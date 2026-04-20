@@ -15,6 +15,7 @@ import { Login } from './pages/Auth/Login';
 
 // Dashboard Pages
 import { DashboardHome } from './pages/Dashboard/DashboardHome';
+import { AnalyticsDashboard } from './pages/Dashboard/AnalyticsDashboard';
 import { TeamManagement } from './pages/Team/TeamManagement';
 
 // Board Pages
@@ -92,6 +93,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <DashboardHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <AnalyticsDashboard />
             </ProtectedRoute>
           }
         />

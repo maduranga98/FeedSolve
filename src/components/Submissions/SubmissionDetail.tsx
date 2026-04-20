@@ -3,6 +3,9 @@ import type { Submission } from '../../types';
 import { Button } from '../Shared';
 import { X } from 'lucide-react';
 import AssignDropdown from './AssignDropdown';
+import PriorityDropdown from './PriorityDropdown';
+import InternalNotesSection from './InternalNotesSection';
+import PublicReplySection from './PublicReplySection';
 import { updateSubmissionStatus } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 
@@ -12,20 +15,12 @@ interface SubmissionDetailProps {
   onUpdated?: () => void;
 }
 
-const priorityColors: Record<string, { bg: string; text: string }> = {
-  low: { bg: 'bg-[#E8F4F8]', text: 'text-[#0B5563]' },
-  medium: { bg: 'bg-[#FEF5E7]', text: 'text-[#854F0B]' },
-  high: { bg: 'bg-[#FDE8E8]', text: 'text-[#A32D2D]' },
-  critical: { bg: 'bg-[#8B0000]', text: 'text-[#FFFFFF]' },
-};
-
 export default function SubmissionDetail({
   submission,
   onClose,
   onUpdated,
 }: SubmissionDetailProps) {
   const [loading, setLoading] = useState(false);
-  const priorityStyle = priorityColors[submission.priority] || priorityColors.medium;
 
   const handleStatusChange = async (newStatus: Submission['status']) => {
     setLoading(true);
@@ -89,11 +84,11 @@ export default function SubmissionDetail({
               <label className="block text-sm font-medium text-[#444441] mb-2">
                 Priority
               </label>
-              <div
-                className={`px-3 py-2 rounded text-sm font-medium ${priorityStyle.bg} ${priorityStyle.text}`}
-              >
-                {submission.priority.charAt(0).toUpperCase() + submission.priority.slice(1)}
-              </div>
+              <PriorityDropdown
+                submissionId={submission.id}
+                currentPriority={submission.priority}
+                onUpdated={onUpdated}
+              />
             </div>
           </div>
 
@@ -154,16 +149,24 @@ export default function SubmissionDetail({
           </div>
 
           {/* Public Reply */}
-          {submission.publicReply && (
-            <div className="bg-[#F8FAFB] border border-[#D3D1C7] rounded p-4">
-              <label className="block text-sm font-medium text-[#444441] mb-2">
-                Public Reply
-              </label>
-              <p className="text-[#444441] text-sm whitespace-pre-wrap">
-                {submission.publicReply}
-              </p>
-            </div>
-          )}
+          <div className="border-t border-[#D3D1C7] pt-6">
+            <PublicReplySection
+              submissionId={submission.id}
+              publicReply={submission.publicReply}
+              publicReplyAt={submission.publicReplyAt}
+              publicReplyBy={submission.publicReplyBy}
+              onReplyAdded={onUpdated}
+            />
+          </div>
+
+          {/* Internal Notes */}
+          <div className="border-t border-[#D3D1C7] pt-6">
+            <InternalNotesSection
+              submissionId={submission.id}
+              notes={submission.internalNotes}
+              onNoteAdded={onUpdated}
+            />
+          </div>
 
           {/* Close Button */}
           <div className="pt-4 border-t border-[#D3D1C7]">
