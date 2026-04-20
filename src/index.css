@@ -12,17 +12,12 @@ body {
 }
 
 body {
-  @apply font-sans antialiased;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
   background-color: #f8fafb;
   color: #444441;
 }
 
 #root {
   min-height: 100vh;
-}
-
-@layer components {
-  .font-inter {
-    @apply font-sans;
-  }
 }
