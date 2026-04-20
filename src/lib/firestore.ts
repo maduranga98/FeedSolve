@@ -9,6 +9,7 @@ import {
   where,
   Timestamp,
   setDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import type {
   User,
@@ -17,9 +18,11 @@ import type {
   Submission,
   BoardFormInput,
   SubmissionFormInput,
+  InternalNote,
 } from '../types';
 import { db } from './firebase';
 import { generateTrackingCode, generateBoardSlug } from './utils';
+import { v4 as uuidv4 } from 'uuid';
 
 // User operations
 export async function createUser(
@@ -244,4 +247,49 @@ export async function getSubmissionsByAssignee(
   );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
+
+// Internal Notes operations (Day 2)
+export async function addInternalNote(
+  submissionId: string,
+  text: string,
+  createdBy: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  const newNote: InternalNote = {
+    id: uuidv4(),
+    text,
+    createdBy,
+    createdAt: Timestamp.now(),
+  };
+
+  await updateDoc(submissionRef, {
+    internalNotes: arrayUnion(newNote),
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function updateSubmissionPriority(
+  submissionId: string,
+  priority: 'low' | 'medium' | 'high' | 'critical'
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    priority,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function addPublicReply(
+  submissionId: string,
+  reply: string,
+  replyBy: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    publicReply: reply,
+    publicReplyAt: Timestamp.now(),
+    publicReplyBy: replyBy,
+    updatedAt: Timestamp.now(),
+  });
 }
