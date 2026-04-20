@@ -204,3 +204,44 @@ export async function getSubmission(id: string): Promise<Submission | null> {
   const snapshot = await getDoc(submissionRef);
   return snapshot.exists() ? (snapshot.data() as Submission) : null;
 }
+
+// Team Member operations (Day 1)
+export async function getCompanyMembers(companyId: string): Promise<User[]> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => doc.data() as User);
+}
+
+export async function assignSubmission(
+  submissionId: string,
+  assignedToUserId: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    assignedTo: assignedToUserId,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function unassignSubmission(submissionId: string): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    assignedTo: undefined,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function getSubmissionsByAssignee(
+  companyId: string,
+  userId: string
+): Promise<Submission[]> {
+  const submissionsRef = collection(db, 'submissions');
+  const q = query(
+    submissionsRef,
+    where('companyId', '==', companyId),
+    where('assignedTo', '==', userId)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
