@@ -36,6 +36,16 @@ export function Navbar() {
                 Dashboard
               </button>
               <button
+                onClick={() => navigate('/analytics')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/analytics')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Analytics
+              </button>
+              <button
                 onClick={() => navigate('/team')}
                 className={`text-sm font-medium transition-colors ${
                   isActive('/team')
