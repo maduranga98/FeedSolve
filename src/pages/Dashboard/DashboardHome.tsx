@@ -4,6 +4,7 @@ import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
 import type { Submission, Board } from '../../types';
 import { SubmissionCard } from '../../components/Cards/SubmissionCard';
 import { LoadingSpinner, Button, Select } from '../../components/Shared';
+import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,29 +15,30 @@ export function DashboardHome() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBoard, setSelectedBoard] = useState('all');
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+
+  const loadData = async () => {
+    if (!user) return;
+
+    try {
+      const [submissionsData, boardsData] = await Promise.all([
+        getCompanySubmissions(user.companyId),
+        getCompanyBoards(user.companyId),
+      ]);
+
+      setSubmissions(submissionsData.sort((a, b) =>
+        b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
+      ));
+      setBoards(boardsData);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-
-      try {
-        const [submissionsData, boardsData] = await Promise.all([
-          getCompanySubmissions(user.companyId),
-          getCompanyBoards(user.companyId),
-        ]);
-
-        setSubmissions(submissionsData.sort((a, b) =>
-          b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
-        ));
-        setBoards(boardsData);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    loadData();
   }, [user]);
 
   const filteredSubmissions =
@@ -109,9 +111,18 @@ export function DashboardHome() {
             <SubmissionCard
               key={submission.id}
               submission={submission}
+              onClick={setSelectedSubmission}
             />
           ))}
         </div>
+      )}
+
+      {selectedSubmission && (
+        <SubmissionDetail
+          submission={selectedSubmission}
+          onClose={() => setSelectedSubmission(null)}
+          onUpdated={loadData}
+        />
       )}
     </div>
   );

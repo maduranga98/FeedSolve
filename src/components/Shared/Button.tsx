@@ -4,6 +4,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger";
   size?: "sm" | "md" | "lg";
   isLoading?: boolean;
+  fullWidth?: boolean;
 }
 
 export function Button({
@@ -11,6 +12,7 @@ export function Button({
   size = "md",
   isLoading = false,
   disabled,
+  fullWidth = false,
   children,
   ...props
 }: ButtonProps) {
@@ -38,7 +40,9 @@ export function Button({
 
   return (
     <button
-      className={`${computedClasses} ${propsClassName || ""}`}
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${
+        disabled || isLoading ? "opacity-50 cursor-not-allowed" : ""
+      }`}
       disabled={disabled || isLoading}
       {...restProps}
     >

@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
 
 export function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -12,11 +13,50 @@ export function Navbar() {
     navigate('/login');
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
     <nav className="bg-white border-b border-[#D3D1C7] sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1E3A5F]">FeedSolve</h1>
+        <div className="flex items-center gap-8">
+          <h1 className="text-2xl font-bold text-[#1E3A5F] cursor-pointer" onClick={() => navigate('/dashboard')}>
+            FeedSolve
+          </h1>
+
+          {user && (
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/dashboard')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => navigate('/analytics')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/analytics')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Analytics
+              </button>
+              <button
+                onClick={() => navigate('/team')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/team')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Team
+              </button>
+            </div>
+          )}
         </div>
 
         {user && (
