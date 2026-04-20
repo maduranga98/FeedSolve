@@ -146,6 +146,22 @@ export function TrackingPage() {
           </p>
         </div>
 
+        {submission.publicReply && (
+          <div className="bg-[#EBF9F1] border border-[#27AE60] rounded-lg shadow-sm p-8 mb-8">
+            <h2 className="text-xl font-bold text-[#0F6E56] mb-2">
+              Response from {submission.publicReplyBy}
+            </h2>
+            {submission.publicReplyAt && (
+              <p className="text-sm text-[#0F6E56] mb-4">
+                {formatDate(submission.publicReplyAt.toDate())}
+              </p>
+            )}
+            <p className="text-[#0F6E56] leading-relaxed whitespace-pre-wrap">
+              {submission.publicReply}
+            </p>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-sm p-8">
           <h2 className="text-xl font-bold text-[#1E3A5F] mb-6">Timeline</h2>
 

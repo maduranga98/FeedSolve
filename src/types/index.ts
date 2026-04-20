@@ -57,6 +57,8 @@ export interface Submission {
   assignedTo?: string;
   internalNotes: InternalNote[];
   publicReply?: string;
+  publicReplyAt?: Timestamp;
+  publicReplyBy?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   resolvedAt?: Timestamp;

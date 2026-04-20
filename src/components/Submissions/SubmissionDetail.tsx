@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import AssignDropdown from './AssignDropdown';
 import PriorityDropdown from './PriorityDropdown';
 import InternalNotesSection from './InternalNotesSection';
+import PublicReplySection from './PublicReplySection';
 import { updateSubmissionStatus } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 
@@ -147,6 +148,17 @@ export default function SubmissionDetail({
             )}
           </div>
 
+          {/* Public Reply */}
+          <div className="border-t border-[#D3D1C7] pt-6">
+            <PublicReplySection
+              submissionId={submission.id}
+              publicReply={submission.publicReply}
+              publicReplyAt={submission.publicReplyAt}
+              publicReplyBy={submission.publicReplyBy}
+              onReplyAdded={onUpdated}
+            />
+          </div>
+
           {/* Internal Notes */}
           <div className="border-t border-[#D3D1C7] pt-6">
             <InternalNotesSection
@@ -155,18 +167,6 @@ export default function SubmissionDetail({
               onNoteAdded={onUpdated}
             />
           </div>
-
-          {/* Public Reply */}
-          {submission.publicReply && (
-            <div className="bg-[#F8FAFB] border border-[#D3D1C7] rounded p-4">
-              <label className="block text-sm font-medium text-[#444441] mb-2">
-                Public Reply
-              </label>
-              <p className="text-[#444441] text-sm whitespace-pre-wrap">
-                {submission.publicReply}
-              </p>
-            </div>
-          )}
 
           {/* Close Button */}
           <div className="pt-4 border-t border-[#D3D1C7]">
