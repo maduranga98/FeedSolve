@@ -1,0 +1,90 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "تعليقات العملاء",
+      "description": "اجمع تعليقات العملاء حول منتجاتك وخدماتك"
+    },
+    "supplier_issues": {
+      "name": "مشاكل الموردين",
+      "description": "تتبع قضايا الجودة والتسليم والأسعار من الموردين"
+    },
+    "distributor_feedback": {
+      "name": "تعليقات الموزعين",
+      "description": "إدارة الشكاوى والمخاوف من موزعيك"
+    },
+    "restaurant_feedback": {
+      "name": "تعليقات المطعم",
+      "description": "اجمع تعليقات حول جودة الطعام والخدمة والنظافة"
+    },
+    "delivery_feedback": {
+      "name": "تعليقات التسليم",
+      "description": "تتبع مشاكل التأخير والتلف وسلوك السائق"
+    },
+    "tenant_requests": {
+      "name": "طلبات المستأجرين",
+      "description": "إدارة طلبات الصيانة والشكاوى من المستأجرين"
+    },
+    "patient_feedback": {
+      "name": "تعليقات المرضى",
+      "description": "اجمع تعليقات حول الأطباء والموظفين والمرافق والفواتير"
+    },
+    "employee_feedback": {
+      "name": "تعليقات الموظفين",
+      "description": "اجمع تعليقات حول الوظيفة والراتب والثقافة والمزايا"
+    },
+    "support_tickets": {
+      "name": "تذاكر الدعم",
+      "description": "إدارة طلبات الدعم الفني وطلبات الميزات"
+    },
+    "event_feedback": {
+      "name": "تعليقات الحدث",
+      "description": "اجمع تعليقات حول الموقع والتنظيم والمحتوى والمتحدثين"
+    }
+  },
+  "industries": {
+    "retail": "البيع بالتجزئة",
+    "manufacturing": "التصنيع",
+    "distribution": "التوزيع",
+    "food_beverage": "الأغذية والمشروبات",
+    "logistics": "اللوجستيات",
+    "real_estate": "العقارات",
+    "healthcare": "الرعاية الصحية",
+    "human_resources": "الموارد البشرية",
+    "technology": "التكنولوجيا",
+    "events": "الأحداث والترفيه"
+  },
+  "categories": {
+    "bug_report": "تقرير الخطأ",
+    "feature_request": "طلب الميزة",
+    "complaint": "شكوى",
+    "compliment": "إطراء",
+    "quality_issue": "مشكلة الجودة",
+    "delivery_problem": "مشكلة التسليم",
+    "pricing": "التسعير",
+    "stock_issue": "مشكلة المخزون",
+    "price_concern": "قلق بشأن السعر",
+    "support": "الدعم",
+    "food_quality": "جودة الطعام",
+    "service": "الخدمة",
+    "cleanliness": "النظافة",
+    "late_delivery": "التسليم المتأخر",
+    "damage": "التلف",
+    "driver_behavior": "سلوك السائق",
+    "maintenance": "الصيانة",
+    "amenities": "المرافق",
+    "doctor": "الطبيب",
+    "staff": "الموظفون",
+    "facilities": "المرافق",
+    "billing": "الفواتير",
+    "career": "الوظيفة",
+    "salary": "الراتب",
+    "culture": "الثقافة",
+    "benefits": "المزايا",
+    "how_to": "كيفية",
+    "account": "الحساب",
+    "venue": "الموقع",
+    "organization": "التنظيم",
+    "content": "المحتوى",
+    "speakers": "المتحدثون"
+  }
+}

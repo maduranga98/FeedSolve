@@ -1,0 +1,66 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "स्वागत है वापसी",
+    "total_submissions": "कुल सबमिशन",
+    "pending": "लंबित",
+    "resolved": "समाधान",
+    "recent_feedback": "हाल की प्रतिपुष्टि",
+    "no_data": "कोई डेटा नहीं",
+    "view_all": "सभी देखें"
+  },
+  "submissions": {
+    "title": "सबमिशन",
+    "new": "नया",
+    "in_progress": "प्रक्रिया में",
+    "resolved": "समाधान",
+    "closed": "बंद",
+    "filter_by_status": "स्थिति द्वारा फ़िल्टर करें",
+    "filter_by_board": "बोर्ड द्वारा फ़िल्टर करें",
+    "sort_by_date": "तारीख द्वारा क्रमबद्ध करें",
+    "sort_by_priority": "प्राथमिकता द्वारा क्रमबद्ध करें",
+    "add_note": "नोट जोड़ें",
+    "internal_notes": "आंतरिक नोट",
+    "public_reply": "सार्वजनिक प्रतिक्रिया",
+    "priority": "प्राथमिकता",
+    "priority_low": "कम",
+    "priority_medium": "मध्यम",
+    "priority_high": "उच्च",
+    "assigned_to": "को सौंपा गया",
+    "resolution_status": "समाधान स्थिति",
+    "unresolved": "अनसुलझा",
+    "partially_resolved": "आंशिक रूप से समाधान"
+  },
+  "templates": {
+    "title": "बोर्ड टेम्प्लेट",
+    "browse": "टेम्प्लेट ब्राउज़ करें",
+    "select_template": "टेम्प्लेट चुनें",
+    "create_from_template": "टेम्प्लेट से बोर्ड बनाएँ",
+    "template_details": "टेम्प्लेट विवरण",
+    "industry": "उद्योग",
+    "categories": "श्रेणियाँ",
+    "featured": "विशेष",
+    "usage_count": "उपयोग की संख्या"
+  },
+  "status": {
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय",
+    "archived": "संग्रहीत",
+    "draft": "ड्राफ्ट",
+    "published": "प्रकाशित"
+  },
+  "errors": {
+    "not_found": "बोर्ड नहीं मिला",
+    "access_denied": "एक्सेस से इनकार",
+    "creation_failed": "बोर्ड बनाने में विफल",
+    "update_failed": "बोर्ड अपडेट करने में विफल",
+    "deletion_failed": "बोर्ड हटाने में विफल"
+  },
+  "success": {
+    "board_created": "बोर्ड सफलतापूर्वक बनाया गया",
+    "board_updated": "बोर्ड सफलतापूर्वक अपडेट किया गया",
+    "board_deleted": "बोर्ड सफलतापूर्वक हटाया गया",
+    "submission_created": "सबमिशन सफलतापूर्वक बनाया गया",
+    "note_added": "नोट सफलतापूर्वक जोड़ा गया"
+  }
+}

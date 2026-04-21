@@ -1,0 +1,90 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "ग्राहक प्रतिपुष्टि",
+      "description": "अपने उत्पादों और सेवाओं के बारे में ग्राहकों से प्रतिपुष्टि एकत्र करें"
+    },
+    "supplier_issues": {
+      "name": "आपूर्तिकर्ता समस्याएं",
+      "description": "आपूर्तिकर्ताओं से गुणवत्ता, वितरण और मूल्य समस्याओं को ट्रैक करें"
+    },
+    "distributor_feedback": {
+      "name": "वितरक प्रतिपुष्टि",
+      "description": "अपने वितरकों से शिकायतों और चिंताओं का प्रबंधन करें"
+    },
+    "restaurant_feedback": {
+      "name": "रेस्तरां प्रतिपुष्टि",
+      "description": "भोजन की गुणवत्ता, सेवा और स्वच्छता के बारे में प्रतिपुष्टि एकत्र करें"
+    },
+    "delivery_feedback": {
+      "name": "डिलीवरी प्रतिपुष्टि",
+      "description": "देर से डिलीवरी, नुकसान और चालक व्यवहार की समस्याओं को ट्रैक करें"
+    },
+    "tenant_requests": {
+      "name": "किरायेदार अनुरोध",
+      "description": "किरायेदारों से रखरखाव अनुरोधों और शिकायतों का प्रबंधन करें"
+    },
+    "patient_feedback": {
+      "name": "रोगी प्रतिपुष्टि",
+      "description": "डॉक्टरों, कर्मचारियों, सुविधाओं और बिलिंग के बारे में प्रतिपुष्टि एकत्र करें"
+    },
+    "employee_feedback": {
+      "name": "कर्मचारी प्रतिपुष्टि",
+      "description": "कैरियर, वेतन, संस्कृति और लाभों के बारे में प्रतिपुष्टि एकत्र करें"
+    },
+    "support_tickets": {
+      "name": "समर्थन टिकट",
+      "description": "तकनीकी समर्थन अनुरोधों और विशेषता अनुरोधों का प्रबंधन करें"
+    },
+    "event_feedback": {
+      "name": "कार्यक्रम प्रतिपुष्टि",
+      "description": "स्थान, संगठन, सामग्री और वक्ताओं के बारे में प्रतिपुष्टि एकत्र करें"
+    }
+  },
+  "industries": {
+    "retail": "खुदरा",
+    "manufacturing": "विनिर्माण",
+    "distribution": "वितरण",
+    "food_beverage": "खाद्य एवं पेय",
+    "logistics": "लॉजिस्टिक्स",
+    "real_estate": "रियल एस्टेट",
+    "healthcare": "स्वास्थ्यसेवा",
+    "human_resources": "मानव संसाधन",
+    "technology": "प्रौद्योगिकी",
+    "events": "कार्यक्रम और मनोरंजन"
+  },
+  "categories": {
+    "bug_report": "बग रिपोर्ट",
+    "feature_request": "सुविधा अनुरोध",
+    "complaint": "शिकायत",
+    "compliment": "प्रशंसा",
+    "quality_issue": "गुणवत्ता समस्या",
+    "delivery_problem": "डिलीवरी समस्या",
+    "pricing": "मूल्य निर्धारण",
+    "stock_issue": "स्टॉक समस्या",
+    "price_concern": "मूल्य चिंता",
+    "support": "समर्थन",
+    "food_quality": "भोजन की गुणवत्ता",
+    "service": "सेवा",
+    "cleanliness": "स्वच्छता",
+    "late_delivery": "देर से डिलीवरी",
+    "damage": "नुकसान",
+    "driver_behavior": "चालक व्यवहार",
+    "maintenance": "रखरखाव",
+    "amenities": "सुविधाएं",
+    "doctor": "डॉक्टर",
+    "staff": "कर्मचारी",
+    "facilities": "सुविधाएं",
+    "billing": "बिलिंग",
+    "career": "कैरियर",
+    "salary": "वेतन",
+    "culture": "संस्कृति",
+    "benefits": "लाभ",
+    "how_to": "कैसे करें",
+    "account": "खाता",
+    "venue": "स्थान",
+    "organization": "संगठन",
+    "content": "सामग्री",
+    "speakers": "वक्ता"
+  }
+}

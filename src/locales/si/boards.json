@@ -1,0 +1,66 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "සාදරයෙන් ආපසු",
+    "total_submissions": "මුළු ඉදිරිපත්භාවයි",
+    "pending": "බලා සිටින්න",
+    "resolved": "විසඳුණු",
+    "recent_feedback": "මෑත ප්‍රතිපෝෂණ",
+    "no_data": "කිසිදු දත්ත නැත",
+    "view_all": "සියල්ල දෙස බලන්න"
+  },
+  "submissions": {
+    "title": "ඉදිරිපත්භාවයි",
+    "new": "නව",
+    "in_progress": "ප්‍රගතිමත්",
+    "resolved": "විසඳුණු",
+    "closed": "වසා ඇත",
+    "filter_by_status": "තත්ත්වය අනුව ෆිල්ටර්",
+    "filter_by_board": "පුවරුව අනුව ෆිල්ටර්",
+    "sort_by_date": "දිනය අනුව ගිණුම්පත",
+    "sort_by_priority": "অগ්‍රাধිකාරයි අනුව ගිණුම්පත",
+    "add_note": "සටහන එකතු කරන්න",
+    "internal_notes": "අභ්‍යන්තර සටහන",
+    "public_reply": "ජනතා පිළිතුරු",
+    "priority": "অග්‍රාධිකාරයි",
+    "priority_low": "පහළ",
+    "priority_medium": "මධ්‍යම",
+    "priority_high": "ඉහළ",
+    "assigned_to": "එකට පවරා ඇත",
+    "resolution_status": "විසඳුම් තත්ත්වය",
+    "unresolved": "විසඳුනු නැත",
+    "partially_resolved": "අර්ධ විසඳුණු"
+  },
+  "templates": {
+    "title": "පුවරු සැකිලි",
+    "browse": "සැකිලි බිරිසිදු කරන්න",
+    "select_template": "සැකිලිය තෝරන්න",
+    "create_from_template": "සැකිලි වලින් පුවරුව සාදන්න",
+    "template_details": "සැකිලි විස්තරයි",
+    "industry": "ශිල්පය",
+    "categories": "ප්‍රවර්ග",
+    "featured": "විශේෂ",
+    "usage_count": "සිටින ගිණුම් දිනවල"
+  },
+  "status": {
+    "active": "සක්‍රිය",
+    "inactive": "අක්‍රිය",
+    "archived": "සංරක්ෂිතයි",
+    "draft": "খসඩ",
+    "published": "ප්‍රකාශිතයි"
+  },
+  "errors": {
+    "not_found": "පුවරුව සොයා ගැනුම් ගිහින්",
+    "access_denied": "ප්‍රවේශ ප්‍රතික්ෂේප කරන ලදී",
+    "creation_failed": "පුවරුව සාදීමට අපසරණයි",
+    "update_failed": "පුවරුව යාවත්කාලීන කිරීමට අපසරණයි",
+    "deletion_failed": "පුවරුව මකා දැමීමට අපසරණයි"
+  },
+  "success": {
+    "board_created": "පුවරුව සාර්ථකව සාදන ලදී",
+    "board_updated": "පුවරුව සාර්ථකව යාවත්කාලීන කරන ලදී",
+    "board_deleted": "පුවරුව සාර්ථකව මකා දැමීණි",
+    "submission_created": "ඉදිරිපත්භාවයි සාර්ථකව සාදන ලදී",
+    "note_added": "සටහන සාර්ථකව එකතු කරන ලදී"
+  }
+}

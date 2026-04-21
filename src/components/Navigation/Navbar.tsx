@@ -1,12 +1,15 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, Users, BarChart3, CreditCard } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
+import { LanguageSwitcher } from '../Language/LanguageSwitcher';
 
 export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     await logout();
@@ -33,7 +36,15 @@ export function Navbar() {
                     : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
                 }`}
               >
-                Dashboard
+                {t('common.dashboard')}
+              </button>
+              <button
+                onClick={() => navigate('/templates')}
+                className={`text-sm font-medium ${
+                  isActive('/templates') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
+                } hover:text-[#1E3A5F]`}
+              >
+                {t('templates.title')}
               </button>
               <button
                 onClick={() => navigate('/board/create')}
@@ -41,7 +52,7 @@ export function Navbar() {
                   isActive('/board/create') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
                 } hover:text-[#1E3A5F]`}
               >
-                Create Board
+                {t('boards.templates.create_from_template')}
               </button>
               <button
                 onClick={() => navigate('/team')}
@@ -50,7 +61,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <Users size={16} />
-                Team
+                {t('common.team')}
               </button>
               <button
                 onClick={() => navigate('/analytics')}
@@ -59,7 +70,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <BarChart3 size={16} />
-                Analytics
+                {t('common.analytics')}
               </button>
               <button
                 onClick={() => navigate('/billing')}
@@ -68,7 +79,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <CreditCard size={16} />
-                Billing
+                {t('common.billing')}
               </button>
             </div>
           )}
@@ -76,6 +87,7 @@ export function Navbar() {
 
         {user && (
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             <div className="text-sm">
               <p className="font-medium text-[#1E3A5F]">{user.name}</p>
               <p className="text-[#6B7B8D]">{user.email}</p>
@@ -87,7 +99,7 @@ export function Navbar() {
               className="flex items-center gap-2"
             >
               <LogOut size={16} />
-              Logout
+              {t('common.logout')}
             </Button>
           </div>
         )}

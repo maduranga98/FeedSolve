@@ -6,6 +6,8 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { useTemplateInit } from './hooks/useTemplateInit';
+import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
 
@@ -34,6 +36,9 @@ import { PricingPage } from './pages/Pricing/PricingPage';
 
 // Billing Pages
 import { BillingPage } from './pages/Billing/BillingPage';
+
+// Templates Pages
+import { TemplatesPage } from './pages/Templates/TemplatesPage';
 
 // Fallback
 import { NotFound } from './pages/NotFound';
@@ -101,6 +106,14 @@ function AppContent() {
             <PublicRoute>
               <TrackingPage />
             </PublicRoute>
+          }
+        />
+        <Route
+          path="/templates"
+          element={
+            <ProtectedRoute>
+              <TemplatesPage />
+            </ProtectedRoute>
           }
         />
 
@@ -179,6 +192,9 @@ function AppContent() {
 }
 
 function App() {
+  useTemplateInit();
+  useRTL();
+
   return (
     <Router>
       <AuthProvider>

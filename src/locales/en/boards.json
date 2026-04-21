@@ -1,0 +1,66 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "total_submissions": "Total Submissions",
+    "pending": "Pending",
+    "resolved": "Resolved",
+    "recent_feedback": "Recent Feedback",
+    "no_data": "No data available",
+    "view_all": "View All"
+  },
+  "submissions": {
+    "title": "Submissions",
+    "new": "New",
+    "in_progress": "In Progress",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "filter_by_status": "Filter by Status",
+    "filter_by_board": "Filter by Board",
+    "sort_by_date": "Sort by Date",
+    "sort_by_priority": "Sort by Priority",
+    "add_note": "Add Note",
+    "internal_notes": "Internal Notes",
+    "public_reply": "Public Reply",
+    "priority": "Priority",
+    "priority_low": "Low",
+    "priority_medium": "Medium",
+    "priority_high": "High",
+    "assigned_to": "Assigned To",
+    "resolution_status": "Resolution Status",
+    "unresolved": "Unresolved",
+    "partially_resolved": "Partially Resolved"
+  },
+  "templates": {
+    "title": "Board Templates",
+    "browse": "Browse Templates",
+    "select_template": "Select Template",
+    "create_from_template": "Create Board from Template",
+    "template_details": "Template Details",
+    "industry": "Industry",
+    "categories": "Categories",
+    "featured": "Featured",
+    "usage_count": "Times Used"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "archived": "Archived",
+    "draft": "Draft",
+    "published": "Published"
+  },
+  "errors": {
+    "not_found": "Board not found",
+    "access_denied": "Access denied",
+    "creation_failed": "Failed to create board",
+    "update_failed": "Failed to update board",
+    "deletion_failed": "Failed to delete board"
+  },
+  "success": {
+    "board_created": "Board created successfully",
+    "board_updated": "Board updated successfully",
+    "board_deleted": "Board deleted successfully",
+    "submission_created": "Submission created successfully",
+    "note_added": "Note added successfully"
+  }
+}

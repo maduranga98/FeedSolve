@@ -175,3 +175,28 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
+
+export interface BoardTemplate {
+  id: string;
+  name: string;
+  description: string;
+  industry: string;
+  icon: string;
+  categories: string[];
+  sampleQuestions?: string[];
+  color: string;
+  featured: boolean;
+  usageCount: number;
+  createdAt: Timestamp;
+  translations: Record<string, {
+    name: string;
+    description: string;
+    categories: string[];
+  }>;
+}
+
+export interface LocalizationSettings {
+  defaultLanguage: 'en' | 'si' | 'ta' | 'ar' | 'hi';
+  supportedLanguages: string[];
+  rtlEnabled: boolean;
+}

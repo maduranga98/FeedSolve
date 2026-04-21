@@ -1,0 +1,66 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "أهلا بعودتك",
+    "total_submissions": "إجمالي التعليقات",
+    "pending": "قيد الانتظار",
+    "resolved": "مُحلّ",
+    "recent_feedback": "التعليقات الأخيرة",
+    "no_data": "لا توجد بيانات",
+    "view_all": "عرض الكل"
+  },
+  "submissions": {
+    "title": "التعليقات",
+    "new": "جديد",
+    "in_progress": "قيد المعالجة",
+    "resolved": "مُحلّ",
+    "closed": "مُغلق",
+    "filter_by_status": "تصفية حسب الحالة",
+    "filter_by_board": "تصفية حسب اللوحة",
+    "sort_by_date": "الترتيب حسب التاريخ",
+    "sort_by_priority": "الترتيب حسب الأولوية",
+    "add_note": "إضافة ملاحظة",
+    "internal_notes": "الملاحظات الداخلية",
+    "public_reply": "الرد العام",
+    "priority": "الأولوية",
+    "priority_low": "منخفضة",
+    "priority_medium": "متوسطة",
+    "priority_high": "عالية",
+    "assigned_to": "موكول إلى",
+    "resolution_status": "حالة الحل",
+    "unresolved": "غير محلول",
+    "partially_resolved": "محلول جزئياً"
+  },
+  "templates": {
+    "title": "قوالب اللوحات",
+    "browse": "استعرض القوالس",
+    "select_template": "اختر قالباً",
+    "create_from_template": "إنشاء لوحة من قالب",
+    "template_details": "تفاصيل القالب",
+    "industry": "الصناعة",
+    "categories": "الفئات",
+    "featured": "مميز",
+    "usage_count": "عدد الاستخدامات"
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "archived": "مؤرشف",
+    "draft": "مسودة",
+    "published": "منشور"
+  },
+  "errors": {
+    "not_found": "لم يتم العثور على اللوحة",
+    "access_denied": "تم رفض الوصول",
+    "creation_failed": "فشل إنشاء اللوحة",
+    "update_failed": "فشل تحديث اللوحة",
+    "deletion_failed": "فشل حذف اللوحة"
+  },
+  "success": {
+    "board_created": "تم إنشاء اللوحة بنجاح",
+    "board_updated": "تم تحديث اللوحة بنجاح",
+    "board_deleted": "تم حذف اللوحة بنجاح",
+    "submission_created": "تم إنشاء التعليق بنجاح",
+    "note_added": "تمت إضافة الملاحظة بنجاح"
+  }
+}

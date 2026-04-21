@@ -1,0 +1,76 @@
+{
+  "feedback": {
+    "category": "ප්‍රවර්ගය",
+    "subject": "විෂය",
+    "description": "විස්තරණ",
+    "email": "ඊමේල් (විකල්පනීය)",
+    "anonymous": "නිරනාමිකව ඉදිරිපත් කරන්න",
+    "submit_button": "ප්‍රතිපෝෂණ ඉදිරිපත් කරන්න",
+    "thank_you": "ඔබේ ප්‍රතිපෝෂණ සඳහා ස්තුතියි!",
+    "tracking_code": "ඔබේ ගිණුම් කේතය:",
+    "track_feedback": "ඔබේ ප්‍රතිපෝෂණ ට්‍රැකවලට",
+    "category_placeholder": "ප්‍රවර්ගය තෝරන්න",
+    "subject_placeholder": "ඔබේ ප්‍රතිපෝෂණ වල කෙටි විෂය",
+    "description_placeholder": "විස්තරයෙන් ඔබේ ප්‍රතිපෝෂණ විස්තර කරන්න"
+  },
+  "validation": {
+    "required": "මෙම ක්ෂේත්‍රය අවශ්‍ය",
+    "email": "කරුණාකර වලංගු ඊමේල් ලිපිනය ඇතුළු කරන්න",
+    "min_length": "අවම වශයෙන් {{count}} අක්ෂර අවශ්‍ය",
+    "max_length": "උපරිම {{count}} අක්ෂර ඉඩ දී ඇත",
+    "invalid_format": "වලංගු නොවන ආකෘතිය"
+  },
+  "board": {
+    "name": "පුවරු නම",
+    "name_placeholder": "පුවරු නම ඇතුළු කරන්න",
+    "description": "විස්තරණ",
+    "description_placeholder": "මෙම පුවරුව භාවිතා කරන්නේ කුමක් සඳහා ඉදිරිපත් කරන්න",
+    "categories": "ප්‍රවර්ග",
+    "add_category": "ප්‍රවර්ගය එකතු කරන්න",
+    "category_name": "ප්‍රවර්ගයේ නම",
+    "category_placeholder": "ප්‍රවර්ගයේ නම ඇතුළු කරන්න",
+    "color": "වර්ණ",
+    "select_color": "වර්ණ තෝරන්න",
+    "anonymous_allowed": "නිරනාමික ඉදිරිපත්භාවය ඉඩ දෙන්න",
+    "create_board": "පුවරුව සෑදීම",
+    "edit_board": "පුවරුව සංස්කරණය",
+    "delete_board": "පුවරුව මකා දමන්න"
+  },
+  "login": {
+    "email": "ඊමේල් ලිපිනය",
+    "password": "මුරපදය",
+    "remember_me": "මාව මතක තබා ගන්න",
+    "sign_in": "ඉතුරු වන්න",
+    "forgot_password": "මුරපදය අමතක වුණාද?",
+    "no_account": "ගිණුමක් නැද්ද?",
+    "signup_link": "මෙහි ලියාපදිංචි වන්න"
+  },
+  "signup": {
+    "company_name": "සමාගමේ නම",
+    "first_name": "පළමු නම",
+    "last_name": "අවසාන නම",
+    "email": "ඊමේල් ලිපිනය",
+    "password": "මුරපදය",
+    "confirm_password": "මුරපදය තහවුරු කරන්න",
+    "agree_terms": "මි සේවා කොන්දේසි සම්මත කරමි",
+    "create_account": "ගිණුම සාදන්න",
+    "have_account": "දැනටමත් ගිණුමක් ඇත්ද?",
+    "login_link": "මෙහි ලිපිනය කරන්න"
+  },
+  "team": {
+    "member_email": "කණ්ඩායම සාමාජිකයි ඊමේල්",
+    "role": "භූමිකා",
+    "add_member": "කණ්ඩායම සාමාජිකයි එකතු කරන්න",
+    "remove_member": "සාමාජිකයි ඉවත් කරන්න",
+    "role_admin": "පරිපාලක",
+    "role_member": "සාමාජිකයි",
+    "role_viewer": "දර්ශකයි"
+  },
+  "billing": {
+    "card_number": "කාඩ් අංකය",
+    "card_expiry": "එක්සපිරි දිනය",
+    "card_cvc": "CVC",
+    "update_payment": "ගෙවීම් ක්‍රමය යාවත්කාලීන කරන්න",
+    "billing_address": "බිල්පතේ ලිපිනය"
+  }
+}
