@@ -448,3 +448,47 @@ export interface FormTemplate {
   updatedAt: Timestamp;
   isPublic: boolean;
 }
+
+export interface BulkOperation {
+  id: string;
+  companyId: string;
+  operationType: 'status' | 'priority' | 'assign' | 'category' | 'delete';
+  submissionIds: string[];
+  updateData: Record<string, any>;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  processedCount: number;
+  totalCount: number;
+  createdBy: string;
+  createdAt: Timestamp;
+  completedAt?: Timestamp;
+  errorMessage?: string;
+  previousValues?: Array<{
+    submissionId: string;
+    previousData: Record<string, any>;
+  }>;
+}
+
+export interface BulkOperationLog {
+  id: string;
+  companyId: string;
+  operationId: string;
+  operationType: 'status' | 'priority' | 'assign' | 'category' | 'delete';
+  submissionCount: number;
+  createdBy: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  action: 'created' | 'completed' | 'failed' | 'undone';
+  details: Record<string, any>;
+  createdAt: Timestamp;
+}
+
+export interface UndoOperation {
+  id: string;
+  companyId: string;
+  operationId: string;
+  originalBulkOperation: BulkOperation;
+  restoredAt: Timestamp;
+  restoredBy: string;
+  expiresAt: Timestamp;
+}

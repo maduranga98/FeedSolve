@@ -40,6 +40,35 @@ For optimal query performance, the following composite indexes must be created i
 - **Query Pattern:** Filter board submissions by status
 - **Purpose:** For future status filtering features
 
+### bulkOperations Collection
+
+#### Index 5: Bulk Operations by Company
+- **Collection:** bulkOperations
+- **Fields:**
+  1. companyId (Ascending)
+  2. createdAt (Descending)
+- **Query Pattern:** Used to list bulk operations for a company
+- **Purpose:** Efficiently fetch all bulk operations for a company ordered by most recent
+
+#### Index 6: Bulk Operations by Status
+- **Collection:** bulkOperations
+- **Fields:**
+  1. companyId (Ascending)
+  2. status (Ascending)
+  3. createdAt (Descending)
+- **Query Pattern:** Filter bulk operations by company and status
+- **Purpose:** Track pending, processing, completed, and failed operations
+
+### bulkOperationLogs Collection
+
+#### Index 7: Bulk Operation Logs by Company
+- **Collection:** bulkOperationLogs
+- **Fields:**
+  1. companyId (Ascending)
+  2. createdAt (Descending)
+- **Query Pattern:** Audit trail for bulk operations
+- **Purpose:** Efficiently fetch audit logs for bulk operations
+
 ## How to Create These Indexes
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)

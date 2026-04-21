@@ -217,6 +217,37 @@ class APIClient {
       return this.get('/api/company');
     },
   };
+
+  // Bulk Operations API
+  bulkOperations = {
+    updateStatus: (submissionIds: string[], status: string): Promise<any> => {
+      return this.post('/api/bulk-operations/status', { submissionIds, status });
+    },
+
+    updatePriority: (submissionIds: string[], priority: string): Promise<any> => {
+      return this.post('/api/bulk-operations/priority', { submissionIds, priority });
+    },
+
+    assign: (submissionIds: string[], assignedTo: string): Promise<any> => {
+      return this.post('/api/bulk-operations/assign', { submissionIds, assignedTo });
+    },
+
+    addToCategory: (submissionIds: string[], category: string): Promise<any> => {
+      return this.post('/api/bulk-operations/category', { submissionIds, category });
+    },
+
+    delete: (submissionIds: string[]): Promise<any> => {
+      return this.post('/api/bulk-operations/delete', { submissionIds });
+    },
+
+    get: (operationId: string): Promise<any> => {
+      return this.get(`/api/bulk-operations/${operationId}`);
+    },
+
+    undo: (operationId: string): Promise<any> => {
+      return this.post(`/api/bulk-operations/${operationId}/undo`, {});
+    },
+  };
 }
 
 class APIError extends Error {
