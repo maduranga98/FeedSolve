@@ -60,15 +60,27 @@ export async function createCompany(
   email: string
 ): Promise<Company> {
   const companyRef = doc(db, 'companies', id);
+  const now = Timestamp.now();
   const newCompany: Company = {
     id,
     name,
     email,
-    subscription: 'free',
+    billingEmail: email,
+    subscription: {
+      tier: 'free',
+      billing: 'monthly',
+      status: 'active',
+    },
+    usage: {
+      submissionsThisMonth: 0,
+      boardsCreated: 0,
+      teamMembersAdded: 0,
+      lastResetAt: now,
+    },
     monthlySubmissionLimit: 100,
     boardCount: 0,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
+    createdAt: now,
+    updatedAt: now,
   };
   await setDoc(companyRef, newCompany);
   return newCompany;
@@ -507,4 +519,59 @@ export async function getCompanyStats(companyId: string): Promise<CompanyStats> 
       : 0;
 
   return stats;
+}
+
+// Subscription operations
+export async function updateCompanySubscription(
+  companyId: string,
+  updates: Partial<any>
+): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  const subscriptionUpdates: Record<string, any> = {};
+  Object.keys(updates).forEach((key) => {
+    subscriptionUpdates[`subscription.${key}`] = updates[key];
+  });
+  subscriptionUpdates['updatedAt'] = Timestamp.now();
+  await updateDoc(companyRef, subscriptionUpdates);
+}
+
+// Usage tracking
+export async function incrementSubmissionUsage(companyId: string): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  await updateDoc(companyRef, {
+    'usage.submissionsThisMonth': arrayUnion({}),
+    'usage.submissionsThisMonth': (await getDoc(companyRef)).data()?.usage?.submissionsThisMonth + 1 || 1,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function incrementBoardUsage(companyId: string): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  const companyData = (await getDoc(companyRef)).data();
+  const currentBoards = companyData?.usage?.boardsCreated || 0;
+  await updateDoc(companyRef, {
+    'usage.boardsCreated': currentBoards + 1,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function incrementTeamMemberUsage(companyId: string): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  const companyData = (await getDoc(companyRef)).data();
+  const currentMembers = companyData?.usage?.teamMembersAdded || 0;
+  await updateDoc(companyRef, {
+    'usage.teamMembersAdded': currentMembers + 1,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function resetMonthlyUsage(companyId: string): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  await updateDoc(companyRef, {
+    'usage.submissionsThisMonth': 0,
+    'usage.boardsCreated': 0,
+    'usage.teamMembersAdded': 0,
+    'usage.lastResetAt': Timestamp.now(),
+    updatedAt: Timestamp.now(),
+  });
 }
