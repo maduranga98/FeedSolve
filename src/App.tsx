@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,42 +12,48 @@ import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
 
 // Auth Pages
-import { SignUp } from './pages/Auth/SignUp';
-import { Login } from './pages/Auth/Login';
+const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
+const Login = lazy(() => import('./pages/Auth/Login').then(m => ({ default: m.Login })));
 
 // Dashboard Pages
-import { DashboardHome } from './pages/Dashboard/DashboardHome';
-import { AnalyticsDashboard } from './pages/Dashboard/AnalyticsDashboard';
-import { TeamManagement } from './pages/Team/TeamManagement';
+const DashboardHome = lazy(() => import('./pages/Dashboard/DashboardHome').then(m => ({ default: m.DashboardHome })));
+const AnalyticsDashboard = lazy(() => import('./pages/Dashboard/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })));
+const TeamManagement = lazy(() => import('./pages/Team/TeamManagement').then(m => ({ default: m.TeamManagement })));
 
 // Board Pages
-import { CreateBoard } from './pages/Board/CreateBoard';
-import { BoardDetails } from './pages/Board/BoardDetails';
+const CreateBoard = lazy(() => import('./pages/Board/CreateBoard').then(m => ({ default: m.CreateBoard })));
+const BoardDetails = lazy(() => import('./pages/Board/BoardDetails').then(m => ({ default: m.BoardDetails })));
 
 // Submission Pages
-import { SubmissionDetail } from './pages/Submission/SubmissionDetail';
+const SubmissionDetail = lazy(() => import('./pages/Submission/SubmissionDetail').then(m => ({ default: m.SubmissionDetail })));
 
 // Public Pages
-import { SubmitFeedback } from './pages/Public/SubmitFeedback';
-import { TrackingPage } from './pages/Public/TrackingPage';
+const SubmitFeedback = lazy(() => import('./pages/Public/SubmitFeedback').then(m => ({ default: m.SubmitFeedback })));
+const TrackingPage = lazy(() => import('./pages/Public/TrackingPage').then(m => ({ default: m.TrackingPage })));
 
 // Pricing Pages
-import { PricingPage } from './pages/Pricing/PricingPage';
+const PricingPage = lazy(() => import('./pages/Pricing/PricingPage').then(m => ({ default: m.PricingPage })));
 
 // Billing Pages
-import { BillingPage } from './pages/Billing/BillingPage';
+const BillingPage = lazy(() => import('./pages/Billing/BillingPage').then(m => ({ default: m.BillingPage })));
 
 // Templates Pages
-import { TemplatesPage } from './pages/Templates/TemplatesPage';
+const TemplatesPage = lazy(() => import('./pages/Templates/TemplatesPage').then(m => ({ default: m.TemplatesPage })));
 
 // Integrations Pages
-import { IntegrationsPage } from './pages/Integrations/IntegrationsPage';
+const IntegrationsPage = lazy(() => import('./pages/Integrations/IntegrationsPage').then(m => ({ default: m.IntegrationsPage })));
 
 // Developer Pages
-import DeveloperDashboard from './pages/Developer/DeveloperDashboard';
+const DeveloperDashboard = lazy(() => import('./pages/Developer/DeveloperDashboard'));
 
 // Fallback
 import { NotFound } from './pages/NotFound';
+
+const RouteLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <LoadingSpinner size="lg" />
+  </div>
+);
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -83,7 +89,7 @@ function PublicRoute({ children }: { children: ReactNode }) {
 
 function AppContent() {
   return (
-    <>
+    <Suspense fallback={<RouteLoadingFallback />}>
       <Routes>
         {/* Auth Routes */}
         <Route path="/signup" element={<SignUp />} />
@@ -211,7 +217,7 @@ function AppContent() {
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </Suspense>
   );
 }
 

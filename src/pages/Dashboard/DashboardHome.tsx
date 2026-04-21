@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
 import { useFilters } from '../../hooks/useFilters';
@@ -59,25 +59,28 @@ export function DashboardHome() {
     loadData();
   }, [user]);
 
-  const filteredSubmissions = submissions.filter((submission) => {
-    const matchesBoard = selectedBoard === 'all' || submission.boardId === selectedBoard;
-    const matchesStatus = !selectedStatus || submission.status === selectedStatus;
-    const matchesPriority = !selectedPriority || submission.priority === selectedPriority;
-    const matchesSearch =
-      !searchQuery ||
-      submission.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      submission.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      submission.trackingCode.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredSubmissions = useMemo(() =>
+    submissions.filter((submission) => {
+      const matchesBoard = selectedBoard === 'all' || submission.boardId === selectedBoard;
+      const matchesStatus = !selectedStatus || submission.status === selectedStatus;
+      const matchesPriority = !selectedPriority || submission.priority === selectedPriority;
+      const matchesSearch =
+        !searchQuery ||
+        submission.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        submission.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        submission.trackingCode.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesBoard && matchesStatus && matchesPriority && matchesSearch;
-  });
+      return matchesBoard && matchesStatus && matchesPriority && matchesSearch;
+    }),
+    [submissions, selectedBoard, selectedStatus, selectedPriority, searchQuery]
+  );
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSearchQuery('');
     setSelectedBoard('all');
     setSelectedStatus('');
     setSelectedPriority('');
-  };
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
