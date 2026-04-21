@@ -3,6 +3,7 @@ import cors from 'cors';
 import * as admin from 'firebase-admin';
 import { authenticateApiKey } from './middleware/auth';
 import { rateLimitMiddleware, logApiRequest } from './middleware/rateLimit';
+import { securityHeaders, validateInput, sanitizeOutput, errorHandler } from './middleware/security';
 import apiKeysRouter from './routes/apiKeys';
 import submissionsRouter from './routes/submissions';
 import boardsRouter from './routes/boards';
@@ -15,9 +16,14 @@ admin.initializeApp();
 
 const app = express();
 
+// Security headers - apply first
+app.use(securityHeaders);
+
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(validateInput);
+app.use(sanitizeOutput);
 app.use(
   cors({
     origin: [
@@ -70,11 +76,6 @@ app.use((req: express.Request, res: express.Response) => {
 });
 
 // Global error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error',
-  });
-});
+app.use(errorHandler);
 
 export default app;

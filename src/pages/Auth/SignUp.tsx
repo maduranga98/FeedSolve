@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Input } from '../../components/Shared';
+import { validatePassword, validateEmail, sanitizeInput } from '../../lib/security';
 
 export function SignUp() {
   const navigate = useNavigate();
@@ -14,22 +15,45 @@ export function SignUp() {
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [passwordFeedback, setPasswordFeedback] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
     }
-    if (!formData.companyName.trim())
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else {
+      const emailValidation = validateEmail(formData.email);
+      if (!emailValidation.valid) {
+        newErrors.email = emailValidation.reason || 'Invalid email';
+      }
+    }
+
+    if (!formData.companyName.trim()) {
       newErrors.companyName = 'Company name is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    } else if (formData.companyName.trim().length < 2) {
+      newErrors.companyName = 'Company name must be at least 2 characters';
     }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.valid) {
+        newErrors.password = passwordValidation.feedback[0] || 'Password is too weak';
+        setPasswordFeedback(passwordValidation.feedback);
+      } else {
+        setPasswordFeedback([]);
+      }
+    }
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
@@ -46,10 +70,10 @@ export function SignUp() {
     setIsLoading(true);
     try {
       await signUp(
-        formData.email,
+        formData.email.toLowerCase().trim(),
         formData.password,
-        formData.name,
-        formData.companyName
+        sanitizeInput(formData.name),
+        sanitizeInput(formData.companyName)
       );
       navigate('/dashboard');
     } catch (error) {
@@ -118,8 +142,15 @@ export function SignUp() {
               setFormData({ ...formData, password: e.target.value })
             }
             error={errors.password}
-            helperText="At least 6 characters"
+            helperText="Min 8 characters, 1 uppercase, 1 lowercase, 1 number"
           />
+          {passwordFeedback.length > 0 && (
+            <div className="text-sm text-[#E74C3C]">
+              {passwordFeedback.map((msg, i) => (
+                <div key={i}>• {msg}</div>
+              ))}
+            </div>
+          )}
 
           <Input
             label="Confirm Password"
