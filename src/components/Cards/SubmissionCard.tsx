@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import type { Submission } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
@@ -18,7 +18,7 @@ const priorityColors: Record<string, { bg: string; text: string }> = {
   critical: { bg: 'bg-[#8B0000]', text: 'text-[#FFFFFF]' },
 };
 
-export function SubmissionCard({ submission, onClick }: SubmissionCardProps) {
+function SubmissionCardComponent({ submission, onClick }: SubmissionCardProps) {
   const [assignedUser, setAssignedUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -35,11 +35,15 @@ export function SubmissionCard({ submission, onClick }: SubmissionCardProps) {
     loadAssignedUser();
   }, [submission.assignedTo]);
 
+  const handleClick = useCallback(() => {
+    onClick?.(submission);
+  }, [submission, onClick]);
+
   const priorityStyle = priorityColors[submission.priority] || priorityColors.medium;
 
   return (
     <div
-      onClick={() => onClick?.(submission)}
+      onClick={handleClick}
       className={`bg-white border border-[#D3D1C7] rounded-lg p-6 transition-shadow ${
         onClick ? 'hover:shadow-md cursor-pointer' : ''
       }`}
@@ -82,3 +86,5 @@ export function SubmissionCard({ submission, onClick }: SubmissionCardProps) {
     </div>
   );
 }
+
+export const SubmissionCard = memo(SubmissionCardComponent);

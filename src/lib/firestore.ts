@@ -7,6 +7,8 @@ import {
   updateDoc,
   query,
   where,
+  orderBy,
+  limit,
   Timestamp,
   setDoc,
   arrayUnion,
@@ -195,16 +197,26 @@ export async function getSubmissionByTrackingCode(
   return { ...doc.data(), id: doc.id } as Submission;
 }
 
-export async function getCompanySubmissions(companyId: string): Promise<Submission[]> {
+export async function getCompanySubmissions(companyId: string, limitCount: number = 500): Promise<Submission[]> {
   const submissionsRef = collection(db, 'submissions');
-  const q = query(submissionsRef, where('companyId', '==', companyId));
+  const q = query(
+    submissionsRef,
+    where('companyId', '==', companyId),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
 }
 
-export async function getBoardSubmissions(boardId: string): Promise<Submission[]> {
+export async function getBoardSubmissions(boardId: string, limitCount: number = 500): Promise<Submission[]> {
   const submissionsRef = collection(db, 'submissions');
-  const q = query(submissionsRef, where('boardId', '==', boardId));
+  const q = query(
+    submissionsRef,
+    where('boardId', '==', boardId),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
 }
