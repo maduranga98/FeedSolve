@@ -171,6 +171,31 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Bulk operations - Cloud Functions writes, Admins can read
+    match /bulkOperations/{operationId} {
+      allow read: if isAuthenticated() &&
+        isUserInCompany(resource.data.companyId) &&
+        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
+      allow write: if false; // Cloud Functions handle writes
+    }
+
+    // Bulk operation logs - Cloud Functions writes, Admins can read for audit
+    match /bulkOperationLogs/{logId} {
+      allow read: if isAuthenticated() &&
+        exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
+        isUserInCompany(resource.data.companyId) &&
+        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin']);
+      allow write: if false; // Cloud Functions handle writes
+    }
+
+    // Undo operations - Cloud Functions writes, users can read for status
+    match /undoOperations/{undoId} {
+      allow read: if isAuthenticated() &&
+        isUserInCompany(resource.data.companyId) &&
+        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
+      allow write: if false; // Cloud Functions handle writes
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;

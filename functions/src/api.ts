@@ -11,6 +11,7 @@ import statsRouter from './routes/stats';
 import attachmentsRouter from './routes/attachments';
 import searchRouter from './routes/search';
 import filtersRouter from './routes/filters';
+import bulkOperationsRouter from './routes/bulk-operations';
 import swaggerUi from 'swagger-ui-express';
 // @ts-ignore
 import openapi from './openapi.json';
@@ -75,6 +76,7 @@ app.use('/', statsRouter);
 app.use('/', attachmentsRouter);
 app.use('/', searchRouter);
 app.use('/', filtersRouter);
+app.use('/', bulkOperationsRouter);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {
