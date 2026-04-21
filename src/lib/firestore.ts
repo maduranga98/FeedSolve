@@ -80,6 +80,13 @@ export async function createCompany(
     },
     monthlySubmissionLimit: 100,
     boardCount: 0,
+    webhooks: {
+      enabled: false,
+    },
+    webhookStats: {
+      totalSent: 0,
+      failureCount: 0,
+    },
     createdAt: now,
     updatedAt: now,
   };

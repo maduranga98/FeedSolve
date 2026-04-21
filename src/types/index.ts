@@ -50,6 +50,8 @@ export interface Company {
   paymentMethod?: PaymentMethod;
   monthlySubmissionLimit: number;
   boardCount: number;
+  webhooks?: WebhookConfig;
+  webhookStats?: WebhookStats;
 }
 
 export interface Board {
@@ -199,4 +201,61 @@ export interface LocalizationSettings {
   defaultLanguage: 'en' | 'si' | 'ta' | 'ar' | 'hi';
   supportedLanguages: string[];
   rtlEnabled: boolean;
+}
+
+export interface SlackWebhook {
+  enabled: boolean;
+  webhookUrl: string;
+  channelId?: string;
+  events: string[];
+  format: 'detailed' | 'compact' | 'minimal';
+  mentionOnNew: boolean;
+  connectedAt: Timestamp;
+}
+
+export interface EmailWebhook {
+  enabled: boolean;
+  recipients: string[];
+  events: string[];
+  frequency: 'instant' | 'daily_digest' | 'weekly_digest';
+  connectedAt: Timestamp;
+}
+
+export interface CustomWebhook {
+  enabled: boolean;
+  url: string;
+  secret: string;
+  events: string[];
+  connectedAt: Timestamp;
+}
+
+export interface WebhookConfig {
+  enabled: boolean;
+  slack?: SlackWebhook;
+  email?: EmailWebhook;
+  custom?: CustomWebhook;
+}
+
+export interface WebhookStats {
+  totalSent: number;
+  failureCount: number;
+  successRate?: number;
+  lastEventAt?: Timestamp;
+  nextRetryAt?: Timestamp;
+}
+
+export interface WebhookLog {
+  id: string;
+  companyId: string;
+  webhookType: 'slack' | 'email' | 'custom';
+  event: string;
+  status: 'success' | 'failed' | 'retrying';
+  statusCode?: number;
+  errorMessage?: string;
+  retryCount: number;
+  maxRetries: number;
+  requestBody: string;
+  response?: string;
+  createdAt: Timestamp;
+  nextRetryAt?: Timestamp;
 }

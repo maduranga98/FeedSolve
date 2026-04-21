@@ -40,6 +40,9 @@ import { BillingPage } from './pages/Billing/BillingPage';
 // Templates Pages
 import { TemplatesPage } from './pages/Templates/TemplatesPage';
 
+// Integrations Pages
+import { IntegrationsPage } from './pages/Integrations/IntegrationsPage';
+
 // Fallback
 import { NotFound } from './pages/NotFound';
 
@@ -150,6 +153,15 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <BillingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/integrations"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <IntegrationsPage />
             </ProtectedRoute>
           }
         />
