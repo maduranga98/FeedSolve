@@ -69,6 +69,25 @@ For optimal query performance, the following composite indexes must be created i
 - **Query Pattern:** Audit trail for bulk operations
 - **Purpose:** Efficiently fetch audit logs for bulk operations
 
+### analyticsSnapshots Collection
+
+#### Index 8: Analytics Snapshots by Company
+- **Collection:** analyticsSnapshots
+- **Fields:**
+  1. companyId (Ascending)
+  2. date (Descending)
+- **Query Pattern:** Fetch analytics snapshots for a company
+- **Purpose:** Efficiently fetch daily analytics snapshots for trend analysis
+
+#### Index 9: Submissions by Company and Status (Analytics)
+- **Collection:** submissions
+- **Fields:**
+  1. companyId (Ascending)
+  2. status (Ascending)
+  3. resolvedAt (Descending)
+- **Query Pattern:** Filter resolved submissions for analytics
+- **Purpose:** Calculate resolution metrics efficiently
+
 ## How to Create These Indexes
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
