@@ -2,17 +2,22 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getBoardBySlug, createSubmission } from '../../lib/firestore';
 import { Button, Input, Select, LoadingSpinner } from '../../components/Shared';
+import { FileUploadInput, FilePreview, FileProgressBar } from '../../components/Attachments';
+import { useFileUpload } from '../../hooks/useFileUpload';
 import type { Board, SubmissionFormInput } from '../../types';
 import { Copy, Check } from 'lucide-react';
 
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { uploads, uploadFiles, uploading: fileUploading } = useFileUpload();
   const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<{ trackingCode: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [submissionId, setSubmissionId] = useState<string>('');
 
   const [formData, setFormData] = useState<SubmissionFormInput>({
     category: '',
@@ -78,6 +83,13 @@ export function SubmitFeedback() {
     setSubmitting(true);
     try {
       const result = await createSubmission(board.id, board.companyId, formData);
+      setSubmissionId(result.id);
+
+      // Upload files if any were selected
+      if (selectedFiles.length > 0) {
+        await uploadFiles(result.id, selectedFiles);
+      }
+
       setSuccess(result);
     } catch (error) {
       setErrors({
@@ -87,6 +99,14 @@ export function SubmitFeedback() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleFilesSelected = (files: File[]) => {
+    setSelectedFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCopyCode = () => {
@@ -259,14 +279,54 @@ export function SubmitFeedback() {
               />
             )}
 
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+                Attachments (Optional)
+              </h3>
+
+              <FileUploadInput
+                onFilesSelected={handleFilesSelected}
+                disabled={submitting || fileUploading}
+              />
+
+              {selectedFiles.length > 0 && (
+                <div className="mt-4">
+                  <FilePreview
+                    files={selectedFiles.map((file) => ({
+                      name: file.name,
+                      size: file.size,
+                    }))}
+                    onRemove={handleRemoveFile}
+                    isUploading={fileUploading}
+                  />
+                </div>
+              )}
+
+              {uploads.size > 0 && (
+                <div className="mt-4 space-y-3">
+                  {Array.from(uploads.values()).map((upload) => (
+                    <FileProgressBar
+                      key={upload.fileId}
+                      filename={upload.filename}
+                      progress={upload.progress}
+                      totalBytes={upload.totalBytes}
+                      uploadedBytes={upload.uploadedBytes}
+                      error={upload.error}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
             <Button
               type="submit"
               variant="primary"
               size="lg"
-              isLoading={submitting}
+              isLoading={submitting || fileUploading}
+              disabled={submitting || fileUploading}
               className="w-full"
             >
-              Submit Feedback
+              {fileUploading ? 'Uploading Files...' : 'Submit Feedback'}
             </Button>
           </form>
         </div>

@@ -107,6 +107,12 @@ service cloud.firestore {
       allow update: if canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
+
+      // Attachments can be read by company members
+      match /attachments/{attachmentId} {
+        allow read: if canReadSubmissions(resource.data.companyId);
+        allow write: if false; // Cloud Functions handle writes
+      }
     }
 
     // API Keys collection - Admin+ only
@@ -132,6 +138,11 @@ service cloud.firestore {
     match /audit_logs/{companyId}/{logId} {
       allow read: if canManageCompany(companyId);
       allow write: if false;
+    }
+
+    // Virus scan queue - Cloud Functions only
+    match /virus_scan_queue/{scanId} {
+      allow read, write: if false;
     }
 
     // Deny everything else
