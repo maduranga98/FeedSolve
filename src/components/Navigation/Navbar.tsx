@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, Users, BarChart3 } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
 
@@ -32,6 +33,20 @@ export function Navbar() {
                 className={`text-sm font-medium ${
                   isActive('/dashboard') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
                 } hover:text-[#1E3A5F]`}
+        <div className="flex items-center gap-8">
+          <h1 className="text-2xl font-bold text-[#1E3A5F] cursor-pointer" onClick={() => navigate('/dashboard')}>
+            FeedSolve
+          </h1>
+
+          {user && (
+            <div className="flex items-center gap-6">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/dashboard')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
               >
                 Dashboard
               </button>
@@ -60,6 +75,25 @@ export function Navbar() {
               >
                 <BarChart3 size={16} />
                 Analytics
+              </button>
+                onClick={() => navigate('/analytics')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/analytics')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Analytics
+              </button>
+              <button
+                onClick={() => navigate('/team')}
+                className={`text-sm font-medium transition-colors ${
+                  isActive('/team')
+                    ? 'text-[#1E3A5F]'
+                    : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                }`}
+              >
+                Team
               </button>
             </div>
           )}

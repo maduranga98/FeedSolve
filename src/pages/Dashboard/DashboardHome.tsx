@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
+import { useFilters } from '../../hooks/useFilters';
 import type { Submission, Board } from '../../types';
 import { SubmissionCard } from '../../components/Cards/SubmissionCard';
 import { LoadingSpinner, Button } from '../../components/Shared';
+import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
+import FilterBar from '../../components/Filters/FilterBar';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardFilters } from './DashboardFilters';
@@ -18,29 +21,41 @@ export function DashboardHome() {
   const [selectedBoard, setSelectedBoard] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('');
   const [selectedPriority, setSelectedPriority] = useState('');
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const {
+    filters,
+    filtered,
+    activeFilterCount,
+    setStatusFilter,
+    setBoardFilter,
+    setAssigneeFilter,
+    setPriorityFilter,
+    setDateRange,
+    clearAllFilters,
+  } = useFilters(submissions);
+
+  const loadData = async () => {
+    if (!user) return;
+
+    try {
+      const [submissionsData, boardsData] = await Promise.all([
+        getCompanySubmissions(user.companyId),
+        getCompanyBoards(user.companyId),
+      ]);
+
+      setSubmissions(submissionsData.sort((a, b) =>
+        b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
+      ));
+      setBoards(boardsData);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return;
-
-      try {
-        const [submissionsData, boardsData] = await Promise.all([
-          getCompanySubmissions(user.companyId),
-          getCompanyBoards(user.companyId),
-        ]);
-
-        setSubmissions(submissionsData.sort((a, b) =>
-          b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
-        ));
-        setBoards(boardsData);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    loadData();
   }, [user]);
 
   const filteredSubmissions = submissions.filter((submission) => {
@@ -73,6 +88,8 @@ export function DashboardHome() {
             </h1>
             <p className="text-color-muted-text">
               {submissions.length} total{' '}
+            <p className="text-[#6B7B8D]">
+              {filtered.length} of {submissions.length}{' '}
               {submissions.length === 1 ? 'submission' : 'submissions'}
             </p>
           </div>
@@ -102,16 +119,30 @@ export function DashboardHome() {
           onReset={handleReset}
           submissionCount={filteredSubmissions.length}
         />
+        <div className="mb-8">
+          <FilterBar
+            boards={boards}
+            onStatusChange={setStatusFilter}
+            onBoardChange={setBoardFilter}
+            onAssigneeChange={setAssigneeFilter}
+            onPriorityChange={setPriorityFilter}
+            onDateRangeChange={setDateRange}
+            onClear={clearAllFilters}
+            activeFilterCount={activeFilterCount}
+            currentFilters={filters}
+          />
+        </div>
       )}
 
       {loading ? (
         <LoadingSpinner size="lg" className="min-h-96" />
-      ) : filteredSubmissions.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-color-muted-text text-lg mb-4">
             {boards.length === 0
               ? 'Create your first board to start collecting feedback'
               : searchQuery || selectedBoard !== 'all' || selectedStatus || selectedPriority
+              : activeFilterCount > 0
                 ? 'No submissions match your filters'
                 : 'No submissions yet. Share your board QR code to get started.'}
           </p>
@@ -123,16 +154,33 @@ export function DashboardHome() {
               Create First Board
             </Button>
           )}
+          {activeFilterCount > 0 && (
+            <Button
+              variant="secondary"
+              onClick={clearAllFilters}
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSubmissions.map((submission) => (
+          {filtered.map((submission) => (
             <SubmissionCard
               key={submission.id}
               submission={submission}
+              onClick={setSelectedSubmission}
             />
           ))}
         </div>
+      )}
+
+      {selectedSubmission && (
+        <SubmissionDetail
+          submission={selectedSubmission}
+          onClose={() => setSelectedSubmission(null)}
+          onUpdated={loadData}
+        />
       )}
     </div>
   );

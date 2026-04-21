@@ -9,6 +9,7 @@ import {
   where,
   Timestamp,
   setDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 import type {
   User,
@@ -19,9 +20,11 @@ import type {
   SubmissionFormInput,
   TeamInvitation,
   TeamMember,
+  InternalNote,
 } from '../types';
 import { db } from './firebase';
 import { generateTrackingCode, generateBoardSlug } from './utils';
+import { v4 as uuidv4 } from 'uuid';
 
 // User operations
 export async function createUser(
@@ -314,6 +317,48 @@ export async function updateSubmissionAssignment(
   await updateDoc(submissionRef, { assignedTo, updatedAt: Timestamp.now() });
 }
 
+// Team Member operations (Day 1)
+export async function getCompanyMembers(companyId: string): Promise<User[]> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => doc.data() as User);
+}
+
+export async function assignSubmission(
+  submissionId: string,
+  assignedToUserId: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    assignedTo: assignedToUserId,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function unassignSubmission(submissionId: string): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    assignedTo: undefined,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function getSubmissionsByAssignee(
+  companyId: string,
+  userId: string
+): Promise<Submission[]> {
+  const submissionsRef = collection(db, 'submissions');
+  const q = query(
+    submissionsRef,
+    where('companyId', '==', companyId),
+    where('assignedTo', '==', userId)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
+
+// Internal Notes operations (Day 2)
 export async function addInternalNote(
   submissionId: string,
   text: string,
@@ -325,6 +370,8 @@ export async function addInternalNote(
 
   const newNote = {
     id: Date.now().toString(),
+  const newNote: InternalNote = {
+    id: uuidv4(),
     text,
     createdBy,
     createdAt: Timestamp.now(),
@@ -332,6 +379,7 @@ export async function addInternalNote(
 
   await updateDoc(submissionRef, {
     internalNotes: [...submission.internalNotes, newNote],
+    internalNotes: arrayUnion(newNote),
     updatedAt: Timestamp.now(),
   });
 }
@@ -342,4 +390,133 @@ export async function updateSubmissionPublicReply(
 ): Promise<void> {
   const submissionRef = doc(db, 'submissions', submissionId);
   await updateDoc(submissionRef, { publicReply: reply, updatedAt: Timestamp.now() });
+export async function updateSubmissionPriority(
+  submissionId: string,
+  priority: 'low' | 'medium' | 'high' | 'critical'
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    priority,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function addPublicReply(
+  submissionId: string,
+  reply: string,
+  replyBy: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, {
+    publicReply: reply,
+    publicReplyAt: Timestamp.now(),
+    publicReplyBy: replyBy,
+    updatedAt: Timestamp.now(),
+  });
+}
+
+// Analytics operations (Day 4)
+export interface CompanyStats {
+  totalSubmissions: number;
+  receivedCount: number;
+  inReviewCount: number;
+  inProgressCount: number;
+  resolvedCount: number;
+  closedCount: number;
+  resolutionRate: number;
+  avgResolutionDays: number;
+  submissionsByBoard: Record<string, { name: string; count: number }>;
+  submissionsByCategory: Record<string, number>;
+  submissionsByPriority: Record<string, number>;
+  submissionsByAssignee: Record<string, { name: string; count: number }>;
+}
+
+export async function getCompanyStats(companyId: string): Promise<CompanyStats> {
+  const [submissions, boards, members] = await Promise.all([
+    getCompanySubmissions(companyId),
+    getCompanyBoards(companyId),
+    getCompanyMembers(companyId),
+  ]);
+
+  const stats: CompanyStats = {
+    totalSubmissions: submissions.length,
+    receivedCount: 0,
+    inReviewCount: 0,
+    inProgressCount: 0,
+    resolvedCount: 0,
+    closedCount: 0,
+    resolutionRate: 0,
+    avgResolutionDays: 0,
+    submissionsByBoard: {},
+    submissionsByCategory: {},
+    submissionsByPriority: {},
+    submissionsByAssignee: {},
+  };
+
+  let totalResolutionTime = 0;
+  let resolvedSubmissionCount = 0;
+
+  const boardMap = new Map(boards.map((b) => [b.id, b.name]));
+  const memberMap = new Map(members.map((m) => [m.id, m.name]));
+
+  submissions.forEach((sub) => {
+    // Count by status
+    if (sub.status === 'received') stats.receivedCount++;
+    else if (sub.status === 'in_review') stats.inReviewCount++;
+    else if (sub.status === 'in_progress') stats.inProgressCount++;
+    else if (sub.status === 'resolved') stats.resolvedCount++;
+    else if (sub.status === 'closed') stats.closedCount++;
+
+    // Resolution time
+    if (
+      (sub.status === 'resolved' || sub.status === 'closed') &&
+      sub.resolvedAt &&
+      sub.createdAt
+    ) {
+      const resTime =
+        sub.resolvedAt.toDate().getTime() - sub.createdAt.toDate().getTime();
+      totalResolutionTime += resTime;
+      resolvedSubmissionCount++;
+    }
+
+    // By board
+    const boardName = boardMap.get(sub.boardId) || 'Unknown';
+    if (!stats.submissionsByBoard[sub.boardId]) {
+      stats.submissionsByBoard[sub.boardId] = { name: boardName, count: 0 };
+    }
+    stats.submissionsByBoard[sub.boardId].count++;
+
+    // By category
+    stats.submissionsByCategory[sub.category] =
+      (stats.submissionsByCategory[sub.category] || 0) + 1;
+
+    // By priority
+    stats.submissionsByPriority[sub.priority] =
+      (stats.submissionsByPriority[sub.priority] || 0) + 1;
+
+    // By assignee
+    if (sub.assignedTo) {
+      const assigneeName = memberMap.get(sub.assignedTo) || 'Unknown';
+      if (!stats.submissionsByAssignee[sub.assignedTo]) {
+        stats.submissionsByAssignee[sub.assignedTo] = {
+          name: assigneeName,
+          count: 0,
+        };
+      }
+      stats.submissionsByAssignee[sub.assignedTo].count++;
+    }
+  });
+
+  // Calculate rates
+  const resolvedTotal = stats.resolvedCount + stats.closedCount;
+  stats.resolutionRate =
+    stats.totalSubmissions > 0
+      ? (resolvedTotal / stats.totalSubmissions) * 100
+      : 0;
+  stats.avgResolutionDays =
+    resolvedSubmissionCount > 0
+      ? totalResolutionTime / resolvedSubmissionCount / 86400000
+      : 0;
+
+  return stats;
 }
