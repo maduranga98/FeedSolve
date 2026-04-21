@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { BoardTemplate } from '../../types';
+import type { BoardTemplate } from '../../types';
 import { Button } from '../Shared';
 
 interface TemplateCardProps {

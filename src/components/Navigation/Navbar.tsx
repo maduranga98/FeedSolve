@@ -39,6 +39,14 @@ export function Navbar() {
                 {t('common.dashboard')}
               </button>
               <button
+                onClick={() => navigate('/templates')}
+                className={`text-sm font-medium ${
+                  isActive('/templates') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
+                } hover:text-[#1E3A5F]`}
+              >
+                {t('templates.title')}
+              </button>
+              <button
                 onClick={() => navigate('/board/create')}
                 className={`text-sm font-medium ${
                   isActive('/board/create') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'

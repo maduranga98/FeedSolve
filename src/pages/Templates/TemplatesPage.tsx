@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { LoadingSpinner } from '../../components/Shared';
 import { getTemplates } from '../../lib/firebase';
-import { BoardTemplate } from '../../types';
+import type { BoardTemplate } from '../../types';
 import { TemplateCard } from '../../components/Templates/TemplateCard';
-import { useAuth } from '../../hooks/useAuth';
 
 export function TemplatesPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [templates, setTemplates] = useState<BoardTemplate[]>([]);
   const [selectedIndustry, setSelectedIndustry] = useState<string>('');
   const [loading, setLoading] = useState(true);

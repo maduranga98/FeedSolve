@@ -539,9 +539,10 @@ export async function updateCompanySubscription(
 // Usage tracking
 export async function incrementSubmissionUsage(companyId: string): Promise<void> {
   const companyRef = doc(db, 'companies', companyId);
+  const companyData = (await getDoc(companyRef)).data();
+  const currentSubmissions = companyData?.usage?.submissionsThisMonth || 0;
   await updateDoc(companyRef, {
-    'usage.submissionsThisMonth': arrayUnion({}),
-    'usage.submissionsThisMonth': (await getDoc(companyRef)).data()?.usage?.submissionsThisMonth + 1 || 1,
+    'usage.submissionsThisMonth': currentSubmissions + 1,
     updatedAt: Timestamp.now(),
   });
 }
