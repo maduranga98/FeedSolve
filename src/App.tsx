@@ -19,6 +19,9 @@ import { DashboardHome } from './pages/Dashboard/DashboardHome';
 // Board Pages
 import { CreateBoard } from './pages/Board/CreateBoard';
 
+// Team Pages
+import { TeamManagement } from './pages/Team/TeamManagement';
+
 // Public Pages
 import { SubmitFeedback } from './pages/Public/SubmitFeedback';
 import { TrackingPage } from './pages/Public/TrackingPage';
@@ -100,6 +103,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <CreateBoard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/team"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <TeamManagement />
             </ProtectedRoute>
           }
         />

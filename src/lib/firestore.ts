@@ -17,6 +17,8 @@ import type {
   Submission,
   BoardFormInput,
   SubmissionFormInput,
+  TeamInvitation,
+  TeamMember,
 } from '../types';
 import { db } from './firebase';
 import { generateTrackingCode, generateBoardSlug } from './utils';
@@ -203,4 +205,94 @@ export async function getSubmission(id: string): Promise<Submission | null> {
   const submissionRef = doc(db, 'submissions', id);
   const snapshot = await getDoc(submissionRef);
   return snapshot.exists() ? (snapshot.data() as Submission) : null;
+}
+
+// Team management operations
+export async function inviteTeamMember(
+  companyId: string,
+  email: string,
+  role: 'admin' | 'member',
+  invitedBy: string
+): Promise<TeamInvitation> {
+  const inviteCode = generateTrackingCode();
+  const invitationsRef = collection(db, 'teamInvitations');
+
+  const newInvitation: Omit<TeamInvitation, 'id'> = {
+    companyId,
+    email,
+    role,
+    invitedBy,
+    inviteCode,
+    status: 'pending',
+    createdAt: Timestamp.now(),
+    expiresAt: new Timestamp(
+      Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
+      0
+    ),
+  };
+
+  const docRef = await addDoc(invitationsRef, newInvitation);
+  return { ...newInvitation, id: docRef.id } as TeamInvitation;
+}
+
+export async function getInvitationByCode(
+  code: string
+): Promise<TeamInvitation | null> {
+  const invitationsRef = collection(db, 'teamInvitations');
+  const q = query(invitationsRef, where('inviteCode', '==', code));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+
+  const doc = snapshot.docs[0];
+  return { ...doc.data(), id: doc.id } as TeamInvitation;
+}
+
+export async function acceptInvitation(invitationId: string): Promise<void> {
+  const invitationRef = doc(db, 'teamInvitations', invitationId);
+  await updateDoc(invitationRef, { status: 'accepted' });
+}
+
+export async function getTeamMembers(companyId: string): Promise<TeamMember[]> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  return snapshot.docs
+    .map((doc) => {
+      const user = doc.data() as User;
+      return {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        joinedAt: user.createdAt,
+        status: user.status || 'active',
+      } as TeamMember & { status: string };
+    })
+    .filter((member) => member.status !== 'inactive');
+}
+
+export async function updateMemberRole(
+  userId: string,
+  newRole: 'admin' | 'member'
+): Promise<void> {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, { role: newRole });
+}
+
+export async function removeTeamMember(userId: string): Promise<void> {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, { status: 'inactive' });
+}
+
+export async function getCompanyInvitations(
+  companyId: string
+): Promise<TeamInvitation[]> {
+  const invitationsRef = collection(db, 'teamInvitations');
+  const q = query(
+    invitationsRef,
+    where('companyId', '==', companyId),
+    where('status', '==', 'pending')
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as TeamInvitation));
 }

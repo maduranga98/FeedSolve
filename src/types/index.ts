@@ -6,6 +6,7 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'member';
+  status?: 'active' | 'inactive';
   createdAt: Timestamp;
 }
 
@@ -75,6 +76,26 @@ export interface BoardFormInput {
   description: string;
   categories: string[];
   isAnonymousAllowed: boolean;
+}
+
+export interface TeamInvitation {
+  id: string;
+  companyId: string;
+  email: string;
+  role: 'admin' | 'member';
+  invitedBy: string;
+  inviteCode: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: Timestamp;
+  expiresAt: Timestamp;
+}
+
+export interface TeamMember {
+  userId: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'member';
+  joinedAt: Timestamp;
 }
 
 export interface AuthContextType {
