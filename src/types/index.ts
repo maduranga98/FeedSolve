@@ -10,14 +10,44 @@ export interface User {
   createdAt: Timestamp;
 }
 
+export interface Subscription {
+  tier: 'free' | 'starter' | 'growth' | 'business';
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  priceId?: string;
+  billing: 'monthly' | 'annual';
+  currentPeriodStart?: Timestamp;
+  currentPeriodEnd?: Timestamp;
+  status: 'active' | 'past_due' | 'canceled' | 'unpaid';
+  canceledAt?: Timestamp;
+  upgradedAt?: Timestamp;
+  downgradedAt?: Timestamp;
+}
+
+export interface CompanyUsage {
+  submissionsThisMonth: number;
+  boardsCreated: number;
+  teamMembersAdded: number;
+  lastResetAt: Timestamp;
+}
+
+export interface PaymentMethod {
+  brand: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+}
+
 export interface Company {
   id: string;
   name: string;
   email: string;
+  billingEmail?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
-  subscription: 'free' | 'starter' | 'growth' | 'business';
-  subscriptionEndsAt?: Timestamp;
+  subscription: Subscription;
+  usage: CompanyUsage;
+  paymentMethod?: PaymentMethod;
   monthlySubmissionLimit: number;
   boardCount: number;
 }
@@ -98,6 +128,44 @@ export interface TeamMember {
   name: string;
   role: 'admin' | 'member';
   joinedAt: Timestamp;
+}
+
+export interface Invoice {
+  id: string;
+  companyId: string;
+  stripeCustomerId: string;
+  amount: number;
+  currency: string;
+  status: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void';
+  paidAt?: Timestamp;
+  dueDate?: Timestamp;
+  pdfUrl: string;
+  description: string;
+  periodStart: Timestamp;
+  periodEnd: Timestamp;
+  createdAt: Timestamp;
+}
+
+export interface BillingEvent {
+  id: string;
+  companyId: string;
+  type: 'upgrade' | 'downgrade' | 'subscription_created' | 'payment_failed' | 'payment_succeeded' | 'cancel';
+  fromTier?: string;
+  toTier?: string;
+  amount?: number;
+  reason?: string;
+  stripeEventId: string;
+  createdAt: Timestamp;
+}
+
+export interface TierLimits {
+  boards: number;
+  submissions: number;
+  teamMembers: number;
+  canReply: boolean;
+  canViewAnalytics: boolean;
+  canRemoveBranding: boolean;
+  canAccessAPI: boolean;
 }
 
 export interface AuthContextType {

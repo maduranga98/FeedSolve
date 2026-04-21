@@ -29,6 +29,12 @@ import { SubmissionDetail } from './pages/Submission/SubmissionDetail';
 import { SubmitFeedback } from './pages/Public/SubmitFeedback';
 import { TrackingPage } from './pages/Public/TrackingPage';
 
+// Pricing Pages
+import { PricingPage } from './pages/Pricing/PricingPage';
+
+// Billing Pages
+import { BillingPage } from './pages/Billing/BillingPage';
+
 // Fallback
 import { NotFound } from './pages/NotFound';
 
@@ -74,6 +80,14 @@ function AppContent() {
 
         {/* Public Routes */}
         <Route
+          path="/pricing"
+          element={
+            <PublicRoute>
+              <PricingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/submit/:slug"
           element={
             <PublicRoute>
@@ -115,6 +129,14 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <TeamManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/billing"
+          element={
+            <ProtectedRoute>
+              <BillingPage />
             </ProtectedRoute>
           }
         />
