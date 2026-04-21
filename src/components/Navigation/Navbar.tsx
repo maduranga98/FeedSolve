@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Users } from 'lucide-react';
+import { LogOut, Users, BarChart3 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
 
@@ -51,6 +51,15 @@ export function Navbar() {
               >
                 <Users size={16} />
                 Team
+              </button>
+              <button
+                onClick={() => navigate('/analytics')}
+                className={`text-sm font-medium flex items-center gap-2 ${
+                  isActive('/analytics') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
+                } hover:text-[#1E3A5F]`}
+              >
+                <BarChart3 size={16} />
+                Analytics
               </button>
             </div>
           )}

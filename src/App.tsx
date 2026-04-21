@@ -25,6 +25,9 @@ import { TeamManagement } from './pages/Team/TeamManagement';
 // Submission Pages
 import { SubmissionDetail } from './pages/Submission/SubmissionDetail';
 
+// Analytics Pages
+import { AnalyticsDashboard } from './pages/Analytics/AnalyticsDashboard';
+
 // Public Pages
 import { SubmitFeedback } from './pages/Public/SubmitFeedback';
 import { TrackingPage } from './pages/Public/TrackingPage';
@@ -124,6 +127,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <SubmissionDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <AnalyticsDashboard />
             </ProtectedRoute>
           }
         />
