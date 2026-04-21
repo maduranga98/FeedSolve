@@ -6,12 +6,16 @@
     "email": "Email (Optional)",
     "anonymous": "Submit Anonymously",
     "submit_button": "Submit Feedback",
-    "thank_you": "Thank you for your feedback!",
-    "tracking_code": "Your tracking code is:",
-    "track_feedback": "Track Your Feedback",
+    "submit_success": "Feedback Submitted!",
+    "thank_you": "Thank you for your feedback. You can track its progress with this code.",
+    "tracking_code": "Your Tracking Code",
+    "track_feedback": "Track Progress",
     "category_placeholder": "Select a category",
-    "subject_placeholder": "Brief subject of your feedback",
-    "description_placeholder": "Describe your feedback in detail"
+    "subject_placeholder": "Brief summary of your feedback",
+    "description_placeholder": "Tell us more about your feedback",
+    "attachments": "Attachments (Optional)",
+    "uploading": "Uploading Files...",
+    "email_helper": "We'll use this to notify you of updates"
   },
   "validation": {
     "required": "This field is required",

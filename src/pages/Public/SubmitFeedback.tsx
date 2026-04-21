@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getBoardBySlug, createSubmission } from '../../lib/firestore';
 import { Button, Input, Select, LoadingSpinner } from '../../components/Shared';
 import { FileUploadInput, FilePreview, FileProgressBar } from '../../components/Attachments';
@@ -10,6 +11,7 @@ import { Copy, Check } from 'lucide-react';
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { uploads, uploadFiles, uploading: fileUploading } = useFileUpload();
   const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,15 +61,15 @@ export function SubmitFeedback() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.category) newErrors.category = 'Category is required';
-    if (!formData.subject.trim()) newErrors.subject = 'Subject is required';
+    if (!formData.category) newErrors.category = t('forms:feedback.category') + ' ' + t('forms:validation.required');
+    if (!formData.subject.trim()) newErrors.subject = t('forms:feedback.subject') + ' ' + t('forms:validation.required');
     if (!formData.description.trim())
-      newErrors.description = 'Description is required';
+      newErrors.description = t('forms:feedback.description') + ' ' + t('forms:validation.required');
 
     if (!formData.isAnonymous) {
-      if (!formData.email?.trim()) newErrors.email = 'Email is required';
+      if (!formData.email?.trim()) newErrors.email = t('forms:validation.required');
       if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = 'Invalid email format';
+        newErrors.email = t('forms:validation.email');
       }
     }
 
@@ -94,7 +96,7 @@ export function SubmitFeedback() {
     } catch (error) {
       setErrors({
         submit:
-          error instanceof Error ? error.message : 'Failed to submit feedback',
+          error instanceof Error ? error.message : t('errors:something_went_wrong'),
       });
     } finally {
       setSubmitting(false);
@@ -130,9 +132,9 @@ export function SubmitFeedback() {
       <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[#1E3A5F] mb-4">
-            Board not found
+            {t('common:not_found')}
           </h1>
-          <p className="text-[#6B7B8D]">The feedback board you're looking for doesn't exist.</p>
+          <p className="text-[#6B7B8D]">{t('common:board_not_found')}</p>
         </div>
       </div>
     );
@@ -147,14 +149,14 @@ export function SubmitFeedback() {
           </div>
 
           <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">
-            Feedback Submitted!
+            {t('forms:feedback.submit_success')}
           </h1>
           <p className="text-[#6B7B8D] mb-6">
-            Thank you for your feedback. You can track its progress with this code.
+            {t('forms:feedback.thank_you')}
           </p>
 
           <div className="bg-[#F8FAFB] rounded-lg p-4 mb-6">
-            <p className="text-xs text-[#6B7B8D] mb-2">Your Tracking Code</p>
+            <p className="text-xs text-[#6B7B8D] mb-2">{t('forms:feedback.tracking_code')}</p>
             <div className="flex items-center gap-2">
               <code className="text-2xl font-mono font-bold text-[#1E3A5F] flex-1">
                 {success.trackingCode}
@@ -178,7 +180,7 @@ export function SubmitFeedback() {
             className="w-full"
             onClick={() => navigate(`/track/${success.trackingCode}`)}
           >
-            Track Progress
+            {t('forms:feedback.track_feedback')}
           </Button>
         </div>
       </div>
@@ -202,7 +204,7 @@ export function SubmitFeedback() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Select
-              label="Category"
+              label={t('forms:feedback.category')}
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -215,8 +217,8 @@ export function SubmitFeedback() {
             />
 
             <Input
-              label="Subject"
-              placeholder="Brief summary of your feedback"
+              label={t('forms:feedback.subject')}
+              placeholder={t('forms:feedback.subject_placeholder')}
               value={formData.subject}
               onChange={(e) =>
                 setFormData({ ...formData, subject: e.target.value })
@@ -226,10 +228,10 @@ export function SubmitFeedback() {
 
             <div>
               <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
-                Description
+                {t('forms:feedback.description')}
               </label>
               <textarea
-                placeholder="Tell us more about your feedback"
+                placeholder={t('forms:feedback.description_placeholder')}
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -261,13 +263,13 @@ export function SubmitFeedback() {
                 className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB] disabled:opacity-50"
               />
               <span className="text-[#1E3A5F] font-medium">
-                Submit anonymously
+                {t('forms:feedback.anonymous')}
               </span>
             </label>
 
             {!formData.isAnonymous && (
               <Input
-                label="Email (optional)"
+                label={t('forms:feedback.email')}
                 type="email"
                 placeholder="your@email.com"
                 value={formData.email || ''}
@@ -275,13 +277,13 @@ export function SubmitFeedback() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 error={errors.email}
-                helperText="We'll use this to notify you of updates"
+                helperText={t('forms:feedback.email_helper')}
               />
             )}
 
             <div className="border-t pt-6">
               <h3 className="text-lg font-semibold text-[#1E3A5F] mb-4">
-                Attachments (Optional)
+                {t('forms:feedback.attachments')}
               </h3>
 
               <FileUploadInput
@@ -326,7 +328,7 @@ export function SubmitFeedback() {
               disabled={submitting || fileUploading}
               className="w-full"
             >
-              {fileUploading ? 'Uploading Files...' : 'Submit Feedback'}
+              {fileUploading ? t('forms:feedback.uploading') : t('forms:feedback.submit_button')}
             </Button>
           </form>
         </div>

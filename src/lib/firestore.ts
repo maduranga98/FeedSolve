@@ -131,20 +131,20 @@ export async function getBoardBySlug(slug: string): Promise<Board | null> {
   const boardsRef = collection(db, 'boards');
   const q = query(boardsRef, where('slug', '==', slug));
   const snapshot = await getDocs(q);
-  return snapshot.empty ? null : (snapshot.docs[0].data() as Board);
+  return snapshot.empty ? null : { ...snapshot.docs[0].data(), id: snapshot.docs[0].id } as Board;
 }
 
 export async function getCompanyBoards(companyId: string): Promise<Board[]> {
   const boardsRef = collection(db, 'boards');
   const q = query(boardsRef, where('companyId', '==', companyId));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => doc.data() as Board);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Board));
 }
 
 export async function getBoard(id: string): Promise<Board | null> {
   const boardRef = doc(db, 'boards', id);
   const snapshot = await getDoc(boardRef);
-  return snapshot.exists() ? (snapshot.data() as Board) : null;
+  return snapshot.exists() ? { ...snapshot.data(), id: snapshot.id } as Board : null;
 }
 
 // Submission operations

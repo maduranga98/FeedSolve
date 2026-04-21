@@ -6,12 +6,16 @@
     "email": "البريد الإلكتروني (اختياري)",
     "anonymous": "إرسال بشكل مجهول",
     "submit_button": "إرسال التعليقات",
-    "thank_you": "شكراً على تعليقاتك!",
-    "tracking_code": "رمز التتبع الخاص بك:",
-    "track_feedback": "تتبع تعليقاتك",
+    "submit_success": "تم إرسال التعليقات!",
+    "thank_you": "شكراً على تعليقاتك. يمكنك تتبع تقدمها باستخدام هذا الرمز.",
+    "tracking_code": "رمز التتبع الخاص بك",
+    "track_feedback": "تتبع التقدم",
     "category_placeholder": "اختر فئة",
-    "subject_placeholder": "موضوع التعليقات الخاص بك",
-    "description_placeholder": "صف تعليقاتك بالتفصيل"
+    "subject_placeholder": "ملخص تعليقاتك",
+    "description_placeholder": "أخبرنا المزيد عن تعليقاتك",
+    "attachments": "المرفقات (اختياري)",
+    "uploading": "جاري رفع الملفات...",
+    "email_helper": "سنستخدم هذا لإخطارك بالتحديثات"
   },
   "validation": {
     "required": "هذا الحقل مطلوب",

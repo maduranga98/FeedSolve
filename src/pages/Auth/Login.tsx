@@ -48,7 +48,10 @@ export function Login() {
         <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5" />
         <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full bg-white/5" />
 
-        <img src="/logo.png" alt="FeedSolve" className="h-9 brightness-0 invert relative z-10" />
+        <div className="flex items-center gap-3 relative z-10">
+          <img src="/logo.png" alt="FeedSolve" className="h-8 w-8 brightness-0 invert" />
+          <span className="text-2xl font-bold">FeedSolve</span>
+        </div>
 
         <div className="relative z-10">
           <h2 className="text-3xl font-bold leading-snug mb-4">
@@ -79,8 +82,9 @@ export function Login() {
       {/* Right panel — form */}
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#F4F7FA]">
         {/* Mobile logo */}
-        <div className="lg:hidden mb-8">
-          <img src="/logo.png" alt="FeedSolve" className="h-9 mx-auto" />
+        <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
+          <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
+          <span className="text-xl font-bold text-[#1E3A5F]">FeedSolve</span>
         </div>
 
         <div className="w-full max-w-sm fade-in">
