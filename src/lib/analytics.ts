@@ -1,6 +1,6 @@
-import { Submission } from '../types';
+import type { Submission } from '../types';
 import { Timestamp } from 'firebase/firestore';
-import { isDateInRange, DateRange } from './date-ranges';
+import { isDateInRange, type DateRange } from './date-ranges';
 
 export interface AnalyticsMetrics {
   totalSubmissions: number;
@@ -105,7 +105,7 @@ export function calculateAnalytics(
   const teamPerformance = calculateTeamPerformance(filteredSubmissions);
 
   // Generate trend data
-  const trendData = generateTrendData(filteredSubmissions, dateRange);
+  const trendData = generateTrendData(filteredSubmissions);
 
   return {
     totalSubmissions,
@@ -164,7 +164,7 @@ function calculateTeamPerformance(submissions: Submission[]): TeamPerformanceMet
       const priorityValues = { critical: 4, high: 3, medium: 2, low: 1 };
       const avgPriorityScore =
         m.priorities.length > 0
-          ? m.priorities.reduce((sum, p) => sum + (priorityValues[p as keyof typeof priorityValues] || 0), 0) /
+          ? m.priorities.reduce((sum: number, p: string) => sum + (priorityValues[p as keyof typeof priorityValues] || 0), 0) /
             m.priorities.length
           : 0;
 
@@ -189,7 +189,7 @@ function calculateTeamPerformance(submissions: Submission[]): TeamPerformanceMet
     .sort((a, b) => b.assignedCount - a.assignedCount);
 }
 
-function generateTrendData(submissions: Submission[], dateRange: DateRange): TrendDataPoint[] {
+function generateTrendData(submissions: Submission[]): TrendDataPoint[] {
   const trendMap = new Map<string, { count: number; resolved: number }>();
 
   submissions.forEach((sub) => {

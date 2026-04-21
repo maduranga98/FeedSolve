@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 
 export interface AnalyticsFilters {
   boards: string[];

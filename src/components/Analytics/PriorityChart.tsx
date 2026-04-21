@@ -1,4 +1,4 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { getPriorityColor } from '../../lib/analytics';
 
 interface PriorityChartProps {
@@ -54,28 +54,13 @@ export function PriorityChart({ data, loading = false }: PriorityChartProps) {
               borderRadius: '8px',
             }}
           />
-          <Bar
-            dataKey="count"
-            fill="#3b82f6"
-            radius={[8, 8, 0, 0]}
-            shape={<CustomBar />}
-          />
+          <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+            {chartData.map((entry) => (
+              <Cell key={`cell-${entry.name}`} fill={getPriorityColor(entry.name)} />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
-  );
-}
-
-function CustomBar(props: any) {
-  const { fill, x, y, width, height, payload } = props;
-  return (
-    <rect
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      fill={getPriorityColor(payload.name)}
-      radius={[8, 8, 0, 0]}
-    />
   );
 }

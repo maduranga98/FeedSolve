@@ -1,7 +1,15 @@
 import jsPDF from 'jspdf';
-import { Submission } from '../types';
-import { AnalyticsMetrics } from './analytics';
-import { DateRange, formatDateRange } from './date-ranges';
+import 'jspdf-autotable';
+import type { Submission } from '../types';
+import type { AnalyticsMetrics } from './analytics';
+import { formatDateRange, type DateRange } from './date-ranges';
+
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF;
+    lastAutoTable: { finalY: number };
+  }
+}
 
 export async function exportPDFReport(
   metrics: AnalyticsMetrics,

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { TrendingUp } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../../components/Shared';
 import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
@@ -12,9 +13,8 @@ import { SourceChart } from '../../components/Analytics/SourceChart';
 import { ReportBuilder, type ReportOptions } from '../../components/Analytics/ReportBuilder';
 import { calculateAnalytics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
-import { getDateRangePreset, type DateRange, type DateRangePreset } from '../../lib/date-ranges';
+import { getDateRangePreset, type DateRange } from '../../lib/date-ranges';
 import type { Submission, Board } from '../../types';
-import { TrendingUp } from 'lucide-react';
 
 export function AnalyticsDashboard() {
   const { user } = useAuth();

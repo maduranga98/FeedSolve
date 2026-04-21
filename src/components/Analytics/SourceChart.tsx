@@ -1,4 +1,3 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface SourceChartProps {
   data: Record<string, number>;
