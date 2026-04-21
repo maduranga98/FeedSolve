@@ -1,0 +1,62 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUserInCompany(companyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+
+    function canManageCompany(companyId) {
+      return isUserInCompany(companyId) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Webhook logs - Company admins can read, Cloud Functions can write
+    match /webhook_logs/{companyId}/{logId} {
+      allow read: if canManageCompany(companyId);
+      allow write: if false; // Server-only via Cloud Functions
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth.uid == userId;
+      allow write: if request.auth.uid == userId || canManageCompany(resource.data.companyId);
+    }
+
+    // Companies collection
+    match /companies/{companyId} {
+      allow read: if canManageCompany(companyId);
+      allow write: if canManageCompany(companyId);
+
+      // Nested subcollections
+      match /webhook_logs/{logId} {
+        allow read: if canManageCompany(companyId);
+        allow write: if false;
+      }
+    }
+
+    // Boards collection
+    match /boards/{boardId} {
+      allow read: if isUserInCompany(resource.data.companyId);
+      allow write: if canManageCompany(resource.data.companyId);
+    }
+
+    // Submissions collection
+    match /submissions/{submissionId} {
+      allow read: if isUserInCompany(resource.data.companyId);
+      allow write: if canManageCompany(resource.data.companyId);
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

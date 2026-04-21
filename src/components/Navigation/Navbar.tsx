@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Users, BarChart3, CreditCard } from 'lucide-react';
+import { LogOut, Users, BarChart3, CreditCard, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
@@ -80,6 +80,15 @@ export function Navbar() {
               >
                 <CreditCard size={16} />
                 {t('common.billing')}
+              </button>
+              <button
+                onClick={() => navigate('/integrations')}
+                className={`text-sm font-medium flex items-center gap-2 ${
+                  isActive('/integrations') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
+                } hover:text-[#1E3A5F]`}
+              >
+                <Zap size={16} />
+                Integrations
               </button>
             </div>
           )}
