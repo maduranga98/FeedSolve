@@ -1,4 +1,4 @@
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
 
 interface WebVitalsMetrics {
   name: string;
@@ -27,7 +27,7 @@ export function initPerformanceMonitoring() {
   if (typeof window === 'undefined') return;
 
   // Track Cumulative Layout Shift
-  getCLS((metric) => {
+  onCLS((metric) => {
     const vitals: WebVitalsMetrics = {
       name: 'CLS',
       value: metric.value,
@@ -37,7 +37,7 @@ export function initPerformanceMonitoring() {
   });
 
   // Track First Input Delay
-  getFID((metric) => {
+  onFID((metric) => {
     const vitals: WebVitalsMetrics = {
       name: 'FID',
       value: metric.value,
@@ -47,7 +47,7 @@ export function initPerformanceMonitoring() {
   });
 
   // Track First Contentful Paint
-  getFCP((metric) => {
+  onFCP((metric) => {
     const vitals: WebVitalsMetrics = {
       name: 'FCP',
       value: metric.value,
@@ -57,7 +57,7 @@ export function initPerformanceMonitoring() {
   });
 
   // Track Largest Contentful Paint
-  getLCP((metric) => {
+  onLCP((metric) => {
     const vitals: WebVitalsMetrics = {
       name: 'LCP',
       value: metric.value,
@@ -67,7 +67,7 @@ export function initPerformanceMonitoring() {
   });
 
   // Track Time to First Byte
-  getTTFB((metric) => {
+  onTTFB((metric) => {
     const vitals: WebVitalsMetrics = {
       name: 'TTFB',
       value: metric.value,
