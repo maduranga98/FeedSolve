@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 import { getSubmissionByTrackingCode } from '../../lib/firestore';
+import { AttachmentGallery } from '../../components/Attachments';
+import { useFileDownload } from '../../hooks/useFileDownload';
 import type { Submission } from '../../types';
 import { Badge, LoadingSpinner } from '../../components/Shared';
 import { formatDate, getStatusLabel } from '../../lib/utils';
@@ -9,6 +11,7 @@ import { Clock, CheckCircle } from 'lucide-react';
 
 export function TrackingPage() {
   const { code } = useParams<{ code: string }>();
+  const { loading: downloading, downloadFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -145,6 +148,16 @@ export function TrackingPage() {
             {statusMessages[submission.status]}
           </p>
         </div>
+
+        {submission.attachments && submission.attachments.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <AttachmentGallery
+              attachments={submission.attachments}
+              onDownload={(attachment) => downloadFile(submission.id, attachment)}
+              loading={downloading}
+            />
+          </div>
+        )}
 
         {submission.publicReply && (
           <div className="bg-[#EBF9F1] border border-[#27AE60] rounded-lg shadow-sm p-8 mb-8">

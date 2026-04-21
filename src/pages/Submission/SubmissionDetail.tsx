@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Badge, LoadingSpinner } from '../../components/Shared';
+import { AttachmentGallery } from '../../components/Attachments';
+import { useFileDownload } from '../../hooks/useFileDownload';
 import {
   getSubmission,
   updateSubmissionStatus,
@@ -13,12 +15,13 @@ import {
   getTeamMembers,
 } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
-import type { Submission, TeamMember, User } from '../../types';
+import type { Submission, TeamMember, User, FileAttachment } from '../../types';
 
 export function SubmissionDetail() {
   const { submissionId } = useParams<{ submissionId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { loading: downloading, downloadFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -258,6 +261,16 @@ export function SubmissionDetail() {
             <h2 className="text-lg font-semibold text-color-primary mb-2">Description</h2>
             <p className="text-color-body-text whitespace-pre-wrap">{submission.description}</p>
           </div>
+
+          {submission.attachments && submission.attachments.length > 0 && (
+            <div className="mb-6 pb-6 border-b border-color-border">
+              <AttachmentGallery
+                attachments={submission.attachments}
+                onDownload={(attachment) => downloadFile(submission.id, attachment)}
+                loading={downloading}
+              />
+            </div>
+          )}
 
           {submission.submitterEmail && (
             <div className="mb-6">

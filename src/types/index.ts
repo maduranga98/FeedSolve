@@ -40,11 +40,18 @@ export interface Subscription {
   downgradedAt?: Timestamp;
 }
 
+export interface StorageUsage {
+  totalBytes: number;
+  usedBytes: number;
+  lastResetAt: Timestamp;
+}
+
 export interface CompanyUsage {
   submissionsThisMonth: number;
   boardsCreated: number;
   teamMembersAdded: number;
   lastResetAt: Timestamp;
+  storage?: StorageUsage;
 }
 
 export interface PaymentMethod {
@@ -91,6 +98,18 @@ export interface InternalNote {
   createdAt: Timestamp;
 }
 
+export interface FileAttachment {
+  id: string;
+  filename: string;
+  fileType: string;
+  fileSize: number;
+  storagePath: string;
+  uploadedAt: Timestamp;
+  uploadedBy: string;
+  scanned?: boolean;
+  scanStatus?: 'pending' | 'clean' | 'infected';
+}
+
 export interface Submission {
   id: string;
   boardId: string;
@@ -105,6 +124,7 @@ export interface Submission {
   priority: 'low' | 'medium' | 'high' | 'critical';
   assignedTo?: string;
   internalNotes: InternalNote[];
+  attachments?: FileAttachment[];
   publicReply?: string;
   publicReplyAt?: Timestamp;
   publicReplyBy?: string;

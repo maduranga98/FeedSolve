@@ -8,6 +8,7 @@ import apiKeysRouter from './routes/apiKeys';
 import submissionsRouter from './routes/submissions';
 import boardsRouter from './routes/boards';
 import statsRouter from './routes/stats';
+import attachmentsRouter from './routes/attachments';
 import swaggerUi from 'swagger-ui-express';
 // @ts-ignore
 import openapi from './openapi.json';
@@ -69,6 +70,7 @@ app.use('/', apiKeysRouter);
 app.use('/', submissionsRouter);
 app.use('/', boardsRouter);
 app.use('/', statsRouter);
+app.use('/', attachmentsRouter);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {

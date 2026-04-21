@@ -812,3 +812,124 @@ export async function seedTemplates(): Promise<void> {
     await setDoc(docRef, template);
   }
 }
+
+// Attachment operations
+export async function uploadAttachment(
+  submissionId: string,
+  file: File
+): Promise<{ success: boolean; error?: string; data?: any }> {
+  try {
+    // Read file as base64
+    const buffer = await file.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+
+    // Call the Cloud Function
+    const response = await fetch(
+      `/api/submissions/${submissionId}/attachments`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          filetype: file.type,
+          filesize: file.size,
+          base64data: base64,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: error.error || 'Upload failed',
+      };
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Upload failed',
+    };
+  }
+}
+
+export async function downloadAttachment(
+  submissionId: string,
+  attachmentId: string
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  try {
+    const response = await fetch(
+      `/api/submissions/${submissionId}/attachments/${attachmentId}/download`,
+      {
+        method: 'GET',
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: error.error || 'Download failed',
+      };
+    }
+
+    const data = await response.json();
+    return { success: true, url: data.url };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Download failed',
+    };
+  }
+}
+
+export async function deleteAttachment(
+  submissionId: string,
+  attachmentId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch(
+      `/api/submissions/${submissionId}/attachments/${attachmentId}`,
+      {
+        method: 'DELETE',
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      return {
+        success: false,
+        error: error.error || 'Delete failed',
+      };
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.message || 'Delete failed',
+    };
+  }
+}
+
+export async function getStorageUsage(companyId: string): Promise<any> {
+  try {
+    const companyRef = doc(db, 'companies', companyId);
+    const snapshot = await getDoc(companyRef);
+
+    if (!snapshot.exists()) {
+      return null;
+    }
+
+    const company = snapshot.data() as Company;
+    return company.usage?.storage || { totalBytes: 0, usedBytes: 0 };
+  } catch (error) {
+    console.error('Failed to get storage usage:', error);
+    return null;
+  }
+}
