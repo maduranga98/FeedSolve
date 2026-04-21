@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import type { Submission } from '../../types';
 import { Badge } from '../Shared';
@@ -10,6 +11,13 @@ interface SubmissionCardProps {
   onClick?: (submission: Submission) => void;
 }
 
+export function SubmissionCard({ submission }: SubmissionCardProps) {
+  const navigate = useNavigate();
+
+  return (
+    <button
+      onClick={() => navigate(`/submission/${submission.id}`)}
+      className="text-left bg-white border border-[#D3D1C7] rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
 const priorityColors: Record<string, { bg: string; text: string }> = {
   low: { bg: 'bg-[#E8F4F8]', text: 'text-[#0B5563]' },
   medium: { bg: 'bg-[#FEF5E7]', text: 'text-[#854F0B]' },
@@ -78,6 +86,6 @@ export function SubmissionCard({ submission, onClick }: SubmissionCardProps) {
           )}
         </div>
       </div>
-    </div>
+    </button>
   );
 }

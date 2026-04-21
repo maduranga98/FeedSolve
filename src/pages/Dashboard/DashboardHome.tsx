@@ -9,6 +9,7 @@ import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import FilterBar from '../../components/Filters/FilterBar';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DashboardFilters } from './DashboardFilters';
 
 export function DashboardHome() {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ export function DashboardHome() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBoard, setSelectedBoard] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const {
     filters,
@@ -53,14 +58,36 @@ export function DashboardHome() {
     loadData();
   }, [user]);
 
+  const filteredSubmissions = submissions.filter((submission) => {
+    const matchesBoard = selectedBoard === 'all' || submission.boardId === selectedBoard;
+    const matchesStatus = !selectedStatus || submission.status === selectedStatus;
+    const matchesPriority = !selectedPriority || submission.priority === selectedPriority;
+    const matchesSearch =
+      !searchQuery ||
+      submission.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      submission.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      submission.trackingCode.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesBoard && matchesStatus && matchesPriority && matchesSearch;
+  });
+
+  const handleReset = () => {
+    setSearchQuery('');
+    setSelectedBoard('all');
+    setSelectedStatus('');
+    setSelectedPriority('');
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
+            <h1 className="text-3xl font-bold text-color-primary mb-2">
               Feedback Dashboard
             </h1>
+            <p className="text-color-muted-text">
+              {submissions.length} total{' '}
             <p className="text-[#6B7B8D]">
               {filtered.length} of {submissions.length}{' '}
               {submissions.length === 1 ? 'submission' : 'submissions'}
@@ -79,6 +106,19 @@ export function DashboardHome() {
       </div>
 
       {boards.length > 0 && (
+        <DashboardFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedBoard={selectedBoard}
+          onBoardChange={setSelectedBoard}
+          selectedStatus={selectedStatus}
+          onStatusChange={setSelectedStatus}
+          selectedPriority={selectedPriority}
+          onPriorityChange={setSelectedPriority}
+          boards={boards}
+          onReset={handleReset}
+          submissionCount={filteredSubmissions.length}
+        />
         <div className="mb-8">
           <FilterBar
             boards={boards}
@@ -98,9 +138,10 @@ export function DashboardHome() {
         <LoadingSpinner size="lg" className="min-h-96" />
       ) : filtered.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-[#6B7B8D] text-lg mb-4">
+          <p className="text-color-muted-text text-lg mb-4">
             {boards.length === 0
               ? 'Create your first board to start collecting feedback'
+              : searchQuery || selectedBoard !== 'all' || selectedStatus || selectedPriority
               : activeFilterCount > 0
                 ? 'No submissions match your filters'
                 : 'No submissions yet. Share your board QR code to get started.'}

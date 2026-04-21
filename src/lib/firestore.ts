@@ -18,6 +18,8 @@ import type {
   Submission,
   BoardFormInput,
   SubmissionFormInput,
+  TeamInvitation,
+  TeamMember,
   InternalNote,
 } from '../types';
 import { db } from './firebase';
@@ -208,6 +210,113 @@ export async function getSubmission(id: string): Promise<Submission | null> {
   return snapshot.exists() ? (snapshot.data() as Submission) : null;
 }
 
+// Team management operations
+export async function inviteTeamMember(
+  companyId: string,
+  email: string,
+  role: 'admin' | 'member',
+  invitedBy: string
+): Promise<TeamInvitation> {
+  const inviteCode = generateTrackingCode();
+  const invitationsRef = collection(db, 'teamInvitations');
+
+  const newInvitation: Omit<TeamInvitation, 'id'> = {
+    companyId,
+    email,
+    role,
+    invitedBy,
+    inviteCode,
+    status: 'pending',
+    createdAt: Timestamp.now(),
+    expiresAt: new Timestamp(
+      Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
+      0
+    ),
+  };
+
+  const docRef = await addDoc(invitationsRef, newInvitation);
+  return { ...newInvitation, id: docRef.id } as TeamInvitation;
+}
+
+export async function getInvitationByCode(
+  code: string
+): Promise<TeamInvitation | null> {
+  const invitationsRef = collection(db, 'teamInvitations');
+  const q = query(invitationsRef, where('inviteCode', '==', code));
+  const snapshot = await getDocs(q);
+  if (snapshot.empty) return null;
+
+  const doc = snapshot.docs[0];
+  return { ...doc.data(), id: doc.id } as TeamInvitation;
+}
+
+export async function acceptInvitation(invitationId: string): Promise<void> {
+  const invitationRef = doc(db, 'teamInvitations', invitationId);
+  await updateDoc(invitationRef, { status: 'accepted' });
+}
+
+export async function getTeamMembers(companyId: string): Promise<TeamMember[]> {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('companyId', '==', companyId));
+  const snapshot = await getDocs(q);
+  return snapshot.docs
+    .map((doc) => {
+      const user = doc.data() as User;
+      return {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        joinedAt: user.createdAt,
+        status: user.status || 'active',
+      } as TeamMember & { status: string };
+    })
+    .filter((member) => member.status !== 'inactive');
+}
+
+export async function updateMemberRole(
+  userId: string,
+  newRole: 'admin' | 'member'
+): Promise<void> {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, { role: newRole });
+}
+
+export async function removeTeamMember(userId: string): Promise<void> {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, { status: 'inactive' });
+}
+
+export async function getCompanyInvitations(
+  companyId: string
+): Promise<TeamInvitation[]> {
+  const invitationsRef = collection(db, 'teamInvitations');
+  const q = query(
+    invitationsRef,
+    where('companyId', '==', companyId),
+    where('status', '==', 'pending')
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as TeamInvitation));
+}
+
+// Submission editing operations
+export async function updateSubmissionPriority(
+  submissionId: string,
+  priority: Submission['priority']
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { priority, updatedAt: Timestamp.now() });
+}
+
+export async function updateSubmissionAssignment(
+  submissionId: string,
+  assignedTo?: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { assignedTo, updatedAt: Timestamp.now() });
+}
+
 // Team Member operations (Day 1)
 export async function getCompanyMembers(companyId: string): Promise<User[]> {
   const usersRef = collection(db, 'users');
@@ -256,6 +365,11 @@ export async function addInternalNote(
   createdBy: string
 ): Promise<void> {
   const submissionRef = doc(db, 'submissions', submissionId);
+  const submission = await getSubmission(submissionId);
+  if (!submission) throw new Error('Submission not found');
+
+  const newNote = {
+    id: Date.now().toString(),
   const newNote: InternalNote = {
     id: uuidv4(),
     text,
@@ -264,11 +378,18 @@ export async function addInternalNote(
   };
 
   await updateDoc(submissionRef, {
+    internalNotes: [...submission.internalNotes, newNote],
     internalNotes: arrayUnion(newNote),
     updatedAt: Timestamp.now(),
   });
 }
 
+export async function updateSubmissionPublicReply(
+  submissionId: string,
+  reply: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { publicReply: reply, updatedAt: Timestamp.now() });
 export async function updateSubmissionPriority(
   submissionId: string,
   priority: 'low' | 'medium' | 'high' | 'critical'
