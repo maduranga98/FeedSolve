@@ -296,3 +296,50 @@ export async function getCompanyInvitations(
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as TeamInvitation));
 }
+
+// Submission editing operations
+export async function updateSubmissionPriority(
+  submissionId: string,
+  priority: Submission['priority']
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { priority, updatedAt: Timestamp.now() });
+}
+
+export async function updateSubmissionAssignment(
+  submissionId: string,
+  assignedTo?: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { assignedTo, updatedAt: Timestamp.now() });
+}
+
+export async function addInternalNote(
+  submissionId: string,
+  text: string,
+  createdBy: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  const submission = await getSubmission(submissionId);
+  if (!submission) throw new Error('Submission not found');
+
+  const newNote = {
+    id: Date.now().toString(),
+    text,
+    createdBy,
+    createdAt: Timestamp.now(),
+  };
+
+  await updateDoc(submissionRef, {
+    internalNotes: [...submission.internalNotes, newNote],
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function updateSubmissionPublicReply(
+  submissionId: string,
+  reply: string
+): Promise<void> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  await updateDoc(submissionRef, { publicReply: reply, updatedAt: Timestamp.now() });
+}

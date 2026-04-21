@@ -22,6 +22,9 @@ import { CreateBoard } from './pages/Board/CreateBoard';
 // Team Pages
 import { TeamManagement } from './pages/Team/TeamManagement';
 
+// Submission Pages
+import { SubmissionDetail } from './pages/Submission/SubmissionDetail';
+
 // Public Pages
 import { SubmitFeedback } from './pages/Public/SubmitFeedback';
 import { TrackingPage } from './pages/Public/TrackingPage';
@@ -112,6 +115,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <TeamManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/submission/:submissionId"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <SubmissionDetail />
             </ProtectedRoute>
           }
         />

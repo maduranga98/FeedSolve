@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Submission } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
@@ -7,8 +8,13 @@ interface SubmissionCardProps {
 }
 
 export function SubmissionCard({ submission }: SubmissionCardProps) {
+  const navigate = useNavigate();
+
   return (
-    <div className="bg-white border border-[#D3D1C7] rounded-lg p-6 hover:shadow-md transition-shadow">
+    <button
+      onClick={() => navigate(`/submission/${submission.id}`)}
+      className="text-left bg-white border border-[#D3D1C7] rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
+    >
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-[#1E3A5F] mb-1">
@@ -38,6 +44,6 @@ export function SubmissionCard({ submission }: SubmissionCardProps) {
           {formatDate(submission.createdAt.toDate())}
         </span>
       </div>
-    </div>
+    </button>
   );
 }
