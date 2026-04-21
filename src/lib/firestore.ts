@@ -933,3 +933,186 @@ export async function getStorageUsage(companyId: string): Promise<any> {
     return null;
   }
 }
+
+// Comment operations
+export async function addComment(
+  submissionId: string,
+  companyId: string,
+  content: string,
+  author: { id: string; name: string; email: string; avatar?: string },
+  mentions: string[] = [],
+  parentCommentId?: string
+): Promise<string> {
+  const commentsRef = collection(
+    db,
+    'submissions',
+    submissionId,
+    'comments'
+  );
+  const newComment = {
+    submissionId,
+    companyId,
+    content,
+    author,
+    mentions,
+    reactions: [],
+    createdAt: Timestamp.now(),
+    updatedAt: Timestamp.now(),
+    isEdited: false,
+    ...(parentCommentId && { parentCommentId }),
+  };
+  const docRef = await addDoc(commentsRef, newComment);
+  return docRef.id;
+}
+
+export async function getComments(
+  submissionId: string
+): Promise<any[]> {
+  const commentsRef = collection(
+    db,
+    'submissions',
+    submissionId,
+    'comments'
+  );
+  const q = query(
+    commentsRef,
+    orderBy('createdAt', 'asc')
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+}
+
+export async function updateComment(
+  submissionId: string,
+  commentId: string,
+  content: string
+): Promise<void> {
+  const commentRef = doc(
+    db,
+    'submissions',
+    submissionId,
+    'comments',
+    commentId
+  );
+  await updateDoc(commentRef, {
+    content,
+    updatedAt: Timestamp.now(),
+    isEdited: true,
+  });
+}
+
+export async function deleteComment(
+  submissionId: string,
+  commentId: string
+): Promise<void> {
+  const commentRef = doc(
+    db,
+    'submissions',
+    submissionId,
+    'comments',
+    commentId
+  );
+  await updateDoc(commentRef, {
+    content: '[deleted]',
+    updatedAt: Timestamp.now(),
+  });
+}
+
+export async function addReaction(
+  submissionId: string,
+  commentId: string,
+  emoji: string,
+  userId: string
+): Promise<void> {
+  const commentRef = doc(
+    db,
+    'submissions',
+    submissionId,
+    'comments',
+    commentId
+  );
+  const snapshot = await getDoc(commentRef);
+  const comment = snapshot.data();
+  const reactions = comment?.reactions || [];
+  const existingReaction = reactions.find((r: any) => r.emoji === emoji);
+
+  if (existingReaction) {
+    if (!existingReaction.userIds.includes(userId)) {
+      existingReaction.userIds.push(userId);
+    }
+  } else {
+    reactions.push({ emoji, userIds: [userId] });
+  }
+
+  await updateDoc(commentRef, { reactions });
+}
+
+export async function removeReaction(
+  submissionId: string,
+  commentId: string,
+  emoji: string,
+  userId: string
+): Promise<void> {
+  const commentRef = doc(
+    db,
+    'submissions',
+    submissionId,
+    'comments',
+    commentId
+  );
+  const snapshot = await getDoc(commentRef);
+  const comment = snapshot.data();
+  const reactions = comment?.reactions || [];
+
+  const reactionIndex = reactions.findIndex((r: any) => r.emoji === emoji);
+  if (reactionIndex !== -1) {
+    reactions[reactionIndex].userIds = reactions[reactionIndex].userIds.filter(
+      (id: string) => id !== userId
+    );
+    if (reactions[reactionIndex].userIds.length === 0) {
+      reactions.splice(reactionIndex, 1);
+    }
+  }
+
+  await updateDoc(commentRef, { reactions });
+}
+
+export async function getCommentCount(submissionId: string): Promise<number> {
+  const commentsRef = collection(
+    db,
+    'submissions',
+    submissionId,
+    'comments'
+  );
+  const snapshot = await getDocs(commentsRef);
+  return snapshot.size;
+}
+
+export async function createCommentNotification(
+  companyId: string,
+  userId: string,
+  mentionedBy: string,
+  submissionId: string,
+  commentId: string
+): Promise<string> {
+  const notificationsRef = collection(
+    db,
+    'companies',
+    companyId,
+    'notifications'
+  );
+  const newNotification = {
+    companyId,
+    userId,
+    mentionedBy,
+    submissionId,
+    commentId,
+    isRead: false,
+    createdAt: Timestamp.now(),
+  };
+  const docRef = await addDoc(notificationsRef, newNotification);
+  return docRef.id;
+}

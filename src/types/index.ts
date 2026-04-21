@@ -346,3 +346,40 @@ export interface QuickFilter {
   label: string;
   filters: SearchFilters;
 }
+
+export interface CommentAuthor {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+}
+
+export interface Reaction {
+  emoji: string;
+  userIds: string[];
+}
+
+export interface Comment {
+  id: string;
+  submissionId: string;
+  companyId: string;
+  content: string;
+  author: CommentAuthor;
+  mentions: string[];
+  reactions: Reaction[];
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  isEdited: boolean;
+  parentCommentId?: string;
+}
+
+export interface CommentNotification {
+  id: string;
+  companyId: string;
+  userId: string;
+  mentionedBy: string;
+  submissionId: string;
+  commentId: string;
+  isRead: boolean;
+  createdAt: Timestamp;
+}
