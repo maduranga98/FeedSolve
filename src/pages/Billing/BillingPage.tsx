@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { SubscriptionCard } from '../../components/Billing/SubscriptionCard';
+import { SubscriptionManager } from '../../components/Billing/SubscriptionManager';
 import { PaymentMethodCard } from '../../components/Billing/PaymentMethod';
 import { InvoiceTable } from '../../components/Billing/InvoiceTable';
 import { useSubscription } from '../../hooks/useSubscription';
@@ -54,21 +55,21 @@ export function BillingPage() {
           <SubscriptionCard subscription={subscription} />
         </div>
 
+        {/* Subscription Management */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Manage Subscription</h2>
+          <SubscriptionManager subscription={subscription} onSubscriptionChange={() => {}} />
+        </div>
+
         {/* Billing Actions */}
         {subscription.tier !== 'free' && (
-          <div className="mb-12 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mb-12">
             <button
               onClick={() => createBillingPortalSession().catch((err) => setError(err.message))}
               disabled={portalLoading}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:bg-gray-400"
             >
-              {portalLoading ? 'Loading...' : 'Manage Billing'}
-            </button>
-            <button
-              className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 font-medium"
-              onClick={() => setError('Use "Manage Billing" to modify your subscription')}
-            >
-              Upgrade Plan
+              {portalLoading ? 'Loading...' : 'Manage Billing in Portal'}
             </button>
           </div>
         )}

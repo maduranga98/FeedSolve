@@ -1,12 +1,17 @@
 import { format } from 'date-fns';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import type { Subscription } from '../../types';
+import { CancelSubscriptionModal } from './CancelSubscriptionModal';
 
 interface SubscriptionCardProps {
   subscription: Subscription;
+  onCancel?: () => Promise<void>;
 }
 
-export function SubscriptionCard({ subscription }: SubscriptionCardProps) {
+export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardProps) {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
   const tierNames: Record<string, string> = {
     free: 'Free',
     starter: 'Starter',
@@ -82,6 +87,25 @@ export function SubscriptionCard({ subscription }: SubscriptionCardProps) {
           </p>
         </div>
       )}
+
+      {subscription.tier !== 'free' && (
+        <div className="mt-6">
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="w-full px-4 py-2 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 font-medium flex items-center justify-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Cancel Subscription
+          </button>
+        </div>
+      )}
+
+      <CancelSubscriptionModal
+        isOpen={showCancelModal}
+        tier={subscription.tier}
+        onClose={() => setShowCancelModal(false)}
+        onConfirm={onCancel || (() => Promise.resolve())}
+      />
     </div>
   );
 }
