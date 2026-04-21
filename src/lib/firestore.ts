@@ -21,6 +21,7 @@ import type {
   TeamInvitation,
   TeamMember,
   InternalNote,
+  BoardTemplate,
 } from '../types';
 import { db } from './firebase';
 import { generateTrackingCode, generateBoardSlug } from './utils';
@@ -574,4 +575,220 @@ export async function resetMonthlyUsage(companyId: string): Promise<void> {
     'usage.lastResetAt': Timestamp.now(),
     updatedAt: Timestamp.now(),
   });
+}
+
+// Board template operations
+export async function getTemplates(): Promise<BoardTemplate[]> {
+  const q = query(collection(db, 'board_templates'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({
+    ...doc.data(),
+    id: doc.id,
+  })) as BoardTemplate[];
+}
+
+export async function getTemplate(templateId: string): Promise<BoardTemplate | null> {
+  const docRef = doc(db, 'board_templates', templateId);
+  const snapshot = await getDoc(docRef);
+  return snapshot.exists() ? ({ ...snapshot.data(), id: snapshot.id } as BoardTemplate) : null;
+}
+
+export async function seedTemplates(): Promise<void> {
+  const templates: BoardTemplate[] = [
+    {
+      id: 'template_customer_feedback',
+      name: 'Customer Feedback',
+      description: 'Collect feedback from customers about your products and services',
+      industry: 'retail',
+      icon: '🎯',
+      categories: ['Bug Report', 'Feature Request', 'Complaint', 'Compliment'],
+      color: '#2E86AB',
+      featured: true,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Customer Feedback',
+          description: 'Collect feedback from customers about your products and services',
+          categories: ['Bug Report', 'Feature Request', 'Complaint', 'Compliment'],
+        },
+      },
+    },
+    {
+      id: 'template_supplier_issues',
+      name: 'Supplier Issues',
+      description: 'Track quality, delivery, and pricing issues from suppliers',
+      industry: 'manufacturing',
+      icon: '🏭',
+      categories: ['Quality Issue', 'Delivery Problem', 'Pricing'],
+      color: '#A23B72',
+      featured: true,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Supplier Issues',
+          description: 'Track quality, delivery, and pricing issues from suppliers',
+          categories: ['Quality Issue', 'Delivery Problem', 'Pricing'],
+        },
+      },
+    },
+    {
+      id: 'template_distributor_feedback',
+      name: 'Distributor Feedback',
+      description: 'Manage complaints and concerns from your distributors',
+      industry: 'distribution',
+      icon: '📦',
+      categories: ['Stock Issue', 'Price Concern', 'Support'],
+      color: '#F18F01',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Distributor Feedback',
+          description: 'Manage complaints and concerns from your distributors',
+          categories: ['Stock Issue', 'Price Concern', 'Support'],
+        },
+      },
+    },
+    {
+      id: 'template_restaurant_feedback',
+      name: 'Restaurant Feedback',
+      description: 'Collect feedback about food quality, service, and cleanliness',
+      industry: 'food_beverage',
+      icon: '🍽️',
+      categories: ['Food Quality', 'Service', 'Cleanliness'],
+      color: '#C73E1D',
+      featured: true,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Restaurant Feedback',
+          description: 'Collect feedback about food quality, service, and cleanliness',
+          categories: ['Food Quality', 'Service', 'Cleanliness'],
+        },
+      },
+    },
+    {
+      id: 'template_delivery_feedback',
+      name: 'Delivery Feedback',
+      description: 'Track late deliveries, damage, and driver behavior issues',
+      industry: 'logistics',
+      icon: '🚚',
+      categories: ['Late Delivery', 'Damage', 'Driver Behavior'],
+      color: '#6A994E',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Delivery Feedback',
+          description: 'Track late deliveries, damage, and driver behavior issues',
+          categories: ['Late Delivery', 'Damage', 'Driver Behavior'],
+        },
+      },
+    },
+    {
+      id: 'template_tenant_requests',
+      name: 'Tenant Requests',
+      description: 'Manage maintenance requests and complaints from tenants',
+      industry: 'real_estate',
+      icon: '🏢',
+      categories: ['Maintenance', 'Amenities', 'Complaint'],
+      color: '#BC4749',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Tenant Requests',
+          description: 'Manage maintenance requests and complaints from tenants',
+          categories: ['Maintenance', 'Amenities', 'Complaint'],
+        },
+      },
+    },
+    {
+      id: 'template_patient_feedback',
+      name: 'Patient Feedback',
+      description: 'Collect feedback about doctors, staff, facilities, and billing',
+      industry: 'healthcare',
+      icon: '🏥',
+      categories: ['Doctor', 'Staff', 'Facilities', 'Billing'],
+      color: '#EF476F',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Patient Feedback',
+          description: 'Collect feedback about doctors, staff, facilities, and billing',
+          categories: ['Doctor', 'Staff', 'Facilities', 'Billing'],
+        },
+      },
+    },
+    {
+      id: 'template_employee_feedback',
+      name: 'Employee Feedback',
+      description: 'Gather feedback about careers, salary, culture, and benefits',
+      industry: 'human_resources',
+      icon: '👥',
+      categories: ['Career', 'Salary', 'Culture', 'Benefits'],
+      color: '#118AB2',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Employee Feedback',
+          description: 'Gather feedback about careers, salary, culture, and benefits',
+          categories: ['Career', 'Salary', 'Culture', 'Benefits'],
+        },
+      },
+    },
+    {
+      id: 'template_support_tickets',
+      name: 'Support Tickets',
+      description: 'Manage technical support requests and feature requests',
+      industry: 'technology',
+      icon: '🔧',
+      categories: ['Bug Report', 'Feature Request', 'How-To', 'Account'],
+      color: '#073B4C',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Support Tickets',
+          description: 'Manage technical support requests and feature requests',
+          categories: ['Bug Report', 'Feature Request', 'How-To', 'Account'],
+        },
+      },
+    },
+    {
+      id: 'template_event_feedback',
+      name: 'Event Feedback',
+      description: 'Collect feedback about venues, organization, content, and speakers',
+      industry: 'events',
+      icon: '🎤',
+      categories: ['Venue', 'Organization', 'Content', 'Speakers'],
+      color: '#FF006E',
+      featured: false,
+      usageCount: 0,
+      createdAt: Timestamp.now(),
+      translations: {
+        en: {
+          name: 'Event Feedback',
+          description: 'Collect feedback about venues, organization, content, and speakers',
+          categories: ['Venue', 'Organization', 'Content', 'Speakers'],
+        },
+      },
+    },
+  ];
+
+  for (const template of templates) {
+    const docRef = doc(db, 'board_templates', template.id);
+    await setDoc(docRef, template);
+  }
 }

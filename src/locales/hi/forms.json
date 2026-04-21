@@ -1,0 +1,76 @@
+{
+  "feedback": {
+    "category": "श्रेणी",
+    "subject": "विषय",
+    "description": "विवरण",
+    "email": "ईमेल (वैकल्पिक)",
+    "anonymous": "अनाम रूप से जमा करें",
+    "submit_button": "प्रतिपुष्टि जमा करें",
+    "thank_you": "आपकी प्रतिपुष्टि के लिए धन्यवाद!",
+    "tracking_code": "आपका ट्रैकिंग कोड है:",
+    "track_feedback": "अपनी प्रतिपुष्टि को ट्रैक करें",
+    "category_placeholder": "श्रेणी चुनें",
+    "subject_placeholder": "अपनी प्रतिपुष्टि का संक्षिप्त विषय",
+    "description_placeholder": "विस्तार से अपनी प्रतिपुष्टि का वर्णन करें"
+  },
+  "validation": {
+    "required": "यह क्षेत्र आवश्यक है",
+    "email": "कृपया एक वैध ईमेल पता दर्ज करें",
+    "min_length": "न्यूनतम {{count}} अक्षर आवश्यक हैं",
+    "max_length": "अधिकतम {{count}} अक्षर अनुमत हैं",
+    "invalid_format": "अमान्य प्रारूप"
+  },
+  "board": {
+    "name": "बोर्ड का नाम",
+    "name_placeholder": "बोर्ड का नाम दर्ज करें",
+    "description": "विवरण",
+    "description_placeholder": "वर्णन करें कि यह बोर्ड किसके लिए है",
+    "categories": "श्रेणियाँ",
+    "add_category": "श्रेणी जोड़ें",
+    "category_name": "श्रेणी का नाम",
+    "category_placeholder": "श्रेणी का नाम दर्ज करें",
+    "color": "रंग",
+    "select_color": "रंग चुनें",
+    "anonymous_allowed": "अनाम सबमिशन की अनुमति दें",
+    "create_board": "बोर्ड बनाएँ",
+    "edit_board": "बोर्ड संपादित करें",
+    "delete_board": "बोर्ड हटाएं"
+  },
+  "login": {
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "remember_me": "मुझे याद रखें",
+    "sign_in": "साइन इन करें",
+    "forgot_password": "पासवर्ड भूल गए?",
+    "no_account": "खाता नहीं है?",
+    "signup_link": "यहाँ साइन अप करें"
+  },
+  "signup": {
+    "company_name": "कंपनी का नाम",
+    "first_name": "पहला नाम",
+    "last_name": "अंतिम नाम",
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "confirm_password": "पासवर्ड की पुष्टि करें",
+    "agree_terms": "मैं सेवा की शर्तों से सहमत हूँ",
+    "create_account": "खाता बनाएँ",
+    "have_account": "पहले से खाता है?",
+    "login_link": "यहाँ लॉगिन करें"
+  },
+  "team": {
+    "member_email": "टीम सदस्य ईमेल",
+    "role": "भूमिका",
+    "add_member": "टीम सदस्य जोड़ें",
+    "remove_member": "सदस्य को हटाएं",
+    "role_admin": "व्यवस्थापक",
+    "role_member": "सदस्य",
+    "role_viewer": "दर्शक"
+  },
+  "billing": {
+    "card_number": "कार्ड नंबर",
+    "card_expiry": "समाप्ति तिथि",
+    "card_cvc": "CVC",
+    "update_payment": "भुगतान विधि अपडेट करें",
+    "billing_address": "बिलिंग पता"
+  }
+}

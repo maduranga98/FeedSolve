@@ -1,0 +1,76 @@
+{
+  "feedback": {
+    "category": "الفئة",
+    "subject": "الموضوع",
+    "description": "الوصف",
+    "email": "البريد الإلكتروني (اختياري)",
+    "anonymous": "إرسال بشكل مجهول",
+    "submit_button": "إرسال التعليقات",
+    "thank_you": "شكراً على تعليقاتك!",
+    "tracking_code": "رمز التتبع الخاص بك:",
+    "track_feedback": "تتبع تعليقاتك",
+    "category_placeholder": "اختر فئة",
+    "subject_placeholder": "موضوع التعليقات الخاص بك",
+    "description_placeholder": "صف تعليقاتك بالتفصيل"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+    "min_length": "الحد الأدنى {{count}} أحرف مطلوب",
+    "max_length": "الحد الأقصى {{count}} حرفاً مسموح",
+    "invalid_format": "صيغة غير صحيحة"
+  },
+  "board": {
+    "name": "اسم اللوحة",
+    "name_placeholder": "أدخل اسم اللوحة",
+    "description": "الوصف",
+    "description_placeholder": "صف الغرض من هذه اللوحة",
+    "categories": "الفئات",
+    "add_category": "إضافة فئة",
+    "category_name": "اسم الفئة",
+    "category_placeholder": "أدخل اسم الفئة",
+    "color": "اللون",
+    "select_color": "اختر لوناً",
+    "anonymous_allowed": "السماح بالتعليقات المجهولة",
+    "create_board": "إنشاء لوحة",
+    "edit_board": "تحرير اللوحة",
+    "delete_board": "حذف اللوحة"
+  },
+  "login": {
+    "email": "عنوان البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "remember_me": "تذكرني",
+    "sign_in": "تسجيل الدخول",
+    "forgot_password": "هل نسيت كلمة المرور؟",
+    "no_account": "ليس لديك حساب؟",
+    "signup_link": "سجل هنا"
+  },
+  "signup": {
+    "company_name": "اسم الشركة",
+    "first_name": "الاسم الأول",
+    "last_name": "الاسم الأخير",
+    "email": "عنوان البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "agree_terms": "أوافق على شروط الخدمة",
+    "create_account": "إنشاء حساب",
+    "have_account": "هل لديك حساب بالفعل؟",
+    "login_link": "تسجيل الدخول هنا"
+  },
+  "team": {
+    "member_email": "بريد عضو الفريق",
+    "role": "الدور",
+    "add_member": "إضافة عضو فريق",
+    "remove_member": "إزالة العضو",
+    "role_admin": "مسؤول",
+    "role_member": "عضو",
+    "role_viewer": "عارض"
+  },
+  "billing": {
+    "card_number": "رقم البطاقة",
+    "card_expiry": "تاريخ انتهاء الصلاحية",
+    "card_cvc": "CVC",
+    "update_payment": "تحديث طريقة الدفع",
+    "billing_address": "عنوان الفواتير"
+  }
+}

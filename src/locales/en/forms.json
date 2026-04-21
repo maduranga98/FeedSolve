@@ -1,0 +1,76 @@
+{
+  "feedback": {
+    "category": "Category",
+    "subject": "Subject",
+    "description": "Description",
+    "email": "Email (Optional)",
+    "anonymous": "Submit Anonymously",
+    "submit_button": "Submit Feedback",
+    "thank_you": "Thank you for your feedback!",
+    "tracking_code": "Your tracking code is:",
+    "track_feedback": "Track Your Feedback",
+    "category_placeholder": "Select a category",
+    "subject_placeholder": "Brief subject of your feedback",
+    "description_placeholder": "Describe your feedback in detail"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "min_length": "Minimum {{count}} characters required",
+    "max_length": "Maximum {{count}} characters allowed",
+    "invalid_format": "Invalid format"
+  },
+  "board": {
+    "name": "Board Name",
+    "name_placeholder": "Enter board name",
+    "description": "Description",
+    "description_placeholder": "Describe what this board is for",
+    "categories": "Categories",
+    "add_category": "Add Category",
+    "category_name": "Category Name",
+    "category_placeholder": "Enter category name",
+    "color": "Color",
+    "select_color": "Select a color",
+    "anonymous_allowed": "Allow Anonymous Submissions",
+    "create_board": "Create Board",
+    "edit_board": "Edit Board",
+    "delete_board": "Delete Board"
+  },
+  "login": {
+    "email": "Email Address",
+    "password": "Password",
+    "remember_me": "Remember me",
+    "sign_in": "Sign In",
+    "forgot_password": "Forgot Password?",
+    "no_account": "Don't have an account?",
+    "signup_link": "Sign up here"
+  },
+  "signup": {
+    "company_name": "Company Name",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "agree_terms": "I agree to the Terms of Service",
+    "create_account": "Create Account",
+    "have_account": "Already have an account?",
+    "login_link": "Login here"
+  },
+  "team": {
+    "member_email": "Team Member Email",
+    "role": "Role",
+    "add_member": "Add Team Member",
+    "remove_member": "Remove Member",
+    "role_admin": "Admin",
+    "role_member": "Member",
+    "role_viewer": "Viewer"
+  },
+  "billing": {
+    "card_number": "Card Number",
+    "card_expiry": "Expiry Date",
+    "card_cvc": "CVC",
+    "update_payment": "Update Payment Method",
+    "billing_address": "Billing Address"
+  }
+}

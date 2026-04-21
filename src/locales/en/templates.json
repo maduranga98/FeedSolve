@@ -1,0 +1,90 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "Customer Feedback",
+      "description": "Collect feedback from customers about your products and services"
+    },
+    "supplier_issues": {
+      "name": "Supplier Issues",
+      "description": "Track quality, delivery, and pricing issues from suppliers"
+    },
+    "distributor_feedback": {
+      "name": "Distributor Feedback",
+      "description": "Manage complaints and concerns from your distributors"
+    },
+    "restaurant_feedback": {
+      "name": "Restaurant Feedback",
+      "description": "Collect feedback about food quality, service, and cleanliness"
+    },
+    "delivery_feedback": {
+      "name": "Delivery Feedback",
+      "description": "Track issues with late deliveries, damage, and driver behavior"
+    },
+    "tenant_requests": {
+      "name": "Tenant Requests",
+      "description": "Manage maintenance requests and complaints from tenants"
+    },
+    "patient_feedback": {
+      "name": "Patient Feedback",
+      "description": "Collect feedback about doctors, staff, facilities, and billing"
+    },
+    "employee_feedback": {
+      "name": "Employee Feedback",
+      "description": "Gather feedback about careers, salary, culture, and benefits"
+    },
+    "support_tickets": {
+      "name": "Support Tickets",
+      "description": "Manage technical support requests and feature requests"
+    },
+    "event_feedback": {
+      "name": "Event Feedback",
+      "description": "Collect feedback about venues, organization, content, and speakers"
+    }
+  },
+  "industries": {
+    "retail": "Retail",
+    "manufacturing": "Manufacturing",
+    "distribution": "Distribution",
+    "food_beverage": "Food & Beverage",
+    "logistics": "Logistics",
+    "real_estate": "Real Estate",
+    "healthcare": "Healthcare",
+    "human_resources": "Human Resources",
+    "technology": "Technology",
+    "events": "Events & Entertainment"
+  },
+  "categories": {
+    "bug_report": "Bug Report",
+    "feature_request": "Feature Request",
+    "complaint": "Complaint",
+    "compliment": "Compliment",
+    "quality_issue": "Quality Issue",
+    "delivery_problem": "Delivery Problem",
+    "pricing": "Pricing",
+    "stock_issue": "Stock Issue",
+    "price_concern": "Price Concern",
+    "support": "Support",
+    "food_quality": "Food Quality",
+    "service": "Service",
+    "cleanliness": "Cleanliness",
+    "late_delivery": "Late Delivery",
+    "damage": "Damage",
+    "driver_behavior": "Driver Behavior",
+    "maintenance": "Maintenance",
+    "amenities": "Amenities",
+    "doctor": "Doctor",
+    "staff": "Staff",
+    "facilities": "Facilities",
+    "billing": "Billing",
+    "career": "Career",
+    "salary": "Salary",
+    "culture": "Culture",
+    "benefits": "Benefits",
+    "how_to": "How-To",
+    "account": "Account",
+    "venue": "Venue",
+    "organization": "Organization",
+    "content": "Content",
+    "speakers": "Speakers"
+  }
+}

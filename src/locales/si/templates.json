@@ -1,0 +1,90 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "ගැනුම්කරු ප්‍රතිපෝෂණ",
+      "description": "ඔබේ නිෂ්පාදන සහ සේවා ගැන ගැනුම්කරුවරුන්ගෙන් ප්‍රතිපෝෂණ සংගීර කරන්න"
+    },
+    "supplier_issues": {
+      "name": "සরবරාහකරු ගැටලු",
+      "description": "සරබරාහකරුවරුන්ගෙන් ගුණාත්මකતා, බේදා දෙනු, සහ මිල ගැටලු ට්‍රැකවලට"
+    },
+    "distributor_feedback": {
+      "name": "බෙදන්නා ප්‍රතිපෝෂණ",
+      "description": "ඔබේ බෙදන්නාවරුන්ගෙන් ඔපාසම්පතයි සහ කනස්සා පවා කරන්න"
+    },
+    "restaurant_feedback": {
+      "name": "අවිස්කාර නිවස ප්‍රතිපෝෂණ",
+      "description": "ආහාර ගුණාත්මකතා, සේවා, සහ පිරිසිදුකම ගැන ප්‍රතිපෝෂණ සංගීර කරන්න"
+    },
+    "delivery_feedback": {
+      "name": "බේදා දෙනු ප්‍රතිපෝෂණ",
+      "description": "බේදා දෙනු ගැටලු, ඉබ්බා දෙනු, සහ ඩ්‍රයිවරයි හැසිරීම ට්‍රැකවලට"
+    },
+    "tenant_requests": {
+      "name": "සවුරුවරු ඉල්ලීම්",
+      "description": "සවුරුවරුන්ගෙන් නඩත්තු ඉල්ලීම් සහ ඔපාසම්පතයි පරිපාලනය කරන්න"
+    },
+    "patient_feedback": {
+      "name": "රෝගී ප්‍රතිපෝෂණ",
+      "description": "වෛද්‍යවරුන්, කර්මකාරයි, පහසුකම්, සහ බිල්පතේ ගැන ප්‍රතිපෝෂණ සංගීර කරන්න"
+    },
+    "employee_feedback": {
+      "name": "සේවකයි ප්‍රතිපෝෂණ",
+      "description": "කර්මාන්ත, වැටුප්, සංස්කෘතිය, සහ සුවිසඳු ගැන ප්‍රතිපෝෂණ එකතු කරන්න"
+    },
+    "support_tickets": {
+      "name": "සහයෝගිතා ටිකට්",
+      "description": "තාක්ෂණිక සහයෝගිතා ඉල්ලීම් සහ විශේෂාංග ඉල්ලීම් පවා කරන්න"
+    },
+    "event_feedback": {
+      "name": "සිදුවීම ප්‍රතිපෝෂණ",
+      "description": "පිටුවම, සංවිධානය, සামාග්‍රී, සහ කතුවරුන් ගැන ප්‍රතිපෝෂණ සංගීර කරන්න"
+    }
+  },
+  "industries": {
+    "retail": "සිල්ප",
+    "manufacturing": "නිෂ්පාදනය",
+    "distribution": "බෙදා දෙනු",
+    "food_beverage": "ආහාර සහ පීයුමල්",
+    "logistics": "ලොජිස්ටිකස්",
+    "real_estate": "සත්‍ය සम්පතිය",
+    "healthcare": "සෞඛ්‍ය සේවා",
+    "human_resources": "මිනිස් සම්පත",
+    "technology": "තාක්ෂණයි",
+    "events": "සිදුවීම් සහ විනෝදය"
+  },
+  "categories": {
+    "bug_report": "දෝෂ වාර්තා",
+    "feature_request": "විශේෂාංග ඉල්ලීම",
+    "complaint": "ඔපාසම්පත",
+    "compliment": "ප්‍රශංසාව",
+    "quality_issue": "ගුණාත්මක ගැටලු",
+    "delivery_problem": "බේදා දෙනු ගැටලු",
+    "pricing": "මිල",
+    "stock_issue": "තොගය ගැටලු",
+    "price_concern": "මිල කනස්සා",
+    "support": "සහයෝගිතා",
+    "food_quality": "ආහාර ගුණාත්මකතා",
+    "service": "සේවා",
+    "cleanliness": "පිරිසිදුකම",
+    "late_delivery": "බේදා දෙනු ගිණුම්පත",
+    "damage": "ඉබ්බා දෙනු",
+    "driver_behavior": "ඩ්‍රයිවරයි හැසිරීම",
+    "maintenance": "නඩත්තු",
+    "amenities": "පහසුකම්",
+    "doctor": "වෛද්‍යවරයි",
+    "staff": "කර්මකාරයි",
+    "facilities": "පහසුකම්",
+    "billing": "බිල්පතේ",
+    "career": "කර්මාන්ත",
+    "salary": "වැටුප්",
+    "culture": "සංස්කෘතිය",
+    "benefits": "සුවිසඳු",
+    "how_to": "කරන්න ගැබ්බ",
+    "account": "ගිණුම",
+    "venue": "පිටුවම",
+    "organization": "සංවිධානය",
+    "content": "සामාග්‍රී",
+    "speakers": "කතුවරුන්"
+  }
+}

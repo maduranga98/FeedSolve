@@ -1,0 +1,22 @@
+{
+  "network_error": "Network error. Please try again.",
+  "server_error": "Server error. Please try again later.",
+  "unauthorized": "You are not authorized to perform this action.",
+  "not_found": "The requested resource was not found.",
+  "invalid_input": "Invalid input. Please check your data.",
+  "password_mismatch": "Passwords do not match.",
+  "email_exists": "This email is already registered.",
+  "invalid_email": "Please enter a valid email address.",
+  "weak_password": "Password must be at least 8 characters long.",
+  "session_expired": "Your session has expired. Please login again.",
+  "access_denied": "Access denied.",
+  "something_went_wrong": "Something went wrong. Please try again.",
+  "file_too_large": "File is too large. Maximum size is {{size}}.",
+  "invalid_file_type": "Invalid file type.",
+  "request_failed": "Request failed. Please try again.",
+  "timeout": "Request timed out. Please try again.",
+  "rate_limit": "Too many requests. Please wait a moment and try again.",
+  "validation_error": "Please check your input and try again.",
+  "duplicate_entry": "This entry already exists.",
+  "cannot_delete": "Cannot delete this item because it has dependent items."
+}

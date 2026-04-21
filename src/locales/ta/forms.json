@@ -1,0 +1,76 @@
+{
+  "feedback": {
+    "category": "வகை",
+    "subject": "விஷயம்",
+    "description": "விளக்கம்",
+    "email": "மின்னஞ்சல் (விருப்பமான)",
+    "anonymous": "அநாமதேயமாக சமர்ப்பிக்கவும்",
+    "submit_button": "கருத்து சமர்ப்பிக்கவும்",
+    "thank_you": "உங்கள் கருத்தின் জন்য நன்றி!",
+    "tracking_code": "உங்கள் ट్র్యాకింగ್ కోడ్:",
+    "track_feedback": "உங்கள் கருத்து பின்தொடரவும்",
+    "category_placeholder": "வகை தேர்ந்தெடுக்கவும்",
+    "subject_placeholder": "உங்கள் கருத்தின் சுருக்க விஷயம்",
+    "description_placeholder": "விரிவாக உங்கள் கருத்து விவரிக்கவும்"
+  },
+  "validation": {
+    "required": "இந்த புலம் கட்டாயம்",
+    "email": "தயவு செய்து சரியான மின்னஞ்சல் முகவரி உள்ளிடவும்",
+    "min_length": "குறைந்தபட்சம் {{count}} எழுத்துக்கள் தேவை",
+    "max_length": "அதிகபட்சம் {{count}} எழுத்துக்கள் அனுமதிக்கப்பட்டுள்ளது",
+    "invalid_format": "சரியற்ற வடிவ"
+  },
+  "board": {
+    "name": "பலகை பெயர்",
+    "name_placeholder": "பலகை பெயர் உள்ளிடவும்",
+    "description": "விளக்கம்",
+    "description_placeholder": "இந்த பலகை என்ன இதற்கு பயன்படுத்தப்படுகிறது",
+    "categories": "வகைகள்",
+    "add_category": "வகை சேர்க்கவும்",
+    "category_name": "வகை பெயர்",
+    "category_placeholder": "வகை பெயர் உள்ளிடவும்",
+    "color": "நிறம்",
+    "select_color": "நிறம் தேர்ந்தெடுக்கவும்",
+    "anonymous_allowed": "அநாமதேய சமர்ப்பணைக்கு அனுமதிக்கவும்",
+    "create_board": "பலகை உருவாக்கவும்",
+    "edit_board": "பலகை திருத்தவும்",
+    "delete_board": "பலகை நீக்கவும்"
+  },
+  "login": {
+    "email": "மின்னஞ்சல் முகவரி",
+    "password": "கடவுச்சொல்",
+    "remember_me": "என்னை நினைவு கொள்ளவும்",
+    "sign_in": "உள்நுழைக",
+    "forgot_password": "கடவுச்சொல் மறந்தீர்களா?",
+    "no_account": "ஒரு கணக்கு இல்லை?",
+    "signup_link": "இங்கே பதிவு செய்யவும்"
+  },
+  "signup": {
+    "company_name": "நிறுவன பெயர்",
+    "first_name": "முதல் பெயர்",
+    "last_name": "கடைசி பெயர்",
+    "email": "மின்னஞ்சல் முகவரி",
+    "password": "கடவுச்சொல்",
+    "confirm_password": "கடவுச்சொல் உறுதிப்படுத்தவும்",
+    "agree_terms": "நான் சேவை விதிமுறைக்கு சहमत",
+    "create_account": "கணக்கை உருவாக்கவும்",
+    "have_account": "ஏற்கனவே கணக்கு உள்ளதா?",
+    "login_link": "இங்கே உள்நுழைக"
+  },
+  "team": {
+    "member_email": "குழு உறுப்பினர் மின்னஞ்சல்",
+    "role": "பங்கு",
+    "add_member": "குழு உறுப்பினர் சேர்க்கவும்",
+    "remove_member": "உறுப்பினரை அகற்றவும்",
+    "role_admin": "நிர்வாகி",
+    "role_member": "உறுப்பினர்",
+    "role_viewer": "பார்வையாளர்"
+  },
+  "billing": {
+    "card_number": "கார்டு எண்",
+    "card_expiry": "கால வெளிப்பாடு தேதி",
+    "card_cvc": "CVC",
+    "update_payment": "பணம் வழங்கும் முறை புதுப்பிக்கவும்",
+    "billing_address": "பிரண்டணை முகவரி"
+  }
+}
