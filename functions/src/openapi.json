@@ -1,0 +1,744 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FeedSolve API",
+    "version": "1.0.0",
+    "description": "REST API for feedback management and analytics",
+    "contact": {
+      "name": "FeedSolve Support",
+      "url": "https://feedsolve.com/support"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.feedsolve.com",
+      "description": "Production API"
+    },
+    {
+      "url": "http://localhost:5001",
+      "description": "Local development"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/submissions": {
+      "post": {
+        "summary": "Create a new submission",
+        "tags": ["Submissions"],
+        "operationId": "createSubmission",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmissionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submission created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/api/submissions/{id}": {
+      "get": {
+        "summary": "Get submission by tracking code",
+        "tags": ["Submissions"],
+        "operationId": "getSubmission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Tracking code (e.g., #FSV-7891)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Submission not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update submission",
+        "tags": ["Submissions"],
+        "operationId": "updateSubmission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmissionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Submission not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete submission",
+        "tags": ["Submissions"],
+        "operationId": "deleteSubmission",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Submission deleted"
+          },
+          "404": {
+            "description": "Submission not found"
+          }
+        }
+      }
+    },
+    "/api/company/submissions": {
+      "get": {
+        "summary": "List company submissions",
+        "tags": ["Submissions"],
+        "operationId": "listSubmissions",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["received", "in_review", "in_progress", "resolved", "closed"]
+            }
+          },
+          {
+            "name": "boardId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["low", "medium", "high", "critical"]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of submissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/boards": {
+      "post": {
+        "summary": "Create a new board",
+        "tags": ["Boards"],
+        "operationId": "createBoard",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Board created successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/boards/{id}": {
+      "get": {
+        "summary": "Get board by ID",
+        "tags": ["Boards"],
+        "operationId": "getBoard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Board found"
+          },
+          "404": {
+            "description": "Board not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update board",
+        "tags": ["Boards"],
+        "operationId": "updateBoard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoardInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Board updated"
+          },
+          "404": {
+            "description": "Board not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete board",
+        "tags": ["Boards"],
+        "operationId": "deleteBoard",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Board deleted"
+          },
+          "404": {
+            "description": "Board not found"
+          }
+        }
+      }
+    },
+    "/api/company/boards": {
+      "get": {
+        "summary": "List company boards",
+        "tags": ["Boards"],
+        "operationId": "listBoards",
+        "responses": {
+          "200": {
+            "description": "List of boards"
+          }
+        }
+      }
+    },
+    "/api/company/stats": {
+      "get": {
+        "summary": "Get company statistics",
+        "tags": ["Analytics"],
+        "operationId": "getCompanyStats",
+        "responses": {
+          "200": {
+            "description": "Company statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/boards/{id}/stats": {
+      "get": {
+        "summary": "Get board statistics",
+        "tags": ["Analytics"],
+        "operationId": "getBoardStats",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Board statistics"
+          }
+        }
+      }
+    },
+    "/api/auth/api-keys": {
+      "get": {
+        "summary": "List API keys",
+        "tags": ["Authentication"],
+        "operationId": "listApiKeys",
+        "responses": {
+          "200": {
+            "description": "List of API keys"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create API key",
+        "tags": ["Authentication"],
+        "operationId": "createApiKey",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApiKeyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "API key created (key shown only once)"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    },
+    "/api/auth/api-keys/{keyId}": {
+      "delete": {
+        "summary": "Delete API key",
+        "tags": ["Authentication"],
+        "operationId": "deleteApiKey",
+        "parameters": [
+          {
+            "name": "keyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "API key deleted"
+          },
+          "404": {
+            "description": "API key not found"
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "summary": "Get current company info",
+        "tags": ["Account"],
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "description": "Current company info"
+          }
+        }
+      }
+    },
+    "/api/company": {
+      "get": {
+        "summary": "Get company information",
+        "tags": ["Account"],
+        "operationId": "getCompany",
+        "responses": {
+          "200": {
+            "description": "Company information"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Submission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trackingCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["received", "in_review", "in_progress", "resolved", "closed"]
+          },
+          "category": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "publicReply": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["id", "trackingCode", "status", "subject"]
+      },
+      "SubmissionInput": {
+        "type": "object",
+        "properties": {
+          "boardId": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "isAnonymous": {
+            "type": "boolean"
+          }
+        },
+        "required": ["boardId", "subject", "description"]
+      },
+      "SubmissionUpdate": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["received", "in_review", "in_progress", "resolved", "closed"]
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "assignedTo": {
+            "type": "string"
+          },
+          "publicReply": {
+            "type": "string"
+          },
+          "internalNotes": {
+            "type": "string"
+          }
+        }
+      },
+      "SubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trackingCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "SubmissionList": {
+        "type": "object",
+        "properties": {
+          "submissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Submission"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "offset": {
+            "type": "integer"
+          }
+        }
+      },
+      "Board": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAnonymousAllowed": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BoardInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAnonymousAllowed": {
+            "type": "boolean"
+          }
+        },
+        "required": ["name"]
+      },
+      "CompanyStats": {
+        "type": "object",
+        "properties": {
+          "totalSubmissions": {
+            "type": "integer"
+          },
+          "resolutionRate": {
+            "type": "number"
+          },
+          "avgResolutionDays": {
+            "type": "number"
+          },
+          "submissionsByStatus": {
+            "type": "object"
+          },
+          "submissionsByPriority": {
+            "type": "object"
+          },
+          "submissionsByBoard": {
+            "type": "object"
+          }
+        }
+      },
+      "ApiKey": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "keyDisplay": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApiKeyInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "submissions:read",
+                "submissions:write",
+                "submissions:delete",
+                "boards:read",
+                "boards:write",
+                "boards:delete",
+                "stats:read",
+                "keys:create",
+                "keys:read",
+                "keys:delete",
+                "company:read"
+              ]
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ipWhitelist": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["name", "permissions"]
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "token",
+        "description": "API Key in format: Bearer fsk_xxxxx"
+      }
+    }
+  }
+}
