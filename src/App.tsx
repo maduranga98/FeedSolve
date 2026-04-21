@@ -6,6 +6,8 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { useTemplateInit } from './hooks/useTemplateInit';
+import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
 
@@ -190,6 +192,9 @@ function AppContent() {
 }
 
 function App() {
+  useTemplateInit();
+  useRTL();
+
   return (
     <Router>
       <AuthProvider>
