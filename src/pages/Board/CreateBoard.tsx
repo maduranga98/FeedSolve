@@ -1,14 +1,19 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { createBoard } from '../../lib/firestore';
+import { createBoard, getTemplate } from '../../lib/firestore';
 import { Button, Input } from '../../components/Shared';
 import type { BoardFormInput } from '../../types';
+import type { BoardTemplate } from '../../types';
 import { Plus, Trash2 } from 'lucide-react';
 
 export function CreateBoard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const [selectedTemplate, setSelectedTemplate] = useState<BoardTemplate | null>(null);
   const [formData, setFormData] = useState<BoardFormInput>({
     name: '',
     description: '',
@@ -18,6 +23,28 @@ export function CreateBoard() {
   const [newCategory, setNewCategory] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadTemplate = async () => {
+      const templateId = (location.state as any)?.templateId;
+      if (templateId) {
+        try {
+          const template = await getTemplate(templateId);
+          if (template) {
+            setSelectedTemplate(template);
+            setFormData(prev => ({
+              ...prev,
+              categories: template.categories,
+            }));
+          }
+        } catch (error) {
+          console.error('Failed to load template:', error);
+        }
+      }
+    };
+
+    loadTemplate();
+  }, [location]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -70,10 +97,20 @@ export function CreateBoard() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-sm p-8">
-        <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">Create Board</h1>
+        <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
+          {selectedTemplate ? t('boards.templates.create_from_template') : t('forms.board.create_board')}
+        </h1>
         <p className="text-[#6B7B8D] mb-8">
-          Set up a new feedback board to start collecting feedback
+          {selectedTemplate ? `Creating board from ${selectedTemplate.name} template` : t('forms.board.description')}
         </p>
+
+        {selectedTemplate && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-700">
+              <strong>Template:</strong> {selectedTemplate.name}
+            </p>
+          </div>
+        )}
 
         {errors.submit && (
           <div className="mb-4 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
@@ -83,7 +120,7 @@ export function CreateBoard() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="Board Name"
+            label={t('forms.board.name')}
             placeholder="Product Feedback"
             value={formData.name}
             onChange={(e) =>
@@ -93,7 +130,7 @@ export function CreateBoard() {
           />
 
           <Input
-            label="Description"
+            label={t('forms.board.description')}
             placeholder="Collect feedback about your product"
             value={formData.description}
             onChange={(e) =>
@@ -104,7 +141,7 @@ export function CreateBoard() {
 
           <div>
             <label className="block text-sm font-medium text-[#1E3A5F] mb-3">
-              Feedback Categories
+              {t('forms.board.categories')}
             </label>
 
             <div className="space-y-2 mb-4">
@@ -132,7 +169,7 @@ export function CreateBoard() {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Add new category"
+                placeholder={t('forms.board.category_placeholder')}
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 onKeyPress={(e) => {
@@ -167,7 +204,7 @@ export function CreateBoard() {
               className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
             />
             <span className="text-[#1E3A5F] font-medium">
-              Allow anonymous submissions
+              {t('forms.board.anonymous_allowed')}
             </span>
           </label>
 
@@ -179,7 +216,7 @@ export function CreateBoard() {
               isLoading={isLoading}
               className="flex-1"
             >
-              Create Board
+              {selectedTemplate ? 'Create Board from Template' : t('forms.board.create_board')}
             </Button>
             <Button
               type="button"
@@ -187,7 +224,7 @@ export function CreateBoard() {
               size="lg"
               onClick={() => navigate('/dashboard')}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
           </div>
         </form>
