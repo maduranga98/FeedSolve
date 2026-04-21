@@ -1,13 +1,29 @@
 import { Timestamp } from 'firebase/firestore';
 
+export type UserRole = 'owner' | 'admin' | 'manager' | 'viewer';
+
 export interface User {
   id: string;
   companyId: string;
   email: string;
   name: string;
-  role: 'admin' | 'member';
+  role: UserRole;
   status?: 'active' | 'inactive';
   createdAt: Timestamp;
+  lastActive?: Timestamp;
+}
+
+export interface PermissionAuditLog {
+  id: string;
+  companyId: string;
+  userId: string;
+  targetUserId: string;
+  action: 'role_changed' | 'member_added' | 'member_removed';
+  oldRole?: UserRole;
+  newRole?: UserRole;
+  reason?: string;
+  createdAt: Timestamp;
+  createdBy: string;
 }
 
 export interface Subscription {
@@ -116,7 +132,7 @@ export interface TeamInvitation {
   id: string;
   companyId: string;
   email: string;
-  role: 'admin' | 'member';
+  role: UserRole;
   invitedBy: string;
   inviteCode: string;
   status: 'pending' | 'accepted' | 'declined';
@@ -128,8 +144,9 @@ export interface TeamMember {
   userId: string;
   email: string;
   name: string;
-  role: 'admin' | 'member';
+  role: UserRole;
   joinedAt: Timestamp;
+  lastActive?: Timestamp;
 }
 
 export interface Invoice {

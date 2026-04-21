@@ -7,63 +7,131 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function getUserDoc(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
+    function getCurrentUserRole(companyId) {
+      return getUserDoc(request.auth.uid).role;
+    }
+
     function isUserInCompany(companyId) {
       return isAuthenticated() &&
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+        getUserDoc(request.auth.uid).companyId == companyId;
+    }
+
+    function hasRolePermission(companyId, permission) {
+      let role = getCurrentUserRole(companyId);
+      return (
+        (role == 'owner') ||
+        (role == 'admin' && permission in ['submissions:read', 'submissions:write', 'team:manage', 'webhooks:write', 'integrations:write', 'analytics:read', 'audit:read']) ||
+        (role == 'manager' && permission in ['submissions:read', 'submissions:write', 'submissions:reply', 'analytics:read', 'audit:read']) ||
+        (role == 'viewer' && permission in ['submissions:read', 'analytics:read'])
+      );
     }
 
     function canManageCompany(companyId) {
       return isUserInCompany(companyId) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        (getCurrentUserRole(companyId) == 'owner' || getCurrentUserRole(companyId) == 'admin');
     }
 
-    // Webhook logs - Company admins can read, Cloud Functions can write
+    function isOwner(companyId) {
+      return isUserInCompany(companyId) && getCurrentUserRole(companyId) == 'owner';
+    }
+
+    function canManageTeam(companyId) {
+      return isUserInCompany(companyId) &&
+        (getCurrentUserRole(companyId) == 'owner' || getCurrentUserRole(companyId) == 'admin');
+    }
+
+    function canReadSubmissions(companyId) {
+      return isUserInCompany(companyId) &&
+        getCurrentUserRole(companyId) in ['owner', 'admin', 'manager', 'viewer'];
+    }
+
+    function canManageSubmissions(companyId) {
+      return isUserInCompany(companyId) &&
+        (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
+    }
+
+    function canReplyToSubmissions(companyId) {
+      return isUserInCompany(companyId) &&
+        (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
+    }
+
+    // Webhook logs - Can read based on role, Cloud Functions writes
     match /webhook_logs/{companyId}/{logId} {
       allow read: if canManageCompany(companyId);
-      allow write: if false; // Server-only via Cloud Functions
+      allow write: if false;
     }
 
-    // Users collection
+    // Users collection - RBAC enforced
     match /users/{userId} {
-      allow read: if request.auth.uid == userId;
-      allow write: if request.auth.uid == userId || canManageCompany(resource.data.companyId);
+      allow read: if request.auth.uid == userId || isUserInCompany(resource.data.companyId);
+      allow write: if request.auth.uid == userId || canManageTeam(resource.data.companyId);
+      allow update: if request.auth.uid == userId ||
+        (canManageTeam(resource.data.companyId) &&
+         (request.resource.data.role != resource.data.role ||
+          request.resource.data.companyId == resource.data.companyId));
     }
 
-    // Companies collection
+    // Companies collection - Owner/Admin only
     match /companies/{companyId} {
       allow read: if canManageCompany(companyId);
       allow write: if canManageCompany(companyId);
+      allow delete: if isOwner(companyId);
 
-      // Nested subcollections
       match /webhook_logs/{logId} {
+        allow read: if canManageCompany(companyId);
+        allow write: if false;
+      }
+
+      match /audit_logs/{logId} {
         allow read: if canManageCompany(companyId);
         allow write: if false;
       }
     }
 
-    // Boards collection
+    // Boards collection - Role-based access
     match /boards/{boardId} {
-      allow read: if isUserInCompany(resource.data.companyId);
+      allow read: if canReadSubmissions(resource.data.companyId);
       allow write: if canManageCompany(resource.data.companyId);
+      allow delete: if isOwner(resource.data.companyId);
     }
 
-    // Submissions collection
+    // Submissions collection - Role-based access
     match /submissions/{submissionId} {
-      allow read: if isUserInCompany(resource.data.companyId);
-      allow write: if canManageCompany(resource.data.companyId);
+      allow read: if canReadSubmissions(resource.data.companyId);
+      allow create: if isUserInCompany(resource.data.companyId);
+      allow update: if canManageSubmissions(resource.data.companyId) ||
+        (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
+      allow delete: if canManageCompany(resource.data.companyId);
     }
 
-    // API Keys collection
+    // API Keys collection - Admin+ only
     match /api_keys/{companyId}/{keyId} {
       allow read: if canManageCompany(companyId);
       allow write: if canManageCompany(companyId);
     }
 
-    // API Logs collection (Server-only writes)
+    // API Logs collection - Server-only writes, Admin+ reads
     match /api_logs/{companyId}/{logId} {
       allow read: if canManageCompany(companyId);
-      allow write: if false; // Server-only via Cloud Functions
+      allow write: if false;
+    }
+
+    // Team invitations - Team managers and above
+    match /team_invitations/{companyId}/{inviteId} {
+      allow read: if canManageTeam(companyId);
+      allow create: if canManageTeam(companyId);
+      allow delete: if canManageTeam(companyId);
+    }
+
+    // Audit logs - Admin+ read only
+    match /audit_logs/{companyId}/{logId} {
+      allow read: if canManageCompany(companyId);
+      allow write: if false;
     }
 
     // Deny everything else
@@ -71,4 +139,8 @@ service cloud.firestore {
       allow read, write: if false;
     }
   }
+}
+
+function only(fields) {
+  return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
 }

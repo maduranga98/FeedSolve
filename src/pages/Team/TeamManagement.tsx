@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { Button, Input, Badge, LoadingSpinner } from '../../components/Shared';
+import { usePermissions } from '../../hooks/usePermissions';
+import { Button, Input, LoadingSpinner } from '../../components/Shared';
+import { TeamMembersTable } from '../../components/RBAC/TeamMembersTable';
+import { RoleSelector } from '../../components/RBAC/RoleSelector';
+import { RoleIndicator } from '../../components/RBAC/RoleIndicator';
+import { PermissionGuard, PermissionDenied } from '../../components/RBAC/PermissionGuard';
 import {
   getTeamMembers,
   updateMemberRole,
@@ -8,15 +13,16 @@ import {
   inviteTeamMember,
   getCompanyInvitations,
 } from '../../lib/firestore';
-import type { TeamMember, TeamInvitation, User } from '../../types';
+import type { TeamMember, TeamInvitation, User, UserRole } from '../../types';
 
 export function TeamManagement() {
   const { user } = useAuth();
+  const { hasPermissionTo } = usePermissions();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<'member' | 'admin'>('member');
+  const [inviteRole, setInviteRole] = useState<UserRole>('viewer');
   const [inviting, setInviting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -52,8 +58,8 @@ export function TeamManagement() {
       return;
     }
 
-    if (currentUser.role !== 'admin') {
-      setError('Only admins can invite team members');
+    if (!hasPermissionTo('team:invite')) {
+      setError('You do not have permission to invite team members');
       return;
     }
 
@@ -63,7 +69,7 @@ export function TeamManagement() {
       await inviteTeamMember(currentUser.companyId, inviteEmail, inviteRole, currentUser.id);
       setSuccess(`Invitation sent to ${inviteEmail}`);
       setInviteEmail('');
-      setInviteRole('member');
+      setInviteRole('viewer');
       await loadTeamData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
@@ -74,38 +80,26 @@ export function TeamManagement() {
     }
   }
 
-  async function handleRoleChange(userId: string, newRole: 'admin' | 'member') {
-    if (currentUser.role !== 'admin') {
-      setError('Only admins can change roles');
-      return;
-    }
-
+  async function handleRoleChange(userId: string, newRole: UserRole) {
     try {
       await updateMemberRole(userId, newRole);
       setSuccess('Role updated');
       await loadTeamData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to update role');
+      setError(err instanceof Error ? err.message : 'Failed to update role');
       console.error(err);
     }
   }
 
   async function handleRemoveMember(userId: string) {
-    if (currentUser.role !== 'admin') {
-      setError('Only admins can remove members');
-      return;
-    }
-
-    if (!confirm('Are you sure you want to remove this team member?')) return;
-
     try {
       await removeTeamMember(userId);
       setSuccess('Team member removed');
       await loadTeamData();
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to remove team member');
+      setError(err instanceof Error ? err.message : 'Failed to remove team member');
       console.error(err);
     }
   }
@@ -122,7 +116,13 @@ export function TeamManagement() {
     <main className="min-h-screen bg-color-bg">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-color-surface rounded-lg shadow-md p-6">
-          <h1 className="text-3xl font-bold text-color-primary mb-8">Team Management</h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-color-primary">Team Management</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-color-muted-text">Your Role:</span>
+              <RoleIndicator />
+            </div>
+          </div>
 
           {error && (
             <div className="mb-4 p-4 bg-red-100 border border-color-error text-color-error rounded-md">
@@ -136,7 +136,14 @@ export function TeamManagement() {
             </div>
           )}
 
-          {user.role === 'admin' && (
+          <PermissionGuard
+            permission="team:invite"
+            fallback={
+              <div className="mb-8">
+                <PermissionDenied message="You do not have permission to invite team members" />
+              </div>
+            }
+          >
             <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-color-accent-light">
               <h2 className="text-xl font-semibold text-color-primary mb-4">
                 Invite Team Member
@@ -148,20 +155,13 @@ export function TeamManagement() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   placeholder="teammate@example.com"
+                  disabled={inviting}
                 />
-                <div>
-                  <label className="block text-sm font-medium text-color-body-text mb-2">
-                    Role
-                  </label>
-                  <select
-                    value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member')}
-                    className="w-full px-4 py-2 border border-color-border rounded-md focus:ring-2 focus:ring-color-accent focus:border-transparent"
-                  >
-                    <option value="member">Member</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
+                <RoleSelector
+                  value={inviteRole}
+                  onChange={setInviteRole}
+                  disabled={inviting}
+                />
                 <Button
                   onClick={handleInvite}
                   disabled={inviting}
@@ -171,67 +171,31 @@ export function TeamManagement() {
                 </Button>
               </div>
             </div>
-          )}
+          </PermissionGuard>
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-color-primary mb-4">
               Team Members ({teamMembers.length})
             </h2>
-            {teamMembers.length === 0 ? (
-              <p className="text-color-muted-text">No team members yet.</p>
-            ) : (
-              <div className="space-y-3">
-                {teamMembers.map((member) => (
-                  <div
-                    key={member.userId}
-                    className="flex items-center justify-between p-4 border border-color-border rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium text-color-body-text">{member.name}</p>
-                      <p className="text-sm text-color-muted-text">{member.email}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {user.role === 'admin' && member.userId !== user.id && (
-                        <>
-                          <select
-                            value={member.role}
-                            onChange={(e) =>
-                              handleRoleChange(member.userId, e.target.value as 'admin' | 'member')
-                            }
-                            className="px-3 py-1 border border-color-border rounded-md text-sm focus:ring-2 focus:ring-color-accent"
-                          >
-                            <option value="member">Member</option>
-                            <option value="admin">Admin</option>
-                          </select>
-                          <Button
-                            onClick={() => handleRemoveMember(member.userId)}
-                            variant="danger"
-                            size="sm"
-                          >
-                            Remove
-                          </Button>
-                        </>
-                      )}
-                      {member.role === 'admin' && (
-                        <Badge variant="primary">{member.role.toUpperCase()}</Badge>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <TeamMembersTable
+              members={teamMembers}
+              currentUserId={currentUser.id}
+              isLoading={loading}
+              onRoleChange={handleRoleChange}
+              onRemoveMember={handleRemoveMember}
+            />
           </div>
 
           {pendingInvitations.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold text-color-primary mb-4">
-                Pending Invitations
+                Pending Invitations ({pendingInvitations.length})
               </h2>
               <div className="space-y-3">
                 {pendingInvitations.map((invitation) => (
                   <div
                     key={invitation.id}
-                    className="flex items-center justify-between p-4 border border-color-border rounded-lg bg-yellow-50"
+                    className="flex items-center justify-between p-4 border border-yellow-200 rounded-lg bg-yellow-50"
                   >
                     <div>
                       <p className="font-medium text-color-body-text">{invitation.email}</p>
@@ -239,7 +203,9 @@ export function TeamManagement() {
                         Invited as {invitation.role}
                       </p>
                     </div>
-                    <Badge variant="warning">PENDING</Badge>
+                    <span className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-semibold">
+                      PENDING
+                    </span>
                   </div>
                 ))}
               </div>
