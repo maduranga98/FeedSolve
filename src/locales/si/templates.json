@@ -41,6 +41,7 @@
       "description": "පිටුවම, සංවිධානය, සামාග්‍රී, සහ කතුවරුන් ගැන ප්‍රතිපෝෂණ සංගීර කරන්න"
     }
   },
+  "select_template": "Select Template",
   "industries": {
     "retail": "සිල්ප",
     "manufacturing": "නිෂ්පාදනය",

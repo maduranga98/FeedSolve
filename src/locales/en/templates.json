@@ -53,6 +53,7 @@
     "technology": "Technology",
     "events": "Events & Entertainment"
   },
+  "select_template": "Select Template",
   "categories": {
     "bug_report": "Bug Report",
     "feature_request": "Feature Request",

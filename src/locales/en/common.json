@@ -51,5 +51,7 @@
   "remove": "Remove",
   "add": "Add",
   "update": "Update",
-  "integrations": "Integrations"
+  "integrations": "Integrations",
+  "not_found": "Board not found",
+  "board_not_found": "The feedback board you're looking for doesn't exist."
 }

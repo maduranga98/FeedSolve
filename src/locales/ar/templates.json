@@ -41,6 +41,7 @@
       "description": "اجمع تعليقات حول الموقع والتنظيم والمحتوى والمتحدثين"
     }
   },
+  "select_template": "Select Template",
   "industries": {
     "retail": "البيع بالتجزئة",
     "manufacturing": "التصنيع",

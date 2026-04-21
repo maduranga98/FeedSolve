@@ -41,6 +41,7 @@
       "description": "இடம், संगঠन, உள்ளடக்கம் மற்றும் பேச்சாளர்கள் பற்றிய கருத்து சংকरिक्कவும்"
     }
   },
+  "select_template": "Select Template",
   "industries": {
     "retail": "சில்ப",
     "manufacturing": "உত்पादन",

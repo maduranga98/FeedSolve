@@ -41,6 +41,7 @@
       "description": "स्थान, संगठन, सामग्री और वक्ताओं के बारे में प्रतिपुष्टि एकत्र करें"
     }
   },
+  "select_template": "Select Template",
   "industries": {
     "retail": "खुदरा",
     "manufacturing": "विनिर्माण",
