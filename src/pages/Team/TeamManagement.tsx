@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
 import { Button, Input, LoadingSpinner } from '../../components/Shared';
@@ -18,6 +19,7 @@ import type { TeamMember, TeamInvitation, User, UserRole } from '../../types';
 export function TeamManagement() {
   const { user } = useAuth();
   const { hasPermissionTo } = usePermissions();
+  const { t } = useTranslation();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [pendingInvitations, setPendingInvitations] = useState<TeamInvitation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,11 +29,10 @@ export function TeamManagement() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  if (!user) return null;
-
   const currentUser = user as User;
 
   useEffect(() => {
+    if (!user) return;
     loadTeamData();
   }, [user]);
 
@@ -104,6 +105,8 @@ export function TeamManagement() {
     }
   }
 
+  if (!user) return null;
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -117,7 +120,7 @@ export function TeamManagement() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-color-surface rounded-lg shadow-md p-6">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-color-primary">Team Management</h1>
+            <h1 className="text-3xl font-bold text-color-primary">{t('team')} Management</h1>
             <div className="flex items-center gap-2">
               <span className="text-sm text-color-muted-text">Your Role:</span>
               <RoleIndicator />
@@ -146,11 +149,11 @@ export function TeamManagement() {
           >
             <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-color-accent-light">
               <h2 className="text-xl font-semibold text-color-primary mb-4">
-                Invite Team Member
+                Invite {t('team')} Member
               </h2>
               <div className="space-y-4">
                 <Input
-                  label="Email Address"
+                  label={t('forms:team.member_email')}
                   type="email"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
@@ -167,7 +170,7 @@ export function TeamManagement() {
                   disabled={inviting}
                   isLoading={inviting}
                 >
-                  Send Invitation
+                  {t('forms:team.add_member')}
                 </Button>
               </div>
             </div>
@@ -175,7 +178,7 @@ export function TeamManagement() {
 
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-color-primary mb-4">
-              Team Members ({teamMembers.length})
+              {t('team')} Members ({teamMembers.length})
             </h2>
             <TeamMembersTable
               members={teamMembers}

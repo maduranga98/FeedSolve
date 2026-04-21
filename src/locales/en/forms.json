@@ -37,15 +37,18 @@
     "delete_board": "Delete Board"
   },
   "login": {
+    "subtitle": "Sign in to your account",
     "email": "Email Address",
     "password": "Password",
     "remember_me": "Remember me",
     "sign_in": "Sign In",
     "forgot_password": "Forgot Password?",
     "no_account": "Don't have an account?",
-    "signup_link": "Sign up here"
+    "signup_link": "Create one"
   },
   "signup": {
+    "subtitle": "Create your account",
+    "full_name": "Full Name",
     "company_name": "Company Name",
     "first_name": "First Name",
     "last_name": "Last Name",
@@ -55,7 +58,8 @@
     "agree_terms": "I agree to the Terms of Service",
     "create_account": "Create Account",
     "have_account": "Already have an account?",
-    "login_link": "Login here"
+    "login_link": "Sign in",
+    "password_hint": "Min 8 characters, 1 uppercase, 1 lowercase, 1 number"
   },
   "team": {
     "member_email": "Team Member Email",

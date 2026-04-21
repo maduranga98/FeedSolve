@@ -22,9 +22,12 @@ export function Navbar() {
     <nav className="bg-white border-b border-[#D3D1C7] sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <h1 className="text-2xl font-bold text-[#1E3A5F] cursor-pointer" onClick={() => navigate('/dashboard')}>
-            FeedSolve
-          </h1>
+          <img
+            src="/logo.png"
+            alt="FeedSolve"
+            className="h-8 cursor-pointer"
+            onClick={() => navigate('/dashboard')}
+          />
 
           {user && (
             <div className="flex items-center gap-6">
@@ -36,7 +39,7 @@ export function Navbar() {
                     : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
                 }`}
               >
-                {t('common.dashboard')}
+                {t('dashboard')}
               </button>
               <button
                 onClick={() => navigate('/templates')}
@@ -44,7 +47,7 @@ export function Navbar() {
                   isActive('/templates') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
                 } hover:text-[#1E3A5F]`}
               >
-                {t('templates.title')}
+                {t('boards:templates.title')}
               </button>
               <button
                 onClick={() => navigate('/board/create')}
@@ -52,7 +55,7 @@ export function Navbar() {
                   isActive('/board/create') ? 'text-[#1E3A5F]' : 'text-[#6B7B8D]'
                 } hover:text-[#1E3A5F]`}
               >
-                {t('boards.templates.create_from_template')}
+                {t('boards:templates.create_from_template')}
               </button>
               <button
                 onClick={() => navigate('/team')}
@@ -61,7 +64,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <Users size={16} />
-                {t('common.team')}
+                {t('team')}
               </button>
               <button
                 onClick={() => navigate('/analytics')}
@@ -70,7 +73,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <BarChart3 size={16} />
-                {t('common.analytics')}
+                {t('analytics')}
               </button>
               <button
                 onClick={() => navigate('/billing')}
@@ -79,7 +82,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <CreditCard size={16} />
-                {t('common.billing')}
+                {t('billing')}
               </button>
               <button
                 onClick={() => navigate('/integrations')}
@@ -88,7 +91,7 @@ export function Navbar() {
                 } hover:text-[#1E3A5F]`}
               >
                 <Zap size={16} />
-                Integrations
+                {t('integrations')}
               </button>
             </div>
           )}
@@ -108,7 +111,7 @@ export function Navbar() {
               className="flex items-center gap-2"
             >
               <LogOut size={16} />
-              {t('common.logout')}
+              {t('logout')}
             </Button>
           </div>
         )}

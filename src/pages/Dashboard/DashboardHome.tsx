@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { getCompanySubmissions, getCompanyBoards, getCompanyMembers } from '../../lib/firestore';
+import { getCompanySubmissions, getCompanyMembers } from '../../lib/firestore';
 import { useFilters } from '../../hooks/useFilters';
 import type { Submission, Board, User } from '../../types';
 import { LoadingSpinner, Button } from '../../components/Shared';
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 export function DashboardHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,10 +50,13 @@ export function DashboardHome() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-color-primary mb-2">
-              Feedback Dashboard
+              {t('boards:dashboard.title')}
             </h1>
             <p className="text-color-muted-text">
-              {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'}
+              {submissions.length}{' '}
+              {submissions.length === 1
+                ? t('boards:dashboard.submission_one')
+                : t('boards:dashboard.submission_other')}
             </p>
           </div>
           <Button
@@ -61,7 +66,7 @@ export function DashboardHome() {
             className="flex items-center gap-2"
           >
             <Plus size={20} />
-            Create Board
+            {t('boards:dashboard.create_board')}
           </Button>
         </div>
       </div>
@@ -76,13 +81,13 @@ export function DashboardHome() {
       ) : submissions.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-color-muted-text text-lg mb-4">
-            Create your first board to start collecting feedback
+            {t('boards:dashboard.create_first')}
           </p>
           <Button
             variant="primary"
             onClick={() => navigate('/board/create')}
           >
-            Create First Board
+            {t('boards:dashboard.create_board')}
           </Button>
         </div>
       ) : (

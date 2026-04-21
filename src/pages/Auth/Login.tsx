@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Input } from '../../components/Shared';
 
 export function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,11 +18,12 @@ export function Login() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
+    if (!formData.email.trim()) {
+      newErrors.email = t('forms:validation.required');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = t('forms:validation.email');
     }
-    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.password) newErrors.password = t('forms:validation.required');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -37,7 +40,7 @@ export function Login() {
       navigate('/dashboard');
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : 'Login failed',
+        submit: error instanceof Error ? error.message : t('errors:something_went_wrong'),
       });
     } finally {
       setIsLoading(false);
@@ -48,8 +51,8 @@ export function Login() {
     <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-sm p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">FeedSolve</h1>
-          <p className="text-[#6B7B8D]">Sign in to your account</p>
+          <img src="/logo.png" alt="FeedSolve" className="h-12 mx-auto mb-4" />
+          <p className="text-[#6B7B8D]">{t('forms:login.subtitle')}</p>
         </div>
 
         {errors.submit && (
@@ -60,7 +63,7 @@ export function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Email"
+            label={t('forms:login.email')}
             type="email"
             placeholder="you@company.com"
             value={formData.email}
@@ -71,7 +74,7 @@ export function Login() {
           />
 
           <Input
-            label="Password"
+            label={t('forms:login.password')}
             type="password"
             placeholder="••••••••"
             value={formData.password}
@@ -88,14 +91,14 @@ export function Login() {
             isLoading={isLoading}
             className="w-full"
           >
-            Sign In
+            {t('forms:login.sign_in')}
           </Button>
         </form>
 
         <p className="text-center text-sm text-[#6B7B8D] mt-6">
-          Don't have an account?{' '}
+          {t('forms:login.no_account')}{' '}
           <Link to="/signup" className="text-[#2E86AB] hover:underline">
-            Create one
+            {t('forms:login.signup_link')}
           </Link>
         </p>
       </div>
