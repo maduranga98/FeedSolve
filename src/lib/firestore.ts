@@ -389,17 +389,6 @@ export async function updateSubmissionPublicReply(
   await updateDoc(submissionRef, { publicReply: reply, updatedAt: Timestamp.now() });
 }
 
-export async function updateSubmissionPriority(
-  submissionId: string,
-  priority: 'low' | 'medium' | 'high' | 'critical'
-): Promise<void> {
-  const submissionRef = doc(db, 'submissions', submissionId);
-  await updateDoc(submissionRef, {
-    priority,
-    updatedAt: Timestamp.now(),
-  });
-}
-
 export async function addPublicReply(
   submissionId: string,
   reply: string,
