@@ -1,0 +1,177 @@
+.form-template-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  max-width: 600px;
+  max-height: 700px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.template-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 1rem;
+}
+
+.template-manager-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.template-manager-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #999;
+}
+
+.templates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.template-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.template-card:hover {
+  background: #f0f0f0;
+  border-color: #007bff;
+}
+
+.template-info {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.template-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.template-info p {
+  margin: 0.25rem 0 0.5rem 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.template-info small {
+  color: #999;
+  font-size: 0.75rem;
+}
+
+.template-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-danger {
+  padding: 0.4rem 0.8rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.template-manager-footer {
+  border-top: 2px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.create-template-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-template-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.create-template-form input,
+.create-template-form textarea {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.create-template-form input:focus,
+.create-template-form textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.create-template-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  color: #999;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .form-template-manager {
+    max-width: 100%;
+    max-height: 80vh;
+  }
+
+  .template-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .template-info {
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+
+  .template-actions {
+    width: 100%;
+  }
+
+  .template-actions button {
+    flex: 1;
+    min-width: 100px;
+  }
+}

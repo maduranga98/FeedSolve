@@ -77,6 +77,53 @@ export interface Company {
   webhookStats?: WebhookStats;
 }
 
+export type FormFieldType =
+  | 'text'
+  | 'longtext'
+  | 'select'
+  | 'checkbox'
+  | 'radio'
+  | 'date'
+  | 'email'
+  | 'file'
+  | 'rating';
+
+export interface ConditionalLogicRule {
+  fieldId: string;
+  operator: 'equals' | 'contains' | 'notEquals';
+  value: string;
+}
+
+export interface FormField {
+  id: string;
+  type: FormFieldType;
+  label: string;
+  helpText?: string;
+  required: boolean;
+  options?: string[];
+  placeholder?: string;
+  minLength?: number;
+  maxLength?: number;
+  conditionalLogic?: ConditionalLogicRule;
+  order: number;
+}
+
+export interface FormStep {
+  id: string;
+  title: string;
+  description?: string;
+  fields: FormField[];
+}
+
+export interface CustomForm {
+  enabled: boolean;
+  fields: FormField[];
+  steps?: FormStep[];
+  template?: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
 export interface Board {
   id: string;
   companyId: string;
@@ -89,6 +136,7 @@ export interface Board {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   submissionCount: number;
+  customForm?: CustomForm;
 }
 
 export interface InternalNote {
@@ -382,4 +430,21 @@ export interface CommentNotification {
   commentId: string;
   isRead: boolean;
   createdAt: Timestamp;
+}
+
+export interface FormSubmissionData {
+  [fieldId: string]: string | string[] | number | boolean | null;
+}
+
+export interface FormTemplate {
+  id: string;
+  companyId: string;
+  name: string;
+  description: string;
+  form: CustomForm;
+  usageCount: number;
+  createdAt: Timestamp;
+  createdBy: string;
+  updatedAt: Timestamp;
+  isPublic: boolean;
 }
