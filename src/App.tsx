@@ -22,14 +22,8 @@ import { TeamManagement } from './pages/Team/TeamManagement';
 import { CreateBoard } from './pages/Board/CreateBoard';
 import { BoardDetails } from './pages/Board/BoardDetails';
 
-// Team Pages
-import { TeamManagement } from './pages/Team/TeamManagement';
-
 // Submission Pages
 import { SubmissionDetail } from './pages/Submission/SubmissionDetail';
-
-// Analytics Pages
-import { AnalyticsDashboard } from './pages/Analytics/AnalyticsDashboard';
 
 // Public Pages
 import { SubmitFeedback } from './pages/Public/SubmitFeedback';
@@ -143,29 +137,11 @@ function AppContent() {
           }
         />
         <Route
-          path="/team"
-          element={
-            <ProtectedRoute>
-              <Navbar />
-              <TeamManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/submission/:submissionId"
           element={
             <ProtectedRoute>
               <Navbar />
               <SubmissionDetail />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <ProtectedRoute>
-              <Navbar />
-              <AnalyticsDashboard />
             </ProtectedRoute>
           }
         />
