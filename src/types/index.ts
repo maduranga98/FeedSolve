@@ -296,3 +296,53 @@ export interface WebhookLog {
   createdAt: Timestamp;
   nextRetryAt?: Timestamp;
 }
+
+export interface SearchFilters {
+  status?: Submission['status'][];
+  priority?: Submission['priority'][];
+  boardId?: string[];
+  category?: string[];
+  assignedTo?: string;
+  dateRange?: {
+    from: Timestamp | Date;
+    to: Timestamp | Date;
+  };
+}
+
+export interface SavedFilter {
+  id: string;
+  companyId: string;
+  name: string;
+  description?: string;
+  filters: SearchFilters;
+  createdAt: Timestamp;
+  createdBy: string;
+  updatedAt?: Timestamp;
+  isPinned?: boolean;
+}
+
+export interface SearchQuery {
+  text: string;
+  timestamp: Timestamp;
+  filters?: SearchFilters;
+  resultCount?: number;
+}
+
+export interface SearchResult {
+  submission: Submission;
+  matchedFields: string[];
+  score?: number;
+}
+
+export interface PaginationParams {
+  page: number;
+  limit: number;
+  sortBy?: 'newest' | 'oldest' | 'status' | 'priority';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface QuickFilter {
+  id: string;
+  label: string;
+  filters: SearchFilters;
+}

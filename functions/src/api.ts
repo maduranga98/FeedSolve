@@ -9,6 +9,8 @@ import submissionsRouter from './routes/submissions';
 import boardsRouter from './routes/boards';
 import statsRouter from './routes/stats';
 import attachmentsRouter from './routes/attachments';
+import searchRouter from './routes/search';
+import filtersRouter from './routes/filters';
 import swaggerUi from 'swagger-ui-express';
 // @ts-ignore
 import openapi from './openapi.json';
@@ -71,6 +73,8 @@ app.use('/', submissionsRouter);
 app.use('/', boardsRouter);
 app.use('/', statsRouter);
 app.use('/', attachmentsRouter);
+app.use('/', searchRouter);
+app.use('/', filtersRouter);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {
