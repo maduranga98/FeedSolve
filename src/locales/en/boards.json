@@ -1,13 +1,17 @@
 {
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Feedback Dashboard",
     "welcome": "Welcome back",
     "total_submissions": "Total Submissions",
     "pending": "Pending",
     "resolved": "Resolved",
     "recent_feedback": "Recent Feedback",
     "no_data": "No data available",
-    "view_all": "View All"
+    "view_all": "View All",
+    "create_board": "Create Board",
+    "create_first": "Create your first board to start collecting feedback",
+    "submission_one": "submission",
+    "submission_other": "submissions"
   },
   "submissions": {
     "title": "Submissions",

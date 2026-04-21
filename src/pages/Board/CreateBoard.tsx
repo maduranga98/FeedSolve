@@ -98,10 +98,10 @@ export function CreateBoard() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg shadow-sm p-8">
         <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
-          {selectedTemplate ? t('boards.templates.create_from_template') : t('forms.board.create_board')}
+          {selectedTemplate ? t('boards:templates.create_from_template') : t('forms:board.create_board')}
         </h1>
         <p className="text-[#6B7B8D] mb-8">
-          {selectedTemplate ? `Creating board from ${selectedTemplate.name} template` : t('forms.board.description')}
+          {selectedTemplate ? `Creating board from ${selectedTemplate.name} template` : t('forms:board.description_placeholder')}
         </p>
 
         {selectedTemplate && (
@@ -120,7 +120,7 @@ export function CreateBoard() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label={t('forms.board.name')}
+            label={t('forms:board.name')}
             placeholder="Product Feedback"
             value={formData.name}
             onChange={(e) =>
@@ -130,7 +130,7 @@ export function CreateBoard() {
           />
 
           <Input
-            label={t('forms.board.description')}
+            label={t('forms:board.description')}
             placeholder="Collect feedback about your product"
             value={formData.description}
             onChange={(e) =>
@@ -141,7 +141,7 @@ export function CreateBoard() {
 
           <div>
             <label className="block text-sm font-medium text-[#1E3A5F] mb-3">
-              {t('forms.board.categories')}
+              {t('forms:board.categories')}
             </label>
 
             <div className="space-y-2 mb-4">
@@ -169,7 +169,7 @@ export function CreateBoard() {
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder={t('forms.board.category_placeholder')}
+                placeholder={t('forms:board.category_placeholder')}
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 onKeyPress={(e) => {
@@ -204,7 +204,7 @@ export function CreateBoard() {
               className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
             />
             <span className="text-[#1E3A5F] font-medium">
-              {t('forms.board.anonymous_allowed')}
+              {t('forms:board.anonymous_allowed')}
             </span>
           </label>
 
@@ -216,7 +216,7 @@ export function CreateBoard() {
               isLoading={isLoading}
               className="flex-1"
             >
-              {selectedTemplate ? 'Create Board from Template' : t('forms.board.create_board')}
+              {selectedTemplate ? t('boards:templates.create_from_template') : t('forms:board.create_board')}
             </Button>
             <Button
               type="button"
@@ -224,7 +224,7 @@ export function CreateBoard() {
               size="lg"
               onClick={() => navigate('/dashboard')}
             >
-              {t('common.cancel')}
+              {t('cancel')}
             </Button>
           </div>
         </form>

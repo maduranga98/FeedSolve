@@ -50,5 +50,6 @@
   "reset": "Reset",
   "remove": "Remove",
   "add": "Add",
-  "update": "Update"
+  "update": "Update",
+  "integrations": "Integrations"
 }

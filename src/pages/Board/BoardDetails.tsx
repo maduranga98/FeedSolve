@@ -16,9 +16,12 @@ export function BoardDetails() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
 
-  if (!user || !boardId) return null;
-
   useEffect(() => {
+    if (!user || !boardId) {
+      setLoading(false);
+      return;
+    }
+
     const fetchBoard = async () => {
       try {
         setLoading(true);
