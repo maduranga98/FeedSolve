@@ -7,6 +7,7 @@ import { SubmissionCard } from '../../components/Cards/SubmissionCard';
 import { LoadingSpinner, Button } from '../../components/Shared';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import FilterBar from '../../components/Filters/FilterBar';
+import { UsageOverview } from '../../components/Dashboard/UsageOverview';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardFilters } from './DashboardFilters';
@@ -101,6 +102,11 @@ export function DashboardHome() {
             Create Board
           </Button>
         </div>
+      </div>
+
+      {/* Usage Overview */}
+      <div className="mb-8">
+        <UsageOverview />
       </div>
 
       {boards.length > 0 && (
