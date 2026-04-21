@@ -1,53 +1,36 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
+import { getCompanySubmissions, getCompanyBoards, getCompanyMembers } from '../../lib/firestore';
 import { useFilters } from '../../hooks/useFilters';
-import type { Submission, Board } from '../../types';
-import { SubmissionCard } from '../../components/Cards/SubmissionCard';
+import type { Submission, Board, User } from '../../types';
 import { LoadingSpinner, Button } from '../../components/Shared';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
-import FilterBar from '../../components/Filters/FilterBar';
 import { UsageOverview } from '../../components/Dashboard/UsageOverview';
+import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { DashboardFilters } from './DashboardFilters';
 
 export function DashboardHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBoard, setSelectedBoard] = useState('all');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedPriority, setSelectedPriority] = useState('');
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
-  const {
-    filters,
-    filtered,
-    activeFilterCount,
-    setStatusFilter,
-    setBoardFilter,
-    setAssigneeFilter,
-    setPriorityFilter,
-    setDateRange,
-    clearAllFilters,
-  } = useFilters(submissions);
 
   const loadData = async () => {
     if (!user) return;
 
     try {
-      const [submissionsData, boardsData] = await Promise.all([
+      const [submissionsData, usersData] = await Promise.all([
         getCompanySubmissions(user.companyId),
-        getCompanyBoards(user.companyId),
+        getCompanyMembers(user.companyId),
       ]);
 
       setSubmissions(submissionsData.sort((a, b) =>
         b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
       ));
-      setBoards(boardsData);
+      setUsers(usersData);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -59,29 +42,6 @@ export function DashboardHome() {
     loadData();
   }, [user]);
 
-  const filteredSubmissions = useMemo(() =>
-    submissions.filter((submission) => {
-      const matchesBoard = selectedBoard === 'all' || submission.boardId === selectedBoard;
-      const matchesStatus = !selectedStatus || submission.status === selectedStatus;
-      const matchesPriority = !selectedPriority || submission.priority === selectedPriority;
-      const matchesSearch =
-        !searchQuery ||
-        submission.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        submission.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        submission.trackingCode.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return matchesBoard && matchesStatus && matchesPriority && matchesSearch;
-    }),
-    [submissions, selectedBoard, selectedStatus, selectedPriority, searchQuery]
-  );
-
-  const handleReset = useCallback(() => {
-    setSearchQuery('');
-    setSelectedBoard('all');
-    setSelectedStatus('');
-    setSelectedPriority('');
-  }, []);
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -91,8 +51,7 @@ export function DashboardHome() {
               Feedback Dashboard
             </h1>
             <p className="text-color-muted-text">
-              {filtered.length} of {submissions.length}{' '}
-              {submissions.length === 1 ? 'submission' : 'submissions'}
+              {submissions.length} {submissions.length === 1 ? 'submission' : 'submissions'}
             </p>
           </div>
           <Button
@@ -112,62 +71,26 @@ export function DashboardHome() {
         <UsageOverview />
       </div>
 
-      {boards.length > 0 && (
-        <div className="mb-8">
-          <DashboardFilters
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedBoard={selectedBoard}
-            onBoardChange={setSelectedBoard}
-            selectedStatus={selectedStatus}
-            onStatusChange={setSelectedStatus}
-            selectedPriority={selectedPriority}
-            onPriorityChange={setSelectedPriority}
-            boards={boards}
-            onReset={handleReset}
-            submissionCount={filteredSubmissions.length}
-          />
-        </div>
-      )}
-
       {loading ? (
         <LoadingSpinner size="lg" className="min-h-96" />
-      ) : filtered.length === 0 ? (
+      ) : submissions.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-color-muted-text text-lg mb-4">
-            {boards.length === 0
-              ? 'Create your first board to start collecting feedback'
-              : activeFilterCount > 0
-              ? 'No submissions match your filters'
-              : 'No submissions yet. Share your board QR code to get started.'}
+            Create your first board to start collecting feedback
           </p>
-          {boards.length === 0 && (
-            <Button
-              variant="primary"
-              onClick={() => navigate('/board/create')}
-            >
-              Create First Board
-            </Button>
-          )}
-          {activeFilterCount > 0 && (
-            <Button
-              variant="secondary"
-              onClick={clearAllFilters}
-            >
-              Clear Filters
-            </Button>
-          )}
+          <Button
+            variant="primary"
+            onClick={() => navigate('/board/create')}
+          >
+            Create First Board
+          </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((submission) => (
-            <SubmissionCard
-              key={submission.id}
-              submission={submission}
-              onClick={setSelectedSubmission}
-            />
-          ))}
-        </div>
+        <AdvancedSearch
+          submissions={submissions}
+          users={users}
+          onSubmissionClick={setSelectedSubmission}
+        />
       )}
 
       {selectedSubmission && (
