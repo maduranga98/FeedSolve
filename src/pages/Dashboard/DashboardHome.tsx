@@ -87,8 +87,6 @@ export function DashboardHome() {
               Feedback Dashboard
             </h1>
             <p className="text-color-muted-text">
-              {submissions.length} total{' '}
-            <p className="text-[#6B7B8D]">
               {filtered.length} of {submissions.length}{' '}
               {submissions.length === 1 ? 'submission' : 'submissions'}
             </p>
@@ -106,30 +104,19 @@ export function DashboardHome() {
       </div>
 
       {boards.length > 0 && (
-        <DashboardFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedBoard={selectedBoard}
-          onBoardChange={setSelectedBoard}
-          selectedStatus={selectedStatus}
-          onStatusChange={setSelectedStatus}
-          selectedPriority={selectedPriority}
-          onPriorityChange={setSelectedPriority}
-          boards={boards}
-          onReset={handleReset}
-          submissionCount={filteredSubmissions.length}
-        />
         <div className="mb-8">
-          <FilterBar
+          <DashboardFilters
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedBoard={selectedBoard}
+            onBoardChange={setSelectedBoard}
+            selectedStatus={selectedStatus}
+            onStatusChange={setSelectedStatus}
+            selectedPriority={selectedPriority}
+            onPriorityChange={setSelectedPriority}
             boards={boards}
-            onStatusChange={setStatusFilter}
-            onBoardChange={setBoardFilter}
-            onAssigneeChange={setAssigneeFilter}
-            onPriorityChange={setPriorityFilter}
-            onDateRangeChange={setDateRange}
-            onClear={clearAllFilters}
-            activeFilterCount={activeFilterCount}
-            currentFilters={filters}
+            onReset={handleReset}
+            submissionCount={filteredSubmissions.length}
           />
         </div>
       )}
@@ -141,10 +128,9 @@ export function DashboardHome() {
           <p className="text-color-muted-text text-lg mb-4">
             {boards.length === 0
               ? 'Create your first board to start collecting feedback'
-              : searchQuery || selectedBoard !== 'all' || selectedStatus || selectedPriority
               : activeFilterCount > 0
-                ? 'No submissions match your filters'
-                : 'No submissions yet. Share your board QR code to get started.'}
+              ? 'No submissions match your filters'
+              : 'No submissions yet. Share your board QR code to get started.'}
           </p>
           {boards.length === 0 && (
             <Button
