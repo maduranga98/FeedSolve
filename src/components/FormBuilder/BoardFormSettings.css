@@ -1,0 +1,165 @@
+.board-form-settings {
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  min-height: 400px;
+}
+
+.board-form-settings.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #666;
+}
+
+.board-form-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.board-form-settings-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.board-form-settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-status {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-enabled h3,
+.form-disabled h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.form-enabled {
+  border-left: 4px solid #28a745;
+  color: #155724;
+}
+
+.form-disabled {
+  border-left: 4px solid #ffc107;
+  color: #856404;
+}
+
+.form-status p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.form-settings-tier {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-settings-tier h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.tier-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.tier-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.tier-info strong {
+  color: #333;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.form-settings-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-settings-actions button {
+  flex: 1;
+  min-width: 150px;
+}
+
+.form-fields-preview {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-fields-preview h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.form-fields-preview ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-fields-preview li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.field-icon {
+  font-size: 1rem;
+}
+
+.field-label {
+  color: #333;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .board-form-settings {
+    padding: 1rem;
+  }
+
+  .tier-info {
+    grid-template-columns: 1fr;
+  }
+
+  .form-settings-actions {
+    flex-direction: column;
+  }
+
+  .form-settings-actions button {
+    width: 100%;
+  }
+}
