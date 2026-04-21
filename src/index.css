@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap');
 
 @import "tailwindcss";
 
@@ -9,7 +9,7 @@
   --color-success: #27ae60;
   --color-warning: #f39c12;
   --color-error: #e74c3c;
-  --color-bg: #f8fafb;
+  --color-bg: #f4f7fa;
   --color-surface: #ffffff;
   --color-muted-text: #6b7b8d;
   --color-body-text: #444441;
@@ -40,5 +40,67 @@
 
   #root {
     min-height: 100vh;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c8d0d8;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #9aabbf;
+  }
+}
+
+@layer utilities {
+  .card {
+    background: #ffffff;
+    border: 1px solid #e8ecf0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(30, 58, 95, 0.05), 0 1px 2px -1px rgba(30, 58, 95, 0.04);
+  }
+
+  .card-hover {
+    transition: box-shadow 150ms ease, transform 150ms ease;
+  }
+  .card-hover:hover {
+    box-shadow: 0 4px 12px 0 rgba(30, 58, 95, 0.1), 0 2px 6px -1px rgba(30, 58, 95, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2e6e9a 100%);
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #1e3a5f, #2e86ab);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .fade-in {
+    animation: fadeIn 200ms ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-up {
+    animation: slideUp 250ms ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 }
