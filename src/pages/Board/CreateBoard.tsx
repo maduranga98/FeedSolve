@@ -56,8 +56,8 @@ export function CreateBoard() {
 
     setIsLoading(true);
     try {
-      await createBoard(user.companyId, formData);
-      navigate('/dashboard');
+      const newBoard = await createBoard(user.companyId, formData);
+      navigate(`/board/${newBoard.id}`);
     } catch (error) {
       setErrors({
         submit: error instanceof Error ? error.message : 'Failed to create board',
