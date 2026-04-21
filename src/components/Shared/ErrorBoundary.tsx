@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from './Button';
+import { captureErrorBoundary } from '../../lib/monitoring';
 
 interface Props {
   children: React.ReactNode;
@@ -25,7 +26,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
 
-    // Log to error tracking service (Sentry, etc.)
+    // Log to Sentry
+    captureErrorBoundary(error, errorInfo);
+
     if (window.__VITALS_DATA__ === undefined) {
       window.__VITALS_DATA__ = [];
     }
