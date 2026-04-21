@@ -24,11 +24,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'stripe': ['@stripe/react-stripe-js', '@stripe/stripe-js'],
-          'firebase': ['firebase'],
-          'recharts': ['recharts'],
-          'vendor': ['react', 'react-dom', 'react-router-dom'],
+        manualChunks: (id: string) => {
+          if (id.includes('@stripe')) return 'stripe';
+          if (id.includes('firebase')) return 'firebase';
+          if (id.includes('recharts')) return 'recharts';
+          if (id.includes('node_modules')) return 'vendor';
+          return undefined;
         }
       }
     }
