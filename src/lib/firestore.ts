@@ -368,8 +368,6 @@ export async function addInternalNote(
   const submission = await getSubmission(submissionId);
   if (!submission) throw new Error('Submission not found');
 
-  const newNote = {
-    id: Date.now().toString(),
   const newNote: InternalNote = {
     id: uuidv4(),
     text,
@@ -378,7 +376,6 @@ export async function addInternalNote(
   };
 
   await updateDoc(submissionRef, {
-    internalNotes: [...submission.internalNotes, newNote],
     internalNotes: arrayUnion(newNote),
     updatedAt: Timestamp.now(),
   });
@@ -390,6 +387,8 @@ export async function updateSubmissionPublicReply(
 ): Promise<void> {
   const submissionRef = doc(db, 'submissions', submissionId);
   await updateDoc(submissionRef, { publicReply: reply, updatedAt: Timestamp.now() });
+}
+
 export async function updateSubmissionPriority(
   submissionId: string,
   priority: 'low' | 'medium' | 'high' | 'critical'
