@@ -6,32 +6,36 @@ interface UsageBarProps {
 }
 
 export function UsageBar({ current, limit, label, showPercentage = true }: UsageBarProps) {
-  const percentage = limit > 0 ? (current / limit) * 100 : 0;
+  const percentage = limit > 0 ? Math.min((current / limit) * 100, 100) : 0;
   const isNearLimit = percentage >= 80;
   const isAtLimit = current >= limit;
 
-  let barColor = 'bg-green-500';
-  if (isAtLimit) {
-    barColor = 'bg-red-500';
-  } else if (isNearLimit) {
-    barColor = 'bg-yellow-500';
-  }
+  const barColor = isAtLimit ? 'bg-[#E74C3C]' : isNearLimit ? 'bg-[#F39C12]' : 'bg-[#2E86AB]';
+  const trackColor = isAtLimit ? 'bg-[#FADBD8]' : isNearLimit ? 'bg-[#FEF5E7]' : 'bg-[#EBF5FB]';
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-medium text-gray-900">{label}</span>
-        <span className="text-sm text-gray-600">
-          {current} / {limit}
-          {showPercentage && ` (${Math.round(percentage)}%)`}
+      <div className="flex justify-between items-center mb-1.5">
+        <span className="text-xs font-medium text-[#1E3A5F]">{label}</span>
+        <span className="text-xs text-[#9AABBF]">
+          <span className={isAtLimit ? 'text-[#E74C3C] font-semibold' : isNearLimit ? 'text-[#D4A017] font-semibold' : 'text-[#2E86AB] font-medium'}>
+            {current}
+          </span>
+          {' / '}
+          {limit === Infinity ? '∞' : limit}
+          {showPercentage && limit !== Infinity && (
+            <span className="text-[#B0BEC9] ml-1">({Math.round(percentage)}%)</span>
+          )}
         </span>
       </div>
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-        <div className={`h-full ${barColor} transition-all`} style={{ width: `${Math.min(percentage, 100)}%` }} />
+      <div className={`h-1.5 ${trackColor} rounded-full overflow-hidden`}>
+        <div
+          className={`h-full ${barColor} rounded-full transition-all duration-500`}
+          style={{ width: `${percentage}%` }}
+        />
       </div>
-      {isAtLimit && <p className="text-xs text-red-600 mt-1">Limit reached</p>}
-      {isNearLimit && !isAtLimit && (
-        <p className="text-xs text-yellow-600 mt-1">Approaching limit</p>
+      {isAtLimit && (
+        <p className="text-xs text-[#E74C3C] mt-1 font-medium">Limit reached</p>
       )}
     </div>
   );
