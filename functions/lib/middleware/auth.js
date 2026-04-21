@@ -1,0 +1,131 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authenticateApiKey = authenticateApiKey;
+exports.authenticateUser = authenticateUser;
+exports.hasPermission = hasPermission;
+const admin = __importStar(require("firebase-admin"));
+const crypto = __importStar(require("crypto"));
+const db = admin.firestore();
+function hashKey(key) {
+    return crypto.createHash('sha256').update(key).digest('hex');
+}
+async function authenticateApiKey(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            res.status(401).json({ error: 'Missing or invalid API key' });
+            return;
+        }
+        const apiKey = authHeader.substring(7);
+        const snapshot = await db
+            .collectionGroup('api_keys')
+            .where('keyHash', '==', hashKey(apiKey))
+            .limit(1)
+            .get();
+        if (snapshot.empty) {
+            res.status(401).json({ error: 'Invalid API key' });
+            return;
+        }
+        const keyDoc = snapshot.docs[0];
+        const keyData = keyDoc.data();
+        const companyId = keyDoc.ref.parent.parent?.id;
+        if (!companyId) {
+            res.status(401).json({ error: 'Invalid API key structure' });
+            return;
+        }
+        if (keyData.expiresAt && keyData.expiresAt.toDate() < new Date()) {
+            res.status(401).json({ error: 'API key expired' });
+            return;
+        }
+        if (keyData.ipWhitelist && keyData.ipWhitelist.length > 0) {
+            const clientIp = req.ip || '';
+            if (!keyData.ipWhitelist.includes(clientIp)) {
+                res.status(403).json({ error: 'IP address not whitelisted' });
+                return;
+            }
+        }
+        await keyDoc.ref.update({
+            lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        req.companyId = companyId;
+        req.apiKeyId = keyDoc.id;
+        req.permissions = keyData.permissions || [];
+        next();
+    }
+    catch (error) {
+        console.error('Auth error:', error);
+        res.status(500).json({ error: 'Authentication failed' });
+    }
+}
+async function authenticateUser(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            res.status(401).json({ error: 'Missing authentication token' });
+            return;
+        }
+        const token = authHeader.substring(7);
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        req.userId = decodedToken.uid;
+        const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+        if (!userDoc.exists) {
+            res.status(401).json({ error: 'User not found' });
+            return;
+        }
+        const userData = userDoc.data();
+        req.companyId = userData?.companyId;
+        next();
+    }
+    catch (error) {
+        console.error('User auth error:', error);
+        res.status(401).json({ error: 'Invalid authentication token' });
+    }
+}
+function hasPermission(requiredPermissions) {
+    return (req, res, next) => {
+        const userPermissions = req.permissions || [];
+        const hasPermission = requiredPermissions.some((perm) => userPermissions.includes(perm));
+        if (!hasPermission) {
+            res.status(403).json({
+                error: 'Insufficient permissions',
+                required: requiredPermissions,
+            });
+            return;
+        }
+        next();
+    };
+}
+//# sourceMappingURL=auth.js.map

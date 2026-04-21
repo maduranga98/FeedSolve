@@ -43,6 +43,9 @@ import { TemplatesPage } from './pages/Templates/TemplatesPage';
 // Integrations Pages
 import { IntegrationsPage } from './pages/Integrations/IntegrationsPage';
 
+// Developer Pages
+import DeveloperDashboard from './pages/Developer/DeveloperDashboard';
+
 // Fallback
 import { NotFound } from './pages/NotFound';
 
@@ -162,6 +165,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <IntegrationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/developer"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <DeveloperDashboard />
             </ProtectedRoute>
           }
         />

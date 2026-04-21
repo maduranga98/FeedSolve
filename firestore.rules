@@ -54,6 +54,18 @@ service cloud.firestore {
       allow write: if canManageCompany(resource.data.companyId);
     }
 
+    // API Keys collection
+    match /api_keys/{companyId}/{keyId} {
+      allow read: if canManageCompany(companyId);
+      allow write: if canManageCompany(companyId);
+    }
+
+    // API Logs collection (Server-only writes)
+    match /api_logs/{companyId}/{logId} {
+      allow read: if canManageCompany(companyId);
+      allow write: if false; // Server-only via Cloud Functions
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;
