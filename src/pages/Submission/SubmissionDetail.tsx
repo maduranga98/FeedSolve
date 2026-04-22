@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -15,13 +15,13 @@ import {
   getTeamMembers,
 } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
-import type { Submission, TeamMember, User, FileAttachment } from '../../types';
+import type { Submission, TeamMember } from '../../types';
 
 export function SubmissionDetail() {
   const { submissionId } = useParams<{ submissionId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { loading: downloading, downloadFile } = useFileDownload();
+  const { loading: downloading, downloadFile, viewFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,21 +31,13 @@ export function SubmissionDetail() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  if (!user || !submissionId) return null;
-
-  const currentUser = user as User;
-
-  useEffect(() => {
-    loadData();
-  }, [submissionId]);
-
-  async function loadData() {
-    if (!submissionId) return;
+  const loadData = useCallback(async () => {
+    if (!submissionId || !user) return;
     try {
       setLoading(true);
       const [submissionData, members] = await Promise.all([
         getSubmission(submissionId),
-        getTeamMembers(currentUser.companyId),
+        getTeamMembers(user.companyId),
       ]);
 
       if (!submissionData) {
@@ -62,7 +54,12 @@ export function SubmissionDetail() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [submissionId, user]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadData();
+  }, [loadData]);
 
   async function handleStatusChange(newStatus: Submission['status']) {
     if (!submission) return;
@@ -113,10 +110,11 @@ export function SubmissionDetail() {
   }
 
   async function handleAddNote() {
+    if (!user) return;
     if (!submission || !newNote.trim()) return;
     try {
       setUpdating(true);
-      await addInternalNote(submission.id, newNote, currentUser.id);
+      await addInternalNote(submission.id, newNote, user.id);
       setSuccess('Note added');
       setNewNote('');
       await loadData();
@@ -143,6 +141,8 @@ export function SubmissionDetail() {
       setUpdating(false);
     }
   }
+
+  if (!user || !submissionId) return null;
 
   if (loading) {
     return (
@@ -267,6 +267,7 @@ export function SubmissionDetail() {
               <AttachmentGallery
                 attachments={submission.attachments}
                 onDownload={(attachment) => downloadFile(submission.id, attachment)}
+                onView={(attachment) => viewFile(submission.id, attachment)}
                 loading={downloading}
               />
             </div>

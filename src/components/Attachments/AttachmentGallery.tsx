@@ -1,4 +1,4 @@
-import { File, Download, AlertCircle, Loader2 } from 'lucide-react';
+import { File, Download, Eye, AlertCircle, Loader2 } from 'lucide-react';
 import { formatFileSize } from '../../lib/attachments-config';
 import { formatDate } from '../../lib/utils';
 import type { FileAttachment } from '../../types';
@@ -6,12 +6,14 @@ import type { FileAttachment } from '../../types';
 interface AttachmentGalleryProps {
   attachments: FileAttachment[];
   onDownload: (attachment: FileAttachment) => Promise<void>;
+  onView?: (attachment: FileAttachment) => Promise<void> | void;
   loading?: string;
 }
 
 export function AttachmentGallery({
   attachments,
   onDownload,
+  onView,
   loading = '',
 }: AttachmentGalleryProps) {
   if (attachments.length === 0) {
@@ -58,18 +60,29 @@ export function AttachmentGallery({
               </div>
             </div>
 
-            <button
-              onClick={() => onDownload(attachment)}
-              disabled={loading === attachment.id}
-              className="p-2 ml-2 hover:bg-gray-200 rounded transition-colors disabled:opacity-50 flex-shrink-0"
-              aria-label={`Download ${attachment.filename}`}
-            >
-              {loading === attachment.id ? (
-                <Loader2 size={20} className="text-color-accent animate-spin" />
-              ) : (
-                <Download size={20} className="text-color-accent" />
+            <div className="flex items-center gap-1 ml-2">
+              {onView && (
+                <button
+                  onClick={() => onView(attachment)}
+                  className="p-2 hover:bg-gray-200 rounded transition-colors flex-shrink-0"
+                  aria-label={`View ${attachment.filename}`}
+                >
+                  <Eye size={20} className="text-color-accent" />
+                </button>
               )}
-            </button>
+              <button
+                onClick={() => onDownload(attachment)}
+                disabled={loading === attachment.id}
+                className="p-2 hover:bg-gray-200 rounded transition-colors disabled:opacity-50 flex-shrink-0"
+                aria-label={`Download ${attachment.filename}`}
+              >
+                {loading === attachment.id ? (
+                  <Loader2 size={20} className="text-color-accent animate-spin" />
+                ) : (
+                  <Download size={20} className="text-color-accent" />
+                )}
+              </button>
+            </div>
           </div>
         ))}
       </div>

@@ -7,6 +7,7 @@ import {
   Zap,
   LayoutDashboard,
   LayoutTemplate,
+  Inbox,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -38,13 +39,21 @@ export function Navbar() {
       : location.pathname.startsWith(path);
 
   const navItems: NavItem[] = [
-    { path: '/dashboard',   label: t('dashboard'),                           icon: <LayoutDashboard size={15} /> },
-    { path: '/submissions', label: 'Submissions',                            icon: <Inbox size={15} /> },
-    { path: '/templates',   label: t('boards:templates.title'),              icon: <LayoutTemplate size={15} /> },
-    { path: '/team',        label: t('team'),                                icon: <Users size={15} /> },
-    { path: '/analytics',   label: t('analytics'),                          icon: <BarChart3 size={15} /> },
-    { path: '/billing',     label: t('billing'),                             icon: <CreditCard size={15} /> },
-    { path: '/integrations',label: t('integrations'),                       icon: <Zap size={15} /> },
+    {
+      path: "/dashboard",
+      label: t("dashboard"),
+      icon: <LayoutDashboard size={15} />,
+    },
+    { path: "/submissions", label: "Submissions", icon: <Inbox size={15} /> },
+    {
+      path: "/templates",
+      label: t("boards:templates.title"),
+      icon: <LayoutTemplate size={15} />,
+    },
+    { path: "/team", label: t("team"), icon: <Users size={15} /> },
+    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} /> },
+    { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
+    { path: "/integrations", label: t("integrations"), icon: <Zap size={15} /> },
   ];
 
   const initials = user?.name
@@ -74,7 +83,7 @@ export function Navbar() {
 
             {/* Nav links */}
             {user && (
-              <div className="hidden md:flex items-center">
+              <div className="hidden md:flex items-center gap-1">
                 {navItems.map((item) => {
                   const active = isActive(item.path);
                   return (
