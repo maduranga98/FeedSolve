@@ -171,11 +171,11 @@ export function SubmissionDetail() {
     <main className="min-h-screen bg-color-bg">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/submissions')}
           className="flex items-center gap-2 text-color-accent hover:text-color-primary mb-6 font-medium"
         >
           <ArrowLeft size={20} />
-          Back to Dashboard
+          Back to Submissions
         </button>
 
         <div className="bg-color-surface rounded-lg shadow-md p-6 mb-6">

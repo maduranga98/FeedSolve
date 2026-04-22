@@ -26,6 +26,7 @@ const BoardDetails = lazy(() => import('./pages/Board/BoardDetails').then(m => (
 
 // Submission Pages
 const SubmissionDetail = lazy(() => import('./pages/Submission/SubmissionDetail').then(m => ({ default: m.SubmissionDetail })));
+const SubmissionsPage = lazy(() => import('./pages/Submission/SubmissionsPage').then(m => ({ default: m.SubmissionsPage })));
 
 // Public Pages
 const SubmitFeedback = lazy(() => import('./pages/Public/SubmitFeedback').then(m => ({ default: m.SubmitFeedback })));
@@ -207,6 +208,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <SubmissionDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/submissions"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <SubmissionsPage />
             </ProtectedRoute>
           }
         />

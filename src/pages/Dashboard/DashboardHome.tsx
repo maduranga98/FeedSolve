@@ -15,7 +15,6 @@ export function DashboardHome() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
@@ -25,17 +24,13 @@ export function DashboardHome() {
     if (!user) return;
     setError(null);
     try {
-      const [submissionsData, usersData] = await Promise.all([
-        getCompanySubmissions(user.companyId),
-        getCompanyMembers(user.companyId),
-      ]);
+      const submissionsData = await getCompanySubmissions(user.companyId);
       setSubmissions(
         submissionsData.sort(
           (a, b) =>
             b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime(),
         ),
       );
-      setUsers(usersData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError(
@@ -153,14 +148,6 @@ export function DashboardHome() {
           </div>
         )}
       </div>
-
-      {selectedSubmission && (
-        <SubmissionDetail
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
-          onUpdated={loadData}
-        />
-      )}
     </div>
   );
 }
