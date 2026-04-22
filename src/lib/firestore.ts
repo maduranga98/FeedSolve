@@ -297,7 +297,7 @@ export async function getTeamMembers(companyId: string): Promise<TeamMember[]> {
     .map((doc) => {
       const user = doc.data() as User;
       return {
-        userId: user.id,
+        userId: user.id || doc.id,
         email: user.email,
         name: user.name,
         role: user.role,
