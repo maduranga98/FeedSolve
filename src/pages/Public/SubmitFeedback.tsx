@@ -28,7 +28,7 @@ export function SubmitFeedback() {
   const [success, setSuccess] = useState<{ trackingCode: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [submissionId, setSubmissionId] = useState<string>("");
+  const [existingTrackingCode, setExistingTrackingCode] = useState("");
 
   const [formData, setFormData] = useState<SubmissionFormInput>({
     category: "",
@@ -115,11 +115,10 @@ export function SubmitFeedback() {
         board.companyId,
         formData,
       );
-      setSubmissionId(result.id);
 
       // Upload files if any were selected
       if (selectedFiles.length > 0) {
-        await uploadFiles(result.id, selectedFiles);
+        await uploadFiles(result.submissionId, selectedFiles);
       }
 
       setSuccess(result);
@@ -139,8 +138,9 @@ export function SubmitFeedback() {
     setSelectedFiles((prev) => [...prev, ...files]);
   };
 
-  const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFile = (fileId: string | number) => {
+    if (typeof fileId !== "number") return;
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== fileId));
   };
 
   const handleCopyCode = () => {
@@ -220,9 +220,34 @@ export function SubmitFeedback() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFB] p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#EEF6FB] via-[#F8FAFB] to-white p-4 sm:p-8">
+      <div className="max-w-3xl mx-auto space-y-5">
+        <div className="bg-white/90 backdrop-blur-sm border border-[#DDEAF2] rounded-2xl shadow-sm p-5">
+          <p className="text-xs uppercase tracking-wide text-[#6B7B8D] font-semibold mb-2">
+            Already submitted feedback?
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Input
+              placeholder="Enter tracking code (e.g. #FSV-AB12)"
+              value={existingTrackingCode}
+              onChange={(e) => setExistingTrackingCode(e.target.value)}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                const code = existingTrackingCode.trim();
+                if (!code) return;
+                navigate(`/track/${code}`);
+              }}
+              className="sm:w-auto w-full"
+            >
+              View Updates
+            </Button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-md p-8">
           <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
             {board.name}
           </h1>
