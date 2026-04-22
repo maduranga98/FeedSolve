@@ -23,17 +23,8 @@ export function DashboardHome() {
     }
     setError(null);
     try {
-      const [submissionsData, membersData] = await Promise.all([
-        getCompanySubmissions(user.companyId),
-        getCompanyMembers(user.companyId),
-      ]);
-      setSubmissions(
-        submissionsData.sort(
-          (a, b) =>
-            b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime(),
-        ),
-      );
-      setUsers(membersData);
+      const boardsData = await getCompanyBoards(user.companyId);
+      setBoards(boardsData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError(
@@ -140,10 +131,11 @@ export function DashboardHome() {
                 Created submission forms
               </h2>
               <p className="text-sm text-[#6B7B8D] mt-1">
-                Open a form to copy its public link or view/download its QR code.
-                Submitted forms
-              </h2>
+                Open a form to copy its public link or view/download its QR
+                code.
+              </p>
               <p className="text-sm text-[#6B7B8D] mt-1">
+                Submitted forms
                 Review, filter, and manage every submission from a single
                 workspace.
               </p>
