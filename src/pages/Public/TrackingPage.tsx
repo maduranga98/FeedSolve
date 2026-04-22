@@ -11,7 +11,7 @@ import { Clock, CheckCircle, Lock } from "lucide-react";
 
 export function TrackingPage() {
   const { code } = useParams<{ code: string }>();
-  const { loading: downloading, downloadFile } = useFileDownload();
+  const { loading: downloading, downloadFile, viewFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
@@ -239,6 +239,7 @@ export function TrackingPage() {
               onDownload={(attachment) =>
                 downloadFile(submission.id, attachment)
               }
+              onView={(attachment) => viewFile(submission.id, attachment)}
               loading={downloading}
             />
           </div>

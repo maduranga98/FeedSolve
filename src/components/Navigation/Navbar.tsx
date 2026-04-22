@@ -51,17 +51,9 @@ export function Navbar() {
       icon: <LayoutTemplate size={15} />,
     },
     { path: "/team", label: t("team"), icon: <Users size={15} /> },
-    {
-      path: "/analytics",
-      label: t("analytics"),
-      icon: <BarChart3 size={15} />,
-    },
+    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} /> },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
-    {
-      path: "/integrations",
-      label: t("integrations"),
-      icon: <Zap size={15} />,
-    },
+    { path: "/integrations", label: t("integrations"), icon: <Zap size={15} /> },
   ];
 
   const initials = user?.name
@@ -91,7 +83,7 @@ export function Navbar() {
 
             {/* Nav links */}
             {user && (
-              <div className="hidden md:flex items-center">
+              <div className="hidden md:flex items-center gap-1.5">
                 {navItems.map((item) => {
                   const active = isActive(item.path);
                   return (

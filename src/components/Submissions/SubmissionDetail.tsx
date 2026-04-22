@@ -23,7 +23,7 @@ export default function SubmissionDetail({
   onUpdated,
 }: SubmissionDetailProps) {
   const [loading, setLoading] = useState(false);
-  const { loading: downloading, downloadFile } = useFileDownload();
+  const { loading: downloading, downloadFile, viewFile } = useFileDownload();
 
   const handleStatusChange = async (newStatus: Submission["status"]) => {
     setLoading(true);
@@ -130,8 +130,9 @@ export default function SubmissionDetail({
               </label>
               <AttachmentGallery
                 attachments={submission.attachments}
-                onDownload={downloadFile}
-                isDownloading={downloading}
+                onDownload={(attachment) => downloadFile(submission.id, attachment)}
+                onView={(attachment) => viewFile(submission.id, attachment)}
+                loading={downloading}
               />
             </div>
           )}

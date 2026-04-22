@@ -1,28 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
-import { getCompanySubmissions, getCompanyMembers } from "../../lib/firestore";
-import type { Submission, User } from "../../types";
+import { getCompanyBoards } from "../../lib/firestore";
+import type { Board } from "../../types";
 import { LoadingSpinner, Button } from "../../components/Shared";
-import SubmissionDetail from "../../components/Submissions/SubmissionDetail";
 import { UsageOverview } from "../../components/Dashboard/UsageOverview";
-import { AdvancedSearch } from "../../components/Filters/AdvancedSearch";
-import { Plus, Inbox } from "lucide-react";
+import { Plus, QrCode, ExternalLink, LayoutTemplate } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function DashboardHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSubmission, setSelectedSubmission] =
-    useState<Submission | null>(null);
 
-  const loadData = async () => {
-    if (!user) return;
+  const loadData = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setError(null);
     try {
       const [submissionsData, membersData] = await Promise.all([
@@ -41,16 +39,17 @@ export function DashboardHome() {
       setError(
         error instanceof Error
           ? error.message
-          : "Failed to load submissions. Please try again.",
+          : "Failed to load boards. Please try again.",
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   const hour = new Date().getHours();
   const greeting =
@@ -72,11 +71,8 @@ export function DashboardHome() {
               </h1>
               {!loading && (
                 <p className="text-sm text-[#6B7B8D] mt-1">
-                  {submissions.length}{" "}
-                  {submissions.length === 1
-                    ? t("boards:dashboard.submission_one")
-                    : t("boards:dashboard.submission_other")}{" "}
-                  total
+                  {boards.length} {boards.length === 1 ? "board" : "boards"}{" "}
+                  created
                 </p>
               )}
             </div>
@@ -112,18 +108,18 @@ export function DashboardHome() {
           </div>
         )}
 
-        {/* Submissions */}
+        {/* Boards */}
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <LoadingSpinner size="lg" />
           </div>
-        ) : submissions.length === 0 ? (
+        ) : boards.length === 0 ? (
           <div className="card rounded-xl p-12 text-center slide-up">
             <div className="w-16 h-16 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-5">
-              <Inbox size={32} className="text-[#2E86AB]" />
+              <LayoutTemplate size={32} className="text-[#2E86AB]" />
             </div>
             <h2 className="text-lg font-semibold text-[#1E3A5F] mb-2">
-              No submissions yet
+              No boards yet
             </h2>
             <p className="text-sm text-[#6B7B8D] mb-6 max-w-sm mx-auto">
               {t("boards:dashboard.create_first")}
@@ -141,6 +137,10 @@ export function DashboardHome() {
           <div className="slide-up">
             <div className="mb-4">
               <h2 className="text-lg font-semibold text-[#1E3A5F]">
+                Created submission forms
+              </h2>
+              <p className="text-sm text-[#6B7B8D] mt-1">
+                Open a form to copy its public link or view/download its QR code.
                 Submitted forms
               </h2>
               <p className="text-sm text-[#6B7B8D] mt-1">
@@ -148,11 +148,45 @@ export function DashboardHome() {
                 workspace.
               </p>
             </div>
-            <AdvancedSearch
-              submissions={submissions}
-              users={users}
-              onSubmissionClick={setSelectedSubmission}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {boards.map((board) => (
+                <div
+                  key={board.id}
+                  className="bg-white border border-[#E8ECF0] rounded-xl p-5 flex flex-col gap-3"
+                >
+                  <div>
+                    <h3 className="text-base font-semibold text-[#1E3A5F]">
+                      {board.name}
+                    </h3>
+                    <p className="text-sm text-[#6B7B8D] line-clamp-2 mt-1">
+                      {board.description}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-[#9AABBF]">
+                      {board.submissionCount} submissions
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/submit/${board.slug}`)}
+                      className="inline-flex items-center gap-1 text-[#2E86AB] hover:text-[#1E3A5F]"
+                    >
+                      View form link
+                      <ExternalLink size={14} />
+                    </button>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate(`/board/${board.id}`)}
+                    className="w-full justify-center"
+                  >
+                    <QrCode size={16} />
+                    View QR code
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

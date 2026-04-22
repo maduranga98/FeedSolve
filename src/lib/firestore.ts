@@ -239,7 +239,9 @@ export async function updateSubmissionStatus(
 export async function getSubmission(id: string): Promise<Submission | null> {
   const submissionRef = doc(db, 'submissions', id);
   const snapshot = await getDoc(submissionRef);
-  return snapshot.exists() ? (snapshot.data() as Submission) : null;
+  return snapshot.exists()
+    ? ({ ...snapshot.data(), id: snapshot.id } as Submission)
+    : null;
 }
 
 // Team management operations
@@ -295,7 +297,7 @@ export async function getTeamMembers(companyId: string): Promise<TeamMember[]> {
     .map((doc) => {
       const user = doc.data() as User;
       return {
-        userId: user.id,
+        userId: user.id || doc.id,
         email: user.email,
         name: user.name,
         role: user.role,
@@ -354,7 +356,7 @@ export async function getCompanyMembers(companyId: string): Promise<User[]> {
   const usersRef = collection(db, 'users');
   const q = query(usersRef, where('companyId', '==', companyId));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((doc) => doc.data() as User);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as User));
 }
 
 export async function assignSubmission(
