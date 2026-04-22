@@ -1,5 +1,7 @@
 import { SubmissionCard } from '../Cards/SubmissionCard';
 import type { Submission } from '../../types';
+import { LayoutGrid, Rows3 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 interface SearchResultsProps {
   results: Submission[];
@@ -16,10 +18,18 @@ export function SearchResults({
   page = 1,
   pageSize = 50,
 }: SearchResultsProps) {
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const start = (page - 1) * pageSize;
   const end = start + pageSize;
   const paginatedResults = results.slice(start, end);
   const totalPages = Math.ceil(results.length / pageSize);
+  const statusSummary = useMemo(() => {
+    return {
+      received: results.filter((item) => item.status === 'received').length,
+      inProgress: results.filter((item) => item.status === 'in_progress').length,
+      resolved: results.filter((item) => item.status === 'resolved').length,
+    };
+  }, [results]);
 
   if (loading) {
     return (
@@ -40,23 +50,64 @@ export function SearchResults({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-[#6B7B8D] text-sm">
-          Showing {start + 1} to {Math.min(end, results.length)} of {results.length} results
-        </p>
-        {totalPages > 1 && (
-          <p className="text-[#6B7B8D] text-sm">
-            Page {page} of {totalPages}
-          </p>
-        )}
+      <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[#6B7B8D] text-sm">
+              Showing {start + 1} to {Math.min(end, results.length)} of {results.length} submissions
+            </p>
+            {totalPages > 1 && (
+              <p className="text-[#9AABBF] text-xs mt-1">
+                Page {page} of {totalPages}
+              </p>
+            )}
+          </div>
+
+          <div className="inline-flex items-center bg-[#F4F7FA] rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors inline-flex items-center gap-1.5 ${
+                viewMode === 'grid' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#6B7B8D]'
+              }`}
+            >
+              <LayoutGrid size={14} />
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors inline-flex items-center gap-1.5 ${
+                viewMode === 'list' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#6B7B8D]'
+              }`}
+            >
+              <Rows3 size={14} />
+              List
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+          <div className="rounded-lg bg-[#F4F7FA] px-3 py-2">
+            <p className="text-xs text-[#6B7B8D]">New</p>
+            <p className="text-lg font-semibold text-[#1E3A5F]">{statusSummary.received}</p>
+          </div>
+          <div className="rounded-lg bg-[#FFF8E6] px-3 py-2">
+            <p className="text-xs text-[#6B7B8D]">In progress</p>
+            <p className="text-lg font-semibold text-[#8A5A00]">{statusSummary.inProgress}</p>
+          </div>
+          <div className="rounded-lg bg-[#EAF9F2] px-3 py-2">
+            <p className="text-xs text-[#6B7B8D]">Resolved</p>
+            <p className="text-lg font-semibold text-[#1D6B45]">{statusSummary.resolved}</p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-3'}>
         {paginatedResults.map((submission) => (
           <SubmissionCard
             key={submission.id}
             submission={submission}
             onClick={() => onSubmissionClick(submission)}
+            compact={viewMode === 'list'}
           />
         ))}
       </div>
