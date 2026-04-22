@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
-import { EmailWebhook } from '@/types';
+import type { EmailWebhook } from '@/types';
 import { WEBHOOK_EVENTS, EMAIL_FREQUENCIES } from '@/lib/webhooks';
 
 interface EmailSetupProps {

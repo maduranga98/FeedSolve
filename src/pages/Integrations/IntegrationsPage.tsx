@@ -6,7 +6,7 @@ import { SlackSetup } from '@/components/Webhooks/SlackSetup';
 import { EmailSetup } from '@/components/Webhooks/EmailSetup';
 import { CustomWebhookSetup } from '@/components/Webhooks/CustomWebhookSetup';
 import { WebhookLogs } from '@/components/Webhooks/WebhookLogs';
-import { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
+import type { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
 
 type SetupMode = null | 'slack' | 'email' | 'custom';
 
@@ -14,7 +14,7 @@ export function IntegrationsPage() {
   const { webhooks, loading, error, updateSlack, updateEmail, updateCustom, deleteWebhookConfig, toggleWebhookConfig } =
     useWebhooks();
   const { logs, loading: logsLoading, fetchLogs } = useWebhookLogs();
-  const { testWebhook, loading: testing } = useTestWebhook();
+  const { testWebhook } = useTestWebhook();
 
   const [setupMode, setSetupMode] = useState<SetupMode>(null);
   const [testingWebhook, setTestingWebhook] = useState<SetupMode>(null);

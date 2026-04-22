@@ -63,7 +63,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                   Reload Page
                 </Button>
               </div>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <details className="mt-8 text-left">
                   <summary className="cursor-pointer text-sm font-medium text-[#6B7B8D]">
                     Error Details (Dev Only)
@@ -85,6 +85,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
 declare global {
   interface Window {
-    __VITALS_DATA__?: any[];
+    __VITALS_DATA__?: unknown[];
   }
 }

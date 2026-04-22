@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, Eye, EyeOff, Copy, Check } from 'lucide-react';
-import { CustomWebhook } from '@/types';
+import type { CustomWebhook } from '@/types';
 import { WEBHOOK_EVENTS } from '@/lib/webhooks';
 
 interface CustomWebhookSetupProps {

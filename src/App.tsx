@@ -10,6 +10,7 @@ import { useTemplateInit } from './hooks/useTemplateInit';
 import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
+import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 
 // Auth Pages
 const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
@@ -90,8 +91,9 @@ function PublicRoute({ children }: { children: ReactNode }) {
 
 function AppContent() {
   return (
-    <Suspense fallback={<RouteLoadingFallback />}>
-      <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<RouteLoadingFallback />}>
+        <Routes>
         {/* Auth Routes */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
@@ -226,8 +228,9 @@ function AppContent() {
 
         {/* Fallback */}
         <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 

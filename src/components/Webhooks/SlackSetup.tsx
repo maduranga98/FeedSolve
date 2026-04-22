@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { SlackWebhook } from '@/types';
+import type { SlackWebhook } from '@/types';
 import { WEBHOOK_EVENTS, MESSAGE_FORMATS } from '@/lib/webhooks';
 
 interface SlackSetupProps {
