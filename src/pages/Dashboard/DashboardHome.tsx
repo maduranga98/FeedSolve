@@ -23,13 +23,17 @@ export function DashboardHome() {
     }
     setError(null);
     try {
-      const boardsData = await getCompanyBoards(user.companyId);
-      setBoards(
-        boardsData.sort(
+      const [submissionsData, membersData] = await Promise.all([
+        getCompanySubmissions(user.companyId),
+        getCompanyMembers(user.companyId),
+      ]);
+      setSubmissions(
+        submissionsData.sort(
           (a, b) =>
             b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime(),
         ),
       );
+      setUsers(membersData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError(
@@ -137,6 +141,11 @@ export function DashboardHome() {
               </h2>
               <p className="text-sm text-[#6B7B8D] mt-1">
                 Open a form to copy its public link or view/download its QR code.
+                Submitted forms
+              </h2>
+              <p className="text-sm text-[#6B7B8D] mt-1">
+                Review, filter, and manage every submission from a single
+                workspace.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
