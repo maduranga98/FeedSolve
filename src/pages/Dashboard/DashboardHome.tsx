@@ -107,6 +107,12 @@ export function DashboardHome() {
           </div>
         ) : (
           <div className="slide-up">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-[#1E3A5F]">Submitted forms</h2>
+              <p className="text-sm text-[#6B7B8D] mt-1">
+                Review, filter, and manage every submission from a single workspace.
+              </p>
+            </div>
             <AdvancedSearch
               submissions={submissions}
               users={users}

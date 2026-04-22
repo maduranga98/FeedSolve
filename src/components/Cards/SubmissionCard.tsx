@@ -9,6 +9,7 @@ import { MessageSquare, UserCircle } from 'lucide-react';
 interface SubmissionCardProps {
   submission: Submission;
   onClick?: (submission: Submission) => void;
+  compact?: boolean;
 }
 
 const priorityDot: Record<string, string> = {
@@ -22,7 +23,7 @@ const priorityLabel: Record<string, string> = {
   low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical',
 };
 
-function SubmissionCardComponent({ submission, onClick }: SubmissionCardProps) {
+function SubmissionCardComponent({ submission, onClick, compact = false }: SubmissionCardProps) {
   const [assignedUser, setAssignedUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -44,9 +45,9 @@ function SubmissionCardComponent({ submission, onClick }: SubmissionCardProps) {
       `}
     >
       {/* Top row */}
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <div className={`flex items-start justify-between gap-3 ${compact ? 'mb-2' : 'mb-3'}`}>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-[#1E3A5F] truncate mb-0.5">
+          <h3 className={`font-semibold text-[#1E3A5F] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
             {submission.subject}
           </h3>
           <p className="text-xs text-[#9AABBF] font-mono">{submission.trackingCode}</p>
@@ -55,12 +56,12 @@ function SubmissionCardComponent({ submission, onClick }: SubmissionCardProps) {
       </div>
 
       {/* Description */}
-      <p className="text-sm text-[#6B7B8D] mb-4 line-clamp-2 leading-relaxed">
+      <p className={`text-sm text-[#6B7B8D] ${compact ? 'mb-3 line-clamp-1' : 'mb-4 line-clamp-2'} leading-relaxed`}>
         {submission.description}
       </p>
 
       {/* Footer row */}
-      <div className="flex items-center justify-between gap-2 flex-wrap">
+      <div className={`flex items-center justify-between gap-2 flex-wrap ${compact ? 'pt-1 border-t border-[#EEF2F6]' : ''}`}>
         <div className="flex items-center gap-2 flex-wrap">
           {/* Category chip */}
           <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#EBF5FB] text-[#2E86AB] text-xs font-medium">
