@@ -15,6 +15,7 @@ export function DashboardHome() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
@@ -24,13 +25,17 @@ export function DashboardHome() {
     if (!user) return;
     setError(null);
     try {
-      const submissionsData = await getCompanySubmissions(user.companyId);
+      const [submissionsData, membersData] = await Promise.all([
+        getCompanySubmissions(user.companyId),
+        getCompanyMembers(user.companyId),
+      ]);
       setSubmissions(
         submissionsData.sort(
           (a, b) =>
             b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime(),
         ),
       );
+      setUsers(membersData);
     } catch (error) {
       console.error("Failed to fetch data:", error);
       setError(
@@ -135,9 +140,12 @@ export function DashboardHome() {
         ) : (
           <div className="slide-up">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold text-[#1E3A5F]">Submitted forms</h2>
+              <h2 className="text-lg font-semibold text-[#1E3A5F]">
+                Submitted forms
+              </h2>
               <p className="text-sm text-[#6B7B8D] mt-1">
-                Review, filter, and manage every submission from a single workspace.
+                Review, filter, and manage every submission from a single
+                workspace.
               </p>
             </div>
             <AdvancedSearch
