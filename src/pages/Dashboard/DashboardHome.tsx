@@ -17,7 +17,10 @@ export function DashboardHome() {
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setError(null);
     try {
       const boardsData = await getCompanyBoards(user.companyId);
@@ -159,7 +162,7 @@ export function DashboardHome() {
                       onClick={() => navigate(`/submit/${board.slug}`)}
                       className="inline-flex items-center gap-1 text-[#2E86AB] hover:text-[#1E3A5F]"
                     >
-                      View form
+                      View form link
                       <ExternalLink size={14} />
                     </button>
                   </div>

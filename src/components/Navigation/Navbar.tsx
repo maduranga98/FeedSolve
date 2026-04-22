@@ -83,7 +83,7 @@ export function Navbar() {
 
             {/* Nav links */}
             {user && (
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden md:flex items-center gap-1.5">
                 {navItems.map((item) => {
                   const active = isActive(item.path);
                   return (
