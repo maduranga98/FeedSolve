@@ -1,6 +1,6 @@
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp } from "firebase/firestore";
 
-export type UserRole = 'owner' | 'admin' | 'manager' | 'viewer';
+export type UserRole = "owner" | "admin" | "manager" | "viewer";
 
 export interface User {
   id: string;
@@ -8,7 +8,7 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   createdAt: Timestamp;
   lastActive?: Timestamp;
 }
@@ -18,7 +18,7 @@ export interface PermissionAuditLog {
   companyId: string;
   userId: string;
   targetUserId: string;
-  action: 'role_changed' | 'member_added' | 'member_removed';
+  action: "role_changed" | "member_added" | "member_removed";
   oldRole?: UserRole;
   newRole?: UserRole;
   reason?: string;
@@ -27,14 +27,14 @@ export interface PermissionAuditLog {
 }
 
 export interface Subscription {
-  tier: 'free' | 'starter' | 'growth' | 'business';
+  tier: "free" | "starter" | "growth" | "business";
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   priceId?: string;
-  billing: 'monthly' | 'annual';
+  billing: "monthly" | "annual";
   currentPeriodStart?: Timestamp;
   currentPeriodEnd?: Timestamp;
-  status: 'active' | 'past_due' | 'canceled' | 'unpaid';
+  status: "active" | "past_due" | "canceled" | "unpaid";
   canceledAt?: Timestamp;
   upgradedAt?: Timestamp;
   downgradedAt?: Timestamp;
@@ -78,19 +78,19 @@ export interface Company {
 }
 
 export type FormFieldType =
-  | 'text'
-  | 'longtext'
-  | 'select'
-  | 'checkbox'
-  | 'radio'
-  | 'date'
-  | 'email'
-  | 'file'
-  | 'rating';
+  | "text"
+  | "longtext"
+  | "select"
+  | "checkbox"
+  | "radio"
+  | "date"
+  | "email"
+  | "file"
+  | "rating";
 
 export interface ConditionalLogicRule {
   fieldId: string;
-  operator: 'equals' | 'contains' | 'notEquals';
+  operator: "equals" | "contains" | "notEquals";
   value: string;
 }
 
@@ -137,6 +137,7 @@ export interface Board {
   updatedAt: Timestamp;
   submissionCount: number;
   customForm?: CustomForm;
+  accessPassword?: string;
 }
 
 export interface InternalNote {
@@ -155,7 +156,7 @@ export interface FileAttachment {
   uploadedAt: Timestamp;
   uploadedBy: string;
   scanned?: boolean;
-  scanStatus?: 'pending' | 'clean' | 'infected';
+  scanStatus?: "pending" | "clean" | "infected";
 }
 
 export interface Submission {
@@ -168,14 +169,15 @@ export interface Submission {
   description: string;
   submitterEmail?: string;
   isAnonymous: boolean;
-  status: 'received' | 'in_review' | 'in_progress' | 'resolved' | 'closed';
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  status: "received" | "in_review" | "in_progress" | "resolved" | "closed";
+  priority: "low" | "medium" | "high" | "critical";
   assignedTo?: string;
   internalNotes: InternalNote[];
   attachments?: FileAttachment[];
   publicReply?: string;
   publicReplyAt?: Timestamp;
   publicReplyBy?: string;
+  submissionLanguage?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   resolvedAt?: Timestamp;
@@ -187,6 +189,8 @@ export interface SubmissionFormInput {
   description: string;
   email?: string;
   isAnonymous: boolean;
+  assignedTo?: string;
+  submissionLanguage?: string;
 }
 
 export interface BoardFormInput {
@@ -203,7 +207,7 @@ export interface TeamInvitation {
   role: UserRole;
   invitedBy: string;
   inviteCode: string;
-  status: 'pending' | 'accepted' | 'declined';
+  status: "pending" | "accepted" | "declined";
   createdAt: Timestamp;
   expiresAt: Timestamp;
 }
@@ -223,7 +227,7 @@ export interface Invoice {
   stripeCustomerId: string;
   amount: number;
   currency: string;
-  status: 'draft' | 'open' | 'paid' | 'uncollectible' | 'void';
+  status: "draft" | "open" | "paid" | "uncollectible" | "void";
   paidAt?: Timestamp;
   dueDate?: Timestamp;
   pdfUrl: string;
@@ -236,7 +240,13 @@ export interface Invoice {
 export interface BillingEvent {
   id: string;
   companyId: string;
-  type: 'upgrade' | 'downgrade' | 'subscription_created' | 'payment_failed' | 'payment_succeeded' | 'cancel';
+  type:
+    | "upgrade"
+    | "downgrade"
+    | "subscription_created"
+    | "payment_failed"
+    | "payment_succeeded"
+    | "cancel";
   fromTier?: string;
   toTier?: string;
   amount?: number;
@@ -258,7 +268,12 @@ export interface TierLimits {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string, companyName: string) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    companyName: string,
+  ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -275,15 +290,18 @@ export interface BoardTemplate {
   featured: boolean;
   usageCount: number;
   createdAt: Timestamp;
-  translations: Record<string, {
-    name: string;
-    description: string;
-    categories: string[];
-  }>;
+  translations: Record<
+    string,
+    {
+      name: string;
+      description: string;
+      categories: string[];
+    }
+  >;
 }
 
 export interface LocalizationSettings {
-  defaultLanguage: 'en' | 'si' | 'ta' | 'ar' | 'hi';
+  defaultLanguage: "en" | "si" | "ta" | "ar" | "hi";
   supportedLanguages: string[];
   rtlEnabled: boolean;
 }
@@ -293,7 +311,7 @@ export interface SlackWebhook {
   webhookUrl: string;
   channelId?: string;
   events: string[];
-  format: 'detailed' | 'compact' | 'minimal';
+  format: "detailed" | "compact" | "minimal";
   mentionOnNew: boolean;
   connectedAt: Timestamp;
 }
@@ -302,7 +320,7 @@ export interface EmailWebhook {
   enabled: boolean;
   recipients: string[];
   events: string[];
-  frequency: 'instant' | 'daily_digest' | 'weekly_digest';
+  frequency: "instant" | "daily_digest" | "weekly_digest";
   connectedAt: Timestamp;
 }
 
@@ -332,9 +350,9 @@ export interface WebhookStats {
 export interface WebhookLog {
   id: string;
   companyId: string;
-  webhookType: 'slack' | 'email' | 'custom';
+  webhookType: "slack" | "email" | "custom";
   event: string;
-  status: 'success' | 'failed' | 'retrying';
+  status: "success" | "failed" | "retrying";
   statusCode?: number;
   errorMessage?: string;
   retryCount: number;
@@ -346,8 +364,8 @@ export interface WebhookLog {
 }
 
 export interface SearchFilters {
-  status?: Submission['status'][];
-  priority?: Submission['priority'][];
+  status?: Submission["status"][];
+  priority?: Submission["priority"][];
   boardId?: string[];
   category?: string[];
   assignedTo?: string;
@@ -385,8 +403,8 @@ export interface SearchResult {
 export interface PaginationParams {
   page: number;
   limit: number;
-  sortBy?: 'newest' | 'oldest' | 'status' | 'priority';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "newest" | "oldest" | "status" | "priority";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface QuickFilter {
@@ -452,10 +470,10 @@ export interface FormTemplate {
 export interface BulkOperation {
   id: string;
   companyId: string;
-  operationType: 'status' | 'priority' | 'assign' | 'category' | 'delete';
+  operationType: "status" | "priority" | "assign" | "category" | "delete";
   submissionIds: string[];
   updateData: Record<string, any>;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "processing" | "completed" | "failed";
   processedCount: number;
   totalCount: number;
   createdBy: string;
@@ -472,13 +490,13 @@ export interface BulkOperationLog {
   id: string;
   companyId: string;
   operationId: string;
-  operationType: 'status' | 'priority' | 'assign' | 'category' | 'delete';
+  operationType: "status" | "priority" | "assign" | "category" | "delete";
   submissionCount: number;
   createdBy: string;
   userId: string;
   userName: string;
   userEmail: string;
-  action: 'created' | 'completed' | 'failed' | 'undone';
+  action: "created" | "completed" | "failed" | "undone";
   details: Record<string, any>;
   createdAt: Timestamp;
 }
