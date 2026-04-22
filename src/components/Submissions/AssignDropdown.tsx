@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { getCompanyMembers, assignSubmission, unassignSubmission } from '../../lib/firestore';
 import type { User } from '../../types';
+import { UserPlus, UserX } from 'lucide-react';
 
 interface AssignDropdownProps {
   submissionId: string;
@@ -60,41 +61,50 @@ export default function AssignDropdown({
 
   const assignedMember = members.find((m) => m.id === assignedToId);
 
-  return (
-    <div className="relative group">
-      <button
-        disabled={loading}
-        className="px-3 py-2 bg-[#E0E8EF] text-[#1E3A5F] rounded text-sm font-medium hover:bg-[#D0D8E0] transition-colors disabled:opacity-50"
-      >
-        {assignedMember ? `Assigned to ${assignedMember.name}` : 'Unassigned'}
-      </button>
+  const handleChange = async (value: string) => {
+    if (!value) {
+      await handleUnassign();
+      return;
+    }
+    await handleAssign(value);
+  };
 
-      <div className="absolute hidden group-hover:block right-0 mt-1 bg-white border border-[#D3D1C7] rounded shadow-lg z-50 min-w-max">
-        {assignedToId && (
-          <button
-            onClick={handleUnassign}
-            disabled={loading}
-            className="block w-full text-left px-4 py-2 text-sm text-[#444441] hover:bg-[#F8FAFB] disabled:opacity-50"
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <UserPlus size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9AABBF]" />
+          <select
+            value={assignedToId || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            disabled={loading || members.length === 0}
+            className="w-full pl-8 pr-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#1E3A5F] bg-white focus:outline-none focus:ring-2 focus:ring-[#2E86AB] disabled:opacity-50"
           >
-            Unassign
-          </button>
-        )}
-        {members.map((member) => (
-          <button
-            key={member.id}
-            onClick={() => handleAssign(member.id)}
-            disabled={loading || member.id === assignedToId}
-            className="block w-full text-left px-4 py-2 text-sm text-[#444441] hover:bg-[#F8FAFB] disabled:opacity-50 disabled:bg-[#F8FAFB]"
-          >
-            {member.name}
-          </button>
-        ))}
-        {members.length === 0 && (
-          <div className="px-4 py-2 text-xs text-[#6B7B8D]">
-            No team members yet
-          </div>
-        )}
+            <option value="">Unassigned</option>
+            {members.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="button"
+          disabled={!assignedToId || loading}
+          onClick={handleUnassign}
+          className="px-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#6B7B8D] hover:bg-[#F4F7FA] disabled:opacity-50 inline-flex items-center gap-1"
+        >
+          <UserX size={14} />
+          Clear
+        </button>
       </div>
+      <p className="text-xs text-[#9AABBF]">
+        {members.length === 0
+          ? 'No team members available for assignment.'
+          : assignedMember
+            ? `Currently assigned to ${assignedMember.name}.`
+            : 'Select a team member to assign ownership.'}
+      </p>
     </div>
   );
 }

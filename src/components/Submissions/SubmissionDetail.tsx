@@ -60,7 +60,7 @@ export default function SubmissionDetail({
           </div>
 
           {/* Status & Priority */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-[#444441] mb-2">
                 Status
@@ -93,10 +93,13 @@ export default function SubmissionDetail({
           </div>
 
           {/* Assignment */}
-          <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
-              Assign To
+          <div className="bg-[#F8FBFD] border border-[#E4ECF3] rounded-lg p-4">
+            <label className="block text-sm font-semibold text-[#1E3A5F] mb-2">
+              Assignment
             </label>
+            <p className="text-xs text-[#6B7B8D] mb-3">
+              Assign this submission to a team member so ownership is clear.
+            </p>
             <AssignDropdown
               submissionId={submission.id}
               assignedToId={submission.assignedTo}

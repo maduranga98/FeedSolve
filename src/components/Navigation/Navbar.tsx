@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Users, BarChart3, CreditCard, Zap, LayoutDashboard, LayoutTemplate } from 'lucide-react';
+import { LogOut, Users, BarChart3, CreditCard, Zap, LayoutDashboard, LayoutTemplate, Inbox } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Shared';
@@ -29,6 +29,7 @@ export function Navbar() {
 
   const navItems: NavItem[] = [
     { path: '/dashboard',   label: t('dashboard'),                           icon: <LayoutDashboard size={15} /> },
+    { path: '/submissions', label: 'Submissions',                            icon: <Inbox size={15} /> },
     { path: '/templates',   label: t('boards:templates.title'),              icon: <LayoutTemplate size={15} /> },
     { path: '/team',        label: t('team'),                                icon: <Users size={15} /> },
     { path: '/analytics',   label: t('analytics'),                          icon: <BarChart3 size={15} /> },

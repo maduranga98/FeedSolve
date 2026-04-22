@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { getCompanySubmissions, getCompanyMembers } from '../../lib/firestore';
-import type { Submission, User } from '../../types';
-import { LoadingSpinner, Button } from '../../components/Shared';
-import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
+import { getCompanySubmissions } from '../../lib/firestore';
+import type { Submission } from '../../types';
+import { LoadingSpinner, Button, Badge } from '../../components/Shared';
 import { UsageOverview } from '../../components/Dashboard/UsageOverview';
-import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
-import { Plus, Inbox } from 'lucide-react';
+import { Plus, Inbox, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardHome() {
@@ -15,21 +13,15 @@ export function DashboardHome() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
   const loadData = async () => {
     if (!user) return;
     try {
-      const [submissionsData, usersData] = await Promise.all([
-        getCompanySubmissions(user.companyId),
-        getCompanyMembers(user.companyId),
-      ]);
+      const submissionsData = await getCompanySubmissions(user.companyId);
       setSubmissions(
         submissionsData.sort((a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime())
       );
-      setUsers(usersData);
     } catch (error) {
       console.error('Failed to fetch data:', error);
     } finally {
@@ -106,23 +98,48 @@ export function DashboardHome() {
             </Button>
           </div>
         ) : (
-          <div className="slide-up">
-            <AdvancedSearch
-              submissions={submissions}
-              users={users}
-              onSubmissionClick={setSelectedSubmission}
-            />
+          <div className="slide-up space-y-4">
+            <div className="bg-white border border-[#E8ECF0] rounded-xl p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-[#1E3A5F]">Submissions workspace</h2>
+                  <p className="text-sm text-[#6B7B8D] mt-1">
+                    Manage assignments, statuses, and replies in a dedicated submissions section.
+                  </p>
+                </div>
+                <Button variant="primary" onClick={() => navigate('/submissions')}>
+                  Open Submissions
+                  <ArrowRight size={16} />
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-white border border-[#E8ECF0] rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-[#1E3A5F]">Recent submissions</h3>
+                <span className="text-xs text-[#9AABBF]">{Math.min(5, submissions.length)} shown</span>
+              </div>
+              <div className="space-y-3">
+                {submissions.slice(0, 5).map((submission) => (
+                  <button
+                    key={submission.id}
+                    onClick={() => navigate(`/submission/${submission.id}`)}
+                    className="w-full rounded-lg border border-[#E8ECF0] px-4 py-3 text-left hover:bg-[#F8FBFD] transition-colors"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm text-[#1E3A5F] truncate">{submission.subject}</p>
+                        <p className="text-xs text-[#9AABBF] mt-0.5">{submission.trackingCode}</p>
+                      </div>
+                      <Badge status={submission.status} />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>
-
-      {selectedSubmission && (
-        <SubmissionDetail
-          submission={selectedSubmission}
-          onClose={() => setSelectedSubmission(null)}
-          onUpdated={loadData}
-        />
-      )}
     </div>
   );
 }
