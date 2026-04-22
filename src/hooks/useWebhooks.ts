@@ -51,7 +51,7 @@ export function useWebhooks() {
     if (!user) throw new Error('Not authenticated');
     await updateSlackWebhook(user.companyId, config);
     setWebhooks(prev => ({
-      ...prev,
+      ...(prev || {}),
       slack: config,
       enabled: true,
     }));
@@ -61,7 +61,7 @@ export function useWebhooks() {
     if (!user) throw new Error('Not authenticated');
     await updateEmailWebhook(user.companyId, config);
     setWebhooks(prev => ({
-      ...prev,
+      ...(prev || {}),
       email: config,
       enabled: true,
     }));
@@ -71,7 +71,7 @@ export function useWebhooks() {
     if (!user) throw new Error('Not authenticated');
     await updateCustomWebhook(user.companyId, config);
     setWebhooks(prev => ({
-      ...prev,
+      ...(prev || {}),
       custom: config,
       enabled: true,
     }));
