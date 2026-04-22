@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../hooks/useAuth';
-import { getCompanySubmissions } from '../../lib/firestore';
-import type { Submission } from '../../types';
-import { LoadingSpinner, Button, Badge } from '../../components/Shared';
-import { UsageOverview } from '../../components/Dashboard/UsageOverview';
-import { Plus, Inbox, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../../hooks/useAuth";
+import { getCompanySubmissions, getCompanyMembers } from "../../lib/firestore";
+import type { Submission, User } from "../../types";
+import { LoadingSpinner, Button } from "../../components/Shared";
+import SubmissionDetail from "../../components/Submissions/SubmissionDetail";
+import { UsageOverview } from "../../components/Dashboard/UsageOverview";
+import { AdvancedSearch } from "../../components/Filters/AdvancedSearch";
+import { Plus, Inbox } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardHome() {
   const navigate = useNavigate();
@@ -14,16 +16,28 @@ export function DashboardHome() {
   const { t } = useTranslation();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<Submission | null>(null);
 
   const loadData = async () => {
     if (!user) return;
+    setError(null);
     try {
       const submissionsData = await getCompanySubmissions(user.companyId);
       setSubmissions(
-        submissionsData.sort((a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime())
+        submissionsData.sort(
+          (a, b) =>
+            b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime(),
+        ),
       );
     } catch (error) {
-      console.error('Failed to fetch data:', error);
+      console.error("Failed to fetch data:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load submissions. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -34,7 +48,8 @@ export function DashboardHome() {
   }, [user]);
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <div className="min-h-screen bg-[#F4F7FA]">
@@ -44,17 +59,18 @@ export function DashboardHome() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm text-[#9AABBF] font-medium mb-0.5">
-                {greeting}{user?.name ? `, ${user.name.split(' ')[0]}` : ''} 👋
+                {greeting}
+                {user?.name ? `, ${user.name.split(" ")[0]}` : ""} 👋
               </p>
               <h1 className="text-2xl font-bold text-[#1E3A5F]">
-                {t('boards:dashboard.title')}
+                {t("boards:dashboard.title")}
               </h1>
               {!loading && (
                 <p className="text-sm text-[#6B7B8D] mt-1">
-                  {submissions.length}{' '}
+                  {submissions.length}{" "}
                   {submissions.length === 1
-                    ? t('boards:dashboard.submission_one')
-                    : t('boards:dashboard.submission_other')}{' '}
+                    ? t("boards:dashboard.submission_one")
+                    : t("boards:dashboard.submission_other")}{" "}
                   total
                 </p>
               )}
@@ -62,11 +78,11 @@ export function DashboardHome() {
             <Button
               variant="primary"
               size="md"
-              onClick={() => navigate('/board/create')}
+              onClick={() => navigate("/board/create")}
               className="flex-shrink-0"
             >
               <Plus size={16} />
-              {t('boards:dashboard.create_board')}
+              {t("boards:dashboard.create_board")}
             </Button>
           </div>
         </div>
@@ -78,6 +94,19 @@ export function DashboardHome() {
           <UsageOverview />
         </div>
 
+        {/* Error message */}
+        {error && (
+          <div className="mb-6 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
+            <p className="text-sm text-[#E74C3C]">{error}</p>
+            <button
+              onClick={loadData}
+              className="mt-2 text-sm text-[#E74C3C] hover:text-[#C0392B] font-medium underline"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
         {/* Submissions */}
         {loading ? (
           <div className="flex items-center justify-center py-24">
@@ -88,55 +117,34 @@ export function DashboardHome() {
             <div className="w-16 h-16 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-5">
               <Inbox size={32} className="text-[#2E86AB]" />
             </div>
-            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-2">No submissions yet</h2>
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-2">
+              No submissions yet
+            </h2>
             <p className="text-sm text-[#6B7B8D] mb-6 max-w-sm mx-auto">
-              {t('boards:dashboard.create_first')}
+              {t("boards:dashboard.create_first")}
             </p>
-            <Button variant="primary" size="lg" onClick={() => navigate('/board/create')}>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => navigate("/board/create")}
+            >
               <Plus size={16} />
-              {t('boards:dashboard.create_board')}
+              {t("boards:dashboard.create_board")}
             </Button>
           </div>
         ) : (
-          <div className="slide-up space-y-4">
-            <div className="bg-white border border-[#E8ECF0] rounded-xl p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold text-[#1E3A5F]">Submissions workspace</h2>
-                  <p className="text-sm text-[#6B7B8D] mt-1">
-                    Manage assignments, statuses, and replies in a dedicated submissions section.
-                  </p>
-                </div>
-                <Button variant="primary" onClick={() => navigate('/submissions')}>
-                  Open Submissions
-                  <ArrowRight size={16} />
-                </Button>
-              </div>
+          <div className="slide-up">
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold text-[#1E3A5F]">Submitted forms</h2>
+              <p className="text-sm text-[#6B7B8D] mt-1">
+                Review, filter, and manage every submission from a single workspace.
+              </p>
             </div>
-
-            <div className="bg-white border border-[#E8ECF0] rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-[#1E3A5F]">Recent submissions</h3>
-                <span className="text-xs text-[#9AABBF]">{Math.min(5, submissions.length)} shown</span>
-              </div>
-              <div className="space-y-3">
-                {submissions.slice(0, 5).map((submission) => (
-                  <button
-                    key={submission.id}
-                    onClick={() => navigate(`/submission/${submission.id}`)}
-                    className="w-full rounded-lg border border-[#E8ECF0] px-4 py-3 text-left hover:bg-[#F8FBFD] transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm text-[#1E3A5F] truncate">{submission.subject}</p>
-                        <p className="text-xs text-[#9AABBF] mt-0.5">{submission.trackingCode}</p>
-                      </div>
-                      <Badge status={submission.status} />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <AdvancedSearch
+              submissions={submissions}
+              users={users}
+              onSubmissionClick={setSelectedSubmission}
+            />
           </div>
         )}
       </div>

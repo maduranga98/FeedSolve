@@ -1,32 +1,42 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { getBoardBySlug, createSubmission } from '../../lib/firestore';
-import { Button, Input, Select, LoadingSpinner } from '../../components/Shared';
-import { FileUploadInput, FilePreview, FileProgressBar } from '../../components/Attachments';
-import { useFileUpload } from '../../hooks/useFileUpload';
-import type { Board, SubmissionFormInput } from '../../types';
-import { Copy, Check } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  getBoardBySlug,
+  createSubmission,
+  getCompanyMembers,
+} from "../../lib/firestore";
+import { Button, Input, Select, LoadingSpinner } from "../../components/Shared";
+import {
+  FileUploadInput,
+  FilePreview,
+  FileProgressBar,
+} from "../../components/Attachments";
+import { useFileUpload } from "../../hooks/useFileUpload";
+import type { Board, SubmissionFormInput, User } from "../../types";
+import { Copy, Check } from "lucide-react";
 
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { uploads, uploadFiles, uploading: fileUploading } = useFileUpload();
   const [board, setBoard] = useState<Board | null>(null);
+  const [teamMembers, setTeamMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<{ trackingCode: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [submissionId, setSubmissionId] = useState<string>('');
+  const [submissionId, setSubmissionId] = useState<string>("");
 
   const [formData, setFormData] = useState<SubmissionFormInput>({
-    category: '',
-    subject: '',
-    description: '',
-    email: '',
+    category: "",
+    subject: "",
+    description: "",
+    email: "",
     isAnonymous: false,
+    submissionLanguage: i18n.language || "en",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -47,9 +57,16 @@ export function SubmitFeedback() {
               category: boardData.categories[0],
             }));
           }
+          // Fetch team members for this company
+          try {
+            const members = await getCompanyMembers(boardData.companyId);
+            setTeamMembers(members);
+          } catch (error) {
+            console.error("Failed to fetch team members:", error);
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch board:', error);
+        console.error("Failed to fetch board:", error);
       } finally {
         setLoading(false);
       }
@@ -61,15 +78,24 @@ export function SubmitFeedback() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.category) newErrors.category = t('forms:feedback.category') + ' ' + t('forms:validation.required');
-    if (!formData.subject.trim()) newErrors.subject = t('forms:feedback.subject') + ' ' + t('forms:validation.required');
+    if (!formData.category)
+      newErrors.category =
+        t("forms:feedback.category") + " " + t("forms:validation.required");
+    if (!formData.subject.trim())
+      newErrors.subject =
+        t("forms:feedback.subject") + " " + t("forms:validation.required");
     if (!formData.description.trim())
-      newErrors.description = t('forms:feedback.description') + ' ' + t('forms:validation.required');
+      newErrors.description =
+        t("forms:feedback.description") + " " + t("forms:validation.required");
 
     if (!formData.isAnonymous) {
-      if (!formData.email?.trim()) newErrors.email = t('forms:validation.required');
-      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = t('forms:validation.email');
+      if (!formData.email?.trim())
+        newErrors.email = t("forms:validation.required");
+      if (
+        formData.email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+      ) {
+        newErrors.email = t("forms:validation.email");
       }
     }
 
@@ -84,7 +110,11 @@ export function SubmitFeedback() {
 
     setSubmitting(true);
     try {
-      const result = await createSubmission(board.id, board.companyId, formData);
+      const result = await createSubmission(
+        board.id,
+        board.companyId,
+        formData,
+      );
       setSubmissionId(result.id);
 
       // Upload files if any were selected
@@ -96,7 +126,9 @@ export function SubmitFeedback() {
     } catch (error) {
       setErrors({
         submit:
-          error instanceof Error ? error.message : t('errors:something_went_wrong'),
+          error instanceof Error
+            ? error.message
+            : t("errors:something_went_wrong"),
       });
     } finally {
       setSubmitting(false);
@@ -132,9 +164,9 @@ export function SubmitFeedback() {
       <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[#1E3A5F] mb-4">
-            {t('common:not_found')}
+            {t("common:not_found")}
           </h1>
-          <p className="text-[#6B7B8D]">{t('common:board_not_found')}</p>
+          <p className="text-[#6B7B8D]">{t("common:board_not_found")}</p>
         </div>
       </div>
     );
@@ -149,14 +181,14 @@ export function SubmitFeedback() {
           </div>
 
           <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">
-            {t('forms:feedback.submit_success')}
+            {t("forms:feedback.submit_success")}
           </h1>
-          <p className="text-[#6B7B8D] mb-6">
-            {t('forms:feedback.thank_you')}
-          </p>
+          <p className="text-[#6B7B8D] mb-6">{t("forms:feedback.thank_you")}</p>
 
           <div className="bg-[#F8FAFB] rounded-lg p-4 mb-6">
-            <p className="text-xs text-[#6B7B8D] mb-2">{t('forms:feedback.tracking_code')}</p>
+            <p className="text-xs text-[#6B7B8D] mb-2">
+              {t("forms:feedback.tracking_code")}
+            </p>
             <div className="flex items-center gap-2">
               <code className="text-2xl font-mono font-bold text-[#1E3A5F] flex-1">
                 {success.trackingCode}
@@ -180,7 +212,7 @@ export function SubmitFeedback() {
             className="w-full"
             onClick={() => navigate(`/track/${success.trackingCode}`)}
           >
-            {t('forms:feedback.track_feedback')}
+            {t("forms:feedback.track_feedback")}
           </Button>
         </div>
       </div>
@@ -204,7 +236,7 @@ export function SubmitFeedback() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <Select
-              label={t('forms:feedback.category')}
+              label={t("forms:feedback.category")}
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -216,9 +248,24 @@ export function SubmitFeedback() {
               error={errors.category}
             />
 
+            <Select
+              label={t("forms:feedback.language") || "Language"}
+              value={formData.submissionLanguage || i18n.language || "en"}
+              onChange={(e) =>
+                setFormData({ ...formData, submissionLanguage: e.target.value })
+              }
+              options={[
+                { value: "en", label: "🇬🇧 English" },
+                { value: "si", label: "🇱🇰 සිංහල" },
+                { value: "ta", label: "🇮🇳 தமிழ்" },
+                { value: "ar", label: "🇸🇦 العربية" },
+                { value: "hi", label: "🇮🇳 हिन्दी" },
+              ]}
+            />
+
             <Input
-              label={t('forms:feedback.subject')}
-              placeholder={t('forms:feedback.subject_placeholder')}
+              label={t("forms:feedback.subject")}
+              placeholder={t("forms:feedback.subject_placeholder")}
               value={formData.subject}
               onChange={(e) =>
                 setFormData({ ...formData, subject: e.target.value })
@@ -228,18 +275,18 @@ export function SubmitFeedback() {
 
             <div>
               <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
-                {t('forms:feedback.description')}
+                {t("forms:feedback.description")}
               </label>
               <textarea
-                placeholder={t('forms:feedback.description_placeholder')}
+                placeholder={t("forms:feedback.description_placeholder")}
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
                 className={`w-full px-4 py-2 border rounded-lg text-base font-inter focus:outline-none focus:ring-2 focus:ring-[#2E86AB] transition-colors resize-none h-32 ${
                   errors.description
-                    ? 'border-[#E74C3C] focus:ring-[#E74C3C]'
-                    : 'border-[#D3D1C7] hover:border-[#2E86AB]'
+                    ? "border-[#E74C3C] focus:ring-[#E74C3C]"
+                    : "border-[#D3D1C7] hover:border-[#2E86AB]"
                 }`}
               />
               {errors.description && (
@@ -263,27 +310,45 @@ export function SubmitFeedback() {
                 className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB] disabled:opacity-50"
               />
               <span className="text-[#1E3A5F] font-medium">
-                {t('forms:feedback.anonymous')}
+                {t("forms:feedback.anonymous")}
               </span>
             </label>
 
             {!formData.isAnonymous && (
               <Input
-                label={t('forms:feedback.email')}
+                label={t("forms:feedback.email")}
                 type="email"
                 placeholder="your@email.com"
-                value={formData.email || ''}
+                value={formData.email || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
                 error={errors.email}
-                helperText={t('forms:feedback.email_helper')}
+                helperText={t("forms:feedback.email_helper")}
               />
             )}
-
+            {teamMembers.length > 0 && (
+              <Select
+                label={
+                  t("forms:feedback.assign_to") ||
+                  "Assign to Team Member (Optional)"
+                }
+                value={formData.assignedTo || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, assignedTo: e.target.value })
+                }
+                options={[
+                  { value: "", label: "No assignment" },
+                  ...teamMembers.map((member) => ({
+                    value: member.id,
+                    label: `${member.name} (${member.email})`,
+                  })),
+                ]}
+              />
+            )}
             <div className="border-t pt-6">
               <h3 className="text-lg font-semibold text-[#1E3A5F] mb-4">
-                {t('forms:feedback.attachments')}
+                {t("forms:feedback.attachments")}
               </h3>
 
               <FileUploadInput
@@ -328,7 +393,9 @@ export function SubmitFeedback() {
               disabled={submitting || fileUploading}
               className="w-full"
             >
-              {fileUploading ? t('forms:feedback.uploading') : t('forms:feedback.submit_button')}
+              {fileUploading
+                ? t("forms:feedback.uploading")
+                : t("forms:feedback.submit_button")}
             </Button>
           </form>
         </div>

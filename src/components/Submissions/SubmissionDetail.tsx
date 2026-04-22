@@ -1,13 +1,15 @@
-import { useState } from 'react';
-import type { Submission } from '../../types';
-import { Button } from '../Shared';
-import { X } from 'lucide-react';
-import AssignDropdown from './AssignDropdown';
-import PriorityDropdown from './PriorityDropdown';
-import InternalNotesSection from './InternalNotesSection';
-import PublicReplySection from './PublicReplySection';
-import { updateSubmissionStatus } from '../../lib/firestore';
-import { formatDate } from '../../lib/utils';
+import { useState } from "react";
+import type { Submission } from "../../types";
+import { Button } from "../Shared";
+import { X } from "lucide-react";
+import { AttachmentGallery } from "../Attachments";
+import { useFileDownload } from "../../hooks/useFileDownload";
+import AssignDropdown from "./AssignDropdown";
+import PriorityDropdown from "./PriorityDropdown";
+import InternalNotesSection from "./InternalNotesSection";
+import PublicReplySection from "./PublicReplySection";
+import { updateSubmissionStatus } from "../../lib/firestore";
+import { formatDate } from "../../lib/utils";
 
 interface SubmissionDetailProps {
   submission: Submission;
@@ -21,15 +23,16 @@ export default function SubmissionDetail({
   onUpdated,
 }: SubmissionDetailProps) {
   const [loading, setLoading] = useState(false);
+  const { loading: downloading, downloadFile } = useFileDownload();
 
-  const handleStatusChange = async (newStatus: Submission['status']) => {
+  const handleStatusChange = async (newStatus: Submission["status"]) => {
     setLoading(true);
     try {
       await updateSubmissionStatus(submission.id, newStatus);
       onUpdated?.();
     } catch (error) {
-      console.error('Failed to update status:', error);
-      alert('Failed to update status');
+      console.error("Failed to update status:", error);
+      alert("Failed to update status");
     } finally {
       setLoading(false);
     }
@@ -56,7 +59,9 @@ export default function SubmissionDetail({
             <label className="block text-sm font-medium text-[#444441] mb-1">
               Tracking Code
             </label>
-            <p className="text-[#1E3A5F] font-mono">{submission.trackingCode}</p>
+            <p className="text-[#1E3A5F] font-mono">
+              {submission.trackingCode}
+            </p>
           </div>
 
           {/* Status & Priority */}
@@ -68,7 +73,7 @@ export default function SubmissionDetail({
               <select
                 value={submission.status}
                 onChange={(e) =>
-                  handleStatusChange(e.target.value as Submission['status'])
+                  handleStatusChange(e.target.value as Submission["status"])
                 }
                 disabled={loading}
                 className="w-full px-3 py-2 border border-[#D3D1C7] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
@@ -116,6 +121,20 @@ export default function SubmissionDetail({
               {submission.description}
             </p>
           </div>
+
+          {/* Attachments */}
+          {submission.attachments && submission.attachments.length > 0 && (
+            <div className="border-t border-[#D3D1C7] pt-6">
+              <label className="block text-sm font-medium text-[#444441] mb-4">
+                Attachments ({submission.attachments.length})
+              </label>
+              <AttachmentGallery
+                attachments={submission.attachments}
+                onDownload={downloadFile}
+                isDownloading={downloading}
+              />
+            </div>
+          )}
 
           {/* Category & Submitter Info */}
           <div className="grid grid-cols-2 gap-4 text-sm">

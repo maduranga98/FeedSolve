@@ -1,20 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Timestamp } from 'firebase/firestore';
-import { getSubmissionByTrackingCode } from '../../lib/firestore';
-import { AttachmentGallery } from '../../components/Attachments';
-import { useFileDownload } from '../../hooks/useFileDownload';
-import type { Submission } from '../../types';
-import { Badge, LoadingSpinner } from '../../components/Shared';
-import { formatDate, getStatusLabel } from '../../lib/utils';
-import { Clock, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Timestamp } from "firebase/firestore";
+import { getSubmissionByTrackingCode, getBoard } from "../../lib/firestore";
+import { AttachmentGallery } from "../../components/Attachments";
+import { useFileDownload } from "../../hooks/useFileDownload";
+import type { Submission, Board } from "../../types";
+import { Badge, LoadingSpinner, Button, Input } from "../../components/Shared";
+import { formatDate, getStatusLabel } from "../../lib/utils";
+import { Clock, CheckCircle, Lock } from "lucide-react";
 
 export function TrackingPage() {
   const { code } = useParams<{ code: string }>();
   const { loading: downloading, downloadFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
+  const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [passwordRequired, setPasswordRequired] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordAuthenticated, setPasswordAuthenticated] = useState(false);
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -27,12 +32,24 @@ export function TrackingPage() {
         const data = await getSubmissionByTrackingCode(code);
         if (data) {
           setSubmission(data);
+          // Fetch board to check if it has a password
+          try {
+            const boardData = await getBoard(data.boardId);
+            if (boardData) {
+              setBoard(boardData);
+              if (boardData.accessPassword) {
+                setPasswordRequired(true);
+              }
+            }
+          } catch (boardError) {
+            console.error("Failed to fetch board:", boardError);
+          }
         } else {
-          setError('Submission not found. Please check your tracking code.');
+          setError("Submission not found. Please check your tracking code.");
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : 'Failed to fetch submission'
+          err instanceof Error ? err.message : "Failed to fetch submission",
         );
       } finally {
         setLoading(false);
@@ -41,6 +58,24 @@ export function TrackingPage() {
 
     fetchSubmission();
   }, [code]);
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordError(null);
+
+    if (!board?.accessPassword) {
+      setPasswordAuthenticated(true);
+      return;
+    }
+
+    if (passwordInput === board.accessPassword) {
+      setPasswordAuthenticated(true);
+      // Store in sessionStorage so they don't need to enter again
+      sessionStorage.setItem(`tracking_auth_${code}`, "true");
+    } else {
+      setPasswordError("Incorrect password. Please try again.");
+    }
+  };
 
   if (loading) {
     return (
@@ -59,8 +94,52 @@ export function TrackingPage() {
           </h1>
           <p className="text-[#6B7B8D]">
             {error ||
-              'The submission you are looking for does not exist or the tracking code is incorrect.'}
+              "The submission you are looking for does not exist or the tracking code is incorrect."}
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show password prompt if board is password-protected and user hasn't authenticated
+  if (passwordRequired && !passwordAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-sm p-8">
+          <div className="flex items-center justify-center w-12 h-12 bg-[#FFF3CD] rounded-full mx-auto mb-6">
+            <Lock size={24} className="text-[#F39C12]" />
+          </div>
+          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2 text-center">
+            Password Protected
+          </h1>
+          <p className="text-[#6B7B8D] text-center mb-6">
+            This submission is password protected. Please enter the password to
+            view.
+          </p>
+
+          {passwordError && (
+            <div className="mb-4 p-3 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
+              <p className="text-sm text-[#E74C3C]">{passwordError}</p>
+            </div>
+          )}
+
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              autoFocus
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full"
+            >
+              Unlock
+            </Button>
+          </form>
         </div>
       </div>
     );
@@ -68,33 +147,37 @@ export function TrackingPage() {
 
   const statusMessages: Record<string, string> = {
     received:
-      'Your feedback has been received. Thank you for submitting! Our team will review it shortly.',
+      "Your feedback has been received. Thank you for submitting! Our team will review it shortly.",
     in_review:
-      'Your feedback is currently being reviewed by our team. We appreciate your input.',
+      "Your feedback is currently being reviewed by our team. We appreciate your input.",
     in_progress:
-      'We are actively working on your feedback. Updates coming soon.',
+      "We are actively working on your feedback. Updates coming soon.",
     resolved:
-      'Your feedback has been resolved! Check out the details below to learn what changed.',
-    closed: 'This feedback has been closed.',
+      "Your feedback has been resolved! Check out the details below to learn what changed.",
+    closed: "This feedback has been closed.",
   };
 
   const timelineEvents = [
     {
       date: submission.createdAt,
-      label: 'Submitted',
+      label: "Submitted",
       status: true,
     },
     {
       date: submission.updatedAt,
-      label: 'Updated',
-      status: submission.status !== 'received',
+      label: "Updated",
+      status: submission.status !== "received",
     },
     {
       date: submission.resolvedAt,
-      label: 'Resolved',
-      status: submission.status === 'resolved' || submission.status === 'closed',
+      label: "Resolved",
+      status:
+        submission.status === "resolved" || submission.status === "closed",
     },
-  ].filter((e): e is { date: Timestamp; label: string; status: boolean } => e.date !== undefined);
+  ].filter(
+    (e): e is { date: Timestamp; label: string; status: boolean } =>
+      e.date !== undefined,
+  );
 
   return (
     <div className="min-h-screen bg-[#F8FAFB] p-4">
@@ -153,7 +236,9 @@ export function TrackingPage() {
           <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
             <AttachmentGallery
               attachments={submission.attachments}
-              onDownload={(attachment) => downloadFile(submission.id, attachment)}
+              onDownload={(attachment) =>
+                downloadFile(submission.id, attachment)
+              }
               loading={downloading}
             />
           </div>
@@ -185,8 +270,8 @@ export function TrackingPage() {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       event.status
-                        ? 'bg-[#27AE60] text-white'
-                        : 'bg-[#EFF3F6] text-[#6B7B8D]'
+                        ? "bg-[#27AE60] text-white"
+                        : "bg-[#EFF3F6] text-[#6B7B8D]"
                     }`}
                   >
                     {event.status ? (
@@ -200,9 +285,7 @@ export function TrackingPage() {
                   )}
                 </div>
                 <div className="pt-2 pb-6">
-                  <p className="font-medium text-[#1E3A5F]">
-                    {event.label}
-                  </p>
+                  <p className="font-medium text-[#1E3A5F]">{event.label}</p>
                   <p className="text-sm text-[#6B7B8D]">
                     {formatDate(event.date.toDate())}
                   </p>
