@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle2, Clock, ChevronDown } from 'lucide-react';
-import { WebhookLog } from '@/types';
+import type { WebhookLog } from '@/types';
 
 interface WebhookLogsProps {
   logs: WebhookLog[];

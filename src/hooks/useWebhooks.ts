@@ -11,7 +11,13 @@ import {
   getWebhookLogsByType,
   getWebhookLogsByStatus,
 } from '@/lib/webhooks';
-import { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog, WebhookConfig } from '@/types';
+import type {
+  SlackWebhook,
+  EmailWebhook,
+  CustomWebhook,
+  WebhookLog,
+  WebhookConfig,
+} from '@/types';
 import { httpsCallable } from 'firebase/functions';
 import { getFunctions } from 'firebase/functions';
 import app from '@/lib/firebase';
