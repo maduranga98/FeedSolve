@@ -39,7 +39,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
         {/* Categories Preview */}
         <div className="mb-6">
           <p className="text-xs font-medium text-gray-500 mb-2">
-            {t('templates.categories')}
+            {t('boards:templates.categories')}
           </p>
           <div className="flex flex-wrap gap-1">
             {translation.categories.slice(0, 3).map((category, idx) => (
@@ -70,7 +70,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
           onClick={onSelect}
           className="w-full"
         >
-          {t('templates.select_template')}
+          {t('boards:templates.select_template')}
         </Button>
       </div>
     </div>
