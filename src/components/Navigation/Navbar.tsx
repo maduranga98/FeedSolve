@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LayoutTemplate,
   Inbox,
+  Paintbrush,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -55,6 +56,7 @@ export function Navbar() {
     { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} /> },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
     { path: "/integrations", label: t("integrations"), icon: <Zap size={15} /> },
+    { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
   ];
 
   const initials = user?.name

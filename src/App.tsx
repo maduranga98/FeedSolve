@@ -48,6 +48,9 @@ const IntegrationsPage = lazy(() => import('./pages/Integrations/IntegrationsPag
 // Developer Pages
 const DeveloperDashboard = lazy(() => import('./pages/Developer/DeveloperDashboard'));
 
+// Branding Pages
+const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m => ({ default: m.BrandingPage })));
+
 // Fallback
 import { NotFound } from './pages/NotFound';
 
@@ -174,6 +177,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <IntegrationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/branding"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <BrandingPage />
             </ProtectedRoute>
           }
         />

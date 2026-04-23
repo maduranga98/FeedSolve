@@ -61,6 +61,19 @@ export interface PaymentMethod {
   expYear: number;
 }
 
+export interface CompanyBranding {
+  logoUrl?: string;
+  logoStoragePath?: string;
+  companyName?: string;
+  slogan?: string;
+  description?: string;
+  address?: string;
+  contactNumber?: string;
+  contactEmail?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -75,6 +88,7 @@ export interface Company {
   boardCount: number;
   webhooks?: WebhookConfig;
   webhookStats?: WebhookStats;
+  branding?: CompanyBranding;
 }
 
 export type FormFieldType =

@@ -15,7 +15,12 @@
     "description_placeholder": "أخبرنا المزيد عن تعليقاتك",
     "attachments": "المرفقات (اختياري)",
     "uploading": "جاري رفع الملفات...",
-    "email_helper": "سنستخدم هذا لإخطارك بالتحديثات"
+    "email_helper": "سنستخدم هذا لإخطارك بالتحديثات",
+    "language": "اللغة",
+    "powered_by": "مدعوم من FeedSolve",
+    "already_submitted": "هل قمت بإرسال ملاحظات بالفعل؟",
+    "enter_tracking_code": "أدخل رمز التتبع (مثال #FSV-AB12)",
+    "view_updates": "عرض التحديثات"
   },
   "validation": {
     "required": "هذا الحقل مطلوب",

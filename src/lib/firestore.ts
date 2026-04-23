@@ -12,10 +12,12 @@ import {
   Timestamp,
   setDoc,
   arrayUnion,
+  deleteField,
 } from 'firebase/firestore';
 import type {
   User,
   Company,
+  CompanyBranding,
   Board,
   Submission,
   BoardFormInput,
@@ -25,7 +27,8 @@ import type {
   InternalNote,
   BoardTemplate,
 } from '../types';
-import { db } from './firebase';
+import { db, storage } from './firebase';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { generateTrackingCode, generateBoardSlug } from './utils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -555,6 +558,55 @@ export async function updateCompanySubscription(
   });
   subscriptionUpdates['updatedAt'] = Timestamp.now();
   await updateDoc(companyRef, subscriptionUpdates);
+}
+
+// Branding operations
+export async function updateCompanyBranding(
+  companyId: string,
+  branding: Partial<CompanyBranding>
+): Promise<void> {
+  const companyRef = doc(db, 'companies', companyId);
+  const brandingUpdates: Record<string, unknown> = {};
+  Object.entries(branding).forEach(([key, value]) => {
+    brandingUpdates[`branding.${key}`] = value ?? deleteField();
+  });
+  brandingUpdates['updatedAt'] = Timestamp.now();
+  await updateDoc(companyRef, brandingUpdates);
+}
+
+export async function uploadCompanyLogo(
+  companyId: string,
+  file: File,
+  oldStoragePath?: string
+): Promise<{ url: string; storagePath: string }> {
+  const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Invalid file type. Only PNG, JPEG, WebP, and SVG are allowed.');
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    throw new Error('File too large. Maximum size is 2MB.');
+  }
+
+  if (oldStoragePath) {
+    try {
+      const oldRef = ref(storage, oldStoragePath);
+      await deleteObject(oldRef);
+    } catch {
+      // Old file may not exist
+    }
+  }
+
+  const fileExtension = file.name.split('.').pop() || 'png';
+  const storagePath = `logos/${companyId}/logo.${fileExtension}`;
+  const storageRef = ref(storage, storagePath);
+
+  await uploadBytes(storageRef, file, {
+    contentType: file.type,
+    customMetadata: { companyId },
+  });
+
+  const url = await getDownloadURL(storageRef);
+  return { url, storagePath };
 }
 
 // Usage tracking

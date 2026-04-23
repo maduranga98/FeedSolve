@@ -15,7 +15,12 @@
     "description_placeholder": "Tell us more about your feedback",
     "attachments": "Attachments (Optional)",
     "uploading": "Uploading Files...",
-    "email_helper": "We'll use this to notify you of updates"
+    "email_helper": "We'll use this to notify you of updates",
+    "language": "Language",
+    "powered_by": "Powered by FeedSolve",
+    "already_submitted": "Already submitted feedback?",
+    "enter_tracking_code": "Enter tracking code (e.g. #FSV-AB12)",
+    "view_updates": "View Updates"
   },
   "validation": {
     "required": "This field is required",
