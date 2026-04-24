@@ -20,7 +20,10 @@
     "powered_by": "Powered by FeedSolve",
     "already_submitted": "Already submitted feedback?",
     "enter_tracking_code": "Enter tracking code (e.g. #FSV-AB12)",
-    "view_updates": "View Updates"
+    "view_updates": "View Updates",
+    "start_button": "Submit Feedback",
+    "intro_description": "We value your input. Share your feedback, report issues, or suggest improvements.",
+    "form_description": "Fill in the details below to submit your feedback."
   },
   "validation": {
     "required": "This field is required",

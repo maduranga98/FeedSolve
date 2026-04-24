@@ -20,7 +20,10 @@
     "powered_by": "مدعوم من FeedSolve",
     "already_submitted": "هل قمت بإرسال ملاحظات بالفعل؟",
     "enter_tracking_code": "أدخل رمز التتبع (مثال #FSV-AB12)",
-    "view_updates": "عرض التحديثات"
+    "view_updates": "عرض التحديثات",
+    "start_button": "إرسال التعليقات",
+    "intro_description": "نقدّر آراءك. شارك تعليقاتك أو أبلغ عن المشكلات أو اقترح تحسينات.",
+    "form_description": "املأ التفاصيل أدناه لإرسال تعليقاتك."
   },
   "validation": {
     "required": "هذا الحقل مطلوب",
