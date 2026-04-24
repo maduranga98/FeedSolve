@@ -50,7 +50,7 @@ function TrackingLookup() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = inputCode.trim();
+    const trimmed = inputCode.trim().replace(/^#/, "");
     if (trimmed) navigate(`/track/${trimmed}`);
   };
 
@@ -87,6 +87,9 @@ function TrackingView({ code }: { code: string }) {
   const navigate = useNavigate();
   const { loading: downloading, downloadFile, viewFile } = useFileDownload();
 
+  // Codes are stored with a '#' prefix but URLs can't carry '#' as a path segment
+  const normalizedCode = code.startsWith("#") ? code : `#${code}`;
+
   const [submission, setSubmission] = useState<Submission | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
@@ -100,7 +103,7 @@ function TrackingView({ code }: { code: string }) {
   useEffect(() => {
     const fetchSubmission = async () => {
       try {
-        const data = await getSubmissionByTrackingCode(code);
+        const data = await getSubmissionByTrackingCode(normalizedCode);
         if (data) {
           setSubmission(data);
           try {
@@ -153,7 +156,7 @@ function TrackingView({ code }: { code: string }) {
             {error || "No submission matched this tracking code."}
           </p>
           <p className="text-xs text-[#9AABBF] mb-6">
-            Code: <span className="font-mono font-semibold">{code}</span>
+            Code: <span className="font-mono font-semibold">{normalizedCode}</span>
           </p>
           <div className="flex flex-col gap-2">
             <Button variant="primary" onClick={() => navigate("/track")} className="w-full">
@@ -190,7 +193,7 @@ function TrackingView({ code }: { code: string }) {
               setPasswordError(null);
               if (!board?.accessPassword || passwordInput === board.accessPassword) {
                 setPasswordAuthenticated(true);
-                sessionStorage.setItem(`tracking_auth_${code}`, "true");
+                sessionStorage.setItem(`tracking_auth_${normalizedCode}`, "true");
               } else {
                 setPasswordError("Incorrect password. Please try again.");
               }
@@ -241,7 +244,7 @@ function TrackingView({ code }: { code: string }) {
           </button>
           <div>
             <p className="text-xs text-[#9AABBF] font-medium uppercase tracking-wide">Tracking</p>
-            <p className="text-sm font-bold text-[#1E3A5F] font-mono">{code}</p>
+            <p className="text-sm font-bold text-[#1E3A5F] font-mono">{normalizedCode}</p>
           </div>
           <div className="ml-auto">
             <Badge status={submission.status} />
