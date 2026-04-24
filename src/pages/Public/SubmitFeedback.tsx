@@ -234,26 +234,33 @@ export function SubmitFeedback() {
 
         <div className="w-full max-w-lg">
           {/* Tracking lookup */}
-          <div className="mb-6 bg-white/80 backdrop-blur border border-[#DDEAF2] rounded-2xl p-4 shadow-sm">
-            <p className="text-xs uppercase tracking-wide text-[#6B7B8D] font-semibold mb-2">
+          <div className="mb-6">
+            <p className="text-xs text-center text-[#9AABBF] mb-2">
               {t("forms:feedback.already_submitted")}
             </p>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex gap-2 bg-white/80 backdrop-blur border border-[#DDEAF2] rounded-xl shadow-sm p-2">
               <Input
                 placeholder={t("forms:feedback.enter_tracking_code")}
                 value={existingTrackingCode}
                 onChange={e => setExistingTrackingCode(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    const code = existingTrackingCode.trim();
+                    if (code) navigate(`/track/${code}`);
+                  }
+                }}
+                className="border-0 shadow-none bg-transparent focus:ring-0 focus:border-0"
               />
-              <Button
+              <button
                 type="button"
-                variant="secondary"
                 onClick={() => {
                   const code = existingTrackingCode.trim();
                   if (code) navigate(`/track/${code}`);
                 }}
+                className="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-lg bg-[#1E3A5F] text-white hover:bg-[#163056] transition-colors"
               >
                 {t("forms:feedback.view_updates")}
-              </Button>
+              </button>
             </div>
           </div>
 

@@ -19,12 +19,13 @@ import {
   Calendar,
   Tag,
   AlertCircle,
+  Search,
 } from "lucide-react";
 
 const STATUS_STEPS = [
-  { key: "received", label: "Received", description: "Your feedback was submitted" },
-  { key: "in_review", label: "In Review", description: "Our team is reviewing it" },
-  { key: "in_progress", label: "In Progress", description: "Actively being worked on" },
+  { key: "received", label: "Received", description: "Feedback submitted" },
+  { key: "in_review", label: "In Review", description: "Team reviewing" },
+  { key: "in_progress", label: "In Progress", description: "Being worked on" },
   { key: "resolved", label: "Resolved", description: "Issue addressed" },
 ] as const;
 
@@ -42,8 +43,47 @@ const PRIORITY_COLOR: Record<string, string> = {
   high: "text-[#C0392B] bg-[#FDECEA]",
 };
 
-export function TrackingPage() {
-  const { code } = useParams<{ code: string }>();
+/* ─── Standalone lookup screen (shown when no code in URL) ─── */
+function TrackingLookup() {
+  const navigate = useNavigate();
+  const [inputCode, setInputCode] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = inputCode.trim();
+    if (trimmed) navigate(`/track/${trimmed}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-xl px-8 py-10 text-center">
+          <div className="w-14 h-14 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <Search size={24} className="text-[#2E86AB]" />
+          </div>
+          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">Track Your Submission</h1>
+          <p className="text-sm text-[#6B7B8D] mb-6">
+            Enter the tracking code you received after submitting your feedback.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <Input
+              placeholder="Enter tracking code (e.g. ABC-1234)"
+              value={inputCode}
+              onChange={e => setInputCode(e.target.value)}
+              autoFocus
+            />
+            <Button type="submit" variant="primary" size="lg" className="w-full">
+              Track Submission
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Main tracking view (code present in URL) ─── */
+function TrackingView({ code }: { code: string }) {
   const navigate = useNavigate();
   const { loading: downloading, downloadFile, viewFile } = useFileDownload();
 
@@ -59,7 +99,6 @@ export function TrackingPage() {
 
   useEffect(() => {
     const fetchSubmission = async () => {
-      if (!code) { setLoading(false); return; }
       try {
         const data = await getSubmissionByTrackingCode(code);
         if (data) {
@@ -76,10 +115,10 @@ export function TrackingPage() {
             }
           } catch { /* non-critical */ }
         } else {
-          setError("Submission not found. Please check your tracking code.");
+          setError("No submission found for this tracking code.");
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch submission");
+        setError(err instanceof Error ? err.message : "Failed to fetch submission.");
       } finally {
         setLoading(false);
       }
@@ -87,7 +126,6 @@ export function TrackingPage() {
     fetchSubmission();
   }, [code]);
 
-  // Apply brand colors when company data is available
   useEffect(() => {
     if (company?.branding) {
       const root = document.getElementById("tracking-root");
@@ -110,13 +148,21 @@ export function TrackingPage() {
           <div className="w-14 h-14 bg-[#FDECEA] rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle size={24} className="text-[#C0392B]" />
           </div>
-          <h1 className="text-xl font-bold text-[#1E3A5F] mb-2">Tracking Not Found</h1>
-          <p className="text-sm text-[#6B7B8D] mb-6">
-            {error || "The tracking code you entered does not match any submission. Please double-check and try again."}
+          <h1 className="text-xl font-bold text-[#1E3A5F] mb-2">Submission Not Found</h1>
+          <p className="text-sm text-[#6B7B8D] mb-1">
+            {error || "No submission matched this tracking code."}
           </p>
-          <Button variant="secondary" onClick={() => navigate(-1)} className="w-full">
-            Go Back
-          </Button>
+          <p className="text-xs text-[#9AABBF] mb-6">
+            Code: <span className="font-mono font-semibold">{code}</span>
+          </p>
+          <div className="flex flex-col gap-2">
+            <Button variant="primary" onClick={() => navigate("/track")} className="w-full">
+              Try Another Code
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(-1)} className="w-full">
+              Go Back
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -151,7 +197,13 @@ export function TrackingPage() {
             }}
             className="space-y-3"
           >
-            <Input type="password" placeholder="Enter password" value={passwordInput} onChange={e => setPasswordInput(e.target.value)} autoFocus />
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={passwordInput}
+              onChange={e => setPasswordInput(e.target.value)}
+              autoFocus
+            />
             <Button type="submit" variant="primary" size="lg" className="w-full">Unlock</Button>
           </form>
         </div>
@@ -163,22 +215,23 @@ export function TrackingPage() {
   const companyName = branding?.companyName || company?.name || board?.name || "";
   const currentStep = getStepIndex(submission.status);
   const isClosed = submission.status === "closed";
+  const isResolved = submission.status === "resolved";
 
   const timelineEvents = [
-    { date: submission.createdAt, label: "Submitted", icon: "submit" },
-    submission.status !== "received" && submission.status !== "new"
-      ? { date: submission.updatedAt, label: "Updated", icon: "update" }
+    { date: submission.createdAt, label: "Submitted" },
+    submission.status !== "received"
+      ? { date: submission.updatedAt, label: "Updated" }
       : null,
-    (submission.status === "resolved" || submission.status === "closed") && submission.resolvedAt
-      ? { date: submission.resolvedAt, label: "Resolved", icon: "resolve" }
+    (isResolved || isClosed) && submission.resolvedAt
+      ? { date: submission.resolvedAt, label: "Resolved" }
       : null,
-  ].filter(Boolean) as { date: Timestamp; label: string; icon: string }[];
+  ].filter(Boolean) as { date: Timestamp; label: string }[];
 
   return (
     <div id="tracking-root" className="min-h-screen bg-[#F4F7FA] py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-4">
 
-        {/* Top nav */}
+        {/* Top nav bar */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
@@ -189,6 +242,9 @@ export function TrackingPage() {
           <div>
             <p className="text-xs text-[#9AABBF] font-medium uppercase tracking-wide">Tracking</p>
             <p className="text-sm font-bold text-[#1E3A5F] font-mono">{code}</p>
+          </div>
+          <div className="ml-auto">
+            <Badge status={submission.status} />
           </div>
         </div>
 
@@ -206,61 +262,32 @@ export function TrackingPage() {
               <p className="font-semibold text-sm text-[#1E3A5F]">{companyName}</p>
               {branding?.slogan && <p className="text-xs text-[#6B7B8D]">{branding.slogan}</p>}
             </div>
-            <div className="ml-auto">
-              <Badge status={submission.status} />
-            </div>
           </div>
         )}
 
         {/* Progress stepper */}
         <div className="bg-white rounded-2xl border border-[#E8ECF0] shadow-sm px-6 py-6">
           <h2 className="text-sm font-semibold text-[#1E3A5F] mb-5">Progress</h2>
-          <div className="flex items-start gap-0">
+          <div className="flex items-start">
             {STATUS_STEPS.map((s, i) => {
-              const done = i < currentStep || (i === currentStep && (isClosed || submission.status === 'resolved'));
-              const active = i === currentStep && !isClosed && submission.status !== 'resolved';
-              const upcoming = i > currentStep;
-
+              const done = i < currentStep || (i === currentStep && (isClosed || isResolved));
+              const active = i === currentStep && !isClosed && !isResolved;
               return (
                 <div key={s.key} className="flex-1 flex flex-col items-center relative">
-                  {/* Connector line */}
                   {i < STATUS_STEPS.length - 1 && (
-                    <div
-                      className={`absolute top-4 left-1/2 w-full h-0.5 ${
-                        i < currentStep ? "bg-[#2E86AB]" : "bg-[#E8ECF0]"
-                      }`}
-                      style={{ transform: "translateX(0)" }}
-                    />
+                    <div className={`absolute top-4 left-1/2 w-full h-0.5 ${i < currentStep ? "bg-[#2E86AB]" : "bg-[#E8ECF0]"}`} />
                   )}
-
-                  {/* Step dot */}
-                  <div
-                    className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center mb-2 border-2 transition-all ${
-                      done
-                        ? "bg-[#2E86AB] border-[#2E86AB] text-white"
-                        : active
-                        ? "bg-white border-[#2E86AB] text-[#2E86AB]"
-                        : "bg-white border-[#D8E4EE] text-[#C8D8E4]"
-                    }`}
-                  >
-                    {done ? (
-                      <CheckCircle2 size={14} />
-                    ) : active ? (
-                      <Clock size={13} className="animate-pulse" />
-                    ) : (
-                      <Circle size={12} />
-                    )}
+                  <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center mb-2 border-2 transition-all ${
+                    done ? "bg-[#2E86AB] border-[#2E86AB] text-white"
+                    : active ? "bg-white border-[#2E86AB] text-[#2E86AB]"
+                    : "bg-white border-[#D8E4EE] text-[#C8D8E4]"
+                  }`}>
+                    {done ? <CheckCircle2 size={14} /> : active ? <Clock size={13} className="animate-pulse" /> : <Circle size={12} />}
                   </div>
-
-                  {/* Labels */}
-                  <p
-                    className={`text-xs font-semibold text-center leading-tight ${
-                      done ? "text-[#2E86AB]" : active ? "text-[#1E3A5F]" : "text-[#9AABBF]"
-                    }`}
-                  >
+                  <p className={`text-xs font-semibold text-center ${done ? "text-[#2E86AB]" : active ? "text-[#1E3A5F]" : "text-[#9AABBF]"}`}>
                     {s.label}
                   </p>
-                  <p className={`text-xs text-center mt-0.5 hidden sm:block ${upcoming ? "text-[#C8D8E4]" : "text-[#9AABBF]"}`}>
+                  <p className={`text-xs text-center mt-0.5 hidden sm:block ${i > currentStep ? "text-[#C8D8E4]" : "text-[#9AABBF]"}`}>
                     {s.description}
                   </p>
                 </div>
@@ -268,47 +295,35 @@ export function TrackingPage() {
             })}
           </div>
 
-          {/* Status message */}
-          <div
-            className={`mt-5 rounded-xl px-4 py-3 text-sm leading-relaxed ${
-              submission.status === "resolved" || submission.status === "closed"
-                ? "bg-[#EAF9F2] text-[#1D6B45]"
-                : "bg-[#EBF5FB] text-[#1E6A9A]"
-            }`}
-          >
-            {
-              {
-                received: "Your feedback has been received. Our team will review it shortly.",
-                in_review: "We're reviewing your feedback. Thanks for your patience.",
-                in_progress: "We're actively working on your feedback. Updates coming soon.",
-                resolved: "Your feedback has been resolved. Thank you for helping us improve!",
-                closed: "This submission has been closed.",
-              }[submission.status] ?? "Thank you for your feedback."
-            }
+          <div className={`mt-5 rounded-xl px-4 py-3 text-sm leading-relaxed ${
+            isResolved || isClosed ? "bg-[#EAF9F2] text-[#1D6B45]" : "bg-[#EBF5FB] text-[#1E6A9A]"
+          }`}>
+            {({
+              received: "Your feedback has been received. Our team will review it shortly.",
+              in_review: "We're reviewing your feedback. Thanks for your patience.",
+              in_progress: "We're actively working on your feedback. Updates coming soon.",
+              resolved: "Your feedback has been resolved. Thank you for helping us improve!",
+              closed: "This submission has been closed.",
+            } as Record<string, string>)[submission.status] ?? "Thank you for your feedback."}
           </div>
         </div>
 
         {/* Submission details */}
         <div className="bg-white rounded-2xl border border-[#E8ECF0] shadow-sm px-6 py-6">
-          <h2 className="text-lg font-bold text-[#1E3A5F] mb-4">{submission.subject}</h2>
+          <h2 className="text-lg font-bold text-[#1E3A5F] mb-3">{submission.subject}</h2>
           <p className="text-sm text-[#444441] leading-relaxed whitespace-pre-wrap mb-5">
             {submission.description}
           </p>
-
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1 flex items-center gap-1">
-                <Tag size={10} />Category
+                <Tag size={9} />Category
               </p>
               <p className="text-sm font-semibold text-[#1E3A5F]">{submission.category}</p>
             </div>
             <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Priority</p>
-              <span
-                className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
-                  PRIORITY_COLOR[submission.priority] || "text-[#6B7B8D] bg-[#F4F7FA]"
-                }`}
-              >
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[submission.priority] ?? "text-[#6B7B8D] bg-[#F4F7FA]"}`}>
                 {submission.priority}
               </span>
             </div>
@@ -322,8 +337,8 @@ export function TrackingPage() {
         {/* Public reply */}
         {submission.publicReply && (
           <div className="bg-[#EAF9F2] border border-[#A8DFC4] rounded-2xl shadow-sm px-6 py-5">
-            <div className="flex items-center gap-2 mb-3">
-              <MessageSquare size={16} className="text-[#1D8A57]" />
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+              <MessageSquare size={15} className="text-[#1D8A57]" />
               <h2 className="text-sm font-bold text-[#1D6B45]">
                 Response from {submission.publicReplyBy}
               </h2>
@@ -366,7 +381,7 @@ export function TrackingPage() {
               <div key={index} className="flex gap-3 items-start">
                 <div className="flex flex-col items-center pt-0.5">
                   <div className="w-7 h-7 rounded-full bg-[#EBF5FB] flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 size={14} className="text-[#2E86AB]" />
+                    <CheckCircle2 size={13} className="text-[#2E86AB]" />
                   </div>
                   {index < timelineEvents.length - 1 && (
                     <div className="w-px h-6 bg-[#DDEAF2] mt-1" />
@@ -381,10 +396,15 @@ export function TrackingPage() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#C8D8E4] pb-2">
-          Powered by FeedSolve
-        </p>
+        <p className="text-center text-xs text-[#C8D8E4] pb-2">Powered by FeedSolve</p>
       </div>
     </div>
   );
+}
+
+/* ─── Route component ─── */
+export function TrackingPage() {
+  const { code } = useParams<{ code?: string }>();
+  if (!code) return <TrackingLookup />;
+  return <TrackingView code={code} />;
 }
