@@ -119,6 +119,14 @@ function AppContent() {
           }
         />
         <Route
+          path="/track"
+          element={
+            <PublicRoute>
+              <TrackingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/track/:code"
           element={
             <PublicRoute>
