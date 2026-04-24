@@ -686,6 +686,26 @@ export async function seedTemplates(): Promise<void> {
           description: 'Collect feedback from customers about your products and services',
           categories: ['Bug Report', 'Feature Request', 'Complaint', 'Compliment'],
         },
+        si: {
+          name: 'ගනුදෙනුකරු ප්‍රතිපෝෂණ',
+          description: 'ඔබේ නිෂ්පාදන සහ සේවා සম්බන්ධයෙන් ගනුදෙනුකරුවරුන්ගෙන් ප්‍රතිපෝෂණ එකතු කරන්න',
+          categories: ['දෝෂ වාර්තා', 'ලක්ෂණ ඉල්ලීම', 'অভিযෝग', 'প্রশংসা'],
+        },
+        ta: {
+          name: 'கிராहக பதிப்புரை',
+          description: 'உங்கள் பொருட்கள் மற்றும் சேவைகள் பற்றிய கிராহக பதிப்புரை சேகரிக்கவும்',
+          categories: ['பிழை அறிக்கை', 'அம்சம் கோரிக்கை', 'புகார்', 'புகழ்ச்சி'],
+        },
+        ar: {
+          name: 'ملاحظات العملاء',
+          description: 'اجمع ملاحظات العملاء حول منتجاتك وخدماتك',
+          categories: ['تقرير خلل', 'طلب ميزة', 'شكوى', 'مديح'],
+        },
+        hi: {
+          name: 'ग्राहक प्रतिक्रिया',
+          description: 'अपने उत्पादों और सेवाओं के बारे में ग्राहक प्रतिक्रिया एकत्र करें',
+          categories: ['बग रिपोर्ट', 'सुविधा अनुरोध', 'शिकायत', 'तारीफ'],
+        },
       },
     },
     {
@@ -704,6 +724,26 @@ export async function seedTemplates(): Promise<void> {
           name: 'Supplier Issues',
           description: 'Track quality, delivery, and pricing issues from suppliers',
           categories: ['Quality Issue', 'Delivery Problem', 'Pricing'],
+        },
+        si: {
+          name: 'සরবරාහකරු ගැටළු',
+          description: 'සරබරාහකරුවරුන්ගේ ගුණාත්මක, ඉවත් කිරීම් සහ මිල තීරණ ගැටළු ලුහුබඳු කරන්න',
+          categories: ['ගුණාත්මක කරුණු', 'ඉවත් කිරීමේ সমস්যা', 'මිල තීරණ'],
+        },
+        ta: {
+          name: 'சப்ளையர் சிக்கல்கள்',
+          description: 'சப்ளையர்களிடமிருந்து தரம், விநியோகம் மற்றும் விலை சிக்கல்களைக் கண்காணிக்கவும்',
+          categories: ['தரம் சிக்கல்', 'விநியோக சிக்கல்', 'விலை'],
+        },
+        ar: {
+          name: 'مشاكل الموردين',
+          description: 'تتبع مشاكل الجودة والتسليم والأسعار من الموردين',
+          categories: ['مشكلة الجودة', 'مشكلة التسليم', 'التسعير'],
+        },
+        hi: {
+          name: 'आपूर्तिकर्ता समस्याएं',
+          description: 'आपूर्तिकर्ताओं से गुणवत्ता, वितरण और मूल्य निर्धारण समस्याओं को ट्रैक करें',
+          categories: ['गुणवत्ता समस्या', 'वितरण समस्या', 'मूल्य निर्धारण'],
         },
       },
     },
@@ -724,6 +764,26 @@ export async function seedTemplates(): Promise<void> {
           description: 'Manage complaints and concerns from your distributors',
           categories: ['Stock Issue', 'Price Concern', 'Support'],
         },
+        si: {
+          name: 'බෙදා හැරුවා ප්‍රතිපෝෂණ',
+          description: 'ඔබේ බෙදා හරින්නන්ගෙන් පැමිණි ගැටළු සහ උහුදු පිළිසඳුවා ගන්න',
+          categories: ['මුද්‍රණ කරුණු', 'මිල සම්බන්ධ සඳහා', 'සහය'],
+        },
+        ta: {
+          name: 'விநியோگাளனர் பதிப்புரை',
+          description: 'உங்கள் விநியோகஸ்தர்களிடமிருந்து புகார்கள் மற்றும் கவலைகளைக் நிர்வகிக்கவும்',
+          categories: ['பங்கு சிக்கல்', 'விலை கவலை', 'ஆதரவு'],
+        },
+        ar: {
+          name: 'ملاحظات الموزعين',
+          description: 'إدارة الشكاوى والمخاوف من موزعيك',
+          categories: ['مشكلة المخزون', 'قلق السعر', 'الدعم'],
+        },
+        hi: {
+          name: 'वितरक प्रतिक्रिया',
+          description: 'अपने वितरकों से शिकायतों और चिंताओं का प्रबंधन करें',
+          categories: ['स्टॉक समस्या', 'मूल्य चिंता', 'सहायता'],
+        },
       },
     },
     {
@@ -742,6 +802,26 @@ export async function seedTemplates(): Promise<void> {
           name: 'Restaurant Feedback',
           description: 'Collect feedback about food quality, service, and cleanliness',
           categories: ['Food Quality', 'Service', 'Cleanliness'],
+        },
+        si: {
+          name: 'අවන්හල ප්‍රතිපෝෂණ',
+          description: 'ආහාරයේ ගුණාත්මක, සේවා සහ පිරිසිදුකම පිළිබඳ ප්‍රතිපෝෂණ එකතු කරන්න',
+          categories: ['ආහාර ගුණාත්මක', 'සේවා', 'පිරිසිදුකම'],
+        },
+        ta: {
+          name: 'உணவகப் பதிப்புரை',
+          description: 'உணவின் தரம், சேவை மற்றும் சுத்தத்தன்மை பற்றிய பதிப்புரை சேகரிக்கவும்',
+          categories: ['உணவு தரம்', 'சேவை', 'சுத்தத்தன்மை'],
+        },
+        ar: {
+          name: 'ملاحظات المطعم',
+          description: 'اجمع الملاحظات حول جودة الطعام والخدمة والنظافة',
+          categories: ['جودة الطعام', 'الخدمة', 'النظافة'],
+        },
+        hi: {
+          name: 'रेस्तरां प्रतिक्रिया',
+          description: 'खाद्य गुणवत्ता, सेवा और सफाई के बारे में प्रतिक्रिया एकत्र करें',
+          categories: ['खाद्य गुणवत्ता', 'सेवा', 'सफाई'],
         },
       },
     },
@@ -762,6 +842,26 @@ export async function seedTemplates(): Promise<void> {
           description: 'Track late deliveries, damage, and driver behavior issues',
           categories: ['Late Delivery', 'Damage', 'Driver Behavior'],
         },
+        si: {
+          name: 'ඉවත් කිරීම් ප්‍රතිපෝෂණ',
+          description: 'ප්‍රමාද ඉවත් කිරීම්, හානි සහ රියදුරු ගැටළු ලුහුබඳු කරන්න',
+          categories: ['ප්‍රමාද ඉවත් කිරීම', 'හානි', 'රියදුරු ගැටළු'],
+        },
+        ta: {
+          name: 'விநியோग பதிப்புரை',
+          description: 'தாமதமான விநியோகம், சேதம் மற்றும் ড்রைவர் நடத்தை சிக்கல்களைக் கண்காணிக்கவும்',
+          categories: ['தாமதமான விநியோগம்', 'சேதம்', 'ড்রைவர் நடத்தை'],
+        },
+        ar: {
+          name: 'ملاحظات التسليم',
+          description: 'تتبع التسليمات المتأخرة والضرر ومشاكل سلوك السائق',
+          categories: ['التسليم المتأخر', 'الضرر', 'سلوك السائق'],
+        },
+        hi: {
+          name: 'वितरण प्रतिक्रिया',
+          description: 'देर से डिलीवरी, नुकसान और ड्राइवर व्यवहार समस्याओं को ट्रैक करें',
+          categories: ['देरी से डिलीवरी', 'नुकसान', 'ड्राइवर व्यवहार'],
+        },
       },
     },
     {
@@ -780,6 +880,26 @@ export async function seedTemplates(): Promise<void> {
           name: 'Tenant Requests',
           description: 'Manage maintenance requests and complaints from tenants',
           categories: ['Maintenance', 'Amenities', 'Complaint'],
+        },
+        si: {
+          name: 'කුලී බදු ඉල්ලීම්',
+          description: 'කුලී බදු සම්පූර්ණ සිට රැකවරණ ඉල්ලීම් සහ ගැටළු පිළිසඳුවා ගන්න',
+          categories: ['රැකවරණ', 'සুවිධාන', 'ගැටළු'],
+        },
+        ta: {
+          name: 'குத்தகையாளர் கோரிக்கைகள்',
+          description: 'குத்தகையாளர்களிடமிருந்து பராமரிப்பு கோரிக்கைகள் மற்றும் புகார்களைக் நிர்வகிக்கவும்',
+          categories: ['பராமரிப்பு', 'வசதிகள்', 'புகார்'],
+        },
+        ar: {
+          name: 'طلبات المستأجرين',
+          description: 'إدارة طلبات الصيانة والشكاوى من المستأجرين',
+          categories: ['الصيانة', 'المرافق', 'الشكوى'],
+        },
+        hi: {
+          name: 'किरायेदार अनुरोध',
+          description: 'किरायेदारों से रखरखाव अनुरोध और शिकायतों का प्रबंधन करें',
+          categories: ['रखरखाव', 'सुविधाएं', 'शिकायत'],
         },
       },
     },
@@ -800,6 +920,26 @@ export async function seedTemplates(): Promise<void> {
           description: 'Collect feedback about doctors, staff, facilities, and billing',
           categories: ['Doctor', 'Staff', 'Facilities', 'Billing'],
         },
+        si: {
+          name: 'රෝගී ප්‍රතිපෝෂණ',
+          description: 'වෛද්‍යවරුන්, කර්මිකයින්, පහසුකම් සහ බිල්පත් පිළිබඳ ප්‍රතිපෝෂණ එකතු කරන්න',
+          categories: ['වෛද්‍යවරු', 'කර්මිකයින්', 'පහසුකම්', 'බිල්පත්'],
+        },
+        ta: {
+          name: 'நோயாளி பதிப்புரை',
+          description: 'வைத்தியர்கள், பணியாளர்கள், வசதிகள் மற்றும் பில்லிங் பற்றிய பதிப்புரை சேகரிக்கவும்',
+          categories: ['வைத்தியர்', 'பணியாளர்கள்', 'வசதிகள்', 'பில்லிங்'],
+        },
+        ar: {
+          name: 'ملاحظات المرضى',
+          description: 'اجمع ملاحظات الأطباء والموظفين والمرافق والفواتير',
+          categories: ['الطبيب', 'الموظفون', 'المرافق', 'الفواتير'],
+        },
+        hi: {
+          name: 'रोगी प्रतिक्रिया',
+          description: 'डॉक्टरों, कर्मचारियों, सुविधाओं और बिलिंग के बारे में प्रतिक्रिया एकत्र करें',
+          categories: ['डॉक्टर', 'कर्मचारी', 'सुविधाएं', 'बिलिंग'],
+        },
       },
     },
     {
@@ -818,6 +958,26 @@ export async function seedTemplates(): Promise<void> {
           name: 'Employee Feedback',
           description: 'Gather feedback about careers, salary, culture, and benefits',
           categories: ['Career', 'Salary', 'Culture', 'Benefits'],
+        },
+        si: {
+          name: 'සේවක ප්‍රතිපෝෂණ',
+          description: 'සිකුරු, වැටුප්, සංස්කෘතිය සහ ප්‍රතිලාභ පිළිබඳ ප්‍රතිපෝෂණ එකතු කරන්න',
+          categories: ['ආර්ජ', 'වැටුප්', 'සංස්කෘතිය', 'ප්‍රතිලාභ'],
+        },
+        ta: {
+          name: 'কর্মচারী প্रতिक्रिया',
+          description: 'தொழिल், சம்பளம், संस்कृति மற्றும் लाभों के बारे में प्रतिক्रिया एकत्र करें',
+          categories: ['கார்', 'சம்பளம்', 'संस्कृति', 'लाभ'],
+        },
+        ar: {
+          name: 'ملاحظات الموظفين',
+          description: 'اجمع ملاحظات حول الوظائف والرواتب والثقافة والمزايا',
+          categories: ['المسار الوظيفي', 'الراتب', 'الثقافة', 'المزايا'],
+        },
+        hi: {
+          name: 'कर्मचारी प्रतिक्रिया',
+          description: 'करियर, वेतन, संस्कृति और लाभों के बारे में प्रतिक्रिया एकत्र करें',
+          categories: ['करियर', 'वेतन', 'संस्कृति', 'लाभ'],
         },
       },
     },
@@ -838,6 +998,26 @@ export async function seedTemplates(): Promise<void> {
           description: 'Manage technical support requests and feature requests',
           categories: ['Bug Report', 'Feature Request', 'How-To', 'Account'],
         },
+        si: {
+          name: 'සහාය ටිකට්පත්',
+          description: 'තාක්ෂණික සහාය ඉල්ලීම් සහ ලක්ෂණ ඉල්ලීම් පිළිසඳුවා ගන්න',
+          categories: ['දෝෂ වාර්තා', 'ලක්ෂණ ඉල්ලීම', 'ගිණුම්', 'ගිණුම්'],
+        },
+        ta: {
+          name: 'ஆதரவு டிக்கெட்கள்',
+          description: 'தொழில்நுட்ப ஆதரவு கோரிக்கைகள் மற்றும் அம்சம் கோரிக்கைகளைக் நிர்வகிக்கவும்',
+          categories: ['பிழை அறிக்கை', 'அம்சம் கோரிக்கை', 'எப்படி', 'கணக்கு'],
+        },
+        ar: {
+          name: 'تذاكر الدعم',
+          description: 'إدارة طلبات الدعم الفني وطلبات الميزات',
+          categories: ['تقرير خلل', 'طلب ميزة', 'الكيفية', 'الحساب'],
+        },
+        hi: {
+          name: 'सहायता टिकट',
+          description: 'तकनीकी सहायता अनुरोध और सुविधा अनुरोधों का प्रबंधन करें',
+          categories: ['बग रिपोर्ट', 'सुविधा अनुरोध', 'कैसे करें', 'खाता'],
+        },
       },
     },
     {
@@ -856,6 +1036,26 @@ export async function seedTemplates(): Promise<void> {
           name: 'Event Feedback',
           description: 'Collect feedback about venues, organization, content, and speakers',
           categories: ['Venue', 'Organization', 'Content', 'Speakers'],
+        },
+        si: {
+          name: 'අවස්ථා ප්‍රතිපෝෂණ',
+          description: 'ස්වාස්තිකයන්, සංවිධාතෑ, අන්තර්ගතය සහ කතිකාවරුන් පිළිබඳ ප්‍රතිපෝෂණ එකතු කරන්න',
+          categories: ['ස්වාස්තිකය', 'සංවිධාතා', 'අන්තර්ගතය', 'කතිකාවරුන්'],
+        },
+        ta: {
+          name: 'ஆयોজன பதிப்புரை',
+          description: 'இடங்கள், அமைப்பு, உள்ளடக்கம் மற்றும் சொற்பொழிப்பாளர்கள் பற்றிய பதிப்புரை சேகரிக்கவும்',
+          categories: ['இடம்', 'அமைப்பு', 'உள்ளடக்கம்', 'சொற்பொழிப்பாளர்கள்'],
+        },
+        ar: {
+          name: 'ملاحظات الحدث',
+          description: 'اجمع ملاحظات حول الأماكن والتنظيم والمحتوى والمتحدثين',
+          categories: ['المكان', 'التنظيم', 'المحتوى', 'المتحدثون'],
+        },
+        hi: {
+          name: 'कार्यक्रम प्रतिक्रिया',
+          description: 'स्थान, संगठन, सामग्री और वक्ताओं के बारे में प्रतिक्रिया एकत्र करें',
+          categories: ['स्थान', 'संगठन', 'सामग्री', 'वक्ता'],
         },
       },
     },
