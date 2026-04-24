@@ -4,28 +4,38 @@ import { useTranslation } from "react-i18next";
 import {
   getBoardBySlug,
   createSubmission,
-  getCompanyMembers,
   getCompany,
 } from "../../lib/firestore";
-import { applyBrandColors, DEFAULT_COLOR_THEME } from "../../lib/color-utils";
+import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
-import { Button, Input, Select, LoadingSpinner } from "../../components/Shared";
+import { LoadingSpinner, Input, Select, Button } from "../../components/Shared";
 import {
   FileUploadInput,
   FilePreview,
   FileProgressBar,
 } from "../../components/Attachments";
 import { useFileUpload } from "../../hooks/useFileUpload";
-import type { Board, Company, SubmissionFormInput, User } from "../../types";
-import { Copy, Check, MapPin, Phone, Mail } from "lucide-react";
+import type { Board, Company, SubmissionFormInput } from "../../types";
+import {
+  Copy,
+  Check,
+  MapPin,
+  Phone,
+  Mail,
+  ChevronRight,
+  MessageSquare,
+  ArrowLeft,
+} from "lucide-react";
+
+type Step = "intro" | "form" | "success";
 
 const BRANDED_STYLES = `
   [data-branded] .brand-primary-bg { background-color: var(--brand-primary, #2E86AB); }
   [data-branded] .brand-primary-text { color: var(--brand-primary, #2E86AB); }
   [data-branded] .brand-secondary-text { color: var(--brand-secondary, #1E3A5F); }
-  [data-branded] .brand-muted-text { color: var(--brand-primary-dark, #6B7B8D); }
-  [data-branded] .brand-primary-border { border-color: var(--brand-primary-border, #D3D1C7); }
-  [data-branded] .brand-primary-ring { --tw-ring-color: var(--brand-primary, #2E86AB); }
+  [data-branded] .brand-header-bg {
+    background: linear-gradient(135deg, var(--brand-primary-bg, rgba(46,134,171,0.10)) 0%, var(--brand-primary-bg, rgba(46,134,171,0.04)) 100%);
+  }
   [data-branded] .brand-btn-primary {
     background-color: var(--brand-primary, #2E86AB);
     color: var(--brand-text-on-primary, #FFFFFF);
@@ -33,35 +43,57 @@ const BRANDED_STYLES = `
   [data-branded] .brand-btn-primary:hover {
     background-color: var(--brand-primary-dark, #246d8c);
   }
-  [data-branded] .brand-input-border {
-    border-color: var(--brand-primary-border, #D3D1C7);
+  [data-branded] .brand-btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
-  [data-branded] .brand-input-border:hover {
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]),
+  [data-branded] select,
+  [data-branded] textarea {
+    border-color: var(--brand-primary-border, #c8dce8);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]):hover,
+  [data-branded] select:hover,
+  [data-branded] textarea:hover {
     border-color: var(--brand-primary, #2E86AB);
   }
-  [data-branded] .brand-input-border:focus {
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]):focus,
+  [data-branded] select:focus,
+  [data-branded] textarea:focus {
     border-color: var(--brand-primary, #2E86AB);
-    --tw-ring-color: var(--brand-primary, #2E86AB);
+    box-shadow: 0 0 0 3px var(--brand-primary-bg, rgba(46,134,171,0.15));
+    outline: none;
   }
-  [data-branded] .brand-header-bg {
-    background-color: var(--brand-primary-bg, rgba(46, 134, 171, 0.08));
+  [data-branded] input[type="checkbox"] {
+    accent-color: var(--brand-primary, #2E86AB);
   }
 `;
+
+const LANGUAGES = [
+  { value: "en", label: "🇬🇧 English" },
+  { value: "si", label: "🇱🇰 සිංහල" },
+  { value: "ta", label: "🇮🇳 தமிழ்" },
+  { value: "ar", label: "🇸🇦 العربية" },
+  { value: "hi", label: "🇮🇳 हिन्दी" },
+];
 
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { uploads, uploadFiles, uploading: fileUploading } = useFileUpload();
+
+  const [step, setStep] = useState<Step>("intro");
   const [board, setBoard] = useState<Board | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
-  const [teamMembers, setTeamMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<{ trackingCode: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingTrackingCode, setExistingTrackingCode] = useState("");
+
   const formRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState<SubmissionFormInput>({
@@ -76,34 +108,19 @@ export function SubmitFeedback() {
 
   useEffect(() => {
     const fetchBoard = async () => {
-      if (!slug) {
-        setLoading(false);
-        return;
-      }
-
+      if (!slug) { setLoading(false); return; }
       try {
         const boardData = await getBoardBySlug(slug);
         if (boardData) {
           setBoard(boardData);
           if (boardData.categories.length > 0) {
-            setFormData((prev) => ({
-              ...prev,
-              category: boardData.categories[0],
-            }));
-          }
-          try {
-            const members = await getCompanyMembers(boardData.companyId);
-            setTeamMembers(members);
-          } catch (error) {
-            console.error("Failed to fetch team members:", error);
+            setFormData(prev => ({ ...prev, category: boardData.categories[0] }));
           }
           try {
             const companyData = await getCompany(boardData.companyId);
-            if (companyData) {
-              setCompany(companyData);
-            }
-          } catch (error) {
-            console.error("Failed to fetch company:", error);
+            if (companyData) setCompany(companyData);
+          } catch {
+            // non-critical
           }
         }
       } catch (error) {
@@ -112,87 +129,65 @@ export function SubmitFeedback() {
         setLoading(false);
       }
     };
-
     fetchBoard();
   }, [slug]);
 
   useEffect(() => {
-    if (company?.branding) {
+    if (company?.branding && formRef.current) {
       applyBrandColors(
         formRef.current,
         company.branding.primaryColor,
         company.branding.secondaryColor
       );
     }
-  }, [company]);
+  }, [company, step]);
 
   const branding = company?.branding;
+  const companyDisplayName = branding?.companyName || company?.name || board?.name || "";
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-
     if (!formData.category)
-      newErrors.category =
-        t("forms:feedback.category") + " " + t("forms:validation.required");
+      newErrors.category = t("forms:feedback.category") + " " + t("forms:validation.required");
     if (!formData.subject.trim())
-      newErrors.subject =
-        t("forms:feedback.subject") + " " + t("forms:validation.required");
+      newErrors.subject = t("forms:feedback.subject") + " " + t("forms:validation.required");
     if (!formData.description.trim())
-      newErrors.description =
-        t("forms:feedback.description") + " " + t("forms:validation.required");
-
+      newErrors.description = t("forms:feedback.description") + " " + t("forms:validation.required");
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
         newErrors.email = t("forms:validation.required");
-      if (
-        formData.email &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-      ) {
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
         newErrors.email = t("forms:validation.email");
-      }
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm() || !board) return;
-
     setSubmitting(true);
     try {
-      const result = await createSubmission(
-        board.id,
-        board.companyId,
-        formData
-      );
-
+      const result = await createSubmission(board.id, board.companyId, formData);
       if (selectedFiles.length > 0) {
         await uploadFiles(result.submissionId, selectedFiles);
       }
-
       setSuccess(result);
+      setStep("success");
     } catch (error) {
       setErrors({
-        submit:
-          error instanceof Error
-            ? error.message
-            : t("errors:something_went_wrong"),
+        submit: error instanceof Error ? error.message : t("errors:something_went_wrong"),
       });
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleFilesSelected = (files: File[]) => {
-    setSelectedFiles((prev) => [...prev, ...files]);
-  };
-
-  const handleRemoveFile = (fileId: string | number) => {
-    if (typeof fileId !== "number") return;
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== fileId));
+  const handleLanguageChange = (lang: string) => {
+    setFormData(prev => ({ ...prev, submissionLanguage: lang }));
+    i18n.changeLanguage(lang);
+    localStorage.setItem("feedsolve_language", lang);
+    applyTextDirection(lang);
   };
 
   const handleCopyCode = () => {
@@ -201,13 +196,6 @@ export function SubmitFeedback() {
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2000);
     }
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    setFormData({ ...formData, submissionLanguage: lang });
-    i18n.changeLanguage(lang);
-    localStorage.setItem("feedsolve_language", lang);
-    applyTextDirection(lang);
   };
 
   const showPoweredBy =
@@ -227,98 +215,131 @@ export function SubmitFeedback() {
     return (
       <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-4">
-            {t("common:not_found")}
-          </h1>
+          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-4">{t("common:not_found")}</h1>
           <p className="text-[#6B7B8D]">{t("common:board_not_found")}</p>
         </div>
       </div>
     );
   }
 
-  if (success) {
+  /* ─── INTRO PAGE ─── */
+  if (step === "intro") {
     return (
       <div
         ref={formRef}
         data-branded
-        className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4"
+        className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex flex-col items-center justify-center p-4"
       >
         <style>{BRANDED_STYLES}</style>
-        <div className="w-full max-w-md bg-white rounded-lg shadow-sm p-8 text-center">
-          {/* Company branding */}
-          {branding?.logoUrl ? (
-            <img
-              src={branding.logoUrl}
-              alt={branding.companyName || company?.name}
-              className="h-14 w-14 rounded-lg object-contain mx-auto mb-3"
-            />
-          ) : (
-            <div
-              className="h-14 w-14 rounded-lg flex items-center justify-center text-xl font-bold mx-auto mb-3"
-              style={{
-                backgroundColor:
-                  "var(--brand-primary, #2E86AB)",
-                color: "var(--brand-text-on-primary, #FFFFFF)",
-              }}
-            >
-              {(branding?.companyName || company?.name || board.name)
-                .charAt(0)
-                .toUpperCase()}
-            </div>
-          )}
-          {(branding?.companyName || company?.name) && (
-            <h2 className="text-lg font-semibold brand-secondary-text mb-1">
-              {branding?.companyName || company?.name}
-            </h2>
-          )}
-          {branding?.slogan && (
-            <p className="text-xs brand-primary-text mb-4">
-              {branding.slogan}
-            </p>
-          )}
 
-          {/* Success icon */}
-          <div className="w-16 h-16 bg-[#EBF9F1] rounded-full flex items-center justify-center mx-auto mb-6">
-            <Check size={32} className="text-[#27AE60]" />
+        <div className="w-full max-w-lg">
+          {/* Tracking lookup */}
+          <div className="mb-6 bg-white/80 backdrop-blur border border-[#DDEAF2] rounded-2xl p-4 shadow-sm">
+            <p className="text-xs uppercase tracking-wide text-[#6B7B8D] font-semibold mb-2">
+              {t("forms:feedback.already_submitted")}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input
+                placeholder={t("forms:feedback.enter_tracking_code")}
+                value={existingTrackingCode}
+                onChange={e => setExistingTrackingCode(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  const code = existingTrackingCode.trim();
+                  if (code) navigate(`/track/${code}`);
+                }}
+              >
+                {t("forms:feedback.view_updates")}
+              </Button>
+            </div>
           </div>
 
-          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">
-            {t("forms:feedback.submit_success")}
-          </h1>
-          <p className="text-[#6B7B8D] mb-6">
-            {t("forms:feedback.thank_you")}
-          </p>
-
-          <div className="bg-[#F8FAFB] rounded-lg p-4 mb-6">
-            <p className="text-xs text-[#6B7B8D] mb-2">
-              {t("forms:feedback.tracking_code")}
-            </p>
-            <div className="flex items-center gap-2">
-              <code className="text-2xl font-mono font-bold text-[#1E3A5F] flex-1">
-                {success.trackingCode}
-              </code>
-              <button
-                onClick={handleCopyCode}
-                className="p-2 hover:bg-[#E8E8E8] rounded-lg transition-colors"
+          {/* Branding card */}
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-[#E3EDF4]">
+            {/* Hero header */}
+            <div className="brand-header-bg px-8 pt-10 pb-8 text-center border-b border-[#E3EDF4]">
+              {branding?.logoUrl ? (
+                <img
+                  src={branding.logoUrl}
+                  alt={companyDisplayName}
+                  className="h-20 w-20 rounded-2xl object-contain mx-auto mb-4 shadow-md"
+                />
+              ) : (
+                <div
+                  className="h-20 w-20 rounded-2xl flex items-center justify-center text-3xl font-bold mx-auto mb-4 shadow-md brand-primary-bg"
+                  style={{ color: "var(--brand-text-on-primary, #fff)" }}
+                >
+                  {companyDisplayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <h1
+                className="text-2xl font-bold mb-1"
+                style={{ color: "var(--brand-secondary, #1E3A5F)" }}
               >
-                {copiedCode ? (
-                  <Check size={20} className="text-[#27AE60]" />
-                ) : (
-                  <Copy size={20} className="text-[#2E86AB]" />
-                )}
+                {companyDisplayName}
+              </h1>
+              {branding?.slogan && (
+                <p className="text-sm brand-primary-text font-medium">{branding.slogan}</p>
+              )}
+            </div>
+
+            {/* Body */}
+            <div className="px-8 py-8">
+              <div className="flex items-start gap-3 mb-6">
+                <div className="mt-0.5 p-2 rounded-xl bg-[#EBF5FB]">
+                  <MessageSquare size={18} className="text-[#2E86AB]" />
+                </div>
+                <div>
+                  <h2
+                    className="text-lg font-semibold mb-1"
+                    style={{ color: "var(--brand-secondary, #1E3A5F)" }}
+                  >
+                    {board.name}
+                  </h2>
+                  <p className="text-sm text-[#6B7B8D] leading-relaxed">
+                    {branding?.description || board.description || t("forms:feedback.intro_description")}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setStep("form")}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold rounded-xl transition-all brand-btn-primary shadow-sm hover:shadow-md"
+              >
+                {t("forms:feedback.start_button") || "Submit Feedback"}
+                <ChevronRight size={18} />
               </button>
             </div>
+
+            {/* Contact footer */}
+            {(branding?.address || branding?.contactNumber || branding?.contactEmail) && (
+              <div className="px-8 pb-6 border-t border-[#F0F4F8] pt-4">
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#6B7B8D] justify-center">
+                  {branding.address && (
+                    <span className="flex items-center gap-1">
+                      <MapPin size={11} />{branding.address}
+                    </span>
+                  )}
+                  {branding.contactNumber && (
+                    <span className="flex items-center gap-1">
+                      <Phone size={11} />{branding.contactNumber}
+                    </span>
+                  )}
+                  {branding.contactEmail && (
+                    <span className="flex items-center gap-1">
+                      <Mail size={11} />{branding.contactEmail}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
-          <button
-            onClick={() => navigate(`/track/${success.trackingCode}`)}
-            className="w-full px-5 py-2.5 text-base font-medium rounded-lg transition-all brand-btn-primary"
-          >
-            {t("forms:feedback.track_feedback")}
-          </button>
-
           {showPoweredBy && (
-            <p className="text-xs text-[#9AABBF] mt-6">
+            <p className="text-center text-xs text-[#9AABBF] mt-4">
               {t("forms:feedback.powered_by")}
             </p>
           )}
@@ -327,6 +348,108 @@ export function SubmitFeedback() {
     );
   }
 
+  /* ─── SUCCESS / THANK YOU PAGE ─── */
+  if (step === "success" && success) {
+    return (
+      <div
+        ref={formRef}
+        data-branded
+        className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4"
+      >
+        <style>{BRANDED_STYLES}</style>
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-[#E3EDF4]">
+            {/* Top brand strip */}
+            <div className="brand-header-bg px-6 py-5 border-b border-[#E3EDF4] flex items-center gap-3">
+              {branding?.logoUrl ? (
+                <img
+                  src={branding.logoUrl}
+                  alt={companyDisplayName}
+                  className="h-10 w-10 rounded-xl object-contain"
+                />
+              ) : (
+                <div
+                  className="h-10 w-10 rounded-xl flex items-center justify-center text-base font-bold brand-primary-bg"
+                  style={{ color: "var(--brand-text-on-primary, #fff)" }}
+                >
+                  {companyDisplayName.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div>
+                <p className="font-semibold text-sm" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+                  {companyDisplayName}
+                </p>
+                {branding?.slogan && (
+                  <p className="text-xs brand-primary-text">{branding.slogan}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Success content */}
+            <div className="px-8 py-10 text-center">
+              <div className="w-20 h-20 bg-[#EBF9F1] rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+                <Check size={36} className="text-[#27AE60]" strokeWidth={2.5} />
+              </div>
+              <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">
+                {t("forms:feedback.submit_success")}
+              </h1>
+              <p className="text-[#6B7B8D] mb-8 leading-relaxed">
+                {t("forms:feedback.thank_you")}
+              </p>
+
+              {/* Tracking code box */}
+              <div className="bg-[#F4F8FB] rounded-2xl p-5 mb-6 border border-[#DDEAF2]">
+                <p className="text-xs text-[#6B7B8D] uppercase tracking-wide font-semibold mb-2">
+                  {t("forms:feedback.tracking_code")}
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <code className="text-2xl font-mono font-bold text-[#1E3A5F] tracking-widest">
+                    {success.trackingCode}
+                  </code>
+                  <button
+                    onClick={handleCopyCode}
+                    className="p-2 hover:bg-[#E2EEF5] rounded-lg transition-colors"
+                    title="Copy code"
+                  >
+                    {copiedCode ? (
+                      <Check size={18} className="text-[#27AE60]" />
+                    ) : (
+                      <Copy size={18} style={{ color: "var(--brand-primary, #2E86AB)" }} />
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-[#9AABBF] mt-2">
+                  Save this code to track your submission
+                </p>
+              </div>
+
+              <button
+                onClick={() => navigate(`/track/${success.trackingCode}`)}
+                className="w-full px-5 py-3 text-base font-semibold rounded-xl transition-all brand-btn-primary shadow-sm hover:shadow-md"
+              >
+                {t("forms:feedback.track_feedback")}
+              </button>
+
+              <button
+                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", isAnonymous: false, submissionLanguage: i18n.language || "en" }); }}
+                className="mt-3 w-full px-5 py-2.5 text-sm text-[#6B7B8D] hover:text-[#1E3A5F] transition-colors"
+              >
+                Submit another response
+              </button>
+            </div>
+          </div>
+
+          {showPoweredBy && (
+            <p className="text-center text-xs text-[#9AABBF] mt-4">
+              {t("forms:feedback.powered_by")}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* ─── FORM PAGE ─── */
   return (
     <div
       ref={formRef}
@@ -334,135 +457,92 @@ export function SubmitFeedback() {
       className="min-h-screen bg-gradient-to-b from-[#EEF6FB] via-[#F8FAFB] to-white p-4 sm:p-8"
     >
       <style>{BRANDED_STYLES}</style>
-      <div className="max-w-3xl mx-auto space-y-5">
-        {/* Existing tracking code lookup */}
-        <div className="bg-white/90 backdrop-blur-sm border border-[#DDEAF2] rounded-2xl shadow-sm p-5">
-          <p className="text-xs uppercase tracking-wide text-[#6B7B8D] font-semibold mb-2">
-            {t("forms:feedback.already_submitted")}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Input
-              placeholder={t("forms:feedback.enter_tracking_code")}
-              value={existingTrackingCode}
-              onChange={(e) => setExistingTrackingCode(e.target.value)}
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => {
-                const code = existingTrackingCode.trim();
-                if (!code) return;
-                navigate(`/track/${code}`);
-              }}
-              className="sm:w-auto w-full"
-            >
-              {t("forms:feedback.view_updates")}
-            </Button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-md overflow-hidden">
-          {/* Branded Header */}
-          <div className="brand-header-bg p-6 border-b brand-primary-border">
-            <div className="flex items-center gap-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-3xl border border-[#E3EDF4] shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="brand-header-bg px-6 py-5 border-b border-[#E3EDF4]">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setStep("intro")}
+                className="p-1.5 rounded-lg hover:bg-white/60 transition-colors text-[#6B7B8D]"
+                aria-label="Back"
+              >
+                <ArrowLeft size={18} />
+              </button>
               {branding?.logoUrl ? (
                 <img
                   src={branding.logoUrl}
-                  alt={branding.companyName || company?.name}
-                  className="h-12 w-12 rounded-lg object-contain"
+                  alt={companyDisplayName}
+                  className="h-10 w-10 rounded-xl object-contain"
                 />
               ) : (
                 <div
-                  className="h-12 w-12 rounded-lg flex items-center justify-center text-lg font-bold"
-                  style={{
-                    backgroundColor: "var(--brand-primary, #2E86AB)",
-                    color: "var(--brand-text-on-primary, #FFFFFF)",
-                  }}
+                  className="h-10 w-10 rounded-xl flex items-center justify-center text-base font-bold brand-primary-bg"
+                  style={{ color: "var(--brand-text-on-primary, #fff)" }}
                 >
-                  {(
-                    branding?.companyName ||
-                    company?.name ||
-                    board.name
-                  )
-                    .charAt(0)
-                    .toUpperCase()}
+                  {companyDisplayName.charAt(0).toUpperCase()}
                 </div>
               )}
               <div>
                 <h1
-                  className="text-2xl font-bold"
+                  className="text-lg font-bold leading-tight"
                   style={{ color: "var(--brand-secondary, #1E3A5F)" }}
                 >
-                  {branding?.companyName || company?.name || board.name}
+                  {companyDisplayName}
                 </h1>
                 {branding?.slogan && (
-                  <p
-                    className="text-sm"
-                    style={{ color: "var(--brand-primary, #2E86AB)" }}
-                  >
-                    {branding.slogan}
-                  </p>
+                  <p className="text-xs brand-primary-text">{branding.slogan}</p>
                 )}
               </div>
             </div>
-            {(branding?.description || board.description) && (
-              <p
-                className="text-sm mt-3"
-                style={{ color: "var(--brand-primary-dark, #6B7B8D)" }}
-              >
-                {branding?.description || board.description}
-              </p>
-            )}
           </div>
 
-          {/* Form Body */}
-          <div className="p-8">
+          {/* Form body */}
+          <div className="px-6 sm:px-8 py-8">
+            <h2 className="text-xl font-bold mb-1" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+              {board.name}
+            </h2>
+            <p className="text-sm text-[#6B7B8D] mb-6">
+              {board.description || t("forms:feedback.form_description") || "Fill in the details below"}
+            </p>
+
             {errors.submit && (
-              <div className="mb-4 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
+              <div className="mb-5 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-xl">
                 <p className="text-sm text-[#E74C3C]">{errors.submit}</p>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <Select
-                label={t("forms:feedback.category")}
-                value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
-                options={board.categories.map((cat) => ({
-                  value: cat,
-                  label: cat,
-                }))}
-                error={errors.category}
-              />
-
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Language */}
               <Select
                 label={t("forms:feedback.language") || "Language"}
                 value={formData.submissionLanguage || i18n.language || "en"}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                options={[
-                  { value: "en", label: "🇬🇧 English" },
-                  { value: "si", label: "🇱🇰 සිංහල" },
-                  { value: "ta", label: "🇮🇳 தமிழ்" },
-                  { value: "ar", label: "🇸🇦 العربية" },
-                  { value: "hi", label: "🇮🇳 हिन्दी" },
-                ]}
+                onChange={e => handleLanguageChange(e.target.value)}
+                options={LANGUAGES}
               />
 
+              {/* Category */}
+              <Select
+                label={t("forms:feedback.category")}
+                value={formData.category}
+                onChange={e => setFormData({ ...formData, category: e.target.value })}
+                options={board.categories.map(cat => ({ value: cat, label: cat }))}
+                error={errors.category}
+              />
+
+              {/* Subject */}
               <Input
                 label={t("forms:feedback.subject")}
                 placeholder={t("forms:feedback.subject_placeholder")}
                 value={formData.subject}
-                onChange={(e) =>
-                  setFormData({ ...formData, subject: e.target.value })
-                }
+                onChange={e => setFormData({ ...formData, subject: e.target.value })}
                 error={errors.subject}
               />
 
+              {/* Description */}
               <div>
                 <label
-                  className="block text-sm font-medium mb-2"
+                  className="block text-sm font-medium mb-1.5"
                   style={{ color: "var(--brand-secondary, #1E3A5F)" }}
                 >
                   {t("forms:feedback.description")}
@@ -470,111 +550,75 @@ export function SubmitFeedback() {
                 <textarea
                   placeholder={t("forms:feedback.description_placeholder")}
                   value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  className={`w-full px-4 py-2 border rounded-lg text-base focus:outline-none focus:ring-2 transition-colors resize-none h-32 brand-input-border ${
-                    errors.description
-                      ? "border-[#E74C3C] focus:ring-[#E74C3C]"
-                      : ""
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  rows={5}
+                  className={`w-full px-4 py-3 border rounded-xl text-sm bg-white resize-none focus:outline-none transition-all ${
+                    errors.description ? "border-[#E74C3C]" : ""
                   }`}
                 />
                 {errors.description && (
-                  <p className="text-sm text-[#E74C3C] mt-1">
-                    {errors.description}
-                  </p>
+                  <p className="text-xs text-[#E74C3C] mt-1.5">{errors.description}</p>
                 )}
               </div>
 
-              <label className="flex items-center gap-3 cursor-pointer">
+              {/* Anonymous */}
+              <label className="flex items-center gap-3 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={formData.isAnonymous}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      isAnonymous: e.target.checked,
-                    })
-                  }
+                  onChange={e => setFormData({ ...formData, isAnonymous: e.target.checked })}
                   disabled={!board.isAnonymousAllowed}
-                  className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB] disabled:opacity-50"
+                  className="w-4.5 h-4.5 rounded"
                 />
-                <span
-                  className="font-medium"
-                  style={{ color: "var(--brand-secondary, #1E3A5F)" }}
-                >
+                <span className="text-sm font-medium" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
                   {t("forms:feedback.anonymous")}
                 </span>
               </label>
 
+              {/* Email */}
               {!formData.isAnonymous && (
                 <Input
                   label={t("forms:feedback.email")}
                   type="email"
                   placeholder="your@email.com"
                   value={formData.email || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
                   error={errors.email}
                   helperText={t("forms:feedback.email_helper")}
                 />
               )}
-              {teamMembers.length > 0 && (
-                <Select
-                  label={
-                    t("forms:feedback.assign_to") ||
-                    "Assign to Team Member (Optional)"
-                  }
-                  value={formData.assignedTo || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, assignedTo: e.target.value })
-                  }
-                  options={[
-                    { value: "", label: "No assignment" },
-                    ...teamMembers.map((member) => ({
-                      value: member.id,
-                      label: `${member.name} (${member.email})`,
-                    })),
-                  ]}
-                />
-              )}
-              <div className="border-t pt-6">
-                <h3
-                  className="text-lg font-semibold mb-4"
-                  style={{ color: "var(--brand-secondary, #1E3A5F)" }}
-                >
+
+              {/* Attachments */}
+              <div className="border-t border-[#EDF2F7] pt-5">
+                <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
                   {t("forms:feedback.attachments")}
                 </h3>
-
                 <FileUploadInput
-                  onFilesSelected={handleFilesSelected}
+                  onFilesSelected={files => setSelectedFiles(prev => [...prev, ...files])}
                   disabled={submitting || fileUploading}
                 />
-
                 {selectedFiles.length > 0 && (
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <FilePreview
-                      files={selectedFiles.map((file) => ({
-                        name: file.name,
-                        size: file.size,
-                      }))}
-                      onRemove={handleRemoveFile}
+                      files={selectedFiles.map(f => ({ name: f.name, size: f.size }))}
+                      onRemove={id => {
+                        if (typeof id !== "number") return;
+                        setSelectedFiles(prev => prev.filter((_, i) => i !== id));
+                      }}
                       isUploading={fileUploading}
                     />
                   </div>
                 )}
-
                 {uploads.size > 0 && (
-                  <div className="mt-4 space-y-3">
-                    {Array.from(uploads.values()).map((upload) => (
+                  <div className="mt-3 space-y-2">
+                    {Array.from(uploads.values()).map(u => (
                       <FileProgressBar
-                        key={upload.fileId}
-                        filename={upload.filename}
-                        progress={upload.progress}
-                        totalBytes={upload.totalBytes}
-                        uploadedBytes={upload.uploadedBytes}
-                        error={upload.error}
+                        key={u.fileId}
+                        filename={u.filename}
+                        progress={u.progress}
+                        totalBytes={u.totalBytes}
+                        uploadedBytes={u.uploadedBytes}
+                        error={u.error}
                       />
                     ))}
                   </div>
@@ -584,7 +628,7 @@ export function SubmitFeedback() {
               <button
                 type="submit"
                 disabled={submitting || fileUploading}
-                className="w-full px-5 py-2.5 text-base font-medium rounded-lg transition-all brand-btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-5 py-3.5 text-base font-semibold rounded-xl transition-all brand-btn-primary shadow-sm hover:shadow-md"
               >
                 {submitting || fileUploading
                   ? t("forms:feedback.uploading")
@@ -593,27 +637,18 @@ export function SubmitFeedback() {
             </form>
           </div>
 
-          {/* Company Contact Footer */}
+          {/* Contact footer */}
           {(branding?.address || branding?.contactNumber || branding?.contactEmail) && (
-            <div className="px-8 pb-6 border-t border-[#E3EDF4] pt-4">
-              <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs text-[#6B7B8D]">
+            <div className="px-8 pb-6 border-t border-[#F0F4F8] pt-4">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#6B7B8D]">
                 {branding.address && (
-                  <span className="flex items-center gap-1">
-                    <MapPin size={12} />
-                    {branding.address}
-                  </span>
+                  <span className="flex items-center gap-1"><MapPin size={11} />{branding.address}</span>
                 )}
                 {branding.contactNumber && (
-                  <span className="flex items-center gap-1">
-                    <Phone size={12} />
-                    {branding.contactNumber}
-                  </span>
+                  <span className="flex items-center gap-1"><Phone size={11} />{branding.contactNumber}</span>
                 )}
                 {branding.contactEmail && (
-                  <span className="flex items-center gap-1">
-                    <Mail size={12} />
-                    {branding.contactEmail}
-                  </span>
+                  <span className="flex items-center gap-1"><Mail size={11} />{branding.contactEmail}</span>
                 )}
               </div>
             </div>
@@ -621,7 +656,7 @@ export function SubmitFeedback() {
         </div>
 
         {showPoweredBy && (
-          <p className="text-center text-xs text-[#9AABBF]">
+          <p className="text-center text-xs text-[#9AABBF] mt-4">
             {t("forms:feedback.powered_by")}
           </p>
         )}
