@@ -245,7 +245,7 @@ export function SubmitFeedback() {
                 onChange={e => setExistingTrackingCode(e.target.value)}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
-                    const code = existingTrackingCode.trim();
+                    const code = existingTrackingCode.trim().replace(/^#/, "");
                     if (code) navigate(`/track/${code}`);
                   }
                 }}
@@ -254,7 +254,7 @@ export function SubmitFeedback() {
               <button
                 type="button"
                 onClick={() => {
-                  const code = existingTrackingCode.trim();
+                  const code = existingTrackingCode.trim().replace(/^#/, "");
                   if (code) navigate(`/track/${code}`);
                 }}
                 className="flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-lg bg-[#1E3A5F] text-white hover:bg-[#163056] transition-colors"
@@ -431,7 +431,7 @@ export function SubmitFeedback() {
               </div>
 
               <button
-                onClick={() => navigate(`/track/${success.trackingCode}`)}
+                onClick={() => navigate(`/track/${success.trackingCode.replace(/^#/, "")}`)}
                 className="w-full px-5 py-3 text-base font-semibold rounded-xl transition-all brand-btn-primary shadow-sm hover:shadow-md"
               >
                 {t("forms:feedback.track_feedback")}
