@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #1e3557;
+  --navy-deep: #152843;
+  --teal: #3a8fa5;
+  --teal-light: #4faac2;
+  --teal-pale: #e8f4f8;
+  --bg: #f8f7f4;
+  --bg-warm: #f2f0ec;
+  --white: #ffffff;
+  --text: #1a2b3c;
+  --text-mid: #4a6080;
+  --text-light: #7a94ad;
+  --border: #e2e8ed;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow: 0 4px 24px rgba(30, 53, 87, 0.08);
+  --shadow-lg: 0 16px 56px rgba(30, 53, 87, 0.16);
+  --t: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body, "DM Sans", sans-serif);
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display, "Bricolage Grotesque", sans-serif);
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+  }
+
+  h1 {
+    font-size: clamp(44px, 5.5vw, 74px);
+    font-weight: 800;
+  }
+
+  h2 {
+    font-size: clamp(30px, 3.8vw, 50px);
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 font-semibold rounded-lg transition-all whitespace-nowrap;
+    font-family: var(--font-body, "DM Sans", sans-serif);
+    background: var(--navy);
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  .btn-primary:hover {
+    background: var(--navy-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30, 53, 87, 0.25);
+  }
+
+  .btn-primary.teal {
+    background: var(--teal);
+  }
+
+  .btn-primary.teal:hover {
+    background: var(--teal-light);
+    box-shadow: 0 6px 20px rgba(58, 143, 165, 0.35);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 font-semibold rounded-lg transition-all whitespace-nowrap;
+    font-family: var(--font-body, "DM Sans", sans-serif);
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  .btn-outline:hover {
+    background: var(--navy);
+    color: white;
+  }
+
+  .btn-ghost {
+    @apply font-medium rounded-lg transition-all whitespace-nowrap no-underline;
+    font-family: var(--font-body, "DM Sans", sans-serif);
+    font-size: 15px;
+    color: var(--navy);
+    background: transparent;
+    padding: 8px 14px;
+  }
+
+  .btn-ghost:hover {
+    background: var(--teal-pale);
+  }
+
+  .section-label {
+    @apply inline-flex items-center gap-2 font-bold uppercase;
+    background: var(--teal-pale);
+    color: var(--teal);
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  .section-label svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .section-label.light {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .card-hover {
+    @apply transition-all duration-200;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.from-left {
+  transform: translateX(-32px);
+}
+
+.reveal.from-right {
+  transform: translateX(32px);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-stagger.visible > *:nth-child(1) { transition-delay: 0ms; opacity: 1; transform: none; }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 100ms; opacity: 1; transform: none; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 200ms; opacity: 1; transform: none; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 300ms; opacity: 1; transform: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8d0d8; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #9aabbf; }
