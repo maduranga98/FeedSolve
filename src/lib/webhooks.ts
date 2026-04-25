@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, deleteDoc, deleteField } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog } from '@/types';
 
@@ -35,7 +35,7 @@ export async function updateCustomWebhook(companyId: string, customConfig: Custo
 export async function deleteWebhook(companyId: string, webhookType: 'slack' | 'email' | 'custom') {
   const webhooksRef = doc(db, 'companies', companyId);
   const updateData: Record<string, any> = {};
-  updateData[`webhooks.${webhookType}`] = null;
+  updateData[`webhooks.${webhookType}`] = deleteField();
   await updateDoc(webhooksRef, updateData);
 }
 

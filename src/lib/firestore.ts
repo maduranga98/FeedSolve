@@ -5,6 +5,7 @@ import {
   getDoc,
   addDoc,
   updateDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
@@ -148,6 +149,19 @@ export async function getBoard(id: string): Promise<Board | null> {
   const boardRef = doc(db, 'boards', id);
   const snapshot = await getDoc(boardRef);
   return snapshot.exists() ? { ...snapshot.data(), id: snapshot.id } as Board : null;
+}
+
+export async function updateBoard(
+  boardId: string,
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'isAnonymousAllowed'>>
+): Promise<void> {
+  const boardRef = doc(db, 'boards', boardId);
+  await updateDoc(boardRef, { ...data, updatedAt: Timestamp.now() });
+}
+
+export async function deleteBoard(boardId: string): Promise<void> {
+  const boardRef = doc(db, 'boards', boardId);
+  await deleteDoc(boardRef);
 }
 
 // Submission operations
@@ -1369,4 +1383,34 @@ export async function createCommentNotification(
   };
   const docRef = await addDoc(notificationsRef, newNotification);
   return docRef.id;
+}
+
+// Audit log operations
+export async function addAuditLog(
+  companyId: string,
+  entry: {
+    userId: string;
+    userName: string;
+    userEmail: string;
+    action: string;
+    resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing';
+    resourceId?: string;
+    resourceName?: string;
+    details?: Record<string, unknown>;
+  }
+): Promise<void> {
+  const logsRef = collection(db, 'companies', companyId, 'audit_logs');
+  await addDoc(logsRef, {
+    companyId,
+    ...entry,
+    details: entry.details ?? {},
+    createdAt: Timestamp.now(),
+  });
+}
+
+export async function getAuditLogs(companyId: string, limitCount = 200): Promise<any[]> {
+  const logsRef = collection(db, 'companies', companyId, 'audit_logs');
+  const q = query(logsRef, orderBy('createdAt', 'desc'), limit(limitCount));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
 }

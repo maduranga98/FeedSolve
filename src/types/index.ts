@@ -524,3 +524,17 @@ export interface UndoOperation {
   restoredBy: string;
   expiresAt: Timestamp;
 }
+
+export interface AuditLog {
+  id: string;
+  companyId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  action: string;
+  resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing';
+  resourceId?: string;
+  resourceName?: string;
+  details: Record<string, unknown>;
+  createdAt: Timestamp;
+}

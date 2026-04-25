@@ -7,6 +7,13 @@ import { getTemplates } from '../../lib/firebase';
 import type { BoardTemplate } from '../../types';
 import { TemplateCard } from '../../components/Templates/TemplateCard';
 
+function formatIndustryLabel(industry: string): string {
+  return industry
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export function TemplatesPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -95,7 +102,7 @@ export function TemplatesPage() {
                 <option value="">All Industries</option>
                 {industries.map(industry => (
                   <option key={industry} value={industry}>
-                    {t(`templates:industries.${industry}`)}
+                    {formatIndustryLabel(industry)}
                   </option>
                 ))}
               </select>

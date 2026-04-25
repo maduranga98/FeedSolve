@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader } from 'lucide-react';
+import { Loader, Zap, AlertCircle } from 'lucide-react';
 import { useWebhooks, useWebhookLogs, useTestWebhook } from '@/hooks/useWebhooks';
 import { WebhookCard } from '@/components/Webhooks/WebhookCard';
 import { SlackSetup } from '@/components/Webhooks/SlackSetup';
@@ -11,8 +11,16 @@ import type { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
 type SetupMode = null | 'slack' | 'email' | 'custom';
 
 export function IntegrationsPage() {
-  const { webhooks, loading, error, updateSlack, updateEmail, updateCustom, deleteWebhookConfig, toggleWebhookConfig } =
-    useWebhooks();
+  const {
+    webhooks,
+    loading,
+    error,
+    updateSlack,
+    updateEmail,
+    updateCustom,
+    deleteWebhookConfig,
+    toggleWebhookConfig,
+  } = useWebhooks();
   const { logs, loading: logsLoading, fetchLogs } = useWebhookLogs();
   const { testWebhook } = useTestWebhook();
 
@@ -70,7 +78,10 @@ export function IntegrationsPage() {
     }
   };
 
-  const handleToggleWebhook = async (type: 'slack' | 'email' | 'custom', enabled: boolean) => {
+  const handleToggleWebhook = async (
+    type: 'slack' | 'email' | 'custom',
+    enabled: boolean
+  ) => {
     try {
       await toggleWebhookConfig(type, enabled);
     } catch (err) {
@@ -80,155 +91,191 @@ export function IntegrationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader className="animate-spin text-blue-600" size={32} />
+      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center">
+        <Loader className="animate-spin text-[#2E86AB]" size={32} />
       </div>
     );
   }
 
+  // Determine which integrations are connected (exclude null values from previous bug)
+  const hasSlack = !!webhooks?.slack;
+  const hasEmail = !!webhooks?.email;
+  const hasCustom = !!webhooks?.custom;
+  const hasAnyConnected = hasSlack || hasEmail || hasCustom;
+
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Integrations</h1>
-        <p className="text-gray-600 mt-2">
-          Connect external services to get notifications for submission events
-        </p>
+    <div className="min-h-screen bg-[#F4F7FA]">
+      {/* Page header */}
+      <div className="bg-white border-b border-[#E8ECF0]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+              <Zap size={20} className="text-[#2E86AB]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#1E3A5F]">Integrations</h1>
+              <p className="text-sm text-[#6B7B8D] mt-0.5">
+                Connect external services to receive notifications for submission events.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-          {error}
-        </div>
-      )}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        {/* Error banner */}
+        {error && (
+          <div className="bg-[#FFE5E5] border border-[#E74C3C] rounded-xl p-4 flex items-start gap-3">
+            <AlertCircle size={18} className="text-[#E74C3C] flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-[#E74C3C]">{error}</p>
+          </div>
+        )}
 
-      {/* Connected Webhooks */}
-      {(webhooks?.slack || webhooks?.email || webhooks?.custom) && (
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Connected Integrations</h2>
-          <div className="grid gap-4">
-            {webhooks?.slack && (
-              <WebhookCard
-                type="slack"
-                config={webhooks.slack}
-                enabled={webhooks.slack.enabled}
-                onToggle={enabled => handleToggleWebhook('slack', enabled)}
-                onEdit={() => setSetupMode('slack')}
-                onDelete={() => handleDeleteWebhook('slack')}
-                onTest={() => handleTestWebhook('slack')}
-                testing={testingWebhook === 'slack'}
+        {/* Connected Webhooks */}
+        {hasAnyConnected && (
+          <div>
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+              Connected Integrations
+            </h2>
+            <div className="grid gap-4">
+              {hasSlack && webhooks?.slack && (
+                <WebhookCard
+                  type="slack"
+                  config={webhooks.slack}
+                  enabled={webhooks.slack.enabled}
+                  onToggle={(enabled) => handleToggleWebhook('slack', enabled)}
+                  onEdit={() => setSetupMode('slack')}
+                  onDelete={() => handleDeleteWebhook('slack')}
+                  onTest={() => handleTestWebhook('slack')}
+                  testing={testingWebhook === 'slack'}
+                />
+              )}
+              {hasEmail && webhooks?.email && (
+                <WebhookCard
+                  type="email"
+                  config={webhooks.email}
+                  enabled={webhooks.email.enabled}
+                  onToggle={(enabled) => handleToggleWebhook('email', enabled)}
+                  onEdit={() => setSetupMode('email')}
+                  onDelete={() => handleDeleteWebhook('email')}
+                  onTest={() => handleTestWebhook('email')}
+                  testing={testingWebhook === 'email'}
+                />
+              )}
+              {hasCustom && webhooks?.custom && (
+                <WebhookCard
+                  type="custom"
+                  config={webhooks.custom}
+                  enabled={webhooks.custom.enabled}
+                  onToggle={(enabled) => handleToggleWebhook('custom', enabled)}
+                  onEdit={() => setSetupMode('custom')}
+                  onDelete={() => handleDeleteWebhook('custom')}
+                  onTest={() => handleTestWebhook('custom')}
+                  testing={testingWebhook === 'custom'}
+                />
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Setup Forms */}
+        {setupMode && (
+          <div className="bg-white border border-[#E8ECF0] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+              {setupMode === 'slack'
+                ? 'Setup Slack Integration'
+                : setupMode === 'email'
+                  ? 'Setup Email Notifications'
+                  : 'Setup Custom Webhook'}
+            </h2>
+
+            {setupMode === 'slack' && (
+              <SlackSetup
+                config={webhooks?.slack ?? undefined}
+                onSave={handleSlackSave}
+                onCancel={() => setSetupMode(null)}
               />
             )}
-
-            {webhooks?.email && (
-              <WebhookCard
-                type="email"
-                config={webhooks.email}
-                enabled={webhooks.email.enabled}
-                onToggle={enabled => handleToggleWebhook('email', enabled)}
-                onEdit={() => setSetupMode('email')}
-                onDelete={() => handleDeleteWebhook('email')}
-                onTest={() => handleTestWebhook('email')}
-                testing={testingWebhook === 'email'}
+            {setupMode === 'email' && (
+              <EmailSetup
+                config={webhooks?.email ?? undefined}
+                onSave={handleEmailSave}
+                onCancel={() => setSetupMode(null)}
               />
             )}
-
-            {webhooks?.custom && (
-              <WebhookCard
-                type="custom"
-                config={webhooks.custom}
-                enabled={webhooks.custom.enabled}
-                onToggle={enabled => handleToggleWebhook('custom', enabled)}
-                onEdit={() => setSetupMode('custom')}
-                onDelete={() => handleDeleteWebhook('custom')}
-                onTest={() => handleTestWebhook('custom')}
-                testing={testingWebhook === 'custom'}
+            {setupMode === 'custom' && (
+              <CustomWebhookSetup
+                config={webhooks?.custom ?? undefined}
+                onSave={handleCustomSave}
+                onCancel={() => setSetupMode(null)}
               />
             )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Setup Forms */}
-      {setupMode && (
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-            {setupMode === 'slack'
-              ? 'Setup Slack Integration'
-              : setupMode === 'email'
-                ? 'Setup Email Notifications'
-                : 'Setup Custom Webhook'}
-          </h2>
-
-          {setupMode === 'slack' && (
-            <SlackSetup
-              config={webhooks?.slack}
-              onSave={handleSlackSave}
-              onCancel={() => setSetupMode(null)}
-            />
-          )}
-
-          {setupMode === 'email' && (
-            <EmailSetup
-              config={webhooks?.email}
-              onSave={handleEmailSave}
-              onCancel={() => setSetupMode(null)}
-            />
-          )}
-
-          {setupMode === 'custom' && (
-            <CustomWebhookSetup
-              config={webhooks?.custom}
-              onSave={handleCustomSave}
-              onCancel={() => setSetupMode(null)}
-            />
-          )}
-        </div>
-      )}
-
-      {/* Add New Integration Buttons */}
-      {!setupMode && (
-        <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Add New Integration</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {!webhooks?.slack && (
-              <button
-                onClick={() => setSetupMode('slack')}
-                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
-              >
-                <div className="text-3xl mb-2">💬</div>
-                <div className="font-semibold text-gray-900">Slack</div>
-                <div className="text-sm text-gray-600 mt-1">Get Slack notifications</div>
-              </button>
-            )}
-
-            {!webhooks?.email && (
-              <button
-                onClick={() => setSetupMode('email')}
-                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
-              >
-                <div className="text-3xl mb-2">📧</div>
-                <div className="font-semibold text-gray-900">Email</div>
-                <div className="text-sm text-gray-600 mt-1">Email notifications</div>
-              </button>
-            )}
-
-            {!webhooks?.custom && (
-              <button
-                onClick={() => setSetupMode('custom')}
-                className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
-              >
-                <div className="text-3xl mb-2">🔗</div>
-                <div className="font-semibold text-gray-900">Custom Webhook</div>
-                <div className="text-sm text-gray-600 mt-1">POST to custom URL</div>
-              </button>
-            )}
+        {/* Add New Integration */}
+        {!setupMode && (
+          <div>
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+              {hasAnyConnected ? 'Add Another Integration' : 'Available Integrations'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {!hasSlack && (
+                <button
+                  onClick={() => setSetupMode('slack')}
+                  className="p-5 bg-white border border-[#E8ECF0] rounded-xl hover:border-[#2E86AB] hover:shadow-md transition-all text-center group"
+                >
+                  <div className="text-3xl mb-3">💬</div>
+                  <div className="font-semibold text-[#1E3A5F] group-hover:text-[#2E86AB] transition-colors">
+                    Slack
+                  </div>
+                  <div className="text-sm text-[#6B7B8D] mt-1">
+                    Get real-time Slack notifications
+                  </div>
+                </button>
+              )}
+              {!hasEmail && (
+                <button
+                  onClick={() => setSetupMode('email')}
+                  className="p-5 bg-white border border-[#E8ECF0] rounded-xl hover:border-[#2E86AB] hover:shadow-md transition-all text-center group"
+                >
+                  <div className="text-3xl mb-3">📧</div>
+                  <div className="font-semibold text-[#1E3A5F] group-hover:text-[#2E86AB] transition-colors">
+                    Email
+                  </div>
+                  <div className="text-sm text-[#6B7B8D] mt-1">
+                    Instant or digest email alerts
+                  </div>
+                </button>
+              )}
+              {!hasCustom && (
+                <button
+                  onClick={() => setSetupMode('custom')}
+                  className="p-5 bg-white border border-[#E8ECF0] rounded-xl hover:border-[#2E86AB] hover:shadow-md transition-all text-center group"
+                >
+                  <div className="text-3xl mb-3">🔗</div>
+                  <div className="font-semibold text-[#1E3A5F] group-hover:text-[#2E86AB] transition-colors">
+                    Custom Webhook
+                  </div>
+                  <div className="text-sm text-[#6B7B8D] mt-1">
+                    POST events to any URL
+                  </div>
+                </button>
+              )}
+              {hasSlack && hasEmail && hasCustom && (
+                <div className="md:col-span-3 text-center py-6 text-sm text-[#9AABBF]">
+                  All available integrations are connected.
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Webhook Logs */}
-      <WebhookLogs logs={logs} loading={logsLoading} onRefresh={fetchLogs} />
+        {/* Webhook Logs */}
+        <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
+          <WebhookLogs logs={logs} loading={logsLoading} onRefresh={fetchLogs} />
+        </div>
+      </div>
     </div>
   );
 }
