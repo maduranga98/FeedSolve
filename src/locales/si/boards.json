@@ -1,66 +1,66 @@
 {
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "සාදරයෙන් ආපසු",
-    "total_submissions": "මුළු ඉදිරිපත්භාවයි",
-    "pending": "බලා සිටින්න",
-    "resolved": "විසඳුණු",
+    "title": "ඩැෂ්බෝඩ්",
+    "welcome": "සාදරයෙන් පිළිගනිමු",
+    "total_submissions": "මුළු ඉදිරිපත් කිරීම්",
+    "pending": "විසඳා නොමැති",
+    "resolved": "විසඳා ඇත",
     "recent_feedback": "මෑත ප්‍රතිපෝෂණ",
-    "no_data": "කිසිදු දත්ත නැත",
-    "view_all": "සියල්ල දෙස බලන්න"
+    "no_data": "දත්ත නොමැත",
+    "view_all": "සියල්ල බලන්න"
   },
   "submissions": {
-    "title": "ඉදිරිපත්භාවයි",
+    "title": "ඉදිරිපත් කිරීම්",
     "new": "නව",
-    "in_progress": "ප්‍රගතිමත්",
-    "resolved": "විසඳුණු",
+    "in_progress": "සැකසෙමින් පවතී",
+    "resolved": "විසඳා ඇත",
     "closed": "වසා ඇත",
-    "filter_by_status": "තත්ත්වය අනුව ෆිල්ටර්",
-    "filter_by_board": "පුවරුව අනුව ෆිල්ටර්",
-    "sort_by_date": "දිනය අනුව ගිණුම්පත",
-    "sort_by_priority": "অগ්‍රাধිකාරයි අනුව ගිණුම්පත",
-    "add_note": "සටහන එකතු කරන්න",
-    "internal_notes": "අභ්‍යන්තර සටහන",
-    "public_reply": "ජනතා පිළිතුරු",
-    "priority": "অග්‍රාධිකාරයි",
-    "priority_low": "පහළ",
+    "filter_by_status": "තත්ත්වය අනුව පෙරහන් කරන්න",
+    "filter_by_board": "පුවරුව අනුව පෙරහන් කරන්න",
+    "sort_by_date": "දිනය අනුව අනුක්‍රමගත කරන්න",
+    "sort_by_priority": "ප්‍රමුඛත්වය අනුව අනුක්‍රමගත කරන්න",
+    "add_note": "සටහනක් එකතු කරන්න",
+    "internal_notes": "අභ්‍යන්තර සටහන්",
+    "public_reply": "ප්‍රසිද්ධ පිළිතුර",
+    "priority": "ප්‍රමුඛත්වය",
+    "priority_low": "අඩු",
     "priority_medium": "මධ්‍යම",
     "priority_high": "ඉහළ",
-    "assigned_to": "එකට පවරා ඇත",
+    "assigned_to": "පවරා ඇත",
     "resolution_status": "විසඳුම් තත්ත්වය",
-    "unresolved": "විසඳුනු නැත",
-    "partially_resolved": "අර්ධ විසඳුණු"
+    "unresolved": "විසඳා නොමැති",
+    "partially_resolved": "අර්ධ ලෙස විසඳා ඇත"
   },
   "templates": {
     "title": "පුවරු සැකිලි",
-    "browse": "සැකිලි බිරිසිදු කරන්න",
-    "select_template": "සැකිලිය තෝරන්න",
-    "create_from_template": "සැකිලි වලින් පුවරුව සාදන්න",
-    "template_details": "සැකිලි විස්තරයි",
-    "industry": "ශිල්පය",
+    "browse": "සැකිලි බැලීමට",
+    "select_template": "සැකිලියක් තෝරන්න",
+    "create_from_template": "සැකිලියෙන් පුවරුවක් සාදන්න",
+    "template_details": "සැකිලි විස්තර",
+    "industry": "කර්මාන්තය",
     "categories": "ප්‍රවර්ග",
     "featured": "විශේෂ",
-    "usage_count": "සිටින ගිණුම් දිනවල"
+    "usage_count": "භාවිත සංඛ්‍යාව"
   },
   "status": {
     "active": "සක්‍රිය",
     "inactive": "අක්‍රිය",
-    "archived": "සංරක්ෂිතයි",
-    "draft": "খসඩ",
-    "published": "ප්‍රකාශිතයි"
+    "archived": "සංරක්ෂිත",
+    "draft": "කටුපිටපත",
+    "published": "ප්‍රකාශිත"
   },
   "errors": {
-    "not_found": "පුවරුව සොයා ගැනුම් ගිහින්",
-    "access_denied": "ප්‍රවේශ ප්‍රතික්ෂේප කරන ලදී",
-    "creation_failed": "පුවරුව සාදීමට අපසරණයි",
-    "update_failed": "පුවරුව යාවත්කාලීන කිරීමට අපසරණයි",
-    "deletion_failed": "පුවරුව මකා දැමීමට අපසරණයි"
+    "not_found": "පුවරුව සොයාගත නොහැක",
+    "access_denied": "ප්‍රවේශය ප්‍රතික්ෂේප කරන ලදී",
+    "creation_failed": "පුවරුව සාදීමට අසාර්ථක විය",
+    "update_failed": "පුවරුව යාවත්කාලීන කිරීමට අසාර්ථක විය",
+    "deletion_failed": "පුවරුව මකා දැමීමට අසාර්ථක විය"
   },
   "success": {
     "board_created": "පුවරුව සාර්ථකව සාදන ලදී",
     "board_updated": "පුවරුව සාර්ථකව යාවත්කාලීන කරන ලදී",
-    "board_deleted": "පුවරුව සාර්ථකව මකා දැමීණි",
-    "submission_created": "ඉදිරිපත්භාවයි සාර්ථකව සාදන ලදී",
+    "board_deleted": "පුවරුව සාර්ථකව මකා දැමී ඇත",
+    "submission_created": "ඉදිරිපත් කිරීම සාර්ථකව සාදන ලදී",
     "note_added": "සටහන සාර්ථකව එකතු කරන ලදී"
   }
 }
