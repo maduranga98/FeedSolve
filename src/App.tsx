@@ -51,6 +51,9 @@ const DeveloperDashboard = lazy(() => import('./pages/Developer/DeveloperDashboa
 // Branding Pages
 const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m => ({ default: m.BrandingPage })));
 
+// Audit Logs Pages
+const AuditLogsPage = lazy(() => import('./pages/AuditLogs/AuditLogsPage').then(m => ({ default: m.AuditLogsPage })));
+
 // Fallback
 import { NotFound } from './pages/NotFound';
 
@@ -203,6 +206,15 @@ function AppContent() {
             <ProtectedRoute>
               <Navbar />
               <DeveloperDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/audit-logs"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <AuditLogsPage />
             </ProtectedRoute>
           }
         />

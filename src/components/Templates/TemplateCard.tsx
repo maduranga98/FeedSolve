@@ -7,8 +7,15 @@ interface TemplateCardProps {
   onSelect: () => void;
 }
 
+function formatIndustryLabel(industry: string): string {
+  return industry
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export function TemplateCard({ template, onSelect }: TemplateCardProps) {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const currentLang = i18n.language as 'en' | 'si' | 'ta' | 'ar' | 'hi';
   const translation = template.translations[currentLang] || template.translations['en'];
 
@@ -32,7 +39,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
         {/* Industry Badge */}
         <div className="mb-4">
           <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-            {t(`templates.industries.${template.industry}`)}
+            {formatIndustryLabel(template.industry)}
           </span>
         </div>
 
