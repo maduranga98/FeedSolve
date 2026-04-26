@@ -60,7 +60,30 @@ service cloud.firestore {
         (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
     }
 
-    // Webhook logs - Can read based on role, Cloud Functions writes
+    // Returns true when the update touches only the listed fields
+    function only(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // Validate tracking code format: #FSV-<uppercase alphanumeric, 8-30 chars>
+    function isValidTrackingCode(code) {
+      return code is string && code.matches('#FSV-[A-Z0-9]{8,30}');
+    }
+
+    // Validate submission fields on direct create (Cloud Functions bypass rules)
+    function isValidSubmissionCreate() {
+      let d = request.resource.data;
+      return d.boardId is string && d.boardId.size() > 0 && d.boardId.size() <= 128 &&
+             d.companyId is string && d.companyId.size() > 0 && d.companyId.size() <= 128 &&
+             d.subject is string && d.subject.size() > 0 && d.subject.size() <= 500 &&
+             d.description is string && d.description.size() > 0 && d.description.size() <= 10000 &&
+             d.trackingCode is string && isValidTrackingCode(d.trackingCode) &&
+             d.status == 'received' &&
+             d.priority in ['low', 'medium', 'high', 'critical'] &&
+             d.isAnonymous is bool;
+    }
+
+    // Webhook logs - Cloud Functions write, Admin+ read
     match /webhook_logs/{companyId}/{logId} {
       allow read: if canManageCompany(companyId);
       allow write: if false;
@@ -69,11 +92,16 @@ service cloud.firestore {
     // Users collection - RBAC enforced
     match /users/{userId} {
       allow read: if request.auth.uid == userId || isUserInCompany(resource.data.companyId);
-      allow write: if request.auth.uid == userId || canManageTeam(resource.data.companyId);
-      allow update: if request.auth.uid == userId ||
-        (canManageTeam(resource.data.companyId) &&
-         (request.resource.data.role != resource.data.role ||
-          request.resource.data.companyId == resource.data.companyId));
+      // Create: only the authenticated user may create their own doc; role must be valid
+      allow create: if request.auth.uid == userId &&
+        request.resource.data.id == userId &&
+        request.resource.data.companyId is string &&
+        request.resource.data.role in ['owner', 'admin', 'manager', 'viewer'];
+      // Update: self-update OR manager/admin update that keeps companyId unchanged
+      allow update: if (request.auth.uid == userId && request.resource.data.companyId == resource.data.companyId) ||
+        (canManageTeam(resource.data.companyId) && request.resource.data.companyId == resource.data.companyId);
+      // Delete: team managers may remove other users; cannot self-delete
+      allow delete: if canManageTeam(resource.data.companyId) && request.auth.uid != userId;
     }
 
     // Companies collection - Owner/Admin only
@@ -100,7 +128,7 @@ service cloud.firestore {
       }
     }
 
-    // Boards collection - Role-based access
+    // Boards collection - Role-based access; board doc must carry companyId
     match /boards/{boardId} {
       allow read: if canReadSubmissions(resource.data.companyId);
       allow write: if canManageCompany(resource.data.companyId);
@@ -110,27 +138,35 @@ service cloud.firestore {
     // Submissions collection - Role-based access
     match /submissions/{submissionId} {
       allow read: if canReadSubmissions(resource.data.companyId);
-      allow create: if isUserInCompany(resource.data.companyId);
+      // Create: writer must belong to the company and data must pass validation
+      allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
       allow update: if canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
 
-      // Attachments can be read by company members
+      // Attachments subcollection - company members read; Cloud Functions write
       match /attachments/{attachmentId} {
-        allow read: if canReadSubmissions(resource.data.companyId);
-        allow write: if false; // Cloud Functions handle writes
+        allow read: if canReadSubmissions(
+          get(/databases/$(database)/documents/submissions/$(submissionId)).data.companyId
+        );
+        allow write: if false;
       }
 
-      // Comments subcollection - Team members can read, authors can manage
+      // Comments subcollection - company members read; authors manage their own comments
       match /comments/{commentId} {
-        allow read: if canReadSubmissions(get(/databases/$(database)/documents/submissions/$(submissionId)).data.companyId);
+        allow read: if canReadSubmissions(
+          get(/databases/$(database)/documents/submissions/$(submissionId)).data.companyId
+        );
         allow create: if isAuthenticated() &&
           isUserInCompany(request.resource.data.companyId) &&
           request.resource.data.author.id == request.auth.uid &&
+          request.resource.data.content is string &&
+          request.resource.data.content.size() > 0 &&
+          request.resource.data.content.size() <= 5000 &&
           request.resource.data.mentions.size() <= 15 &&
-          request.resource.data.mentions.all(userId,
-            exists(/databases/$(database)/documents/users/$(userId)) &&
-            get(/databases/$(database)/documents/users/$(userId)).data.companyId == request.resource.data.companyId
+          request.resource.data.mentions.all(uid,
+            exists(/databases/$(database)/documents/users/$(uid)) &&
+            get(/databases/$(database)/documents/users/$(uid)).data.companyId == request.resource.data.companyId
           );
         allow update: if isAuthenticated() &&
           request.auth.uid == resource.data.author.id &&
@@ -147,7 +183,7 @@ service cloud.firestore {
       allow write: if canManageCompany(companyId);
     }
 
-    // API Logs collection - Server-only writes, Admin+ reads
+    // API Logs - server-only writes, Admin+ reads
     match /api_logs/{companyId}/{logId} {
       allow read: if canManageCompany(companyId);
       allow write: if false;
@@ -171,38 +207,39 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Bulk operations - Cloud Functions writes, Admins can read
+    // Per-IP rate limit tracking for public endpoints - Cloud Functions only
+    match /_rate_limits/{docId} {
+      allow read, write: if false;
+    }
+
+    // Bulk operations - Cloud Functions writes, Owner/Admin/Manager reads
     match /bulkOperations/{operationId} {
       allow read: if isAuthenticated() &&
         isUserInCompany(resource.data.companyId) &&
         (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
-      allow write: if false; // Cloud Functions handle writes
+      allow write: if false;
     }
 
-    // Bulk operation logs - Cloud Functions writes, Admins can read for audit
+    // Bulk operation logs - Cloud Functions writes, Owner/Admin reads
     match /bulkOperationLogs/{logId} {
       allow read: if isAuthenticated() &&
         exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
         isUserInCompany(resource.data.companyId) &&
         (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin']);
-      allow write: if false; // Cloud Functions handle writes
+      allow write: if false;
     }
 
-    // Undo operations - Cloud Functions writes, users can read for status
+    // Undo operations - Cloud Functions writes, Owner/Admin/Manager reads
     match /undoOperations/{undoId} {
       allow read: if isAuthenticated() &&
         isUserInCompany(resource.data.companyId) &&
         (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
-      allow write: if false; // Cloud Functions handle writes
+      allow write: if false;
     }
 
-    // Deny everything else
+    // Deny all other documents
     match /{document=**} {
       allow read, write: if false;
     }
   }
-}
-
-function only(fields) {
-  return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
 }

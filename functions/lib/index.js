@@ -43,5 +43,8 @@ exports.api = void 0;
 const functions = __importStar(require("firebase-functions"));
 const api_1 = __importDefault(require("./api"));
 __exportStar(require("./webhooks"), exports);
+__exportStar(require("./attachments-cleanup"), exports);
+__exportStar(require("./comment-notifications"), exports);
+__exportStar(require("./analytics-scheduler"), exports);
 exports.api = functions.https.onRequest(api_1.default);
 //# sourceMappingURL=index.js.map

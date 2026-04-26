@@ -28,14 +28,23 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(validateInput);
 app.use(sanitizeOutput);
+const EXPLICIT_ORIGINS = new Set([
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'https://feedsolve.com',
+]);
+// Matches any https subdomain of feedsolve.com (no wildcards in the cors package)
+const SUBDOMAIN_RE = /^https:\/\/[a-z0-9-]+\.feedsolve\.com$/;
+
 app.use(
   cors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://feedsolve.com',
-      'https://*.feedsolve.com',
-    ],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin || EXPLICIT_ORIGINS.has(origin) || SUBDOMAIN_RE.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
