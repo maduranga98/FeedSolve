@@ -7,10 +7,13 @@ import { EmailSetup } from '@/components/Webhooks/EmailSetup';
 import { CustomWebhookSetup } from '@/components/Webhooks/CustomWebhookSetup';
 import { WebhookLogs } from '@/components/Webhooks/WebhookLogs';
 import type { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { addAuditLog } from '@/lib/firestore';
 
 type SetupMode = null | 'slack' | 'email' | 'custom';
 
 export function IntegrationsPage() {
+  const { user } = useAuth();
   const {
     webhooks,
     loading,
@@ -27,9 +30,23 @@ export function IntegrationsPage() {
   const [setupMode, setSetupMode] = useState<SetupMode>(null);
   const [testingWebhook, setTestingWebhook] = useState<SetupMode>(null);
 
+  const logWebhookAction = (action: string, type: string) => {
+    if (!user) return;
+    void addAuditLog(user.companyId, {
+      userId: user.id,
+      userName: user.name,
+      userEmail: user.email,
+      action,
+      resourceType: 'webhook',
+      resourceName: type,
+      details: { integrationType: type },
+    });
+  };
+
   const handleSlackSave = async (config: SlackWebhook) => {
     try {
       await updateSlack(config);
+      logWebhookAction(webhooks?.slack ? 'Updated Slack integration' : 'Connected Slack integration', 'Slack');
       setSetupMode(null);
       await fetchLogs();
     } catch (err) {
@@ -40,6 +57,7 @@ export function IntegrationsPage() {
   const handleEmailSave = async (config: EmailWebhook) => {
     try {
       await updateEmail(config);
+      logWebhookAction(webhooks?.email ? 'Updated Email integration' : 'Connected Email integration', 'Email');
       setSetupMode(null);
       await fetchLogs();
     } catch (err) {
@@ -50,6 +68,7 @@ export function IntegrationsPage() {
   const handleCustomSave = async (config: CustomWebhook) => {
     try {
       await updateCustom(config);
+      logWebhookAction(webhooks?.custom ? 'Updated Custom webhook' : 'Connected Custom webhook', 'Custom');
       setSetupMode(null);
       await fetchLogs();
     } catch (err) {
@@ -72,6 +91,7 @@ export function IntegrationsPage() {
   const handleDeleteWebhook = async (type: 'slack' | 'email' | 'custom') => {
     try {
       await deleteWebhookConfig(type);
+      logWebhookAction(`Disconnected ${type.charAt(0).toUpperCase() + type.slice(1)} integration`, type);
       await fetchLogs();
     } catch (err) {
       console.error('Failed to delete webhook:', err);

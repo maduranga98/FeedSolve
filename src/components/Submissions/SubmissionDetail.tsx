@@ -13,11 +13,12 @@ import {
 } from "lucide-react";
 import { AttachmentGallery } from "../Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
+import { useAuth } from "../../hooks/useAuth";
 import AssignDropdown from "./AssignDropdown";
 import PriorityDropdown from "./PriorityDropdown";
 import InternalNotesSection from "./InternalNotesSection";
 import PublicReplySection from "./PublicReplySection";
-import { updateSubmissionStatus } from "../../lib/firestore";
+import { updateSubmissionStatus, addAuditLog } from "../../lib/firestore";
 import { formatDate } from "../../lib/utils";
 
 interface SubmissionDetailProps {
@@ -72,6 +73,7 @@ export default function SubmissionDetail({
   onClose,
   onUpdated,
 }: SubmissionDetailProps) {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -81,6 +83,18 @@ export default function SubmissionDetail({
     setLoading(true);
     try {
       await updateSubmissionStatus(submission.id, newStatus);
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Changed status to "${newStatus}"`,
+          resourceType: "submission",
+          resourceId: submission.id,
+          resourceName: submission.subject,
+          details: { from: submission.status, to: newStatus },
+        });
+      }
       onUpdated?.();
     } catch (error) {
       console.error("Failed to update status:", error);
