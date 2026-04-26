@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { createBoard, getTemplate } from '../../lib/firestore';
+import { createBoard, getTemplate, addAuditLog } from '../../lib/firestore';
 import { Button, Input } from '../../components/Shared';
 import type { BoardFormInput } from '../../types';
 import type { BoardTemplate } from '../../types';
@@ -84,6 +84,16 @@ export function CreateBoard() {
     setIsLoading(true);
     try {
       const newBoard = await createBoard(user.companyId, formData);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: "Created board",
+        resourceType: "board",
+        resourceId: newBoard.id,
+        resourceName: newBoard.name,
+        details: { categories: formData.categories },
+      });
       navigate(`/board/${newBoard.id}`);
     } catch (error) {
       setErrors({

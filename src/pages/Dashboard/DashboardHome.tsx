@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
-import { getCompanyBoards, deleteBoard, updateBoard } from "../../lib/firestore";
+import { getCompanyBoards, deleteBoard, updateBoard, addAuditLog } from "../../lib/firestore";
 import type { Board } from "../../types";
 import { LoadingSpinner, Button } from "../../components/Shared";
 import { UsageOverview } from "../../components/Dashboard/UsageOverview";
@@ -180,6 +180,18 @@ export function DashboardHome() {
 
   const handleEditSave = async (board: Board, data: { name: string; description: string }) => {
     await updateBoard(board.id, data);
+    if (user) {
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: "Edited board",
+        resourceType: "board",
+        resourceId: board.id,
+        resourceName: data.name,
+        details: { oldName: board.name, oldDescription: board.description, ...data },
+      });
+    }
     setBoards((prev) =>
       prev.map((b) => (b.id === board.id ? { ...b, ...data } : b))
     );
@@ -187,6 +199,18 @@ export function DashboardHome() {
 
   const handleDeleteConfirm = async (board: Board) => {
     await deleteBoard(board.id);
+    if (user) {
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: "Deleted board",
+        resourceType: "board",
+        resourceId: board.id,
+        resourceName: board.name,
+        details: { submissionCount: board.submissionCount },
+      });
+    }
     setBoards((prev) => prev.filter((b) => b.id !== board.id));
   };
 

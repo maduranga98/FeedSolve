@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { updateSubmissionPriority } from '../../lib/firestore';
+import { useAuth } from '../../hooks/useAuth';
+import { updateSubmissionPriority, addAuditLog } from '../../lib/firestore';
 
 interface PriorityDropdownProps {
   submissionId: string;
@@ -19,6 +20,7 @@ export default function PriorityDropdown({
   currentPriority,
   onUpdated,
 }: PriorityDropdownProps) {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const style = priorityColors[currentPriority] || priorityColors.medium;
 
@@ -28,6 +30,17 @@ export default function PriorityDropdown({
     setLoading(true);
     try {
       await updateSubmissionPriority(submissionId, newPriority);
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Changed priority to "${newPriority}"`,
+          resourceType: 'submission',
+          resourceId: submissionId,
+          details: { from: currentPriority, to: newPriority },
+        });
+      }
       onUpdated?.();
     } catch (error) {
       console.error('Failed to update priority:', error);

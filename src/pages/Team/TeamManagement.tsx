@@ -13,6 +13,7 @@ import {
   removeTeamMember,
   inviteTeamMember,
   getCompanyInvitations,
+  addAuditLog,
 } from '../../lib/firestore';
 import type { TeamMember, TeamInvitation, User, UserRole } from '../../types';
 
@@ -68,6 +69,15 @@ export function TeamManagement() {
       setInviting(true);
       setError('');
       await inviteTeamMember(currentUser.companyId, inviteEmail, inviteRole, currentUser.id);
+      void addAuditLog(currentUser.companyId, {
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        action: `Invited team member`,
+        resourceType: "team",
+        resourceName: inviteEmail,
+        details: { invitedEmail: inviteEmail, role: inviteRole },
+      });
       setSuccess(`Invitation sent to ${inviteEmail}`);
       setInviteEmail('');
       setInviteRole('viewer');
@@ -83,7 +93,18 @@ export function TeamManagement() {
 
   async function handleRoleChange(userId: string, newRole: UserRole) {
     try {
+      const target = teamMembers.find((m) => m.userId === userId);
       await updateMemberRole(userId, newRole);
+      void addAuditLog(currentUser.companyId, {
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        action: `Changed role to "${newRole}"`,
+        resourceType: "team",
+        resourceId: userId,
+        resourceName: target?.name ?? userId,
+        details: { oldRole: target?.role, newRole },
+      });
       setSuccess('Role updated');
       await loadTeamData();
       setTimeout(() => setSuccess(''), 3000);
@@ -95,7 +116,18 @@ export function TeamManagement() {
 
   async function handleRemoveMember(userId: string) {
     try {
+      const target = teamMembers.find((m) => m.userId === userId);
       await removeTeamMember(userId);
+      void addAuditLog(currentUser.companyId, {
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        action: "Removed team member",
+        resourceType: "team",
+        resourceId: userId,
+        resourceName: target?.name ?? userId,
+        details: { removedEmail: target?.email },
+      });
       setSuccess('Team member removed');
       await loadTeamData();
       setTimeout(() => setSuccess(''), 3000);

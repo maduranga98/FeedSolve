@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { getCompanyMembers, assignSubmission, unassignSubmission } from '../../lib/firestore';
+import { getCompanyMembers, assignSubmission, unassignSubmission, addAuditLog } from '../../lib/firestore';
 import type { User } from '../../types';
 import { UserPlus, UserX } from 'lucide-react';
 
@@ -37,6 +37,18 @@ export default function AssignDropdown({
     setLoading(true);
     try {
       await assignSubmission(submissionId, userId);
+      if (user) {
+        const assignedMemberName = members.find((m) => m.id === userId)?.name ?? userId;
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Assigned submission to ${assignedMemberName}`,
+          resourceType: 'submission',
+          resourceId: submissionId,
+          details: { assignedToId: userId, assignedToName: assignedMemberName },
+        });
+      }
       onAssigned?.();
     } catch (error) {
       console.error('Failed to assign submission:', error);
@@ -50,6 +62,17 @@ export default function AssignDropdown({
     setLoading(true);
     try {
       await unassignSubmission(submissionId);
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: 'Unassigned submission',
+          resourceType: 'submission',
+          resourceId: submissionId,
+          details: {},
+        });
+      }
       onAssigned?.();
     } catch (error) {
       console.error('Failed to unassign submission:', error);
