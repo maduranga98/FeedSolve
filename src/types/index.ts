@@ -182,6 +182,8 @@ export interface Submission {
   subject: string;
   description: string;
   submitterEmail?: string;
+  submitterName?: string;
+  submitterMobile?: string;
   isAnonymous: boolean;
   status: "received" | "in_review" | "in_progress" | "resolved" | "closed";
   priority: "low" | "medium" | "high" | "critical";
@@ -202,6 +204,8 @@ export interface SubmissionFormInput {
   subject: string;
   description: string;
   email?: string;
+  submitterName?: string;
+  submitterMobile?: string;
   isAnonymous: boolean;
   assignedTo?: string;
   submissionLanguage?: string;

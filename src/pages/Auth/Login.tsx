@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Mail, Lock } from 'lucide-react';
@@ -29,6 +29,10 @@ export function Login() {
   const { login, loginWithGoogle, loginWithApple } = useAuth();
   const { t } = useTranslation();
   const [formData, setFormData] = useState({ email: '', password: '' });
+
+  useEffect(() => {
+    document.title = 'Login | FeedSolve';
+  }, []);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | null>(null);

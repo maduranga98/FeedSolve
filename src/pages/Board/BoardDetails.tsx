@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Download, Share2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard } from '../../lib/firestore';
@@ -35,6 +35,7 @@ export function BoardDetails() {
           return;
         }
         setBoard(boardData);
+        document.title = `${boardData.name} | FeedSolve`;
       } catch (err) {
         setError('Failed to load board');
         console.error(err);
@@ -47,16 +48,13 @@ export function BoardDetails() {
   }, [boardId, user]);
 
   const handleDownloadQR = () => {
-    const element = document.getElementById('qr-code');
-    if (element) {
-      const canvas = element.querySelector('canvas');
-      if (canvas) {
-        const url = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${board?.name || 'board'}-qr-code.png`;
-        link.click();
-      }
+    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement | null;
+    if (canvas) {
+      const url = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${board?.name || 'board'}-qr-code.png`;
+      link.click();
     }
   };
 
@@ -207,11 +205,9 @@ export function BoardDetails() {
           {/* QR Code */}
           <div className="bg-color-surface rounded-lg shadow-md p-6 flex flex-col items-center justify-center">
             <h2 className="text-xl font-semibold text-color-primary mb-6">QR Code</h2>
-            <div
-              id="qr-code"
-              className="p-4 bg-white rounded-lg border-2 border-color-border mb-6"
-            >
-              <QRCodeSVG
+            <div className="p-4 bg-white rounded-lg border-2 border-color-border mb-6">
+              <QRCodeCanvas
+                id="qr-canvas"
                 value={feedbackUrl}
                 size={256}
                 level="H"

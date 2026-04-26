@@ -54,6 +54,9 @@ app.get('/api/openapi.json', (req: express.Request, res: express.Response) => {
   res.json(openapi);
 });
 
+// Public routes — mounted before auth middleware so /public/* paths are accessible without API key
+app.use('/', attachmentsRouter);
+
 // API authentication and rate limiting
 app.use('/api/', authenticateApiKey);
 app.use('/api/', rateLimitMiddleware);
@@ -73,7 +76,6 @@ app.use('/', apiKeysRouter);
 app.use('/', submissionsRouter);
 app.use('/', boardsRouter);
 app.use('/', statsRouter);
-app.use('/', attachmentsRouter);
 app.use('/', searchRouter);
 app.use('/', filtersRouter);
 app.use('/', bulkOperationsRouter);

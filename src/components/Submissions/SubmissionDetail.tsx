@@ -53,6 +53,8 @@ function exportSubmissionCSV(submission: Submission) {
     ["Priority", submission.priority],
     ["Description", `"${submission.description.replace(/"/g, '""')}"`],
     ["Submitter Email", submission.submitterEmail ?? "Anonymous"],
+    ["Submitter Name", submission.submitterName ?? ""],
+    ["Submitter Mobile", submission.submitterMobile ?? ""],
     ["Anonymous", submission.isAnonymous ? "Yes" : "No"],
     ["Submitted", submission.createdAt.toDate().toISOString()],
     ["Last Updated", submission.updatedAt.toDate().toISOString()],
@@ -254,15 +256,7 @@ export default function SubmissionDetail({
                 {formatDate(submission.createdAt.toDate())}
               </p>
             </div>
-            {submission.submitterEmail && !submission.isAnonymous && (
-              <div>
-                <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
-                  Submitter Email
-                </label>
-                <p className="text-[#444441]">{submission.submitterEmail}</p>
-              </div>
-            )}
-            {submission.isAnonymous && (
+            {submission.isAnonymous ? (
               <div>
                 <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
                   Identity
@@ -271,6 +265,33 @@ export default function SubmissionDetail({
                   Anonymous
                 </span>
               </div>
+            ) : (
+              <>
+                {submission.submitterEmail && (
+                  <div>
+                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                      Submitter Email
+                    </label>
+                    <p className="text-[#444441]">{submission.submitterEmail}</p>
+                  </div>
+                )}
+                {submission.submitterName && (
+                  <div>
+                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                      Name
+                    </label>
+                    <p className="text-[#444441]">{submission.submitterName}</p>
+                  </div>
+                )}
+                {submission.submitterMobile && (
+                  <div>
+                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                      Mobile
+                    </label>
+                    <p className="text-[#444441]">{submission.submitterMobile}</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

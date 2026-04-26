@@ -130,6 +130,8 @@ export function SubmitFeedback() {
     subject: "",
     description: "",
     email: "",
+    submitterName: "",
+    submitterMobile: "",
     isAnonymous: false,
     submissionLanguage: i18n.language || "en",
   });
@@ -142,6 +144,7 @@ export function SubmitFeedback() {
         const boardData = await getBoardBySlug(slug);
         if (boardData) {
           setBoard(boardData);
+          document.title = `${boardData.name} | FeedSolve`;
           if (boardData.categories.length > 0) {
             setFormData(prev => ({ ...prev, category: boardData.categories[0] }));
           }
@@ -467,7 +470,7 @@ export function SubmitFeedback() {
               </button>
 
               <button
-                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", isAnonymous: false, submissionLanguage: i18n.language || "en" }); }}
+                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", submitterName: "", submitterMobile: "", isAnonymous: false, submissionLanguage: i18n.language || "en" }); }}
                 className="mt-3 w-full px-5 py-2.5 text-sm text-[#6B7B8D] hover:text-[#1E3A5F] transition-colors"
               >
                 Submit another response
@@ -622,6 +625,25 @@ export function SubmitFeedback() {
                   error={errors.email}
                   helperText={t("forms:feedback.email_helper")}
                 />
+              )}
+
+              {/* Optional name & mobile */}
+              {!formData.isAnonymous && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    label={t("forms:feedback.name") || "Name (optional)"}
+                    placeholder={t("forms:feedback.name_placeholder") || "Your name"}
+                    value={formData.submitterName || ""}
+                    onChange={e => setFormData({ ...formData, submitterName: e.target.value })}
+                  />
+                  <Input
+                    label={t("forms:feedback.mobile") || "Mobile (optional)"}
+                    type="tel"
+                    placeholder={t("forms:feedback.mobile_placeholder") || "Your mobile number"}
+                    value={formData.submitterMobile || ""}
+                    onChange={e => setFormData({ ...formData, submitterMobile: e.target.value })}
+                  />
+                </div>
               )}
 
               {/* Attachments */}

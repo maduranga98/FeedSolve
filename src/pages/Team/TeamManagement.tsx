@@ -33,6 +33,10 @@ export function TeamManagement() {
   const currentUser = user as User;
 
   useEffect(() => {
+    document.title = 'Team | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     if (!user) return;
     loadTeamData();
   }, [user]);

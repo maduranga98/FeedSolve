@@ -20,6 +20,10 @@ export function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Analytics | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     const loadStats = async () => {
       if (!user) return;
 

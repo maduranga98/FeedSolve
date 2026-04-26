@@ -175,6 +175,10 @@ export function DashboardHome() {
   }, [user]);
 
   useEffect(() => {
+    document.title = 'Dashboard | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     loadData();
   }, [loadData]);
 

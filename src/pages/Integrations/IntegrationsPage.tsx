@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader, Zap, AlertCircle } from 'lucide-react';
 import { useWebhooks, useWebhookLogs, useTestWebhook } from '@/hooks/useWebhooks';
 import { WebhookCard } from '@/components/Webhooks/WebhookCard';
@@ -14,6 +14,10 @@ type SetupMode = null | 'slack' | 'email' | 'custom';
 
 export function IntegrationsPage() {
   const { user } = useAuth();
+
+  useEffect(() => {
+    document.title = 'Integrations | FeedSolve';
+  }, []);
   const {
     webhooks,
     loading,
