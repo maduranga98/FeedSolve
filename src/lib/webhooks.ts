@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, deleteDoc, deleteField } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog } from '@/types';
+import type { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog } from '@/types';
 
 // Webhook management functions
 export async function getCompanyWebhooks(companyId: string) {
