@@ -11,10 +11,10 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
   // Enable XSS protection in older browsers
   res.setHeader('X-XSS-Protection', '1; mode=block');
 
-  // Content Security Policy - restrictive by default
+  // Content Security Policy — API responses are JSON so a strict policy is safe
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';"
+    "default-src 'none'; script-src 'none'; object-src 'none'; frame-ancestors 'none'; base-uri 'none';"
   );
 
   // Referrer Policy - privacy-friendly

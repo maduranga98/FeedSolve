@@ -41,25 +41,43 @@ const cors_1 = __importDefault(require("cors"));
 const admin = __importStar(require("firebase-admin"));
 const auth_1 = require("./middleware/auth");
 const rateLimit_1 = require("./middleware/rateLimit");
+const security_1 = require("./middleware/security");
 const apiKeys_1 = __importDefault(require("./routes/apiKeys"));
 const submissions_1 = __importDefault(require("./routes/submissions"));
 const boards_1 = __importDefault(require("./routes/boards"));
 const stats_1 = __importDefault(require("./routes/stats"));
+const attachments_1 = __importDefault(require("./routes/attachments"));
+const search_1 = __importDefault(require("./routes/search"));
+const filters_1 = __importDefault(require("./routes/filters"));
+const bulk_operations_1 = __importDefault(require("./routes/bulk-operations"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 // @ts-ignore
 const openapi_json_1 = __importDefault(require("./openapi.json"));
 admin.initializeApp();
 const app = (0, express_1.default)();
+// Security headers - apply first
+app.use(security_1.securityHeaders);
 // Middleware
 app.use(express_1.default.json({ limit: '10mb' }));
 app.use(express_1.default.urlencoded({ limit: '10mb', extended: true }));
+app.use(security_1.validateInput);
+app.use(security_1.sanitizeOutput);
+const EXPLICIT_ORIGINS = new Set([
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://feedsolve.com',
+]);
+// Matches any https subdomain of feedsolve.com (no wildcards in the cors package)
+const SUBDOMAIN_RE = /^https:\/\/[a-z0-9-]+\.feedsolve\.com$/;
 app.use((0, cors_1.default)({
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'https://feedsolve.com',
-        'https://*.feedsolve.com',
-    ],
+    origin: (origin, callback) => {
+        if (!origin || EXPLICIT_ORIGINS.has(origin) || SUBDOMAIN_RE.test(origin)) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 // Health check
@@ -73,6 +91,8 @@ app.get('/api/docs', swagger_ui_express_1.default.setup(openapi_json_1.default))
 app.get('/api/openapi.json', (req, res) => {
     res.json(openapi_json_1.default);
 });
+// Public routes — mounted before auth middleware so /public/* paths are accessible without API key
+app.use('/', attachments_1.default);
 // API authentication and rate limiting
 app.use('/api/', auth_1.authenticateApiKey);
 app.use('/api/', rateLimit_1.rateLimitMiddleware);
@@ -90,16 +110,14 @@ app.use('/', apiKeys_1.default);
 app.use('/', submissions_1.default);
 app.use('/', boards_1.default);
 app.use('/', stats_1.default);
+app.use('/', search_1.default);
+app.use('/', filters_1.default);
+app.use('/', bulk_operations_1.default);
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
 // Global error handler
-app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(err.status || 500).json({
-        error: err.message || 'Internal server error',
-    });
-});
+app.use(security_1.errorHandler);
 exports.default = app;
 //# sourceMappingURL=api.js.map
