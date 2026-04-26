@@ -69,10 +69,8 @@ export function Login() {
     try {
       await loginWithGoogle();
       navigate('/dashboard');
-    } catch (error: any) {
-      if (error?.code !== 'auth/popup-closed-by-user' && error?.code !== 'auth/cancelled-popup-request') {
-        setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
-      }
+    } catch (error) {
+      setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
     } finally {
       setSocialLoading(null);
     }
@@ -84,10 +82,8 @@ export function Login() {
     try {
       await loginWithApple();
       navigate('/dashboard');
-    } catch (error: any) {
-      if (error?.code !== 'auth/popup-closed-by-user' && error?.code !== 'auth/cancelled-popup-request') {
-        setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
-      }
+    } catch (error) {
+      setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
     } finally {
       setSocialLoading(null);
     }

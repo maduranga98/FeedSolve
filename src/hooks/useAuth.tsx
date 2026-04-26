@@ -11,6 +11,7 @@ import {
 import type { User, AuthContextType } from '../types';
 import { auth } from '../lib/firebase';
 import { createUser, createCompany, getUser } from '../lib/firestore';
+import { getFirebaseErrorMessage } from '../lib/firebase-errors';
 
 const googleProvider = new GoogleAuthProvider();
 const appleProvider = new OAuthProvider('apple.com');
@@ -45,58 +46,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string,
     companyName: string
   ) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    const companyId = result.user.uid;
-
-    await createCompany(companyId, companyName, email);
-    const newUser = await createUser(
-      result.user.uid,
-      email,
-      name,
-      companyId,
-      'admin'
-    );
-
-    setUser(newUser);
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const companyId = result.user.uid;
+      await createCompany(companyId, companyName, email);
+      const newUser = await createUser(result.user.uid, email, name, companyId, 'admin');
+      setUser(newUser);
+    } catch (error) {
+      throw new Error(getFirebaseErrorMessage(error));
+    }
   };
 
   const login = async (email: string, password: string) => {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    const userData = await getUser(result.user.uid);
-    if (userData) {
-      setUser(userData);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const userData = await getUser(result.user.uid);
+      if (userData) setUser(userData);
+    } catch (error) {
+      throw new Error(getFirebaseErrorMessage(error));
     }
   };
 
   const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    const uid = result.user.uid;
-
-    let userData = await getUser(uid);
-    if (!userData) {
-      const name = result.user.displayName || 'User';
-      const email = result.user.email || '';
-      await createCompany(uid, `${name}'s Workspace`, email);
-      userData = await createUser(uid, email, name, uid, 'admin');
-    }
-    if (userData) {
-      setUser(userData);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const uid = result.user.uid;
+      let userData = await getUser(uid);
+      if (!userData) {
+        const name = result.user.displayName || 'User';
+        const email = result.user.email || '';
+        await createCompany(uid, `${name}'s Workspace`, email);
+        userData = await createUser(uid, email, name, uid, 'admin');
+      }
+      if (userData) setUser(userData);
+    } catch (error: any) {
+      if (
+        error?.code === 'auth/popup-closed-by-user' ||
+        error?.code === 'auth/cancelled-popup-request'
+      ) return;
+      throw new Error(getFirebaseErrorMessage(error));
     }
   };
 
   const loginWithApple = async () => {
-    const result = await signInWithPopup(auth, appleProvider);
-    const uid = result.user.uid;
-
-    let userData = await getUser(uid);
-    if (!userData) {
-      const name = result.user.displayName || 'User';
-      const email = result.user.email || '';
-      await createCompany(uid, `${name}'s Workspace`, email);
-      userData = await createUser(uid, email, name, uid, 'admin');
-    }
-    if (userData) {
-      setUser(userData);
+    try {
+      const result = await signInWithPopup(auth, appleProvider);
+      const uid = result.user.uid;
+      let userData = await getUser(uid);
+      if (!userData) {
+        const name = result.user.displayName || 'User';
+        const email = result.user.email || '';
+        await createCompany(uid, `${name}'s Workspace`, email);
+        userData = await createUser(uid, email, name, uid, 'admin');
+      }
+      if (userData) setUser(userData);
+    } catch (error: any) {
+      if (
+        error?.code === 'auth/popup-closed-by-user' ||
+        error?.code === 'auth/cancelled-popup-request'
+      ) return;
+      throw new Error(getFirebaseErrorMessage(error));
     }
   };
 
