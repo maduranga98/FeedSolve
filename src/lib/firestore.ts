@@ -180,7 +180,9 @@ export async function createSubmission(
     category: input.category,
     subject: input.subject,
     description: input.description,
-    submitterEmail: input.email,
+    submitterEmail: input.isAnonymous ? undefined : input.email,
+    submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
+    submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
     isAnonymous: input.isAnonymous,
     status: 'received',
     priority: 'medium',
@@ -1087,13 +1089,18 @@ export async function uploadAttachment(
   file: File
 ): Promise<{ success: boolean; error?: string; data?: any }> {
   try {
-    // Read file as base64
+    // Browser-compatible base64 encoding (no Node.js Buffer)
     const buffer = await file.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
+    const uint8Array = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < uint8Array.byteLength; i++) {
+      binary += String.fromCharCode(uint8Array[i]);
+    }
+    const base64 = btoa(binary);
 
-    // Call the Cloud Function
+    // Use the public endpoint (no API key required for public form submissions)
     const response = await fetch(
-      `/api/submissions/${submissionId}/attachments`,
+      `/public/submissions/${submissionId}/attachments`,
       {
         method: 'POST',
         headers: {
@@ -1129,25 +1136,20 @@ export async function uploadAttachment(
 export async function downloadAttachment(
   submissionId: string,
   attachmentId: string
-): Promise<{ success: boolean; url?: string; error?: string }> {
+): Promise<{ success: boolean; url?: string; filename?: string; error?: string }> {
   try {
-    const response = await fetch(
-      `/api/submissions/${submissionId}/attachments/${attachmentId}/download`,
-      {
-        method: 'GET',
-      }
-    );
-
-    if (!response.ok) {
-      const error = await response.json();
-      return {
-        success: false,
-        error: error.error || 'Download failed',
-      };
+    const submissionDoc = await getDoc(doc(db, 'submissions', submissionId));
+    if (!submissionDoc.exists()) {
+      return { success: false, error: 'Submission not found' };
     }
-
-    const data = await response.json();
-    return { success: true, url: data.url };
+    const submissionData = submissionDoc.data() as Submission;
+    const attachment = submissionData.attachments?.find((a: any) => a.id === attachmentId);
+    if (!attachment) {
+      return { success: false, error: 'Attachment not found' };
+    }
+    const fileRef = ref(storage, attachment.storagePath);
+    const url = await getDownloadURL(fileRef);
+    return { success: true, url, filename: attachment.filename };
   } catch (error: any) {
     return {
       success: false,

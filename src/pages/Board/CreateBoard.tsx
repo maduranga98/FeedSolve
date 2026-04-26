@@ -25,6 +25,10 @@ export function CreateBoard() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    document.title = 'Create Board | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     const loadTemplate = async () => {
       const templateId = (location.state as any)?.templateId;
       if (templateId) {

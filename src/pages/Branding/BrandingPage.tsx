@@ -32,6 +32,10 @@ export function BrandingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    document.title = 'Branding | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     const fetchCompany = async () => {
       if (!user?.companyId) {
         setLoading(false);

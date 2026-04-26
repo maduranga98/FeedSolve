@@ -101,6 +101,10 @@ function TrackingView({ code }: { code: string }) {
   const [passwordAuthenticated, setPasswordAuthenticated] = useState(false);
 
   useEffect(() => {
+    document.title = 'Track Submission | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     const fetchSubmission = async () => {
       try {
         const data = await getSubmissionByTrackingCode(normalizedCode);

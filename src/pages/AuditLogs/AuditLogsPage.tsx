@@ -112,6 +112,10 @@ export function AuditLogsPage() {
   }, [user]);
 
   useEffect(() => {
+    document.title = 'Audit Logs | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     loadLogs();
   }, [loadLogs]);
 

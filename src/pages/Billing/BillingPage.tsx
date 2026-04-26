@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { SubscriptionCard } from '../../components/Billing/SubscriptionCard';
 import { SubscriptionManager } from '../../components/Billing/SubscriptionManager';
@@ -14,6 +14,10 @@ export function BillingPage() {
   const { invoices, loading: invoicesLoading } = useInvoices();
   const { createBillingPortalSession, loading: portalLoading } = useStripe();
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = 'Billing | FeedSolve';
+  }, []);
 
   if (subscriptionLoading) {
     return (

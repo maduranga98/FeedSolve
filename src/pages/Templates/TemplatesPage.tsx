@@ -23,6 +23,10 @@ export function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    document.title = 'Templates | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     const loadTemplates = async () => {
       try {
         const data = await getTemplates();

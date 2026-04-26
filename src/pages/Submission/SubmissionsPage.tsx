@@ -106,6 +106,10 @@ export function SubmissionsPage() {
   }, [user]);
 
   useEffect(() => {
+    document.title = 'Submissions | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     loadData();
   }, [loadData]);
 

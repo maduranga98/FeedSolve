@@ -47,6 +47,95 @@ async function updateStorageUsage(companyId: string, bytes: number): Promise<voi
   });
 }
 
+// Public endpoint for unauthenticated form submissions (no API key required)
+// This route is mounted before the authenticateApiKey middleware in api.ts
+router.post('/public/submissions/:submissionId/attachments', async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { submissionId } = req.params;
+    const { filename, filetype, filesize, base64data } = req.body;
+
+    if (!submissionId || !filename || !filetype || !filesize || !base64data) {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+    }
+
+    if (!isValidFileType(filename)) {
+      res.status(400).json({ error: 'File type not allowed' });
+      return;
+    }
+
+    if (filesize > ATTACHMENT_CONFIG.maxFileSize) {
+      res.status(400).json({ error: 'File exceeds max size' });
+      return;
+    }
+
+    const submissionDoc = await db.collection('submissions').doc(submissionId).get();
+    if (!submissionDoc.exists) {
+      res.status(404).json({ error: 'Submission not found' });
+      return;
+    }
+
+    const submission = submissionDoc.data()!;
+    const { companyId } = submission;
+
+    // Only allow uploads for very recent submissions (within 2 hours)
+    const createdAt = submission.createdAt?.toDate?.() || new Date(0);
+    if (Date.now() - createdAt.getTime() > 2 * 60 * 60 * 1000) {
+      res.status(403).json({ error: 'Submission too old for attachments' });
+      return;
+    }
+
+    const hasQuota = await checkStorageQuota(companyId, filesize);
+    if (!hasQuota) {
+      res.status(402).json({ error: 'Storage quota exceeded' });
+      return;
+    }
+
+    const submissionAttachments = submission.attachments || [];
+    const submissionSize = submissionAttachments.reduce((sum: number, att: any) => sum + att.fileSize, 0);
+    if (submissionSize + filesize > ATTACHMENT_CONFIG.maxSubmissionSize) {
+      res.status(400).json({ error: 'Submission size limit exceeded' });
+      return;
+    }
+
+    const attachmentId = uuidv4();
+    const storagePath = `attachments/${companyId}/${submissionId}/${attachmentId}`;
+    const file = bucket.file(storagePath);
+
+    const buffer = Buffer.from(base64data, 'base64');
+    await file.save(buffer, { contentType: filetype });
+
+    const attachment = {
+      id: attachmentId,
+      filename,
+      fileType: filetype,
+      fileSize: filesize,
+      storagePath,
+      uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
+      uploadedBy: 'public',
+      scanned: false,
+      scanStatus: 'pending',
+    };
+
+    await db.collection('submissions').doc(submissionId).update({
+      attachments: admin.firestore.FieldValue.arrayUnion(attachment),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    await updateStorageUsage(companyId, filesize);
+
+    res.status(201).json({
+      id: attachmentId,
+      filename,
+      fileSize: filesize,
+      message: 'File uploaded successfully',
+    });
+  } catch (error) {
+    console.error('Public upload error:', error);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
 router.post('/api/submissions/:submissionId/attachments', async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { submissionId } = req.params;

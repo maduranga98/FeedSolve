@@ -42,6 +42,10 @@ const DeveloperDashboard: React.FC = () => {
 
   // Load API keys and logs on mount
   useEffect(() => {
+    document.title = 'Developer | FeedSolve';
+  }, []);
+
+  useEffect(() => {
     loadApiKeys();
     loadApiLogs();
   }, []);

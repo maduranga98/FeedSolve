@@ -6,7 +6,7 @@ interface UseFileDownloadReturn {
   loading: string;
   error: string;
   downloadFile: (submissionId: string, attachment: FileAttachment) => Promise<void>;
-  viewFile: (submissionId: string, attachment: FileAttachment) => Promise<void>;
+  viewFile: (submissionId: string, attachment: FileAttachment) => Promise<{ url: string } | undefined>;
 }
 
 export function useFileDownload(): UseFileDownloadReturn {
@@ -44,7 +44,7 @@ export function useFileDownload(): UseFileDownloadReturn {
   );
 
   const viewFile = useCallback(
-    async (submissionId: string, attachment: FileAttachment) => {
+    async (submissionId: string, attachment: FileAttachment): Promise<{ url: string } | undefined> => {
       try {
         setLoading(attachment.id);
         setError('');
@@ -55,6 +55,7 @@ export function useFileDownload(): UseFileDownloadReturn {
         }
 
         window.open(result.url, '_blank', 'noopener,noreferrer');
+        return { url: result.url };
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Open file failed';
         setError(errorMsg);
