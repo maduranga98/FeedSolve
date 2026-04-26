@@ -2,12 +2,20 @@ import { useEffect, useState, useContext, createContext, type ReactNode } from '
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  OAuthProvider,
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
 import type { User, AuthContextType } from '../types';
 import { auth } from '../lib/firebase';
 import { createUser, createCompany, getUser } from '../lib/firestore';
+
+const googleProvider = new GoogleAuthProvider();
+const appleProvider = new OAuthProvider('apple.com');
+appleProvider.addScope('email');
+appleProvider.addScope('name');
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -60,13 +68,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async () => {
+    const result = await signInWithPopup(auth, googleProvider);
+    const uid = result.user.uid;
+
+    let userData = await getUser(uid);
+    if (!userData) {
+      const name = result.user.displayName || 'User';
+      const email = result.user.email || '';
+      await createCompany(uid, `${name}'s Workspace`, email);
+      userData = await createUser(uid, email, name, uid, 'admin');
+    }
+    if (userData) {
+      setUser(userData);
+    }
+  };
+
+  const loginWithApple = async () => {
+    const result = await signInWithPopup(auth, appleProvider);
+    const uid = result.user.uid;
+
+    let userData = await getUser(uid);
+    if (!userData) {
+      const name = result.user.displayName || 'User';
+      const email = result.user.email || '';
+      await createCompany(uid, `${name}'s Workspace`, email);
+      userData = await createUser(uid, email, name, uid, 'admin');
+    }
+    if (userData) {
+      setUser(userData);
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signUp, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, signUp, login, loginWithGoogle, loginWithApple, logout }}>
       {children}
     </AuthContext.Provider>
   );

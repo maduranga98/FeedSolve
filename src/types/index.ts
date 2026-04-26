@@ -289,6 +289,8 @@ export interface AuthContextType {
     companyName: string,
   ) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
   logout: () => Promise<void>;
 }
 

@@ -1,4 +1,4 @@
-import { Clock, AlertCircle, CheckCircle, User } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle, User, Zap } from 'lucide-react';
 import type { SearchFilters } from '../../types';
 
 interface QuickFiltersProps {
@@ -9,10 +9,9 @@ interface QuickFiltersProps {
 const quickFilterOptions = [
   {
     id: 'recent',
-    label: 'Recent',
+    label: 'Last 7 days',
     icon: Clock,
-    description: 'Last 7 days',
-    filters: (userId?: string) => ({
+    filters: (_userId?: string): SearchFilters => ({
       dateRange: {
         from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
         to: new Date(),
@@ -23,8 +22,7 @@ const quickFilterOptions = [
     id: 'high-priority',
     label: 'High Priority',
     icon: AlertCircle,
-    description: 'High & Critical',
-    filters: () => ({
+    filters: (): SearchFilters => ({
       priority: ['high', 'critical'],
     }),
   },
@@ -32,17 +30,15 @@ const quickFilterOptions = [
     id: 'unresolved',
     label: 'Unresolved',
     icon: AlertCircle,
-    description: 'Not resolved',
-    filters: () => ({
+    filters: (): SearchFilters => ({
       status: ['received', 'in_review', 'in_progress'],
     }),
   },
   {
     id: 'assigned-to-me',
-    label: 'Assigned to Me',
+    label: 'Mine',
     icon: User,
-    description: 'Your submissions',
-    filters: (userId?: string) => ({
+    filters: (userId?: string): SearchFilters => ({
       assignedTo: userId,
     }),
   },
@@ -50,8 +46,7 @@ const quickFilterOptions = [
     id: 'resolved',
     label: 'Resolved',
     icon: CheckCircle,
-    description: 'Completed',
-    filters: () => ({
+    filters: (): SearchFilters => ({
       status: ['resolved', 'closed'],
     }),
   },
@@ -59,9 +54,12 @@ const quickFilterOptions = [
 
 export function QuickFilters({ onApply, userId }: QuickFiltersProps) {
   return (
-    <div className="space-y-2">
-      <p className="text-sm font-medium text-[#444441] mb-3">Quick Filters</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <div>
+      <div className="flex items-center gap-1.5 mb-2.5">
+        <Zap size={12} className="text-[#2E86AB]" />
+        <p className="text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide">Quick Filters</p>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
         {quickFilterOptions
           .filter((option) => option.id !== 'assigned-to-me' || userId)
           .map((option) => {
@@ -70,17 +68,10 @@ export function QuickFilters({ onApply, userId }: QuickFiltersProps) {
               <button
                 key={option.id}
                 onClick={() => onApply(option.filters(userId))}
-                className="p-3 text-left border border-[#D3D1C7] rounded-lg hover:bg-[#F8FAFB] transition-colors group"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full border border-[#E8ECF0] bg-white text-[#6B7B8D] hover:bg-[#EBF5FB] hover:border-[#2E86AB] hover:text-[#2E86AB] transition-all"
               >
-                <div className="flex items-start gap-3">
-                  <Icon className="text-[#2E86AB] mt-0.5 group-hover:scale-110 transition-transform" size={18} />
-                  <div className="flex-1">
-                    <p className="font-medium text-[#444441] text-sm group-hover:text-[#2E86AB]">
-                      {option.label}
-                    </p>
-                    <p className="text-xs text-[#6B7B8D]">{option.description}</p>
-                  </div>
-                </div>
+                <Icon size={11} />
+                {option.label}
               </button>
             );
           })}

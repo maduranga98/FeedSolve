@@ -33,9 +33,54 @@ const BRANDED_STYLES = `
   [data-branded] .brand-primary-bg { background-color: var(--brand-primary, #2E86AB); }
   [data-branded] .brand-primary-text { color: var(--brand-primary, #2E86AB); }
   [data-branded] .brand-secondary-text { color: var(--brand-secondary, #1E3A5F); }
-  [data-branded] .brand-header-bg {
-    background: linear-gradient(135deg, var(--brand-primary-bg, rgba(46,134,171,0.10)) 0%, var(--brand-primary-bg, rgba(46,134,171,0.04)) 100%);
+
+  /* Page background uses brand primary tint */
+  [data-branded].brand-page-bg {
+    background: linear-gradient(
+      150deg,
+      var(--brand-primary-bg, rgba(46,134,171,0.10)) 0%,
+      rgba(248,250,251,0.92) 45%,
+      rgba(255,255,255,0.80) 100%
+    );
   }
+
+  /* Card header gradient */
+  [data-branded] .brand-header-bg {
+    background: linear-gradient(135deg, var(--brand-primary-bg, rgba(46,134,171,0.12)) 0%, var(--brand-primary-bg, rgba(46,134,171,0.04)) 100%);
+  }
+
+  /* Form body section has subtle brand tint */
+  [data-branded] .brand-form-body {
+    background-color: var(--brand-primary-bg, rgba(46,134,171,0.03));
+  }
+
+  /* Input, select, textarea — border + subtle bg tint */
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]),
+  [data-branded] select,
+  [data-branded] textarea {
+    border-color: var(--brand-primary-border, #c8dce8);
+    background-color: var(--brand-primary-bg, rgba(46,134,171,0.04));
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+  }
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]):hover,
+  [data-branded] select:hover,
+  [data-branded] textarea:hover {
+    border-color: var(--brand-primary, #2E86AB);
+    background-color: #fff;
+  }
+  [data-branded] input:not([type="checkbox"]):not([type="radio"]):focus,
+  [data-branded] select:focus,
+  [data-branded] textarea:focus {
+    border-color: var(--brand-primary, #2E86AB);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px var(--brand-primary-bg, rgba(46,134,171,0.15));
+    outline: none;
+  }
+  [data-branded] input[type="checkbox"] {
+    accent-color: var(--brand-primary, #2E86AB);
+  }
+
+  /* Primary action button */
   [data-branded] .brand-btn-primary {
     background-color: var(--brand-primary, #2E86AB);
     color: var(--brand-text-on-primary, #FFFFFF);
@@ -47,26 +92,10 @@ const BRANDED_STYLES = `
     opacity: 0.55;
     cursor: not-allowed;
   }
-  [data-branded] input:not([type="checkbox"]):not([type="radio"]),
-  [data-branded] select,
-  [data-branded] textarea {
-    border-color: var(--brand-primary-border, #c8dce8);
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  [data-branded] input:not([type="checkbox"]):not([type="radio"]):hover,
-  [data-branded] select:hover,
-  [data-branded] textarea:hover {
-    border-color: var(--brand-primary, #2E86AB);
-  }
-  [data-branded] input:not([type="checkbox"]):not([type="radio"]):focus,
-  [data-branded] select:focus,
-  [data-branded] textarea:focus {
-    border-color: var(--brand-primary, #2E86AB);
-    box-shadow: 0 0 0 3px var(--brand-primary-bg, rgba(46,134,171,0.15));
-    outline: none;
-  }
-  [data-branded] input[type="checkbox"] {
-    accent-color: var(--brand-primary, #2E86AB);
+
+  /* Section divider accented */
+  [data-branded] .brand-section-divider {
+    border-color: var(--brand-primary-border, rgba(46,134,171,0.20));
   }
 `;
 
@@ -228,7 +257,7 @@ export function SubmitFeedback() {
       <div
         ref={formRef}
         data-branded
-        className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex flex-col items-center justify-center p-4"
+        className="min-h-screen brand-page-bg flex flex-col items-center justify-center p-4"
       >
         <style>{BRANDED_STYLES}</style>
 
@@ -361,7 +390,7 @@ export function SubmitFeedback() {
       <div
         ref={formRef}
         data-branded
-        className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4"
+        className="min-h-screen brand-page-bg flex items-center justify-center p-4"
       >
         <style>{BRANDED_STYLES}</style>
         <div className="w-full max-w-md">
@@ -461,7 +490,7 @@ export function SubmitFeedback() {
     <div
       ref={formRef}
       data-branded
-      className="min-h-screen bg-gradient-to-b from-[#EEF6FB] via-[#F8FAFB] to-white p-4 sm:p-8"
+      className="min-h-screen brand-page-bg p-4 sm:p-8"
     >
       <style>{BRANDED_STYLES}</style>
       <div className="max-w-2xl mx-auto">
@@ -505,7 +534,7 @@ export function SubmitFeedback() {
           </div>
 
           {/* Form body */}
-          <div className="px-6 sm:px-8 py-8">
+          <div className="px-6 sm:px-8 py-8 brand-form-body">
             <h2 className="text-xl font-bold mb-1" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
               {board.name}
             </h2>
@@ -596,7 +625,7 @@ export function SubmitFeedback() {
               )}
 
               {/* Attachments */}
-              <div className="border-t border-[#EDF2F7] pt-5">
+              <div className="border-t brand-section-divider pt-5">
                 <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
                   {t("forms:feedback.attachments")}
                 </h3>
