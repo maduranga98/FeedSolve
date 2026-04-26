@@ -5,12 +5,14 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useTemplateInit } from './hooks/useTemplateInit';
 import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
+import { OfflineIndicator } from './components/Shared/OfflineIndicator';
 
 // Auth Pages
 const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
@@ -98,6 +100,8 @@ function PublicRoute({ children }: { children: ReactNode }) {
 function AppContent() {
   return (
     <ErrorBoundary>
+      <Toaster position="top-right" richColors closeButton />
+      <OfflineIndicator />
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
         {/* Auth Routes */}

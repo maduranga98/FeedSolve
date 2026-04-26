@@ -15,6 +15,16 @@ import {
   arrayUnion,
   deleteField,
 } from 'firebase/firestore';
+import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
+
+function wrapFirestoreError(error: unknown): never {
+  if (isQuotaError(error)) {
+    throw new Error(
+      'Service is temporarily unavailable due to high demand. Please try again in a moment.'
+    );
+  }
+  throw new Error(getFirebaseErrorMessage(error));
+}
 import type {
   User,
   Company,
@@ -41,23 +51,31 @@ export async function createUser(
   companyId: string,
   role: 'admin' | 'member' = 'admin'
 ): Promise<User> {
-  const userRef = doc(db, 'users', id);
-  const newUser: User = {
-    id,
-    email,
-    name,
-    companyId,
-    role,
-    createdAt: Timestamp.now(),
-  };
-  await setDoc(userRef, newUser);
-  return newUser;
+  try {
+    const userRef = doc(db, 'users', id);
+    const newUser: User = {
+      id,
+      email,
+      name,
+      companyId,
+      role,
+      createdAt: Timestamp.now(),
+    };
+    await setDoc(userRef, newUser);
+    return newUser;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function getUser(id: string): Promise<User | null> {
-  const userRef = doc(db, 'users', id);
-  const snapshot = await getDoc(userRef);
-  return snapshot.exists() ? (snapshot.data() as User) : null;
+  try {
+    const userRef = doc(db, 'users', id);
+    const snapshot = await getDoc(userRef);
+    return snapshot.exists() ? (snapshot.data() as User) : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 // Company operations
@@ -66,44 +84,52 @@ export async function createCompany(
   name: string,
   email: string
 ): Promise<Company> {
-  const companyRef = doc(db, 'companies', id);
-  const now = Timestamp.now();
-  const newCompany: Company = {
-    id,
-    name,
-    email,
-    billingEmail: email,
-    subscription: {
-      tier: 'free',
-      billing: 'monthly',
-      status: 'active',
-    },
-    usage: {
-      submissionsThisMonth: 0,
-      boardsCreated: 0,
-      teamMembersAdded: 0,
-      lastResetAt: now,
-    },
-    monthlySubmissionLimit: 100,
-    boardCount: 0,
-    webhooks: {
-      enabled: false,
-    },
-    webhookStats: {
-      totalSent: 0,
-      failureCount: 0,
-    },
-    createdAt: now,
-    updatedAt: now,
-  };
-  await setDoc(companyRef, newCompany);
-  return newCompany;
+  try {
+    const companyRef = doc(db, 'companies', id);
+    const now = Timestamp.now();
+    const newCompany: Company = {
+      id,
+      name,
+      email,
+      billingEmail: email,
+      subscription: {
+        tier: 'free',
+        billing: 'monthly',
+        status: 'active',
+      },
+      usage: {
+        submissionsThisMonth: 0,
+        boardsCreated: 0,
+        teamMembersAdded: 0,
+        lastResetAt: now,
+      },
+      monthlySubmissionLimit: 100,
+      boardCount: 0,
+      webhooks: {
+        enabled: false,
+      },
+      webhookStats: {
+        totalSent: 0,
+        failureCount: 0,
+      },
+      createdAt: now,
+      updatedAt: now,
+    };
+    await setDoc(companyRef, newCompany);
+    return newCompany;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function getCompany(id: string): Promise<Company | null> {
-  const companyRef = doc(db, 'companies', id);
-  const snapshot = await getDoc(companyRef);
-  return snapshot.exists() ? (snapshot.data() as Company) : null;
+  try {
+    const companyRef = doc(db, 'companies', id);
+    const snapshot = await getDoc(companyRef);
+    return snapshot.exists() ? (snapshot.data() as Company) : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 // Board operations
@@ -111,24 +137,28 @@ export async function createBoard(
   companyId: string,
   input: BoardFormInput
 ): Promise<Board> {
-  const slug = generateBoardSlug(input.name);
-  const boardsRef = collection(db, 'boards');
+  try {
+    const slug = generateBoardSlug(input.name);
+    const boardsRef = collection(db, 'boards');
 
-  const newBoard: Omit<Board, 'id'> = {
-    companyId,
-    name: input.name,
-    description: input.description,
-    slug,
-    categories: input.categories,
-    isAnonymousAllowed: input.isAnonymousAllowed,
-    qrCodeUrl: `${import.meta.env.VITE_APP_URL}/submit/${slug}`,
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-    submissionCount: 0,
-  };
+    const newBoard: Omit<Board, 'id'> = {
+      companyId,
+      name: input.name,
+      description: input.description,
+      slug,
+      categories: input.categories,
+      isAnonymousAllowed: input.isAnonymousAllowed,
+      qrCodeUrl: `${import.meta.env.VITE_APP_URL}/submit/${slug}`,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+      submissionCount: 0,
+    };
 
-  const docRef = await addDoc(boardsRef, newBoard);
-  return { ...newBoard, id: docRef.id } as Board;
+    const docRef = await addDoc(boardsRef, newBoard);
+    return { ...newBoard, id: docRef.id } as Board;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function getBoardBySlug(slug: string): Promise<Board | null> {
@@ -146,22 +176,34 @@ export async function getCompanyBoards(companyId: string): Promise<Board[]> {
 }
 
 export async function getBoard(id: string): Promise<Board | null> {
-  const boardRef = doc(db, 'boards', id);
-  const snapshot = await getDoc(boardRef);
-  return snapshot.exists() ? { ...snapshot.data(), id: snapshot.id } as Board : null;
+  try {
+    const boardRef = doc(db, 'boards', id);
+    const snapshot = await getDoc(boardRef);
+    return snapshot.exists() ? { ...snapshot.data(), id: snapshot.id } as Board : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function updateBoard(
   boardId: string,
   data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'isAnonymousAllowed'>>
 ): Promise<void> {
-  const boardRef = doc(db, 'boards', boardId);
-  await updateDoc(boardRef, { ...data, updatedAt: Timestamp.now() });
+  try {
+    const boardRef = doc(db, 'boards', boardId);
+    await updateDoc(boardRef, { ...data, updatedAt: Timestamp.now() });
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function deleteBoard(boardId: string): Promise<void> {
-  const boardRef = doc(db, 'boards', boardId);
-  await deleteDoc(boardRef);
+  try {
+    const boardRef = doc(db, 'boards', boardId);
+    await deleteDoc(boardRef);
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 // Submission operations
@@ -170,50 +212,57 @@ export async function createSubmission(
   companyId: string,
   input: SubmissionFormInput
 ): Promise<{ trackingCode: string; submissionId: string }> {
-  const trackingCode = generateTrackingCode();
-  const submissionsRef = collection(db, 'submissions');
+  try {
+    const trackingCode = generateTrackingCode();
+    const submissionsRef = collection(db, 'submissions');
 
-  const newSubmission: Omit<Submission, 'id'> = {
-    boardId,
-    companyId,
-    trackingCode,
-    category: input.category,
-    subject: input.subject,
-    description: input.description,
-    submitterEmail: input.isAnonymous ? undefined : input.email,
-    submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
-    submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
-    isAnonymous: input.isAnonymous,
-    status: 'received',
-    priority: 'medium',
-    internalNotes: [],
-    createdAt: Timestamp.now(),
-    updatedAt: Timestamp.now(),
-  };
+    const newSubmission: Omit<Submission, 'id'> = {
+      boardId,
+      companyId,
+      trackingCode,
+      category: input.category,
+      subject: input.subject,
+      description: input.description,
+      submitterEmail: input.isAnonymous ? undefined : input.email,
+      submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
+      submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
+      isAnonymous: input.isAnonymous,
+      status: 'received',
+      priority: 'medium',
+      internalNotes: [],
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
 
-  const docRef = await addDoc(submissionsRef, newSubmission);
+    const docRef = await addDoc(submissionsRef, newSubmission);
 
-  // Increment board submission count
-  const boardRef = doc(db, 'boards', boardId);
-  const boardData = await getDoc(boardRef);
-  if (boardData.exists()) {
-    const currentCount = (boardData.data() as Board).submissionCount || 0;
-    await updateDoc(boardRef, { submissionCount: currentCount + 1 });
+    const boardRef = doc(db, 'boards', boardId);
+    const boardData = await getDoc(boardRef);
+    if (boardData.exists()) {
+      const currentCount = (boardData.data() as Board).submissionCount || 0;
+      await updateDoc(boardRef, { submissionCount: currentCount + 1 });
+    }
+
+    return { trackingCode, submissionId: docRef.id };
+  } catch (error) {
+    wrapFirestoreError(error);
   }
-
-  return { trackingCode, submissionId: docRef.id };
 }
 
 export async function getSubmissionByTrackingCode(
   code: string
 ): Promise<Submission | null> {
-  const submissionsRef = collection(db, 'submissions');
-  const q = query(submissionsRef, where('trackingCode', '==', code));
-  const snapshot = await getDocs(q);
-  if (snapshot.empty) return null;
+  try {
+    const submissionsRef = collection(db, 'submissions');
+    const q = query(submissionsRef, where('trackingCode', '==', code));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
 
-  const doc = snapshot.docs[0];
-  return { ...doc.data(), id: doc.id } as Submission;
+    const doc = snapshot.docs[0];
+    return { ...doc.data(), id: doc.id } as Submission;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function getCompanySubmissions(companyId: string, limitCount: number = 500): Promise<Submission[]> {

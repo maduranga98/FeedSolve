@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Code2, Eye, Settings } from 'lucide-react';
 import ApiKeyCard from '../../components/API/ApiKeyCard';
 import CreateApiKeyModal, { CreateApiKeyData } from '../../components/API/CreateApiKeyModal';
@@ -121,7 +122,7 @@ const DeveloperDashboard: React.FC = () => {
 
   const handleCopyKey = (text: string) => {
     navigator.clipboard.writeText(text);
-    // Show toast notification
+    toast.success('Copied to clipboard');
   };
 
   return (
