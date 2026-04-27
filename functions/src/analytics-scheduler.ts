@@ -73,11 +73,12 @@ function calculateMetrics(submissions: Submission[]) {
   const resolvedWithTime = submissions
     .filter((s) => s.status === "resolved" && s.resolvedAt)
     .map((s) => {
-      const created = (s.createdAt as any)?.toDate
-        ? (s.createdAt as any).toDate()
+      type FsTimestamp = { toDate: () => Date };
+      const created = (s.createdAt as FsTimestamp)?.toDate
+        ? (s.createdAt as FsTimestamp).toDate()
         : new Date(s.createdAt as unknown as string);
-      const resolved = (s.resolvedAt as any)?.toDate
-        ? (s.resolvedAt as any).toDate()
+      const resolved = (s.resolvedAt as FsTimestamp)?.toDate
+        ? (s.resolvedAt as FsTimestamp).toDate()
         : new Date(s.resolvedAt as unknown as string);
       return Math.floor(
         (resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24),

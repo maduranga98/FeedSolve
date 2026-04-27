@@ -68,7 +68,7 @@ async function processBulkOperation(operationId: string): Promise<void> {
     throw new Error("Operation not found");
   }
 
-  const operation = operationDoc.data() as any;
+  const operation = operationDoc.data() as Record<string, unknown>;
   const { submissionIds, updateData, companyId } = operation || {};
 
   let processedCount = 0;
@@ -194,7 +194,7 @@ router.post(
       );
 
       // Process asynchronously
-      processBulkOperation((operation as any)?.id || "").catch(console.error);
+      processBulkOperation((operation as Record<string, unknown>)?.id as string || "").catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {

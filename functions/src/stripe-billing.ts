@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
+import { Request } from "express";
 
 // Maps Stripe price IDs (from src/config/stripe.ts) to app tier names
 const PRICE_TO_TIER: Record<string, string> = {
@@ -222,7 +223,7 @@ export const stripeWebhook = functions.https.onRequest(async (req, res) => {
 
   try {
     event = stripe.webhooks.constructEvent(
-      (req as any).rawBody,
+      (req as Request & { rawBody: Buffer }).rawBody,
       req.headers["stripe-signature"] as string,
       webhookSecret,
     );

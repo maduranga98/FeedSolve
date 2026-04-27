@@ -180,14 +180,14 @@ export async function logApiRequest(
 
   const originalSend = res.send;
 
-  res.send = function (data: any) {
+  res.send = function (data: unknown) {
     const duration = Date.now() - startTime;
     const companyId = req.companyId;
     const apiKeyId = req.apiKeyId;
 
     if (companyId && apiKeyId) {
       const logEntry = {
-        id: admin.firestore.FieldValue.serverTimestamp() as any,
+        id: admin.firestore.FieldValue.serverTimestamp(),
         companyId,
         keyId: apiKeyId,
         method: req.method,

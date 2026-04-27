@@ -193,7 +193,7 @@ router.post(
         return;
       }
 
-      const submission = submissionDoc.data() as any;
+      const submission = submissionDoc.data() as Record<string, unknown>;
       const { companyId } = submission || {};
 
       // Check if user is in company and has permission
@@ -348,7 +348,7 @@ router.delete(
       await bucket
         .file(attachment.storagePath)
         .delete()
-        .catch((error: any) => {
+        .catch((error: unknown) => {
           // File might not exist, continue anyway
           console.log("Storage deletion info:", error);
         });

@@ -20,11 +20,11 @@ interface Submission {
   priority: string;
   assignedTo?: string;
   publicReply?: string;
-  publicReplyAt?: any;
+  publicReplyAt?: admin.firestore.Timestamp | string | null;
   publicReplyBy?: string;
-  createdAt: any;
-  updatedAt: any;
-  resolvedAt?: any;
+  createdAt: admin.firestore.Timestamp | string;
+  updatedAt: admin.firestore.Timestamp | string;
+  resolvedAt?: admin.firestore.Timestamp | string | null;
 }
 
 interface WebhookConfig {
@@ -36,21 +36,21 @@ interface WebhookConfig {
     events: string[];
     format: "detailed" | "compact" | "minimal";
     mentionOnNew: boolean;
-    connectedAt: any;
+    connectedAt: admin.firestore.Timestamp | string;
   };
   email?: {
     enabled: boolean;
     recipients: string[];
     events: string[];
     frequency: "instant" | "daily_digest" | "weekly_digest";
-    connectedAt: any;
+    connectedAt: admin.firestore.Timestamp | string;
   };
   custom?: {
     enabled: boolean;
     url: string;
     secret: string;
     events: string[];
-    connectedAt: any;
+    connectedAt: admin.firestore.Timestamp | string;
   };
 }
 
@@ -226,7 +226,7 @@ async function sendCustomWebhook(
   customConfig: Record<string, unknown>,
 ): Promise<void> {
   try {
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       event: eventType,
       timestamp: new Date().toISOString(),
       data: {
@@ -239,8 +239,8 @@ async function sendCustomWebhook(
           category: submission.category,
           priority: submission.priority,
           assignedTo: submission.assignedTo,
-          createdAt: (submission.createdAt as any)?.toDate?.() || new Date(),
-          updatedAt: (submission.updatedAt as any)?.toDate?.() || new Date(),
+          createdAt: (submission.createdAt as admin.firestore.Timestamp)?.toDate?.() || new Date(),
+          updatedAt: (submission.updatedAt as admin.firestore.Timestamp)?.toDate?.() || new Date(),
         },
       },
     };
@@ -335,7 +335,7 @@ function buildSlackMessage(
   previousSubmission: Submission | undefined,
   eventType: string,
   format: string,
-): { text: string; blocks: any[] } {
+): { text: string; blocks: Record<string, unknown>[] } {
   const baseText = `*${getEventTitle(eventType)}*\n${submission.subject}`;
 
   if (format === "minimal") {
