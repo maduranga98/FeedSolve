@@ -182,13 +182,18 @@ export function SubmissionsPage() {
 
   return (
     <div className="h-screen flex flex-col bg-[#F4F7FA] overflow-hidden">
-      {/* Fixed compact header */}
+      {/* Fixed header */}
       <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <h1 className="text-xl font-bold text-[#1E3A5F]">Submissions</h1>
-              <p className="text-xs text-[#6B7B8D] mt-0.5">Review, assign, and track all feedback in one place.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+                <Inbox size={20} className="text-[#2E86AB]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">Submissions</h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">Review, assign, and track all feedback in one place.</p>
+              </div>
             </div>
 
             {!loading && totalCount > 0 && (
