@@ -225,9 +225,9 @@ export async function createSubmission(
       category: input.category,
       subject: input.subject,
       description: input.description,
-      submitterEmail: input.isAnonymous ? undefined : input.email,
-      submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
-      submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
+      submitterEmail: input.isAnonymous ? null : (input.email?.trim() || null),
+      submitterName: input.isAnonymous ? null : (input.submitterName?.trim() || null),
+      submitterMobile: input.isAnonymous ? null : (input.submitterMobile?.trim() || null),
       isAnonymous: input.isAnonymous,
       status: 'received',
       priority: 'medium',
@@ -256,7 +256,7 @@ export async function getSubmissionByTrackingCode(
 ): Promise<Submission | null> {
   try {
     const submissionsRef = collection(db, 'submissions');
-    const q = query(submissionsRef, where('trackingCode', '==', code));
+    const q = query(submissionsRef, where('trackingCode', '==', code), limit(1));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
 
