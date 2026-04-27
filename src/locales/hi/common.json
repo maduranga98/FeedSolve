@@ -52,6 +52,8 @@
   "add": "जोड़ें",
   "update": "अपडेट",
   "integrations": "एकीकरण",
+  "submissions": "सबमिशन",
+  "audit_logs": "ऑडिट लॉग",
   "not_found": "बोर्ड नहीं मिला",
   "board_not_found": "आप जिस फीडबैक बोर्ड को ढूंढ रहे हैं वह मौजूद नहीं है।",
   "branding": "ब्रांडिंग",

@@ -104,9 +104,11 @@ service cloud.firestore {
       allow delete: if canManageTeam(resource.data.companyId) && request.auth.uid != userId;
     }
 
-    // Companies collection - Owner/Admin only
+    // Companies collection
     match /companies/{companyId} {
-      allow read: if canManageCompany(companyId);
+      // Public get: branding data needed on the public submit-feedback and tracking pages
+      allow get: if true;
+      allow list: if canManageCompany(companyId);
       allow write: if canManageCompany(companyId);
       allow delete: if isOwner(companyId);
 
@@ -128,17 +130,27 @@ service cloud.firestore {
         allow create: if isUserInCompany(companyId);
         allow update: if isUserInCompany(companyId) && resource.data.userId == request.auth.uid;
       }
+
+      // Saved filters - company members can manage their shared filters
+      match /filters/{filterId} {
+        allow read: if isUserInCompany(companyId);
+        allow create: if isUserInCompany(companyId);
+        allow update: if isUserInCompany(companyId);
+        allow delete: if isUserInCompany(companyId);
+      }
     }
 
-    // Board templates - all authenticated users may read; only server writes
+    // Board templates - all authenticated users may read; authenticated users may seed
     match /board_templates/{templateId} {
       allow read: if isAuthenticated();
-      allow write: if false;
+      allow write: if isAuthenticated();
     }
 
     // Boards collection - Role-based access; board doc must carry companyId
     match /boards/{boardId} {
-      allow read: if canReadSubmissions(resource.data.companyId);
+      // Public read: board config is needed by the public submit-feedback form
+      // (slug query) and the public tracking page (get by ID)
+      allow read: if true;
       // create: resource doesn't exist yet, so use request.resource.data
       allow create: if canManageCompany(request.resource.data.companyId);
       allow update: if canManageCompany(resource.data.companyId);

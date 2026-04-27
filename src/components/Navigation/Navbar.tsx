@@ -47,7 +47,7 @@ export function Navbar() {
       label: t("dashboard"),
       icon: <LayoutDashboard size={15} />,
     },
-    { path: "/submissions", label: "Submissions", icon: <Inbox size={15} /> },
+    { path: "/submissions", label: t("submissions"), icon: <Inbox size={15} /> },
     {
       path: "/templates",
       label: t("boards:templates.title"),
@@ -58,7 +58,7 @@ export function Navbar() {
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
     { path: "/integrations", label: t("integrations"), icon: <Zap size={15} /> },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
-    { path: "/audit-logs", label: "Audit Logs", icon: <ClipboardList size={15} /> },
+    { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} /> },
   ];
 
   const initials = user?.name

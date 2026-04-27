@@ -450,7 +450,10 @@ export async function updateSubmissionAssignment(
   assignedTo?: string
 ): Promise<void> {
   const submissionRef = doc(db, 'submissions', submissionId);
-  await updateDoc(submissionRef, { assignedTo, updatedAt: Timestamp.now() });
+  await updateDoc(submissionRef, {
+    assignedTo: assignedTo ?? deleteField(),
+    updatedAt: Timestamp.now(),
+  });
 }
 
 // Team Member operations (Day 1)
@@ -475,7 +478,7 @@ export async function assignSubmission(
 export async function unassignSubmission(submissionId: string): Promise<void> {
   const submissionRef = doc(db, 'submissions', submissionId);
   await updateDoc(submissionRef, {
-    assignedTo: undefined,
+    assignedTo: deleteField(),
     updatedAt: Timestamp.now(),
   });
 }
