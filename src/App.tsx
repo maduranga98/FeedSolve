@@ -182,6 +182,7 @@ function AppContent() {
           path="/billing"
           element={
             <ProtectedRoute>
+              <Navbar />
               <BillingPage />
             </ProtectedRoute>
           }

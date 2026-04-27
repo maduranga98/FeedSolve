@@ -87,12 +87,21 @@ export function AnalyticsDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-color-bg">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-color-primary mb-2">Analytics & Reports</h1>
-          <p className="text-color-muted-text">Track submissions, performance, and trends</p>
+    <main className="min-h-screen bg-[#F4F7FA]">
+      <div className="bg-white border-b border-[#E8ECF0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+              <TrendingUp size={20} className="text-[#2E86AB]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#1E3A5F]">Analytics & Reports</h1>
+              <p className="text-sm text-[#6B7B8D] mt-0.5">Track submissions, performance, and trends</p>
+            </div>
+          </div>
         </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -158,12 +167,12 @@ export function AnalyticsDashboard() {
         </div>
 
         {/* Filter Information */}
-        <div className="bg-color-surface rounded-lg shadow-md p-6 border-l-4 border-color-primary">
+        <div className="bg-white rounded-xl border border-[#E8ECF0] p-6 border-l-4 border-l-[#2E86AB]">
           <div className="flex items-start gap-3">
-            <TrendingUp className="text-color-primary flex-shrink-0 mt-1" size={20} />
+            <TrendingUp className="text-[#2E86AB] flex-shrink-0 mt-1" size={20} />
             <div>
-              <h3 className="font-semibold text-color-primary mb-1">About These Analytics</h3>
-              <p className="text-color-body-text text-sm">
+              <h3 className="font-semibold text-[#1E3A5F] mb-1">About These Analytics</h3>
+              <p className="text-[#6B7B8D] text-sm">
                 This dashboard shows submission analytics and team performance metrics. Use the
                 date range selector above to filter data by time period. Export reports in PDF
                 format or download submission data as CSV for further analysis.

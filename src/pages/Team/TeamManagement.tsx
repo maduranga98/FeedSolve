@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
 import { Button, Input, LoadingSpinner } from '../../components/Shared';
@@ -152,25 +153,37 @@ export function TeamManagement() {
   }
 
   return (
-    <main className="min-h-screen bg-color-bg">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-color-surface rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-color-primary">{t('team')} Management</h1>
+    <main className="min-h-screen bg-[#F4F7FA]">
+      {/* Page header */}
+      <div className="bg-white border-b border-[#E8ECF0]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+                <Users size={20} className="text-[#2E86AB]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('team')} Management</h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">Manage team members and their roles</p>
+              </div>
+            </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-color-muted-text">Your Role:</span>
+              <span className="text-sm text-[#6B7B8D]">Your Role:</span>
               <RoleIndicator />
             </div>
           </div>
+        </div>
+      </div>
 
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-100 border border-color-error text-color-error rounded-md">
+            <div className="p-4 bg-[#FFE5E5] border border-[#E74C3C] text-[#E74C3C] rounded-xl">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-4 bg-green-100 border border-color-success text-color-success rounded-md">
+            <div className="p-4 bg-[#EBF9F1] border border-[#27AE60] text-[#27AE60] rounded-xl">
               {success}
             </div>
           )}
@@ -178,13 +191,13 @@ export function TeamManagement() {
           <PermissionGuard
             permission="team:invite"
             fallback={
-              <div className="mb-8">
+              <div>
                 <PermissionDenied message="You do not have permission to invite team members" />
               </div>
             }
           >
-            <div className="mb-8 p-6 bg-blue-50 rounded-lg border border-color-accent-light">
-              <h2 className="text-xl font-semibold text-color-primary mb-4">
+            <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
+              <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
                 Invite {t('team')} Member
               </h2>
               <div className="space-y-4">
@@ -212,8 +225,8 @@ export function TeamManagement() {
             </div>
           </PermissionGuard>
 
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-color-primary mb-4">
+          <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
               {t('team')} Members ({teamMembers.length})
             </h2>
             <TeamMembersTable
@@ -226,31 +239,30 @@ export function TeamManagement() {
           </div>
 
           {pendingInvitations.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold text-color-primary mb-4">
+            <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
+              <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
                 Pending Invitations ({pendingInvitations.length})
               </h2>
               <div className="space-y-3">
                 {pendingInvitations.map((invitation) => (
                   <div
                     key={invitation.id}
-                    className="flex items-center justify-between p-4 border border-yellow-200 rounded-lg bg-yellow-50"
+                    className="flex items-center justify-between p-4 border border-[#FFF3CD] rounded-xl bg-[#FFFBF0]"
                   >
                     <div>
-                      <p className="font-medium text-color-body-text">{invitation.email}</p>
-                      <p className="text-sm text-color-muted-text">
+                      <p className="font-medium text-[#1E3A5F]">{invitation.email}</p>
+                      <p className="text-sm text-[#6B7B8D]">
                         Invited as {invitation.role}
                       </p>
                     </div>
-                    <span className="px-3 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs font-semibold">
-                      PENDING
+                    <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide">
+                      Pending
                     </span>
                   </div>
                 ))}
               </div>
             </div>
           )}
-        </div>
       </div>
     </main>
   );
