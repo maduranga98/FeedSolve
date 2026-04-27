@@ -2,22 +2,24 @@ import type { TierLimits } from '../types';
 
 export const tierLimits: Record<string, TierLimits> = {
   free: {
-    boards: 1,
-    submissions: 50,
+    boards: 2,
+    submissions: Infinity,
     teamMembers: 1,
     canReply: false,
-    canViewAnalytics: false,
+    canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
+    analyticsLevel: 'basic',
   },
   starter: {
     boards: 3,
-    submissions: 500,
+    submissions: 1500,
     teamMembers: 3,
     canReply: false,
     canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
+    analyticsLevel: 'basic',
   },
   growth: {
     boards: 10,
@@ -27,15 +29,17 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: true,
     canAccessAPI: false,
+    analyticsLevel: 'full',
   },
   business: {
-    boards: 999,
-    submissions: 999999,
-    teamMembers: 999,
+    boards: 20,
+    submissions: 15000,
+    teamMembers: Infinity,
     canReply: true,
     canViewAnalytics: true,
     canRemoveBranding: true,
     canAccessAPI: true,
+    analyticsLevel: 'advanced',
   },
 };
 
@@ -49,8 +53,8 @@ export const tierPricing = {
     annual: 588,
   },
   business: {
-    monthly: 129,
-    annual: 1548,
+    monthly: 79,
+    annual: 948,
   },
 };
 
@@ -72,4 +76,16 @@ export function hasFeature(tier: string, feature: keyof TierLimits): boolean {
 export function getLimit(tier: string, feature: 'boards' | 'submissions' | 'teamMembers'): number {
   const limits = getTierLimits(tier);
   return limits[feature];
+}
+
+export function getAnalyticsLevel(tier: string): 'none' | 'basic' | 'full' | 'advanced' {
+  return getTierLimits(tier).analyticsLevel;
+}
+
+export function analyticsLevelAtLeast(
+  tier: string,
+  required: 'basic' | 'full' | 'advanced'
+): boolean {
+  const order = { none: 0, basic: 1, full: 2, advanced: 3 };
+  return order[getAnalyticsLevel(tier)] >= order[required];
 }
