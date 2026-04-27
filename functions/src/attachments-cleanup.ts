@@ -201,7 +201,7 @@ async function markScanStatus(
   if (!submissionDoc.exists) return;
 
   const submission = submissionDoc.data()!;
-  const attachments = (submission.attachments as unknown[]) || [];
+  const attachments = (submission.attachments as Array<Record<string, unknown>>) || [];
 
   const updated = attachments.map((att: Record<string, unknown>) =>
     att.id === attachmentId
