@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useSearch } from '../../hooks/useSearch';
 import { useSavedFilters } from '../../hooks/useSavedFilters';
@@ -17,12 +17,14 @@ import { Copy, Download } from 'lucide-react';
 interface AdvancedSearchProps {
   submissions: Submission[];
   users: User[];
+  usersMap?: Record<string, User>;
   onSubmissionClick: (submission: Submission) => void;
 }
 
 export function AdvancedSearch({
   submissions,
   users,
+  usersMap,
   onSubmissionClick,
 }: AdvancedSearchProps) {
   const { user } = useAuth();
@@ -33,9 +35,7 @@ export function AdvancedSearch({
   const { savedFilters, saveFilter, deleteFilter, togglePin } = useSavedFilters(user?.companyId || '');
   const { filters: urlFilters, updateFilters: updateURLFilters, getShareURL } = useURLFilters();
 
-  const categories = Array.from(
-    new Set(submissions.map((s) => s.category))
-  );
+  const categories = Array.from(new Set(submissions.map((s) => s.category)));
 
   useEffect(() => {
     const loadBoards = async () => {
@@ -50,6 +50,11 @@ export function AdvancedSearch({
     loadBoards();
   }, [user]);
 
+  // Reset to page 1 whenever search results change
+  useEffect(() => {
+    setPage(1);
+  }, [results.length, searchText]);
+
   const handleSaveFilter = async (name: string, description?: string) => {
     if (!user) return;
     try {
@@ -60,17 +65,17 @@ export function AdvancedSearch({
     }
   };
 
-  const handleApplyQuickFilter = (quickFilters: any) => {
+  const handleApplyQuickFilter = useCallback((quickFilters: any) => {
     setFilters(quickFilters);
     updateURLFilters(quickFilters);
     setPage(1);
-  };
+  }, [setFilters, updateURLFilters]);
 
-  const handleSelectSavedFilter = (filter: any) => {
+  const handleSelectSavedFilter = useCallback((filter: any) => {
     setFilters(filter.filters);
     updateURLFilters(filter.filters);
     setPage(1);
-  };
+  }, [setFilters, updateURLFilters]);
 
   const handleCopyShareLink = () => {
     const url = getShareURL();
@@ -211,8 +216,10 @@ export function AdvancedSearch({
             <SearchResults
               results={results}
               onSubmissionClick={onSubmissionClick}
+              usersMap={usersMap}
               page={page}
-              pageSize={50}
+              pageSize={20}
+              onPageChange={setPage}
             />
           )}
         </div>

@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback, memo } from 'react';
-import type { Submission } from '../../types';
+import type { Submission, User } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
 import { getUser } from '../../lib/firestore';
-import type { User } from '../../types';
 import { MessageSquare, UserCircle } from 'lucide-react';
 
 interface SubmissionCardProps {
   submission: Submission;
   onClick?: (submission: Submission) => void;
   compact?: boolean;
+  usersMap?: Record<string, User>;
 }
 
 const priorityDot: Record<string, string> = {
@@ -23,15 +23,19 @@ const priorityLabel: Record<string, string> = {
   low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical',
 };
 
-function SubmissionCardComponent({ submission, onClick, compact = false }: SubmissionCardProps) {
-  const [assignedUser, setAssignedUser] = useState<User | null>(null);
+function SubmissionCardComponent({ submission, onClick, compact = false, usersMap }: SubmissionCardProps) {
+  const [fetchedUser, setFetchedUser] = useState<User | null>(null);
+
+  const assignedUser: User | null | undefined = submission.assignedTo
+    ? (usersMap ? (usersMap[submission.assignedTo] ?? null) : fetchedUser)
+    : null;
 
   useEffect(() => {
-    if (!submission.assignedTo) return;
+    if (!submission.assignedTo || usersMap) return;
     getUser(submission.assignedTo)
-      .then(setAssignedUser)
+      .then(setFetchedUser)
       .catch(() => {});
-  }, [submission.assignedTo]);
+  }, [submission.assignedTo, usersMap]);
 
   const handleClick = useCallback(() => onClick?.(submission), [submission, onClick]);
 
