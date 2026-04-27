@@ -99,13 +99,15 @@ export function DowngradeModal({
 
           {/* Pricing info */}
           <div className="bg-green-50 rounded-lg p-4 mb-6">
-            <p className="text-gray-600 text-sm mb-2">New Monthly Cost</p>
+            <p className="text-gray-600 text-sm mb-2">
+              {currentBilling === 'annual' ? 'New Annual Cost' : 'New Monthly Cost'}
+            </p>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-gray-900">${toPrice}</span>
-              <span className="text-gray-600">/month</span>
+              <span className="text-gray-600">/{currentBilling === 'annual' ? 'yr' : 'mo'}</span>
             </div>
             <p className="text-sm text-green-600 mt-2">
-              Save ${priceDiff} per month
+              Save ${priceDiff} per {currentBilling === 'annual' ? 'year' : 'month'}
             </p>
           </div>
 

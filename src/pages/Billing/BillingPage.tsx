@@ -12,7 +12,7 @@ import { LoadingSpinner } from '../../components/Shared';
 export function BillingPage() {
   const { subscription, loading: subscriptionLoading } = useSubscription();
   const { invoices, loading: invoicesLoading } = useInvoices();
-  const { createBillingPortalSession, loading: portalLoading } = useStripe();
+  const { createBillingPortalSession, cancelSubscription, loading: portalLoading } = useStripe();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -66,7 +66,10 @@ export function BillingPage() {
         {/* Current Subscription */}
         <div>
           <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Current Subscription</h2>
-          <SubscriptionCard subscription={subscription} />
+          <SubscriptionCard
+            subscription={subscription}
+            onCancel={() => cancelSubscription().catch((err) => setError(err.message))}
+          />
         </div>
 
         {/* Subscription Management */}
