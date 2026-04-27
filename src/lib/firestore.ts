@@ -10,10 +10,12 @@ import {
   where,
   orderBy,
   limit,
+  startAfter,
   Timestamp,
   setDoc,
   arrayUnion,
   deleteField,
+  type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
 
@@ -275,6 +277,38 @@ export async function getCompanySubmissions(companyId: string, limitCount: numbe
   );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
+
+export interface SubmissionsPage {
+  submissions: Submission[];
+  lastDoc: QueryDocumentSnapshot | null;
+  hasMore: boolean;
+}
+
+export async function getCompanySubmissionsPage(
+  companyId: string,
+  pageSize: number = 20,
+  startAfterDoc?: QueryDocumentSnapshot
+): Promise<SubmissionsPage> {
+  const submissionsRef = collection(db, 'submissions');
+  const fetchSize = pageSize + 1;
+  const constraints: Parameters<typeof query>[1][] = [
+    where('companyId', '==', companyId),
+    orderBy('createdAt', 'desc'),
+    limit(fetchSize),
+  ];
+  if (startAfterDoc) {
+    constraints.splice(2, 0, startAfter(startAfterDoc));
+  }
+  const q = query(submissionsRef, ...constraints);
+  const snapshot = await getDocs(q);
+  const hasMore = snapshot.docs.length > pageSize;
+  const docs = hasMore ? snapshot.docs.slice(0, pageSize) : snapshot.docs;
+  return {
+    submissions: docs.map((d) => ({ ...d.data(), id: d.id } as Submission)),
+    lastDoc: docs.length > 0 ? docs[docs.length - 1] : null,
+    hasMore,
+  };
 }
 
 export async function getBoardSubmissions(boardId: string, limitCount: number = 500): Promise<Submission[]> {

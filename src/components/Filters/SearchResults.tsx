@@ -1,35 +1,44 @@
+import { memo, useMemo, useState } from 'react';
 import { SubmissionCard } from '../Cards/SubmissionCard';
-import type { Submission } from '../../types';
-import { LayoutGrid, Rows3 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import type { Submission, User } from '../../types';
+import { LayoutGrid, Rows3, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SearchResultsProps {
   results: Submission[];
   loading?: boolean;
   onSubmissionClick: (submission: Submission) => void;
-  page?: number;
+  usersMap?: Record<string, User>;
+  page: number;
   pageSize?: number;
+  onPageChange: (page: number) => void;
 }
 
-export function SearchResults({
+export const SearchResults = memo(function SearchResults({
   results,
   loading = false,
   onSubmissionClick,
-  page = 1,
-  pageSize = 50,
+  usersMap,
+  page,
+  pageSize = 20,
+  onPageChange,
 }: SearchResultsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const start = (page - 1) * pageSize;
-  const end = start + pageSize;
-  const paginatedResults = results.slice(start, end);
+
   const totalPages = Math.ceil(results.length / pageSize);
-  const statusSummary = useMemo(() => {
-    return {
-      received: results.filter((item) => item.status === 'received').length,
-      inProgress: results.filter((item) => item.status === 'in_progress').length,
-      resolved: results.filter((item) => item.status === 'resolved').length,
-    };
-  }, [results]);
+  const safePage = Math.min(Math.max(1, page), Math.max(1, totalPages));
+  const start = (safePage - 1) * pageSize;
+  const end = start + pageSize;
+
+  const paginatedResults = useMemo(
+    () => results.slice(start, end),
+    [results, start, end]
+  );
+
+  const statusSummary = useMemo(() => ({
+    received: results.filter((s) => s.status === 'received').length,
+    inProgress: results.filter((s) => s.status === 'in_progress').length,
+    resolved: results.filter((s) => s.status === 'resolved').length,
+  }), [results]);
 
   if (loading) {
     return (
@@ -54,11 +63,11 @@ export function SearchResults({
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-[#6B7B8D] text-sm">
-              Showing {start + 1} to {Math.min(end, results.length)} of {results.length} submissions
+              Showing {start + 1}–{Math.min(end, results.length)} of {results.length} submissions
             </p>
             {totalPages > 1 && (
               <p className="text-[#9AABBF] text-xs mt-1">
-                Page {page} of {totalPages}
+                Page {safePage} of {totalPages}
               </p>
             )}
           </div>
@@ -108,17 +117,34 @@ export function SearchResults({
             submission={submission}
             onClick={() => onSubmissionClick(submission)}
             compact={viewMode === 'list'}
+            usersMap={usersMap}
           />
         ))}
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <p className="text-[#6B7B8D] text-sm">
-            Showing page {page} of {totalPages}
-          </p>
+        <div className="flex items-center justify-center gap-3 mt-6">
+          <button
+            onClick={() => onPageChange(safePage - 1)}
+            disabled={safePage <= 1}
+            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft size={15} />
+            Previous
+          </button>
+          <span className="text-sm text-[#6B7B8D] font-medium">
+            {safePage} / {totalPages}
+          </span>
+          <button
+            onClick={() => onPageChange(safePage + 1)}
+            disabled={safePage >= totalPages}
+            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+            <ChevronRight size={15} />
+          </button>
         </div>
       )}
     </div>
   );
-}
+});

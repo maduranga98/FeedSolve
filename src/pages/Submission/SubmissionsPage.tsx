@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { getCompanySubmissions, getCompanyMembers } from '../../lib/firestore';
+import { getCompanySubmissionsPage, getCompanyMembers } from '../../lib/firestore';
+import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
 import type { Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
 import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
+import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import {
   Users,
   Inbox,
@@ -15,7 +17,10 @@ import {
   UserCheck,
   AlertCircle,
   ChevronDown,
+  RefreshCw,
 } from 'lucide-react';
+
+const PAGE_SIZE = 20;
 
 type Tab = 'active' | 'completed';
 
@@ -81,22 +86,29 @@ export function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('active');
   const [showTeamProgress, setShowTeamProgress] = useState(false);
+  const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
-  const loadData = useCallback(async () => {
+  const usersMap = useMemo(
+    () => Object.fromEntries(users.map((u) => [u.id, u])),
+    [users]
+  );
+
+  const loadInitial = useCallback(async () => {
     if (!user) return;
+    setLoading(true);
     try {
-      const [submissionsData, usersData] = await Promise.all([
-        getCompanySubmissions(user.companyId),
+      const [pageResult, usersData]: [SubmissionsPageResult, User[]] = await Promise.all([
+        getCompanySubmissionsPage(user.companyId, PAGE_SIZE),
         getCompanyMembers(user.companyId),
       ]);
-      setSubmissions(
-        submissionsData.sort(
-          (a, b) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime()
-        )
-      );
+      setSubmissions(pageResult.submissions);
+      setHasMore(pageResult.hasMore);
+      lastDocRef.current = pageResult.lastDoc;
       setUsers(usersData);
     } catch (error) {
       console.error('Failed to load submissions workspace:', error);
@@ -105,13 +117,32 @@ export function SubmissionsPage() {
     }
   }, [user]);
 
+  const loadMore = useCallback(async () => {
+    if (!user || !lastDocRef.current || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const pageResult = await getCompanySubmissionsPage(
+        user.companyId,
+        PAGE_SIZE,
+        lastDocRef.current
+      );
+      setSubmissions((prev) => [...prev, ...pageResult.submissions]);
+      setHasMore(pageResult.hasMore);
+      lastDocRef.current = pageResult.lastDoc;
+    } catch (error) {
+      console.error('Failed to load more submissions:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [user, loadingMore]);
+
   useEffect(() => {
     document.title = 'Submissions | FeedSolve';
   }, []);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadInitial();
+  }, [loadInitial]);
 
   const totalCount = submissions.length;
   const newCount = submissions.filter((s) => s.status === 'received').length;
@@ -191,6 +222,11 @@ export function SubmissionsPage() {
                     bg="bg-[#FFF3E0]"
                     textColor="text-[#B06F00]"
                   />
+                )}
+                {hasMore && (
+                  <span className="text-xs text-[#9AABBF]">
+                    Showing {totalCount}+ submissions
+                  </span>
                 )}
               </div>
             )}
@@ -334,9 +370,33 @@ export function SubmissionsPage() {
                 <AdvancedSearch
                   submissions={displayedSubmissions}
                   users={users}
+                  usersMap={usersMap}
                   onSubmissionClick={setSelectedSubmission}
                 />
               </div>
+
+              {/* Load More */}
+              {hasMore && (
+                <div className="flex justify-center pb-4">
+                  <button
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E8ECF0] rounded-xl text-sm font-medium text-[#2E86AB] hover:bg-[#EBF5FB] transition-colors disabled:opacity-60"
+                  >
+                    {loadingMore ? (
+                      <>
+                        <RefreshCw size={14} className="animate-spin" />
+                        Loading…
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown size={14} />
+                        Load more submissions
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -346,7 +406,7 @@ export function SubmissionsPage() {
         <SubmissionDetail
           submission={selectedSubmission}
           onClose={() => setSelectedSubmission(null)}
-          onUpdated={loadData}
+          onUpdated={loadInitial}
         />
       )}
     </div>

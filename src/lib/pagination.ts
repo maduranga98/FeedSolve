@@ -170,13 +170,13 @@ export interface CursorPaginationResult<T> {
 
 // Generate cursor from item ID and timestamp
 export function generateCursor(id: string, timestamp: number): string {
-  return Buffer.from(`${id}:${timestamp}`).toString('base64');
+  return btoa(`${id}:${timestamp}`);
 }
 
 // Decode cursor
 export function decodeCursor(cursor: string): { id: string; timestamp: number } | null {
   try {
-    const decoded = Buffer.from(cursor, 'base64').toString();
+    const decoded = atob(cursor);
     const [id, timestamp] = decoded.split(':');
     return { id, timestamp: parseInt(timestamp) };
   } catch {
