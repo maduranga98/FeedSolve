@@ -1,0 +1,10 @@
+- anonymous check box is not working in the submission form
+- can't upload an attachment in the submission form
+- tracking code is not working
+- "You do not have permission to perform this action." this got when try to create a board
+- audit log not create when tacking action for the submissions
+- board templates are not loading. due to the permission errors
+- team members also not loading due to the permission errors
+- selected analytic option is not visible due to the selected color
+- aduit logs are not created for the most of featers. 
+- 
