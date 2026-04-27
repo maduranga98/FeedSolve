@@ -1,26 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Mail, Lock, User, Building2 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
-import { Button, Input } from '../../components/Shared';
-import { validatePassword, validateEmail, sanitizeInput } from '../../lib/security';
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Mail, Lock, User, Building2 } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import { Button, Input } from "../../components/Shared";
+import {
+  validatePassword,
+  validateEmail,
+  sanitizeInput,
+} from "../../lib/security";
+import { FaApple } from "react-icons/fa";
 
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <path d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
-      <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-    </svg>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 814 1000" fill="currentColor">
-      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 395.8 38 283.2 38 273.4c0-63.1 24.1-168.2 76.5-237.3C158.6 67.9 224.7 32 290.5 32c66.8 0 109.9 42.8 165.4 42.8 50.7 0 102.3-45.9 168.9-45.9 43.9 0 149.5 3.9 208.5 105.5zm-161.9-170.3c27.9-40.4 48.6-96.7 48.6-153 0-7.8-.6-15.6-1.9-23.4-45.9 1.9-104 30.6-138.8 75.1-28.5 36.1-53.4 92.8-53.4 150.7 0 8.4 1.3 16.8 1.9 19.4 3.2.6 8.4 1.3 13.6 1.3 41.1 0 92.8-27.2 129.9-70.1z"/>
+      <path
+        d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+        fill="#4285F4"
+      />
+      <path
+        d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"
+        fill="#34A853"
+      />
+      <path
+        d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
+        fill="#EA4335"
+      />
     </svg>
   );
 }
@@ -31,51 +40,54 @@ export function SignUp() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = 'Sign Up | FeedSolve';
+    document.title = "Sign Up | FeedSolve";
   }, []);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    companyName: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    companyName: "",
+    password: "",
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [passwordFeedback, setPasswordFeedback] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [socialLoading, setSocialLoading] = useState<'google' | 'apple' | null>(null);
+  const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(
+    null,
+  );
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = t('forms:validation.required');
+      newErrors.name = t("forms:validation.required");
     } else if (formData.name.trim().length < 2) {
-      newErrors.name = t('forms:validation.min_length', { count: 2 });
+      newErrors.name = t("forms:validation.min_length", { count: 2 });
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = t('forms:validation.required');
+      newErrors.email = t("forms:validation.required");
     } else {
       const emailValidation = validateEmail(formData.email);
       if (!emailValidation.valid) {
-        newErrors.email = emailValidation.reason || t('forms:validation.email');
+        newErrors.email = emailValidation.reason || t("forms:validation.email");
       }
     }
 
     if (!formData.companyName.trim()) {
-      newErrors.companyName = t('forms:validation.required');
+      newErrors.companyName = t("forms:validation.required");
     } else if (formData.companyName.trim().length < 2) {
-      newErrors.companyName = t('forms:validation.min_length', { count: 2 });
+      newErrors.companyName = t("forms:validation.min_length", { count: 2 });
     }
 
     if (!formData.password) {
-      newErrors.password = t('forms:validation.required');
+      newErrors.password = t("forms:validation.required");
     } else {
       const passwordValidation = validatePassword(formData.password);
       if (!passwordValidation.valid) {
-        newErrors.password = passwordValidation.feedback[0] || t('errors:weak_password');
+        newErrors.password =
+          passwordValidation.feedback[0] || t("errors:weak_password");
         setPasswordFeedback(passwordValidation.feedback);
       } else {
         setPasswordFeedback([]);
@@ -83,7 +95,7 @@ export function SignUp() {
     }
 
     if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = t('errors:password_mismatch');
+      newErrors.confirmPassword = t("errors:password_mismatch");
     }
 
     setErrors(newErrors);
@@ -99,37 +111,52 @@ export function SignUp() {
         formData.email.toLowerCase().trim(),
         formData.password,
         sanitizeInput(formData.name),
-        sanitizeInput(formData.companyName)
+        sanitizeInput(formData.companyName),
       );
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : t("errors:something_went_wrong"),
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    setSocialLoading('google');
+    setSocialLoading("google");
     setErrors({});
     try {
       await loginWithGoogle();
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : t("errors:something_went_wrong"),
+      });
     } finally {
       setSocialLoading(null);
     }
   };
 
   const handleAppleSignUp = async () => {
-    setSocialLoading('apple');
+    setSocialLoading("apple");
     setErrors({});
     try {
       await loginWithApple();
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      setErrors({ submit: error instanceof Error ? error.message : t('errors:something_went_wrong') });
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : t("errors:something_went_wrong"),
+      });
     } finally {
       setSocialLoading(null);
     }
@@ -145,29 +172,49 @@ export function SignUp() {
         <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5" />
 
         <div className="flex items-center gap-3 relative z-10">
-          <img src="/logo.png" alt="FeedSolve" className="h-8 w-8 brightness-0 invert" />
+          <img
+            src="/logo.png"
+            alt="FeedSolve"
+            className="h-8 w-8 brightness-0 invert"
+          />
           <span className="text-2xl font-bold">FeedSolve</span>
         </div>
 
         <div className="relative z-10">
           <h2 className="text-3xl font-bold leading-snug mb-4">
-            Start collecting<br />feedback today.
+            Start collecting
+            <br />
+            feedback today.
           </h2>
           <p className="text-white/70 text-base leading-relaxed">
-            Set up your first feedback board in minutes. No credit card required to get started.
+            Set up your first feedback board in minutes. No credit card required
+            to get started.
           </p>
 
           <ul className="mt-8 space-y-3">
             {[
-              'Unlimited submissions on the free plan',
-              'Real-time analytics & reporting',
-              'Team collaboration built-in',
-              'Multi-language support',
+              "Unlimited submissions on the free plan",
+              "Real-time analytics & reporting",
+              "Team collaboration built-in",
+              "Multi-language support",
             ].map((item) => (
-              <li key={item} className="flex items-center gap-3 text-sm text-white/80">
+              <li
+                key={item}
+                className="flex items-center gap-3 text-sm text-white/80"
+              >
                 <span className="w-5 h-5 rounded-full bg-[#27AE60]/30 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-[#2ECC71]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-3 h-3 text-[#2ECC71]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </span>
                 {item}
@@ -176,7 +223,9 @@ export function SignUp() {
           </ul>
         </div>
 
-        <p className="text-white/40 text-xs relative z-10">© {new Date().getFullYear()} FeedSolve. All rights reserved.</p>
+        <p className="text-white/40 text-xs relative z-10">
+          © {new Date().getFullYear()} FeedSolve. All rights reserved.
+        </p>
       </div>
 
       {/* Right panel — form */}
@@ -188,14 +237,26 @@ export function SignUp() {
 
         <div className="w-full max-w-sm fade-in">
           <div className="mb-7">
-            <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">{t('forms:signup.create_account')}</h1>
-            <p className="text-sm text-[#6B7B8D]">{t('forms:signup.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">
+              {t("forms:signup.create_account")}
+            </h1>
+            <p className="text-sm text-[#6B7B8D]">
+              {t("forms:signup.subtitle")}
+            </p>
           </div>
 
           {errors.submit && (
             <div className="mb-5 p-3.5 bg-[#FEF0EF] border border-[#F5C6C2] rounded-lg flex items-start gap-2.5">
-              <svg className="w-4 h-4 text-[#E74C3C] mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="w-4 h-4 text-[#E74C3C] mt-0.5 flex-shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
               <p className="text-sm text-[#C0392B]">{errors.submit}</p>
             </div>
@@ -209,7 +270,7 @@ export function SignUp() {
               disabled={anyLoading}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E8ECF0] rounded-xl bg-white hover:bg-[#F8FAFB] text-sm font-medium text-[#1E3A5F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
-              {socialLoading === 'google' ? (
+              {socialLoading === "google" ? (
                 <span className="w-4 h-4 border-2 border-[#6B7B8D] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <GoogleIcon />
@@ -222,10 +283,10 @@ export function SignUp() {
               disabled={anyLoading}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#1E3A5F] rounded-xl bg-[#1E3A5F] hover:bg-[#163056] text-sm font-medium text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
-              {socialLoading === 'apple' ? (
+              {socialLoading === "apple" ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                <AppleIcon />
+                <FaApple size={24} />
               )}
               Apple
             </button>
@@ -237,81 +298,106 @@ export function SignUp() {
               <div className="w-full border-t border-[#E8ECF0]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-[#F4F7FA] text-[#9AABBF] font-medium">or create an account with email</span>
+              <span className="px-3 bg-[#F4F7FA] text-[#9AABBF] font-medium">
+                or create an account with email
+              </span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label={t('forms:signup.full_name')}
+              label={t("forms:signup.full_name")}
               type="text"
               placeholder="John Doe"
               autoComplete="name"
               leftIcon={<User size={15} />}
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               error={errors.name}
             />
             <Input
-              label={t('forms:signup.email')}
+              label={t("forms:signup.email")}
               type="email"
               placeholder="you@company.com"
               autoComplete="email"
               leftIcon={<Mail size={15} />}
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               error={errors.email}
             />
             <Input
-              label={t('forms:signup.company_name')}
+              label={t("forms:signup.company_name")}
               type="text"
               placeholder="Acme Inc."
               autoComplete="organization"
               leftIcon={<Building2 size={15} />}
               value={formData.companyName}
-              onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, companyName: e.target.value })
+              }
               error={errors.companyName}
             />
             <Input
-              label={t('forms:signup.password')}
+              label={t("forms:signup.password")}
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
               leftIcon={<Lock size={15} />}
               value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               error={errors.password}
-              helperText={t('forms:signup.password_hint')}
+              helperText={t("forms:signup.password_hint")}
             />
             {passwordFeedback.length > 0 && (
               <div className="space-y-1">
                 {passwordFeedback.map((msg, i) => (
-                  <p key={i} className="text-xs text-[#E74C3C] flex items-center gap-1">
+                  <p
+                    key={i}
+                    className="text-xs text-[#E74C3C] flex items-center gap-1"
+                  >
                     <span>•</span> {msg}
                   </p>
                 ))}
               </div>
             )}
             <Input
-              label={t('forms:signup.confirm_password')}
+              label={t("forms:signup.confirm_password")}
               type="password"
               placeholder="••••••••"
               autoComplete="new-password"
               leftIcon={<Lock size={15} />}
               value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, confirmPassword: e.target.value })
+              }
               error={errors.confirmPassword}
             />
 
-            <Button type="submit" variant="primary" isLoading={isLoading} disabled={anyLoading} className="w-full mt-2" size="lg">
-              {t('forms:signup.create_account')}
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={isLoading}
+              disabled={anyLoading}
+              className="w-full mt-2"
+              size="lg"
+            >
+              {t("forms:signup.create_account")}
             </Button>
           </form>
 
           <p className="text-center text-sm text-[#6B7B8D] mt-6">
-            {t('forms:signup.have_account')}{' '}
-            <Link to="/login" className="text-[#2E86AB] font-medium hover:underline">
-              {t('forms:signup.login_link')}
+            {t("forms:signup.have_account")}{" "}
+            <Link
+              to="/login"
+              className="text-[#2E86AB] font-medium hover:underline"
+            >
+              {t("forms:signup.login_link")}
             </Link>
           </p>
         </div>
