@@ -53,7 +53,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includeMetrics}
             onChange={() => handleCheckboxChange('includeMetrics')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Key Metrics (resolution rate, avg time)</span>
         </label>
@@ -63,7 +63,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includeStatus}
             onChange={() => handleCheckboxChange('includeStatus')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Submissions by Status</span>
         </label>
@@ -73,7 +73,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includePriority}
             onChange={() => handleCheckboxChange('includePriority')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Submissions by Priority</span>
         </label>
@@ -83,7 +83,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includeCategory}
             onChange={() => handleCheckboxChange('includeCategory')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Submissions by Category</span>
         </label>
@@ -93,7 +93,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includeTeamPerformance}
             onChange={() => handleCheckboxChange('includeTeamPerformance')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Team Performance</span>
         </label>
@@ -103,7 +103,7 @@ export function ReportBuilder({
             type="checkbox"
             checked={options.includeTrends}
             onChange={() => handleCheckboxChange('includeTrends')}
-            className="w-4 h-4"
+            className="w-4 h-4 accent-color-accent"
           />
           <span className="text-color-body-text">Trend Analysis</span>
         </label>

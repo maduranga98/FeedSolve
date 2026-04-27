@@ -58,7 +58,7 @@ export function TrendChart({
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                 dateRange.preset === preset
                   ? 'bg-color-primary text-white'
-                  : 'bg-color-border text-color-body-text hover:bg-color-accent'
+                  : 'bg-color-border text-color-body-text hover:bg-color-accent hover:text-white'
               }`}
             >
               {getPresetLabel(preset as DateRangePreset)}
@@ -70,7 +70,7 @@ export function TrendChart({
             className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
               isCustom
                 ? 'bg-color-primary text-white'
-                : 'bg-color-border text-color-body-text hover:bg-color-accent'
+                : 'bg-color-border text-color-body-text hover:bg-color-accent hover:text-white'
             }`}
           >
             <Calendar size={16} />
