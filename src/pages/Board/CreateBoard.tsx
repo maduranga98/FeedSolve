@@ -50,27 +50,43 @@ export function CreateBoard() {
     loadTemplate();
   }, [location]);
 
+  const BOARD_NAME_MAX = 100;
+  const CATEGORY_NAME_MAX = 100;
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Board name is required';
-    if (!formData.description.trim())
+    if (!formData.name.trim()) {
+      newErrors.name = 'Board name is required';
+    } else if (formData.name.trim().length > BOARD_NAME_MAX) {
+      newErrors.name = `Board name must be at most ${BOARD_NAME_MAX} characters`;
+    }
+
+    if (!formData.description.trim()) {
       newErrors.description = 'Description is required';
-    if (formData.categories.length === 0)
+    }
+
+    if (formData.categories.length === 0) {
       newErrors.categories = 'At least one category is required';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleAddCategory = () => {
-    if (newCategory.trim()) {
-      setFormData({
-        ...formData,
-        categories: [...formData.categories, newCategory.trim()],
-      });
-      setNewCategory('');
+    const trimmed = newCategory.trim();
+    if (!trimmed) return;
+    if (trimmed.length > CATEGORY_NAME_MAX) {
+      setErrors(prev => ({ ...prev, newCategory: `Category name must be at most ${CATEGORY_NAME_MAX} characters` }));
+      return;
     }
+    setErrors(prev => { const e = { ...prev }; delete e.newCategory; return e; });
+    setFormData({
+      ...formData,
+      categories: [...formData.categories, trimmed],
+    });
+    setNewCategory('');
   };
 
   const handleRemoveCategory = (index: number) => {
@@ -133,15 +149,20 @@ export function CreateBoard() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <Input
-            label={t('forms:board.name')}
-            placeholder="Product Feedback"
-            value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
-            error={errors.name}
-          />
+          <div>
+            <Input
+              label={t('forms:board.name')}
+              placeholder="Product Feedback"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value.slice(0, BOARD_NAME_MAX) })
+              }
+              error={errors.name}
+            />
+            <p className={`text-xs mt-1 text-right ${formData.name.length >= BOARD_NAME_MAX ? 'text-[#E74C3C]' : 'text-[#9AABBF]'}`}>
+              {formData.name.length}/{BOARD_NAME_MAX}
+            </p>
+          </div>
 
           <Input
             label={t('forms:board.description')}
@@ -185,7 +206,7 @@ export function CreateBoard() {
                 type="text"
                 placeholder={t('forms:board.category_placeholder')}
                 value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                onChange={(e) => setNewCategory(e.target.value.slice(0, CATEGORY_NAME_MAX))}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -203,6 +224,9 @@ export function CreateBoard() {
                 <Plus size={18} />
               </Button>
             </div>
+            {errors.newCategory && (
+              <p className="text-xs text-[#E74C3C] mt-1">{errors.newCategory}</p>
+            )}
           </div>
 
           <label className="flex items-center gap-3 cursor-pointer">

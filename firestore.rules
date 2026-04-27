@@ -65,9 +65,9 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
 
-    // Validate tracking code format: #FSV-<uppercase alphanumeric, 8-30 chars>
+    // Validate tracking code format: #FSV-<exactly 4 uppercase alphanumeric chars>
     function isValidTrackingCode(code) {
-      return code is string && code.matches('#FSV-[A-Z0-9]{8,30}');
+      return code is string && code.matches('#FSV-[A-Z0-9]{4}');
     }
 
     // Validate submission fields on direct create (Cloud Functions bypass rules)
@@ -75,8 +75,8 @@ service cloud.firestore {
       let d = request.resource.data;
       return d.boardId is string && d.boardId.size() > 0 && d.boardId.size() <= 128 &&
              d.companyId is string && d.companyId.size() > 0 && d.companyId.size() <= 128 &&
-             d.subject is string && d.subject.size() > 0 && d.subject.size() <= 500 &&
-             d.description is string && d.description.size() > 0 && d.description.size() <= 10000 &&
+             d.subject is string && d.subject.size() > 0 && d.subject.size() <= 100 &&
+             d.description is string && d.description.size() > 0 && d.description.size() <= 5000 &&
              d.trackingCode is string && isValidTrackingCode(d.trackingCode) &&
              d.status == 'received' &&
              d.priority in ['low', 'medium', 'high', 'critical'] &&
@@ -234,6 +234,14 @@ service cloud.firestore {
       allow read: if isAuthenticated() &&
         isUserInCompany(resource.data.companyId) &&
         (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
+      allow write: if false;
+    }
+
+    // Archived submissions - Cloud Functions write, Owner/Admin read (compliance)
+    match /archived_submissions/{submissionId} {
+      allow read: if isAuthenticated() &&
+        exists(/databases/$(database)/documents/submissions/$(submissionId)) == false &&
+        canManageCompany(resource.data.companyId);
       allow write: if false;
     }
 
