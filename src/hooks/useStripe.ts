@@ -7,19 +7,13 @@ export function useStripe() {
   const [error, setError] = useState<string | null>(null);
   const functions = getFunctions();
 
-  const createCheckoutSession = async (
-    priceId: string,
-    billingCycle: 'monthly' | 'annual'
-  ) => {
+  const createCheckoutSession = async (priceId: string) => {
     setLoading(true);
     setError(null);
 
     try {
-      const createCheckoutSessionFn = httpsCallable(functions, 'createCheckoutSession');
-      const response = await createCheckoutSessionFn({
-        priceId,
-        billingCycle,
-      }) as any;
+      const fn = httpsCallable(functions, 'createCheckoutSession');
+      const response = (await fn({ priceId })) as any;
 
       const stripeInstance = await stripe;
       if (!stripeInstance) {
@@ -47,8 +41,8 @@ export function useStripe() {
     setError(null);
 
     try {
-      const createPortalSessionFn = httpsCallable(functions, 'createBillingPortalSession');
-      const response = await createPortalSessionFn({}) as any;
+      const fn = httpsCallable(functions, 'createBillingPortalSession');
+      const response = (await fn({})) as any;
 
       if (response.data.url) {
         window.location.href = response.data.url;
@@ -62,9 +56,45 @@ export function useStripe() {
     }
   };
 
+  const changeSubscription = async (priceId: string) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const fn = httpsCallable(functions, 'changeSubscription');
+      await fn({ priceId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to change subscription';
+      setError(message);
+      console.error('Change subscription error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelSubscription = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const fn = httpsCallable(functions, 'cancelSubscription');
+      await fn({});
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to cancel subscription';
+      setError(message);
+      console.error('Cancel subscription error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     createCheckoutSession,
     createBillingPortalSession,
+    changeSubscription,
+    cancelSubscription,
     loading,
     error,
   };

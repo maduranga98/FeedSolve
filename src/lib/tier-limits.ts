@@ -43,18 +43,19 @@ export const tierLimits: Record<string, TierLimits> = {
   },
 };
 
+// Annual prices match actual Stripe product prices (20% discount off monthly × 12)
 export const tierPricing = {
   starter: {
     monthly: 19,
-    annual: 228,
+    annual: 182,
   },
   growth: {
     monthly: 49,
-    annual: 588,
+    annual: 470,
   },
   business: {
     monthly: 79,
-    annual: 948,
+    annual: 758,
   },
 };
 

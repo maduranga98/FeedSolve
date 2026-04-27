@@ -91,7 +91,7 @@ export function PricingPage() {
           <PricingCard
             tier="starter"
             monthlyPrice={19}
-            annualPrice={228}
+            annualPrice={182}
             billing={billing}
             features={features.starter}
             onGetStarted={() => handleGetStarted('starter')}
@@ -100,7 +100,7 @@ export function PricingPage() {
           <PricingCard
             tier="growth"
             monthlyPrice={49}
-            annualPrice={588}
+            annualPrice={470}
             billing={billing}
             features={features.growth}
             isPopular
@@ -109,8 +109,8 @@ export function PricingPage() {
           />
           <PricingCard
             tier="business"
-            monthlyPrice={129}
-            annualPrice={1548}
+            monthlyPrice={79}
+            annualPrice={758}
             billing={billing}
             features={features.business}
             onGetStarted={() => handleGetStarted('business')}

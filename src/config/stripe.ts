@@ -55,5 +55,5 @@ export const STRIPE_PRODUCTS = {
   },
 };
 
-// Public Stripe key
-export const STRIPE_PUBLIC_KEY = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+// Public Stripe key (Vite env var — set VITE_STRIPE_PUBLIC_KEY in .env)
+export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined;
