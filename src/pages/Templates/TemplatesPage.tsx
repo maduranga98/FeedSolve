@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { LayoutTemplate } from 'lucide-react';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { LoadingSpinner } from '../../components/Shared';
 import { getTemplates } from '../../lib/firebase';
@@ -70,18 +71,27 @@ export function TemplatesPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
-              {t('boards:templates.title')}
-            </h1>
-            <p className="text-gray-600">
-              {t('boards:templates.browse')}
-            </p>
+      <div className="min-h-screen bg-[#F4F7FA]">
+        {/* Header */}
+        <div className="bg-white border-b border-[#E8ECF0]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+                <LayoutTemplate size={20} className="text-[#2E86AB]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">
+                  {t('boards:templates.title')}
+                </h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                  {t('boards:templates.browse')}
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
 
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Search and Filter */}
           <div className="mb-8 space-y-4">
             <div>

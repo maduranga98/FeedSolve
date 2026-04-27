@@ -151,25 +151,38 @@ export function BrandingPage() {
   const theme = previewTheme || DEFAULT_COLOR_THEME;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[#1E3A5F]">
-            {t("branding")}
-          </h1>
-          <p className="text-sm text-[#6B7B8D] mt-1">
-            Customize how your submission forms appear to customers
-          </p>
+    <div className="min-h-screen bg-[#F4F7FA]">
+      {/* Header */}
+      <div className="bg-white border-b border-[#E8ECF0]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+                <Palette size={20} className="text-[#2E86AB]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">
+                  {t("branding")}
+                </h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                  Customize how your submission forms appear to customers
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              isLoading={saving}
+              disabled={saving || uploading}
+            >
+              {t("save_branding")}
+            </Button>
+          </div>
         </div>
-        <Button
-          variant="primary"
-          onClick={handleSave}
-          isLoading={saving}
-          disabled={saving || uploading}
-        >
-          {t("save_branding")}
-        </Button>
       </div>
+
+      {/* Content */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
       {error && (
         <div className="flex items-center gap-2 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
@@ -510,5 +523,6 @@ export function BrandingPage() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
