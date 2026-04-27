@@ -117,7 +117,9 @@ service cloud.firestore {
 
       match /audit_logs/{logId} {
         allow read: if canManageCompany(companyId);
-        allow write: if false;
+        // Authenticated company members may create audit log entries; no updates/deletes
+        allow create: if isUserInCompany(companyId);
+        allow update, delete: if false;
       }
 
       // Notifications for @mentions
@@ -128,18 +130,31 @@ service cloud.firestore {
       }
     }
 
+    // Board templates - all authenticated users may read; only server writes
+    match /board_templates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
     // Boards collection - Role-based access; board doc must carry companyId
     match /boards/{boardId} {
       allow read: if canReadSubmissions(resource.data.companyId);
-      allow write: if canManageCompany(resource.data.companyId);
+      // create: resource doesn't exist yet, so use request.resource.data
+      allow create: if canManageCompany(request.resource.data.companyId);
+      allow update: if canManageCompany(resource.data.companyId);
       allow delete: if isOwner(resource.data.companyId);
     }
 
     // Submissions collection - Role-based access
     match /submissions/{submissionId} {
+      // Authenticated company members can read their own submissions
       allow read: if canReadSubmissions(resource.data.companyId);
-      // Create: writer must belong to the company and data must pass validation
+      // Public tracking page: unauthenticated read by tracking code
+      allow get: if resource.data.trackingCode is string;
+      // Authenticated company member create
       allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
+      // Public (unauthenticated) create from the feedback form
+      allow create: if !isAuthenticated() && isValidSubmissionCreate();
       allow update: if canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
@@ -189,7 +204,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Team invitations - Team managers and above
+    // Team invitations - flat collection used by client code
+    match /teamInvitations/{inviteId} {
+      allow read: if isAuthenticated() && canManageTeam(resource.data.companyId);
+      allow create: if isAuthenticated() && canManageTeam(request.resource.data.companyId);
+      allow delete: if isAuthenticated() && canManageTeam(resource.data.companyId);
+      allow update: if false;
+    }
+
+    // Team invitations - Team managers and above (legacy nested path)
     match /team_invitations/{companyId}/{inviteId} {
       allow read: if canManageTeam(companyId);
       allow create: if canManageTeam(companyId);
