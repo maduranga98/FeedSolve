@@ -165,7 +165,7 @@ export const onCommentDeleted = functions.firestore
 
 // Clear old notifications (older than 30 days)
 export const clearOldNotifications = functions.pubsub
-  .schedule("every 7 days")
+  .schedule("0 0 * * 0") // every Sunday at midnight UTC
   .onRun(async () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
