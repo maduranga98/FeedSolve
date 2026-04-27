@@ -3,8 +3,6 @@ import * as admin from 'firebase-admin';
 import axios from 'axios';
 import crypto from 'crypto';
 
-admin.initializeApp();
-
 const db = admin.firestore();
 const SLACK_MESSAGE_LIMIT = 4000;
 const MAX_RETRIES = 3;

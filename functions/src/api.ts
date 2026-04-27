@@ -16,8 +16,6 @@ import swaggerUi from 'swagger-ui-express';
 // @ts-ignore
 import openapi from './openapi.json';
 
-admin.initializeApp();
-
 const app = express();
 
 // Security headers - apply first

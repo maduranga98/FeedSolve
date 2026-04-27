@@ -1,3 +1,4 @@
+import './firebase-init'; // Must be first: initializes admin before any other module loads
 import * as functions from 'firebase-functions';
 import app from './api';
 
