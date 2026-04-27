@@ -144,7 +144,7 @@ async function sendSlackNotification(
       submission,
       previousSubmission,
       eventType,
-      slackConfig.format,
+      slackConfig.format as string,
     );
 
     const response = await axios.post(slackConfig.webhookUrl as string, {
@@ -470,8 +470,8 @@ export const testWebhook = functions.https.onCall(async (data, context) => {
     priority: "medium",
     category: "Test",
     isAnonymous: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
 
   try {

@@ -31,7 +31,7 @@ function getStripe(): Stripe {
       "Stripe secret key not configured",
     );
   }
-  return new Stripe(secretKey, { apiVersion: "2024-06-20" });
+  return new Stripe(secretKey, { apiVersion: "2025-02-24.acacia" });
 }
 
 async function getCompanyId(uid: string): Promise<string> {

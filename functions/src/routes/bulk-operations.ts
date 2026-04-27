@@ -68,8 +68,10 @@ async function processBulkOperation(operationId: string): Promise<void> {
     throw new Error("Operation not found");
   }
 
-  const operation = operationDoc.data() as Record<string, unknown>;
-  const { submissionIds, updateData, companyId } = operation || {};
+  const operation = operationDoc.data()!;
+  const submissionIds = operation.submissionIds as string[];
+  const updateData = operation.updateData as Record<string, unknown>;
+  const companyId = operation.companyId as string;
 
   let processedCount = 0;
   const previousValues: Array<{
@@ -93,7 +95,7 @@ async function processBulkOperation(operationId: string): Promise<void> {
             submissionId,
             previousData: Object.keys(updateData).reduce(
               (acc: Record<string, unknown>, key) => {
-                (acc as Record<string, unknown>)[key] = data[key];
+                (acc as Record<string, unknown>)[key] = data?.[key];
                 return acc;
               },
               {} as Record<string, unknown>,
@@ -163,8 +165,8 @@ router.post(
       const { submissionIds, status } = req.body as BulkOperationPayload & {
         status: string;
       };
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       if (
         !submissionIds ||
@@ -194,7 +196,7 @@ router.post(
       );
 
       // Process asynchronously
-      processBulkOperation((operation as Record<string, unknown>)?.id as string || "").catch(console.error);
+      processBulkOperation(operation.id as string).catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {
@@ -212,8 +214,8 @@ router.post(
       const { submissionIds, priority } = req.body as BulkOperationPayload & {
         priority: string;
       };
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       if (
         !submissionIds ||
@@ -242,7 +244,7 @@ router.post(
         userData?.email || "unknown@example.com",
       );
 
-      processBulkOperation(operation.id).catch(console.error);
+      processBulkOperation(operation.id as string).catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {
@@ -260,8 +262,8 @@ router.post(
       const { submissionIds, assignedTo } = req.body as BulkOperationPayload & {
         assignedTo: string;
       };
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       if (
         !submissionIds ||
@@ -290,7 +292,7 @@ router.post(
         userData?.email || "unknown@example.com",
       );
 
-      processBulkOperation(operation.id).catch(console.error);
+      processBulkOperation(operation.id as string).catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {
@@ -308,8 +310,8 @@ router.post(
       const { submissionIds, category } = req.body as BulkOperationPayload & {
         category: string;
       };
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       if (
         !submissionIds ||
@@ -338,7 +340,7 @@ router.post(
         userData?.email || "unknown@example.com",
       );
 
-      processBulkOperation(operation.id).catch(console.error);
+      processBulkOperation(operation.id as string).catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {
@@ -354,8 +356,8 @@ router.post(
   async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { submissionIds } = req.body as BulkOperationPayload;
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       if (
         !submissionIds ||
@@ -379,7 +381,7 @@ router.post(
         userData?.email || "unknown@example.com",
       );
 
-      processBulkOperation(operation.id).catch(console.error);
+      processBulkOperation(operation.id as string).catch(console.error);
 
       res.status(202).json(operation);
     } catch (error) {
@@ -395,8 +397,8 @@ router.post(
   async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { id } = req.params;
-      const companyId = req.companyId;
-      const userId = req.userId;
+      const companyId = req.companyId!;
+      const userId = req.userId!;
 
       const operationRef = db.collection("bulkOperations").doc(id);
       const operationDoc = await operationRef.get();
@@ -406,10 +408,10 @@ router.post(
         return;
       }
 
-      const operation = operationDoc.data();
+      const operation = operationDoc.data()!;
 
       // Check if operation is still within undo window
-      const createdAt = operation.createdAt?.toDate?.()?.getTime() || 0;
+      const createdAt = (operation.createdAt as admin.firestore.Timestamp | undefined)?.toDate?.()?.getTime() || 0;
       const now = Date.now();
 
       if (now - createdAt > UNDO_WINDOW_MS) {
@@ -470,8 +472,8 @@ router.post(
           id: uuidv4(),
           companyId,
           operationId: id,
-          operationType: operation.operationType,
-          submissionCount: operation.submissionIds.length,
+          operationType: operation.operationType as string,
+          submissionCount: (operation.submissionIds as string[]).length,
           createdBy: userId,
           userId,
           userName: userData?.name || "Unknown",
