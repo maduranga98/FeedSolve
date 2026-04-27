@@ -281,6 +281,7 @@ export interface TierLimits {
   canViewAnalytics: boolean;
   canRemoveBranding: boolean;
   canAccessAPI: boolean;
+  analyticsLevel: 'none' | 'basic' | 'full' | 'advanced';
 }
 
 export interface AuthContextType {
