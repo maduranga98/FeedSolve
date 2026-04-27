@@ -12,7 +12,7 @@ router.post(
   async (req: AuthenticatedRequest, res: Response) => {
     try {
       const companyId = req.companyId;
-      const userId = req.user?.uid;
+      const userId = req.userId;
       const { name, description, filters } = req.body;
 
       if (!companyId || !userId) {
@@ -42,7 +42,6 @@ router.post(
       await filterRef.set(filterData);
 
       res.status(201).json({
-        id: filterId,
         ...filterData,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

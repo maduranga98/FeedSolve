@@ -42,7 +42,7 @@ export const cleanupOrphanedAttachments = functions.pubsub
       for (const file of files) {
         if (!validAttachmentPaths.has(file.name)) {
           const [metadata] = await file.getMetadata();
-          const fileAge = Date.now() - new Date(metadata.timeCreated).getTime();
+          const fileAge = Date.now() - new Date(metadata.timeCreated ?? 0).getTime();
 
           // Delete if older than cutoff
           if (fileAge > CLEANUP_DAYS * 24 * 60 * 60 * 1000) {
@@ -175,7 +175,7 @@ export const checkVirusScanResults = functions.pubsub
           });
         } catch (error: unknown) {
           const err = error as Record<string, unknown>;
-          if ((err as Record<string, unknown>).response?.status === 404) {
+          if (((err as Record<string, unknown>).response as Record<string, unknown> | undefined)?.status === 404) {
             // Analysis not ready yet
             console.log(`Scan still pending: ${analysisId}`);
           } else {
@@ -200,8 +200,8 @@ async function markScanStatus(
     .get();
   if (!submissionDoc.exists) return;
 
-  const submission = submissionDoc.data();
-  const attachments = submission.attachments || [];
+  const submission = submissionDoc.data()!;
+  const attachments = (submission.attachments as unknown[]) || [];
 
   const updated = attachments.map((att: Record<string, unknown>) =>
     att.id === attachmentId

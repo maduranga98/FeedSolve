@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import { Router, Response } from "express";
-import { AuthenticatedRequest, hasPermission } from "../middleware/auth";
+import { AuthenticatedRequest } from "../middleware/auth";
 import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
@@ -193,11 +193,11 @@ router.post(
         return;
       }
 
-      const submission = submissionDoc.data() as Record<string, unknown>;
-      const { companyId } = submission || {};
+      const submission = submissionDoc.data()!;
+      const companyId = submission.companyId as string;
 
-      // Check if user is in company and has permission
-      if (!hasPermission(req, companyId, "submissions:write")) {
+      // Check if user has permission
+      if (!req.permissions?.includes("submissions:write")) {
         res.status(403).json({ error: "Forbidden" });
         return;
       }
@@ -210,7 +210,7 @@ router.post(
       }
 
       // Check submission size
-      const submissionAttachments = submission.attachments || [];
+      const submissionAttachments = (submission.attachments as Array<Record<string, number>>) || [];
       const submissionSize = submissionAttachments.reduce(
         (sum: number, att: Record<string, number>) => sum + att.fileSize,
         0,
@@ -236,7 +236,7 @@ router.post(
         fileSize: filesize,
         storagePath,
         uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
-        uploadedBy: req.auth?.uid || "unknown",
+        uploadedBy: req.userId || "unknown",
         scanned: false,
         scanStatus: "pending",
       };
@@ -282,9 +282,9 @@ router.get(
         return;
       }
 
-      const submission = submissionDoc.data();
+      const submission = submissionDoc.data()!;
       const attachment = submission.attachments?.find(
-        (a: Record<string, string>) => a.id === attachmentId,
+        (a: { id: string }) => a.id === attachmentId,
       );
 
       if (!attachment) {
@@ -293,7 +293,7 @@ router.get(
       }
 
       // Check access - company members can download
-      if (!hasPermission(req, submission.companyId, "submissions:read")) {
+      if (req.companyId !== submission.companyId || !req.permissions?.includes("submissions:read")) {
         res.status(403).json({ error: "Forbidden" });
         return;
       }
@@ -328,9 +328,9 @@ router.delete(
         return;
       }
 
-      const submission = submissionDoc.data();
+      const submission = submissionDoc.data()!;
       const attachment = submission.attachments?.find(
-        (a: Record<string, string>) => a.id === attachmentId,
+        (a: { id: string }) => a.id === attachmentId,
       );
 
       if (!attachment) {
@@ -339,7 +339,7 @@ router.delete(
       }
 
       // Check permission - manage submissions required
-      if (!hasPermission(req, submission.companyId, "submissions:write")) {
+      if (req.companyId !== submission.companyId || !req.permissions?.includes("submissions:write")) {
         res.status(403).json({ error: "Forbidden" });
         return;
       }

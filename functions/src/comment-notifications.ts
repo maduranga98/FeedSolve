@@ -13,6 +13,7 @@ interface CommentData {
     email: string;
   };
   mentions: string[];
+  reactions?: unknown[];
   createdAt: admin.firestore.Timestamp;
 }
 
@@ -88,7 +89,8 @@ export const onCommentUpdated = functions.firestore
   .onUpdate(async (change, context) => {
     const oldComment = change.before.data() as CommentData;
     const newComment = change.after.data() as CommentData;
-    const { submissionId, companyId } = context.params;
+    const { submissionId } = context.params;
+    const { companyId } = newComment;
 
     try {
       // Check if reactions were added
@@ -128,7 +130,8 @@ export const onCommentDeleted = functions.firestore
   .document("submissions/{submissionId}/comments/{commentId}")
   .onDelete(async (snap, context) => {
     const comment = snap.data() as CommentData;
-    const { submissionId, companyId } = context.params;
+    const { submissionId } = context.params;
+    const { companyId } = comment;
 
     try {
       // Update submission comment count
