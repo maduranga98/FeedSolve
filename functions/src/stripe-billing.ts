@@ -92,7 +92,7 @@ export const createCheckoutSession = functions.https.onCall(
       subscription_data: { metadata: { companyId } },
     });
 
-    return { sessionId: session.id };
+    return { sessionId: session.id, url: session.url };
   },
 );
 
