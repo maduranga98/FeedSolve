@@ -177,14 +177,29 @@ export function SubmitFeedback() {
   const branding = company?.branding;
   const companyDisplayName = branding?.companyName || company?.name || board?.name || "";
 
+  const SUBJECT_MAX = 100;
+  const DESCRIPTION_MAX = 5000;
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
+
     if (!formData.category)
       newErrors.category = t("forms:feedback.category") + " " + t("forms:validation.required");
-    if (!formData.subject.trim())
+    else if (board && board.categories.length > 0 && !board.categories.includes(formData.category))
+      newErrors.category = t("forms:validation.invalid_category") || "Invalid category selected";
+
+    const subject = formData.subject.trim();
+    if (!subject)
       newErrors.subject = t("forms:feedback.subject") + " " + t("forms:validation.required");
-    if (!formData.description.trim())
+    else if (subject.length > SUBJECT_MAX)
+      newErrors.subject = `Subject must be at most ${SUBJECT_MAX} characters`;
+
+    const description = formData.description.trim();
+    if (!description)
       newErrors.description = t("forms:feedback.description") + " " + t("forms:validation.required");
+    else if (description.length > DESCRIPTION_MAX)
+      newErrors.description = `Description must be at most ${DESCRIPTION_MAX} characters`;
+
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
         newErrors.email = t("forms:validation.required");
@@ -570,13 +585,18 @@ export function SubmitFeedback() {
               />
 
               {/* Subject */}
-              <Input
-                label={t("forms:feedback.subject")}
-                placeholder={t("forms:feedback.subject_placeholder")}
-                value={formData.subject}
-                onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                error={errors.subject}
-              />
+              <div>
+                <Input
+                  label={t("forms:feedback.subject")}
+                  placeholder={t("forms:feedback.subject_placeholder")}
+                  value={formData.subject}
+                  onChange={e => setFormData({ ...formData, subject: e.target.value.slice(0, SUBJECT_MAX) })}
+                  error={errors.subject}
+                />
+                <p className={`text-xs mt-1 text-right ${formData.subject.length >= SUBJECT_MAX ? "text-[#E74C3C]" : "text-[#9AABBF]"}`}>
+                  {formData.subject.length}/{SUBJECT_MAX}
+                </p>
+              </div>
 
               {/* Description */}
               <div>
@@ -589,15 +609,22 @@ export function SubmitFeedback() {
                 <textarea
                   placeholder={t("forms:feedback.description_placeholder")}
                   value={formData.description}
-                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e => setFormData({ ...formData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
                   rows={5}
                   className={`w-full px-4 py-3 border rounded-xl text-sm bg-white resize-none focus:outline-none transition-all ${
                     errors.description ? "border-[#E74C3C]" : ""
                   }`}
                 />
-                {errors.description && (
-                  <p className="text-xs text-[#E74C3C] mt-1.5">{errors.description}</p>
-                )}
+                <div className="flex items-start justify-between mt-1.5">
+                  {errors.description ? (
+                    <p className="text-xs text-[#E74C3C]">{errors.description}</p>
+                  ) : (
+                    <span />
+                  )}
+                  <p className={`text-xs ${formData.description.length >= DESCRIPTION_MAX ? "text-[#E74C3C]" : "text-[#9AABBF]"}`}>
+                    {formData.description.length}/{DESCRIPTION_MAX}
+                  </p>
+                </div>
               </div>
 
               {/* Anonymous */}

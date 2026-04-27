@@ -11,7 +11,6 @@ export function initializeSentry() {
     return;
   }
 
-  // Get Sentry DSN from environment
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 
   if (!sentryDsn) {
@@ -32,21 +31,18 @@ export function initializeSentry() {
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     beforeSend(event, hint) {
-      // Don't send errors from localhost
-      if (
-        event.request?.url &&
-        event.request.url.includes('localhost')
-      ) {
+      if (event.request?.url && event.request.url.includes('localhost')) {
         return null;
       }
-
-      // Don't send network errors (user's problem)
       if (hint.originalException instanceof TypeError) {
         const error = hint.originalException as Error;
         if (error.message.includes('fetch') || error.message.includes('network')) {
           return null;
         }
       }
+
+      // Track error rate for critical alerting
+      recordErrorTimestamp();
 
       return event;
     },
@@ -55,12 +51,43 @@ export function initializeSentry() {
   console.log('[Monitoring] Sentry initialized');
 }
 
-// Event tracking for analytics
+// ─── Critical error rate tracking ────────────────────────────────────────────
+// Keeps a sliding window of error timestamps. Fires a Sentry alert when
+// more than CRITICAL_ERROR_THRESHOLD errors occur within CRITICAL_ERROR_WINDOW_MS.
+
+const CRITICAL_ERROR_THRESHOLD = 5;
+const CRITICAL_ERROR_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+const errorTimestamps: number[] = [];
+
+function recordErrorTimestamp() {
+  const now = Date.now();
+  errorTimestamps.push(now);
+
+  // Evict timestamps outside the sliding window
+  const cutoff = now - CRITICAL_ERROR_WINDOW_MS;
+  while (errorTimestamps.length > 0 && errorTimestamps[0] < cutoff) {
+    errorTimestamps.shift();
+  }
+
+  if (errorTimestamps.length >= CRITICAL_ERROR_THRESHOLD) {
+    Sentry.captureMessage(
+      `Critical error rate: ${errorTimestamps.length} errors in the last hour`,
+      'fatal'
+    );
+    // Reset to avoid repeated alerts for the same burst
+    errorTimestamps.length = 0;
+  }
+}
+
+// ─── Analytics event types ────────────────────────────────────────────────────
+
 export interface AnalyticsEvent {
   category: string;
   action: string;
   label?: string;
   value?: number;
+  properties?: Record<string, unknown>;
 }
 
 const analyticsQueue: AnalyticsEvent[] = [];
@@ -68,108 +95,199 @@ const analyticsQueue: AnalyticsEvent[] = [];
 export function trackEvent(event: AnalyticsEvent) {
   analyticsQueue.push(event);
 
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.MODE === 'development') {
     console.log('[Analytics]', event);
   }
 
-  // Send to Sentry for breadcrumbs
-  Sentry.captureMessage(`${event.category}:${event.action}`, 'info');
+  Sentry.addBreadcrumb({
+    category: event.category,
+    message: `${event.action}${event.label ? `: ${event.label}` : ''}`,
+    level: 'info',
+    data: event.properties,
+  });
 }
 
-// Track page views
-export function trackPageView(pageName: string, properties?: Record<string, any>) {
+// ─── Domain-specific analytics events ────────────────────────────────────────
+
+export function trackSubmissionCreated(properties: {
+  boardId: string;
+  companyId: string;
+  category: string;
+  isAnonymous: boolean;
+}) {
+  trackEvent({
+    category: 'Submission',
+    action: 'Created',
+    properties,
+  });
+}
+
+export function trackBoardCreated(properties: {
+  boardId: string;
+  companyId: string;
+  categoryCount: number;
+  fromTemplate: boolean;
+}) {
+  trackEvent({
+    category: 'Board',
+    action: 'Created',
+    properties,
+  });
+}
+
+export function trackStatusChanged(properties: {
+  submissionId: string;
+  fromStatus: string;
+  toStatus: string;
+  companyId?: string;
+}) {
+  trackEvent({
+    category: 'Submission',
+    action: 'StatusChanged',
+    label: `${properties.fromStatus} → ${properties.toStatus}`,
+    properties,
+  });
+}
+
+export function trackUserSignedUp(properties: {
+  userId: string;
+  method: 'email' | 'google' | 'apple';
+}) {
+  trackEvent({
+    category: 'User',
+    action: 'SignedUp',
+    label: properties.method,
+    properties,
+  });
+}
+
+// ─── Page views & feature usage ──────────────────────────────────────────────
+
+export function trackPageView(pageName: string, properties?: Record<string, unknown>) {
   trackEvent({
     category: 'Page',
     action: 'View',
     label: pageName,
+    properties,
   });
-
   Sentry.setTag('page', pageName);
   if (properties) {
     Sentry.setContext('page_properties', properties);
   }
 }
 
-// Track feature usage
 export function trackFeatureUsage(feature: string, action: string) {
   trackEvent({
     category: 'Feature',
-    action: action,
+    action,
     label: feature,
-  });
-
-  Sentry.addBreadcrumb({
-    category: 'feature',
-    message: `${feature}: ${action}`,
-    level: 'info',
   });
 }
 
-// Track errors
-export function trackError(error: Error, context?: Record<string, any>) {
-  Sentry.captureException(error, {
-    contexts: {
-      error_context: context || {},
-    },
-  });
+// ─── Error tracking ───────────────────────────────────────────────────────────
 
+export function trackError(error: Error, context?: Record<string, unknown>) {
+  recordErrorTimestamp();
+  Sentry.captureException(error, {
+    contexts: { error_context: context || {} },
+  });
   console.error('[Error]', error, context);
 }
 
-// Track performance metrics
-export function trackPerformanceMetric(name: string, value: number, unit: string = 'ms') {
-  Sentry.captureMessage(`Performance: ${name}=${value}${unit}`, 'info');
+// ─── Performance monitoring ───────────────────────────────────────────────────
 
-  if (process.env.NODE_ENV === 'development') {
+const SLOW_DB_THRESHOLD_MS = 500;
+const SLOW_RENDER_THRESHOLD_MS = 100;
+
+export function trackPerformanceMetric(name: string, value: number, unit: string = 'ms') {
+  if (import.meta.env.MODE === 'development') {
     console.log(`[Performance] ${name}: ${value}${unit}`);
+  }
+
+  // Alert on slow database queries
+  if (name.startsWith('database:') && value > SLOW_DB_THRESHOLD_MS) {
+    Sentry.captureMessage(`Slow database query: ${name} took ${value}ms`, 'warning');
+  }
+
+  // Alert on slow UI renders
+  if (name.startsWith('render:') && value > SLOW_RENDER_THRESHOLD_MS) {
+    Sentry.captureMessage(`Slow UI render: ${name} took ${value}ms`, 'warning');
   }
 }
 
-// Set user context
-export function setUserContext(userId: string, email: string, properties?: Record<string, any>) {
-  Sentry.setUser({
-    id: userId,
-    email: email,
-    ...properties,
-  });
-}
-
-// Clear user context on logout
-export function clearUserContext() {
-  Sentry.setUser(null);
-}
-
-// Create custom span for performance monitoring
 export function createPerformanceSpan(operation: string): {
   end: () => void;
-  addTag: (key: string, value: any) => void;
+  addTag: (key: string, value: unknown) => void;
 } {
   const startTime = performance.now();
-  const tags: Record<string, any> = {};
+  const tags: Record<string, unknown> = {};
 
   return {
     end: () => {
       const duration = performance.now() - startTime;
-      trackPerformanceMetric(operation, duration, 'ms');
+      tags['durationMs'] = duration;
+      trackPerformanceMetric(operation, Math.round(duration), 'ms');
     },
-    addTag: (key: string, value: any) => {
+    addTag: (key: string, value: unknown) => {
       tags[key] = value;
     },
   };
 }
 
-// Session heartbeat - track active sessions
-let heartbeatInterval: NodeJS.Timeout | null = null;
+// ─── User context ─────────────────────────────────────────────────────────────
+
+export function setUserContext(
+  userId: string,
+  email: string,
+  properties?: Record<string, unknown>
+) {
+  Sentry.setUser({ id: userId, email, ...properties });
+}
+
+export function clearUserContext() {
+  Sentry.setUser(null);
+}
+
+// ─── Database & API monitoring wrappers ──────────────────────────────────────
+
+export function monitorDatabaseOperation<T>(
+  operationName: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const span = createPerformanceSpan(`database:${operationName}`);
+  return fn()
+    .then((result) => { span.end(); return result; })
+    .catch((error) => {
+      span.end();
+      trackError(error, { operation: operationName });
+      throw error;
+    });
+}
+
+export function monitorApiCall<T>(
+  endpoint: string,
+  method: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  const span = createPerformanceSpan(`api:${method}:${endpoint}`);
+  return fn()
+    .then((result) => { span.end(); return result; })
+    .catch((error) => {
+      span.end();
+      trackError(error, { endpoint, method });
+      throw error;
+    });
+}
+
+// ─── Session heartbeat ────────────────────────────────────────────────────────
+
+let heartbeatInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startSessionHeartbeat() {
   if (heartbeatInterval) return;
-
   heartbeatInterval = setInterval(() => {
-    trackEvent({
-      category: 'Session',
-      action: 'Heartbeat',
-    });
-  }, 5 * 60 * 1000); // Every 5 minutes
+    trackEvent({ category: 'Session', action: 'Heartbeat' });
+  }, 5 * 60 * 1000);
 }
 
 export function stopSessionHeartbeat() {
@@ -179,62 +297,45 @@ export function stopSessionHeartbeat() {
   }
 }
 
-// Get analytics queue for reporting
-export function getAnalyticsQueue(): AnalyticsEvent[] {
-  return [...analyticsQueue];
-}
+// ─── Error boundary helper ────────────────────────────────────────────────────
 
-// Clear analytics queue
-export function clearAnalyticsQueue() {
-  analyticsQueue.length = 0;
-}
-
-// Custom error boundaries
 export function captureErrorBoundary(error: Error, errorInfo: React.ErrorInfo) {
+  recordErrorTimestamp();
   Sentry.withScope((scope) => {
     scope.setTag('error_boundary', true);
-    scope.setContext('errorInfo', {
-      componentStack: errorInfo.componentStack,
-    });
+    scope.setContext('errorInfo', { componentStack: errorInfo.componentStack });
     Sentry.captureException(error);
   });
 }
 
-// Monitor database operations
-export function monitorDatabaseOperation<T>(
-  operationName: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  const span = createPerformanceSpan(`database:${operationName}`);
+// ─── Analytics queue helpers ──────────────────────────────────────────────────
 
-  return fn()
-    .then((result) => {
-      span.end();
-      return result;
-    })
-    .catch((error) => {
-      span.end();
-      trackError(error, { operation: operationName });
-      throw error;
-    });
+export function getAnalyticsQueue(): AnalyticsEvent[] {
+  return [...analyticsQueue];
 }
 
-// Monitor API calls
-export function monitorApiCall<T>(
-  endpoint: string,
-  method: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  const span = createPerformanceSpan(`api:${method}:${endpoint}`);
+export function clearAnalyticsQueue() {
+  analyticsQueue.length = 0;
+}
 
-  return fn()
-    .then((result) => {
-      span.end();
-      return result;
-    })
-    .catch((error) => {
-      span.end();
-      trackError(error, { endpoint, method });
-      throw error;
-    });
+// ─── Performance init ─────────────────────────────────────────────────────────
+
+export function initPerformanceMonitoring() {
+  if (typeof window === 'undefined') return;
+
+  // Observe long tasks (renders / JS blocking >50 ms)
+  if ('PerformanceObserver' in window) {
+    try {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.duration > SLOW_RENDER_THRESHOLD_MS) {
+            trackPerformanceMetric(`render:long-task`, Math.round(entry.duration), 'ms');
+          }
+        }
+      });
+      observer.observe({ type: 'longtask', buffered: true });
+    } catch {
+      // longtask not supported in all browsers
+    }
+  }
 }
