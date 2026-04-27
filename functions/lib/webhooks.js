@@ -41,51 +41,57 @@ const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
-admin.initializeApp();
 const db = admin.firestore();
-const SLACK_MESSAGE_LIMIT = 4000;
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 5000;
 exports.handleSubmissionEvent = functions.firestore
-    .document('submissions/{submissionId}')
-    .onWrite(async (change, context) => {
+    .document("submissions/{submissionId}")
+    .onWrite(async (change) => {
     const submission = change.after.data();
     const previousSubmission = change.before.data();
     if (!submission)
         return;
-    let eventType = 'submission.updated';
+    let eventType = "submission.updated";
     if (!change.before.exists) {
-        eventType = 'submission.created';
+        eventType = "submission.created";
     }
-    else if (previousSubmission && submission.status !== previousSubmission.status) {
-        if (submission.status === 'resolved') {
-            eventType = 'submission.resolved';
+    else if (previousSubmission &&
+        submission.status !== previousSubmission.status) {
+        if (submission.status === "resolved") {
+            eventType = "submission.resolved";
         }
         else {
-            eventType = 'submission.updated';
+            eventType = "submission.updated";
         }
     }
-    else if (previousSubmission && submission.assignedTo !== previousSubmission.assignedTo) {
-        eventType = 'submission.assigned';
+    else if (previousSubmission &&
+        submission.assignedTo !== previousSubmission.assignedTo) {
+        eventType = "submission.assigned";
     }
-    else if (submission.publicReply && (!previousSubmission || !previousSubmission.publicReply)) {
-        eventType = 'submission.reply_added';
+    else if (submission.publicReply &&
+        (!previousSubmission || !previousSubmission.publicReply)) {
+        eventType = "submission.reply_added";
     }
     try {
-        const companyDoc = await db.collection('companies').doc(submission.companyId).get();
+        const companyDoc = await db
+            .collection("companies")
+            .doc(submission.companyId)
+            .get();
         const webhooks = (companyDoc.data()?.webhooks || {});
-        if (webhooks.slack?.enabled && webhooks.slack.events.includes(eventType)) {
+        if (webhooks.slack?.enabled &&
+            webhooks.slack.events.includes(eventType)) {
             await sendSlackNotification(submission, previousSubmission, eventType, webhooks.slack);
         }
-        if (webhooks.email?.enabled && webhooks.email.events.includes(eventType)) {
+        if (webhooks.email?.enabled &&
+            webhooks.email.events.includes(eventType)) {
             await sendEmailNotification(submission, previousSubmission, eventType, webhooks.email);
         }
-        if (webhooks.custom?.enabled && webhooks.custom.events.includes(eventType)) {
+        if (webhooks.custom?.enabled &&
+            webhooks.custom.events.includes(eventType)) {
             await sendCustomWebhook(submission, previousSubmission, eventType, webhooks.custom);
         }
     }
     catch (error) {
-        console.error('Error processing webhook event:', error);
+        console.error("Error processing webhook event:", error);
     }
 });
 async function sendSlackNotification(submission, previousSubmission, eventType, slackConfig) {
@@ -95,26 +101,28 @@ async function sendSlackNotification(submission, previousSubmission, eventType, 
             text: message.text,
             blocks: message.blocks,
         });
-        await logWebhookEvent(submission.companyId, 'slack', eventType, 'success', response.status, undefined, JSON.stringify({ submission: submission.id }));
+        await logWebhookEvent(submission.companyId, "slack", eventType, "success", response.status, undefined, JSON.stringify({ submission: submission.id }));
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        await logWebhookEvent(submission.companyId, 'slack', eventType, 'failed', undefined, errorMessage, JSON.stringify({ submission: submission.id }));
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        await logWebhookEvent(submission.companyId, "slack", eventType, "failed", undefined, errorMessage, JSON.stringify({ submission: submission.id }));
     }
 }
 async function sendEmailNotification(submission, previousSubmission, eventType, emailConfig) {
     try {
         const subject = buildEmailSubject(submission, eventType);
-        const body = buildEmailBody(submission, previousSubmission, eventType);
         // TODO: Implement email sending via Brevo, SendGrid, or Firebase Extensions
         // For MVP, log the intention to send
-        console.log(`Email would be sent to: ${emailConfig.recipients.join(', ')}`);
+        console.log(`Email would be sent to: ${emailConfig.recipients.join(", ")}`);
         console.log(`Subject: ${subject}`);
-        await logWebhookEvent(submission.companyId, 'email', eventType, 'success', 200, undefined, JSON.stringify({ submission: submission.id, recipients: emailConfig.recipients }));
+        await logWebhookEvent(submission.companyId, "email", eventType, "success", 200, undefined, JSON.stringify({
+            submission: submission.id,
+            recipients: emailConfig.recipients,
+        }));
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        await logWebhookEvent(submission.companyId, 'email', eventType, 'failed', undefined, errorMessage, JSON.stringify({ submission: submission.id }));
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        await logWebhookEvent(submission.companyId, "email", eventType, "failed", undefined, errorMessage, JSON.stringify({ submission: submission.id }));
     }
 }
 async function sendCustomWebhook(submission, previousSubmission, eventType, customConfig) {
@@ -140,16 +148,16 @@ async function sendCustomWebhook(submission, previousSubmission, eventType, cust
         const signature = createHmacSignature(payload, customConfig.secret);
         const response = await axios_1.default.post(customConfig.url, payload, {
             headers: {
-                'Content-Type': 'application/json',
-                'X-FeedSolve-Signature': signature,
+                "Content-Type": "application/json",
+                "X-FeedSolve-Signature": signature,
             },
             timeout: 10000,
         });
-        await logWebhookEvent(submission.companyId, 'custom', eventType, 'success', response.status, undefined, JSON.stringify(payload), JSON.stringify(response.data));
+        await logWebhookEvent(submission.companyId, "custom", eventType, "success", response.status, undefined, JSON.stringify(payload), JSON.stringify(response.data));
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        await logWebhookEvent(submission.companyId, 'custom', eventType, 'failed', undefined, errorMessage, JSON.stringify({
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        await logWebhookEvent(submission.companyId, "custom", eventType, "failed", undefined, errorMessage, JSON.stringify({
             submission: submission.id,
             url: customConfig.url,
         }));
@@ -158,9 +166,9 @@ async function sendCustomWebhook(submission, previousSubmission, eventType, cust
 async function logWebhookEvent(companyId, webhookType, event, status, statusCode, errorMessage, requestBody, response) {
     try {
         await db
-            .collection('webhook_logs')
+            .collection("webhook_logs")
             .doc(companyId)
-            .collection('logs')
+            .collection("logs")
             .add({
             webhookType,
             event,
@@ -169,47 +177,48 @@ async function logWebhookEvent(companyId, webhookType, event, status, statusCode
             errorMessage,
             retryCount: 0,
             maxRetries: MAX_RETRIES,
-            requestBody: requestBody || '',
+            requestBody: requestBody || "",
             response: response || undefined,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
         const updateData = {
-            'webhookStats.lastEventAt': admin.firestore.FieldValue.serverTimestamp(),
-            'webhookStats.totalSent': admin.firestore.FieldValue.increment(1),
+            "webhookStats.lastEventAt": admin.firestore.FieldValue.serverTimestamp(),
+            "webhookStats.totalSent": admin.firestore.FieldValue.increment(1),
         };
-        if (status === 'failed') {
-            updateData['webhookStats.failureCount'] = admin.firestore.FieldValue.increment(1);
+        if (status === "failed") {
+            updateData["webhookStats.failureCount"] =
+                admin.firestore.FieldValue.increment(1);
         }
-        await db.collection('companies').doc(companyId).update(updateData);
+        await db.collection("companies").doc(companyId).update(updateData);
     }
     catch (error) {
-        console.error('Error logging webhook event:', error);
+        console.error("Error logging webhook event:", error);
     }
 }
 function buildSlackMessage(submission, previousSubmission, eventType, format) {
     const baseText = `*${getEventTitle(eventType)}*\n${submission.subject}`;
-    if (format === 'minimal') {
+    if (format === "minimal") {
         return {
             text: `New submission: #${submission.trackingCode}`,
             blocks: [
                 {
-                    type: 'section',
+                    type: "section",
                     text: {
-                        type: 'mrkdwn',
+                        type: "mrkdwn",
                         text: `New submission: #${submission.trackingCode}`,
                     },
                 },
             ],
         };
     }
-    if (format === 'compact') {
+    if (format === "compact") {
         return {
             text: `🎯 ${getEventTitle(eventType)}: ${submission.subject} (#${submission.trackingCode})`,
             blocks: [
                 {
-                    type: 'section',
+                    type: "section",
                     text: {
-                        type: 'mrkdwn',
+                        type: "mrkdwn",
                         text: `🎯 ${getEventTitle(eventType)}\n*${submission.subject}* (#${submission.trackingCode})`,
                     },
                 },
@@ -221,45 +230,45 @@ function buildSlackMessage(submission, previousSubmission, eventType, format) {
         text: baseText,
         blocks: [
             {
-                type: 'header',
+                type: "header",
                 text: {
-                    type: 'plain_text',
+                    type: "plain_text",
                     text: getEventTitle(eventType),
                 },
             },
             {
-                type: 'section',
+                type: "section",
                 text: {
-                    type: 'mrkdwn',
+                    type: "mrkdwn",
                     text: `*Subject:* ${submission.subject}\n*Tracking Code:* #${submission.trackingCode}`,
                 },
             },
             {
-                type: 'section',
+                type: "section",
                 fields: [
                     {
-                        type: 'mrkdwn',
+                        type: "mrkdwn",
                         text: `*Category*\n${submission.category}`,
                     },
                     {
-                        type: 'mrkdwn',
+                        type: "mrkdwn",
                         text: `*Priority*\n${submission.priority}`,
                     },
                     {
-                        type: 'mrkdwn',
+                        type: "mrkdwn",
                         text: `*Status*\n${submission.status}`,
                     },
                     {
-                        type: 'mrkdwn',
-                        text: `*Assigned To*\n${submission.assignedTo || 'Unassigned'}`,
+                        type: "mrkdwn",
+                        text: `*Assigned To*\n${submission.assignedTo || "Unassigned"}`,
                     },
                 ],
             },
             {
-                type: 'section',
+                type: "section",
                 text: {
-                    type: 'mrkdwn',
-                    text: `*Description*\n${submission.description.substring(0, 300)}${submission.description.length > 300 ? '...' : ''}`,
+                    type: "mrkdwn",
+                    text: `*Description*\n${submission.description.substring(0, 300)}${submission.description.length > 300 ? "..." : ""}`,
                 },
             },
         ],
@@ -267,79 +276,67 @@ function buildSlackMessage(submission, previousSubmission, eventType, format) {
 }
 function buildEmailSubject(submission, eventType) {
     const eventMap = {
-        'submission.created': 'New Feedback Submitted',
-        'submission.updated': 'Feedback Status Updated',
-        'submission.assigned': 'Feedback Assigned to You',
-        'submission.reply_added': 'Reply Added to Feedback',
-        'submission.resolved': 'Feedback Marked as Resolved',
+        "submission.created": "New Feedback Submitted",
+        "submission.updated": "Feedback Status Updated",
+        "submission.assigned": "Feedback Assigned to You",
+        "submission.reply_added": "Reply Added to Feedback",
+        "submission.resolved": "Feedback Marked as Resolved",
     };
-    return `[FeedSolve] ${eventMap[eventType] || 'Feedback Update'} - ${submission.subject}`;
-}
-function buildEmailBody(submission, previousSubmission, eventType) {
-    return `
-    <h2>${submission.subject}</h2>
-    <p>${submission.description}</p>
-    <hr/>
-    <p><strong>Status:</strong> ${submission.status}</p>
-    <p><strong>Category:</strong> ${submission.category}</p>
-    <p><strong>Priority:</strong> ${submission.priority}</p>
-    <p><strong>Tracking Code:</strong> #${submission.trackingCode}</p>
-    <a href="${process.env.APP_URL}/submissions/${submission.id}">View in Dashboard</a>
-  `;
+    return `[FeedSolve] ${eventMap[eventType] || "Feedback Update"} - ${submission.subject}`;
 }
 function createHmacSignature(payload, secret) {
     const jsonString = JSON.stringify(payload);
-    return crypto_1.default.createHmac('sha256', secret).update(jsonString).digest('hex');
+    return crypto_1.default.createHmac("sha256", secret).update(jsonString).digest("hex");
 }
 function getEventTitle(eventType) {
     const titles = {
-        'submission.created': 'New Feedback Submitted',
-        'submission.updated': 'Feedback Updated',
-        'submission.assigned': 'Feedback Assigned',
-        'submission.reply_added': 'Reply Added',
-        'submission.resolved': 'Feedback Resolved',
+        "submission.created": "New Feedback Submitted",
+        "submission.updated": "Feedback Updated",
+        "submission.assigned": "Feedback Assigned",
+        "submission.reply_added": "Reply Added",
+        "submission.resolved": "Feedback Resolved",
     };
-    return titles[eventType] || 'Feedback Event';
+    return titles[eventType] || "Feedback Event";
 }
 exports.testWebhook = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+        throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
     }
     const { companyId, webhookType } = data;
     const testSubmission = {
-        id: 'test-submission-' + Date.now(),
-        boardId: 'test-board',
+        id: "test-submission-" + Date.now(),
+        boardId: "test-board",
         companyId,
-        trackingCode: 'TEST-001',
-        subject: 'Test Submission',
-        description: 'This is a test submission to verify webhook connectivity',
-        status: 'received',
-        priority: 'medium',
-        category: 'Test',
+        trackingCode: "TEST-001",
+        subject: "Test Submission",
+        description: "This is a test submission to verify webhook connectivity",
+        status: "received",
+        priority: "medium",
+        category: "Test",
         isAnonymous: false,
         createdAt: new Date(),
         updatedAt: new Date(),
     };
     try {
-        const companyDoc = await db.collection('companies').doc(companyId).get();
+        const companyDoc = await db.collection("companies").doc(companyId).get();
         const webhooks = (companyDoc.data()?.webhooks || {});
-        if (webhookType === 'slack' && webhooks.slack?.enabled) {
-            await sendSlackNotification(testSubmission, undefined, 'submission.created', webhooks.slack);
-            return { success: true, message: 'Test Slack message sent' };
+        if (webhookType === "slack" && webhooks.slack?.enabled) {
+            await sendSlackNotification(testSubmission, undefined, "submission.created", webhooks.slack);
+            return { success: true, message: "Test Slack message sent" };
         }
-        if (webhookType === 'email' && webhooks.email?.enabled) {
-            await sendEmailNotification(testSubmission, undefined, 'submission.created', webhooks.email);
-            return { success: true, message: 'Test email sent' };
+        if (webhookType === "email" && webhooks.email?.enabled) {
+            await sendEmailNotification(testSubmission, undefined, "submission.created", webhooks.email);
+            return { success: true, message: "Test email sent" };
         }
-        if (webhookType === 'custom' && webhooks.custom?.enabled) {
-            await sendCustomWebhook(testSubmission, undefined, 'submission.created', webhooks.custom);
-            return { success: true, message: 'Test custom webhook sent' };
+        if (webhookType === "custom" && webhooks.custom?.enabled) {
+            await sendCustomWebhook(testSubmission, undefined, "submission.created", webhooks.custom);
+            return { success: true, message: "Test custom webhook sent" };
         }
-        throw new functions.https.HttpsError('invalid-argument', 'Webhook not found or not enabled');
+        throw new functions.https.HttpsError("invalid-argument", "Webhook not found or not enabled");
     }
     catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        throw new functions.https.HttpsError('internal', errorMessage);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        throw new functions.https.HttpsError("internal", errorMessage);
     }
 });
 //# sourceMappingURL=webhooks.js.map

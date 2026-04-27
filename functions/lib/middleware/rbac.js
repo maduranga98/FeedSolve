@@ -48,91 +48,94 @@ const ROLE_HIERARCHY = {
 };
 const ROLE_PERMISSIONS = {
     owner: new Set([
-        'submissions:read',
-        'submissions:create',
-        'submissions:update',
-        'submissions:delete',
-        'submissions:assign',
-        'submissions:reply',
-        'team:read',
-        'team:invite',
-        'team:manage',
-        'team:remove',
-        'webhooks:read',
-        'webhooks:write',
-        'integrations:read',
-        'integrations:write',
-        'analytics:read',
-        'company:read',
-        'company:update',
-        'company:delete',
-        'billing:read',
-        'billing:manage',
-        'audit:read',
+        "submissions:read",
+        "submissions:create",
+        "submissions:update",
+        "submissions:delete",
+        "submissions:assign",
+        "submissions:reply",
+        "team:read",
+        "team:invite",
+        "team:manage",
+        "team:remove",
+        "webhooks:read",
+        "webhooks:write",
+        "integrations:read",
+        "integrations:write",
+        "analytics:read",
+        "company:read",
+        "company:update",
+        "company:delete",
+        "billing:read",
+        "billing:manage",
+        "audit:read",
     ]),
     admin: new Set([
-        'submissions:read',
-        'submissions:create',
-        'submissions:update',
-        'submissions:delete',
-        'submissions:assign',
-        'submissions:reply',
-        'team:read',
-        'team:invite',
-        'team:manage',
-        'team:remove',
-        'webhooks:read',
-        'webhooks:write',
-        'integrations:read',
-        'integrations:write',
-        'analytics:read',
-        'company:read',
-        'audit:read',
+        "submissions:read",
+        "submissions:create",
+        "submissions:update",
+        "submissions:delete",
+        "submissions:assign",
+        "submissions:reply",
+        "team:read",
+        "team:invite",
+        "team:manage",
+        "team:remove",
+        "webhooks:read",
+        "webhooks:write",
+        "integrations:read",
+        "integrations:write",
+        "analytics:read",
+        "company:read",
+        "audit:read",
     ]),
     manager: new Set([
-        'submissions:read',
-        'submissions:update',
-        'submissions:assign',
-        'submissions:reply',
-        'team:read',
-        'analytics:read',
-        'audit:read',
+        "submissions:read",
+        "submissions:update",
+        "submissions:assign",
+        "submissions:reply",
+        "team:read",
+        "analytics:read",
+        "audit:read",
     ]),
-    viewer: new Set([
-        'submissions:read',
-        'analytics:read',
-    ]),
+    viewer: new Set(["submissions:read", "analytics:read"]),
 };
 async function verifyRBAC(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith('Bearer ')) {
-            return res.status(401).json({ error: 'Missing or invalid authorization header' });
+        if (!authHeader?.startsWith("Bearer ")) {
+            return res
+                .status(401)
+                .json({ error: "Missing or invalid authorization header" });
         }
         const token = authHeader.slice(7);
         const decodedToken = await admin.auth().verifyIdToken(token);
-        const userDoc = await admin.firestore().collection('users').doc(decodedToken.uid).get();
+        const userDoc = await admin
+            .firestore()
+            .collection("users")
+            .doc(decodedToken.uid)
+            .get();
         if (!userDoc.exists) {
-            return res.status(404).json({ error: 'User not found' });
+            return res.status(404).json({ error: "User not found" });
         }
         const userData = userDoc.data();
         req.user = {
             uid: decodedToken.uid,
-            email: decodedToken.email || '',
+            email: decodedToken.email || "",
             companyId: userData.companyId,
             role: userData.role,
         };
         next();
     }
     catch (error) {
-        console.error('RBAC verification error:', error);
-        res.status(401).json({ error: 'Unauthorized' });
+        console.error("RBAC verification error:", error);
+        res.status(401).json({ error: "Unauthorized" });
     }
 }
 function requirePermission(permission) {
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({ error: 'User not authenticated' });
+            return res.status(401).json({ error: "User not authenticated" });
         }
         const permissions = ROLE_PERMISSIONS[req.user.role];
         if (!permissions.has(permission)) {
@@ -147,11 +150,11 @@ function requirePermission(permission) {
 function requireRole(...roles) {
     return (req, res, next) => {
         if (!req.user) {
-            return res.status(401).json({ error: 'User not authenticated' });
+            return res.status(401).json({ error: "User not authenticated" });
         }
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
-                error: `Required one of roles: ${roles.join(', ')}`,
+                error: `Required one of roles: ${roles.join(", ")}`,
                 userRole: req.user.role,
             });
         }
@@ -163,26 +166,31 @@ function canManageRole(userRole, targetRole) {
 }
 async function auditLog(companyId, userId, action, changes, targetUserId) {
     try {
-        await admin.firestore().collection('companies').doc(companyId).collection('audit_logs').add({
+        await admin
+            .firestore()
+            .collection("companies")
+            .doc(companyId)
+            .collection("audit_logs")
+            .add({
             userId,
             action,
             targetUserId,
             changes,
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
-            ipAddress: process.env.CLIENT_IP || 'unknown',
+            ipAddress: process.env.CLIENT_IP || "unknown",
         });
     }
     catch (error) {
-        console.error('Failed to write audit log:', error);
+        console.error("Failed to write audit log:", error);
     }
 }
 function onlyFields(allowedFields) {
     return (req, res, next) => {
         const bodyKeys = Object.keys(req.body || {});
-        const invalidKeys = bodyKeys.filter(key => !allowedFields.includes(key));
+        const invalidKeys = bodyKeys.filter((key) => !allowedFields.includes(key));
         if (invalidKeys.length > 0) {
             return res.status(400).json({
-                error: `Invalid fields: ${invalidKeys.join(', ')}`,
+                error: `Invalid fields: ${invalidKeys.join(", ")}`,
                 allowedFields,
             });
         }

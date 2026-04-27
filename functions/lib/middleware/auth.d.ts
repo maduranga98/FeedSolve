@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from "express";
 export interface AuthenticatedRequest extends Request {
     companyId?: string;
     apiKeyId?: string;

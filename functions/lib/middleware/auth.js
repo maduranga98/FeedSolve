@@ -40,40 +40,40 @@ const admin = __importStar(require("firebase-admin"));
 const crypto = __importStar(require("crypto"));
 const db = admin.firestore();
 function hashKey(key) {
-    return crypto.createHash('sha256').update(key).digest('hex');
+    return crypto.createHash("sha256").update(key).digest("hex");
 }
 async function authenticateApiKey(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            res.status(401).json({ error: 'Missing or invalid API key' });
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            res.status(401).json({ error: "Missing or invalid API key" });
             return;
         }
         const apiKey = authHeader.substring(7);
         const snapshot = await db
-            .collectionGroup('api_keys')
-            .where('keyHash', '==', hashKey(apiKey))
+            .collectionGroup("api_keys")
+            .where("keyHash", "==", hashKey(apiKey))
             .limit(1)
             .get();
         if (snapshot.empty) {
-            res.status(401).json({ error: 'Invalid API key' });
+            res.status(401).json({ error: "Invalid API key" });
             return;
         }
         const keyDoc = snapshot.docs[0];
         const keyData = keyDoc.data();
         const companyId = keyDoc.ref.parent.parent?.id;
         if (!companyId) {
-            res.status(401).json({ error: 'Invalid API key structure' });
+            res.status(401).json({ error: "Invalid API key structure" });
             return;
         }
         if (keyData.expiresAt && keyData.expiresAt.toDate() < new Date()) {
-            res.status(401).json({ error: 'API key expired' });
+            res.status(401).json({ error: "API key expired" });
             return;
         }
         if (keyData.ipWhitelist && keyData.ipWhitelist.length > 0) {
-            const clientIp = req.ip || '';
+            const clientIp = req.ip || "";
             if (!keyData.ipWhitelist.includes(clientIp)) {
-                res.status(403).json({ error: 'IP address not whitelisted' });
+                res.status(403).json({ error: "IP address not whitelisted" });
                 return;
             }
         }
@@ -86,23 +86,23 @@ async function authenticateApiKey(req, res, next) {
         next();
     }
     catch (error) {
-        console.error('Auth error:', error);
-        res.status(500).json({ error: 'Authentication failed' });
+        console.error("Auth error:", error);
+        res.status(500).json({ error: "Authentication failed" });
     }
 }
 async function authenticateUser(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            res.status(401).json({ error: 'Missing authentication token' });
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            res.status(401).json({ error: "Missing authentication token" });
             return;
         }
         const token = authHeader.substring(7);
         const decodedToken = await admin.auth().verifyIdToken(token);
         req.userId = decodedToken.uid;
-        const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+        const userDoc = await db.collection("users").doc(decodedToken.uid).get();
         if (!userDoc.exists) {
-            res.status(401).json({ error: 'User not found' });
+            res.status(401).json({ error: "User not found" });
             return;
         }
         const userData = userDoc.data();
@@ -110,8 +110,8 @@ async function authenticateUser(req, res, next) {
         next();
     }
     catch (error) {
-        console.error('User auth error:', error);
-        res.status(401).json({ error: 'Invalid authentication token' });
+        console.error("User auth error:", error);
+        res.status(401).json({ error: "Invalid authentication token" });
     }
 }
 function hasPermission(requiredPermissions) {
@@ -120,7 +120,7 @@ function hasPermission(requiredPermissions) {
         const hasPermission = requiredPermissions.some((perm) => userPermissions.includes(perm));
         if (!hasPermission) {
             res.status(403).json({
-                error: 'Insufficient permissions',
+                error: "Insufficient permissions",
                 required: requiredPermissions,
             });
             return;

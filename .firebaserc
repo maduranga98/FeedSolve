@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "feedsolve-prod"
-  }
+    "default": "feedsolve-e9483",
+    "prod": "feedsolve-e9483"
+  },
+  "targets": {},
+  "etags": {}
 }

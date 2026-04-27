@@ -50,7 +50,7 @@ async function createBulkOperation(companyId, operationType, submissionIds, upda
         operationType,
         submissionIds,
         updateData,
-        status: 'pending',
+        status: "pending",
         processedCount: 0,
         totalCount: submissionIds.length,
         createdBy: userId,
@@ -66,31 +66,31 @@ async function createBulkOperation(companyId, operationType, submissionIds, upda
         userId,
         userName,
         userEmail,
-        action: 'created',
+        action: "created",
         details: updateData,
         createdAt: timestamp,
     };
-    await db.collection('bulkOperations').doc(operationId).set(operation);
-    await db.collection('bulkOperationLogs').doc(auditLog.id).set(auditLog);
+    await db.collection("bulkOperations").doc(operationId).set(operation);
+    await db.collection("bulkOperationLogs").doc(auditLog.id).set(auditLog);
     return operation;
 }
 async function processBulkOperation(operationId) {
-    const operationRef = db.collection('bulkOperations').doc(operationId);
+    const operationRef = db.collection("bulkOperations").doc(operationId);
     const operationDoc = await operationRef.get();
     if (!operationDoc.exists) {
-        throw new Error('Operation not found');
+        throw new Error("Operation not found");
     }
     const operation = operationDoc.data();
-    const { submissionIds, updateData, companyId } = operation;
+    const { submissionIds, updateData, companyId } = operation || {};
     let processedCount = 0;
-    let previousValues = [];
+    const previousValues = [];
     try {
         // Process in batches to avoid timeout
         for (let i = 0; i < submissionIds.length; i += BATCH_SIZE) {
             const batch = db.batch();
             const batchIds = submissionIds.slice(i, i + BATCH_SIZE);
             for (const submissionId of batchIds) {
-                const submissionRef = db.collection('submissions').doc(submissionId);
+                const submissionRef = db.collection("submissions").doc(submissionId);
                 const submissionDoc = await submissionRef.get();
                 if (submissionDoc.exists) {
                     const data = submissionDoc.data();
@@ -116,7 +116,7 @@ async function processBulkOperation(operationId) {
         }
         // Mark as completed
         await operationRef.update({
-            status: 'completed',
+            status: "completed",
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
             previousValues,
         });
@@ -129,17 +129,17 @@ async function processBulkOperation(operationId) {
             submissionCount: submissionIds.length,
             createdBy: operation.createdBy,
             userId: operation.createdBy,
-            action: 'completed',
+            action: "completed",
             details: { processedCount },
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         };
-        await db.collection('bulkOperationLogs').doc(auditLog.id).set(auditLog);
+        await db.collection("bulkOperationLogs").doc(auditLog.id).set(auditLog);
     }
     catch (error) {
-        console.error('Bulk operation error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error("Bulk operation error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
         await operationRef.update({
-            status: 'failed',
+            status: "failed",
             errorMessage,
             processedCount,
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -147,132 +147,142 @@ async function processBulkOperation(operationId) {
         throw error;
     }
 }
-router.post('/api/bulk-operations/status', (0, auth_1.hasPermission)(['submissions:write']), async (req, res) => {
+router.post("/api/bulk-operations/status", (0, auth_1.hasPermission)(["submissions:write"]), async (req, res) => {
     try {
         const { submissionIds, status } = req.body;
         const companyId = req.companyId;
         const userId = req.userId;
-        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-            res.status(400).json({ error: 'Invalid submission IDs' });
+        if (!submissionIds ||
+            !Array.isArray(submissionIds) ||
+            submissionIds.length === 0) {
+            res.status(400).json({ error: "Invalid submission IDs" });
             return;
         }
         if (!status) {
-            res.status(400).json({ error: 'Status is required' });
+            res.status(400).json({ error: "Status is required" });
             return;
         }
-        const user = await db.collection('users').doc(userId).get();
+        const user = await db.collection("users").doc(userId).get();
         const userData = user.data();
-        const operation = await createBulkOperation(companyId, 'status', submissionIds, { status }, userId, userData?.name || 'Unknown', userData?.email || 'unknown@example.com');
+        const operation = await createBulkOperation(companyId, "status", submissionIds, { status }, userId, userData?.name || "Unknown", userData?.email || "unknown@example.com");
         // Process asynchronously
         processBulkOperation(operation.id).catch(console.error);
         res.status(202).json(operation);
     }
     catch (error) {
-        console.error('Bulk status update error:', error);
-        res.status(500).json({ error: 'Failed to update statuses' });
+        console.error("Bulk status update error:", error);
+        res.status(500).json({ error: "Failed to update statuses" });
     }
 });
-router.post('/api/bulk-operations/priority', (0, auth_1.hasPermission)(['submissions:write']), async (req, res) => {
+router.post("/api/bulk-operations/priority", (0, auth_1.hasPermission)(["submissions:write"]), async (req, res) => {
     try {
         const { submissionIds, priority } = req.body;
         const companyId = req.companyId;
         const userId = req.userId;
-        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-            res.status(400).json({ error: 'Invalid submission IDs' });
+        if (!submissionIds ||
+            !Array.isArray(submissionIds) ||
+            submissionIds.length === 0) {
+            res.status(400).json({ error: "Invalid submission IDs" });
             return;
         }
         if (!priority) {
-            res.status(400).json({ error: 'Priority is required' });
+            res.status(400).json({ error: "Priority is required" });
             return;
         }
-        const user = await db.collection('users').doc(userId).get();
+        const user = await db.collection("users").doc(userId).get();
         const userData = user.data();
-        const operation = await createBulkOperation(companyId, 'priority', submissionIds, { priority }, userId, userData?.name || 'Unknown', userData?.email || 'unknown@example.com');
+        const operation = await createBulkOperation(companyId, "priority", submissionIds, { priority }, userId, userData?.name || "Unknown", userData?.email || "unknown@example.com");
         processBulkOperation(operation.id).catch(console.error);
         res.status(202).json(operation);
     }
     catch (error) {
-        console.error('Bulk priority update error:', error);
-        res.status(500).json({ error: 'Failed to update priorities' });
+        console.error("Bulk priority update error:", error);
+        res.status(500).json({ error: "Failed to update priorities" });
     }
 });
-router.post('/api/bulk-operations/assign', (0, auth_1.hasPermission)(['submissions:write']), async (req, res) => {
+router.post("/api/bulk-operations/assign", (0, auth_1.hasPermission)(["submissions:write"]), async (req, res) => {
     try {
         const { submissionIds, assignedTo } = req.body;
         const companyId = req.companyId;
         const userId = req.userId;
-        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-            res.status(400).json({ error: 'Invalid submission IDs' });
+        if (!submissionIds ||
+            !Array.isArray(submissionIds) ||
+            submissionIds.length === 0) {
+            res.status(400).json({ error: "Invalid submission IDs" });
             return;
         }
         if (!assignedTo) {
-            res.status(400).json({ error: 'Assigned user is required' });
+            res.status(400).json({ error: "Assigned user is required" });
             return;
         }
-        const user = await db.collection('users').doc(userId).get();
+        const user = await db.collection("users").doc(userId).get();
         const userData = user.data();
-        const operation = await createBulkOperation(companyId, 'assign', submissionIds, { assignedTo }, userId, userData?.name || 'Unknown', userData?.email || 'unknown@example.com');
+        const operation = await createBulkOperation(companyId, "assign", submissionIds, { assignedTo }, userId, userData?.name || "Unknown", userData?.email || "unknown@example.com");
         processBulkOperation(operation.id).catch(console.error);
         res.status(202).json(operation);
     }
     catch (error) {
-        console.error('Bulk assign error:', error);
-        res.status(500).json({ error: 'Failed to assign submissions' });
+        console.error("Bulk assign error:", error);
+        res.status(500).json({ error: "Failed to assign submissions" });
     }
 });
-router.post('/api/bulk-operations/category', (0, auth_1.hasPermission)(['submissions:write']), async (req, res) => {
+router.post("/api/bulk-operations/category", (0, auth_1.hasPermission)(["submissions:write"]), async (req, res) => {
     try {
         const { submissionIds, category } = req.body;
         const companyId = req.companyId;
         const userId = req.userId;
-        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-            res.status(400).json({ error: 'Invalid submission IDs' });
+        if (!submissionIds ||
+            !Array.isArray(submissionIds) ||
+            submissionIds.length === 0) {
+            res.status(400).json({ error: "Invalid submission IDs" });
             return;
         }
         if (!category) {
-            res.status(400).json({ error: 'Category is required' });
+            res.status(400).json({ error: "Category is required" });
             return;
         }
-        const user = await db.collection('users').doc(userId).get();
+        const user = await db.collection("users").doc(userId).get();
         const userData = user.data();
-        const operation = await createBulkOperation(companyId, 'category', submissionIds, { category }, userId, userData?.name || 'Unknown', userData?.email || 'unknown@example.com');
+        const operation = await createBulkOperation(companyId, "category", submissionIds, { category }, userId, userData?.name || "Unknown", userData?.email || "unknown@example.com");
         processBulkOperation(operation.id).catch(console.error);
         res.status(202).json(operation);
     }
     catch (error) {
-        console.error('Bulk category update error:', error);
-        res.status(500).json({ error: 'Failed to update categories' });
+        console.error("Bulk category update error:", error);
+        res.status(500).json({ error: "Failed to update categories" });
     }
 });
-router.post('/api/bulk-operations/delete', (0, auth_1.hasPermission)(['submissions:delete']), async (req, res) => {
+router.post("/api/bulk-operations/delete", (0, auth_1.hasPermission)(["submissions:delete"]), async (req, res) => {
     try {
         const { submissionIds } = req.body;
         const companyId = req.companyId;
         const userId = req.userId;
-        if (!submissionIds || !Array.isArray(submissionIds) || submissionIds.length === 0) {
-            res.status(400).json({ error: 'Invalid submission IDs' });
+        if (!submissionIds ||
+            !Array.isArray(submissionIds) ||
+            submissionIds.length === 0) {
+            res.status(400).json({ error: "Invalid submission IDs" });
             return;
         }
-        const user = await db.collection('users').doc(userId).get();
+        const user = await db.collection("users").doc(userId).get();
         const userData = user.data();
-        const operation = await createBulkOperation(companyId, 'delete', submissionIds, {}, userId, userData?.name || 'Unknown', userData?.email || 'unknown@example.com');
+        const operation = await createBulkOperation(companyId, "delete", submissionIds, {}, userId, userData?.name || "Unknown", userData?.email || "unknown@example.com");
         processBulkOperation(operation.id).catch(console.error);
         res.status(202).json(operation);
     }
     catch (error) {
-        console.error('Bulk delete error:', error);
-        res.status(500).json({ error: 'Failed to delete submissions' });
+        console.error("Bulk delete error:", error);
+        res.status(500).json({ error: "Failed to delete submissions" });
     }
 });
-router.post('/api/bulk-operations/:id/undo', (0, auth_1.hasPermission)(['submissions:write']), async (req, res) => {
+router.post("/api/bulk-operations/:id/undo", (0, auth_1.hasPermission)(["submissions:write"]), async (req, res) => {
     try {
         const { id } = req.params;
         const companyId = req.companyId;
         const userId = req.userId;
-        const operationRef = db.collection('bulkOperations').doc(id);
+        const operationRef = db.collection("bulkOperations").doc(id);
         const operationDoc = await operationRef.get();
         if (!operationDoc.exists) {
-            res.status(404).json({ error: 'Operation not found' });
+            res.status(404).json({ error: "Operation not found" });
             return;
         }
         const operation = operationDoc.data();
@@ -280,11 +290,11 @@ router.post('/api/bulk-operations/:id/undo', (0, auth_1.hasPermission)(['submiss
         const createdAt = operation.createdAt?.toDate?.()?.getTime() || 0;
         const now = Date.now();
         if (now - createdAt > UNDO_WINDOW_MS) {
-            res.status(400).json({ error: 'Undo window has expired (6 hours)' });
+            res.status(400).json({ error: "Undo window has expired (6 hours)" });
             return;
         }
-        if (operation.status !== 'completed') {
-            res.status(400).json({ error: 'Can only undo completed operations' });
+        if (operation.status !== "completed") {
+            res.status(400).json({ error: "Can only undo completed operations" });
             return;
         }
         // Restore previous values
@@ -294,7 +304,9 @@ router.post('/api/bulk-operations/:id/undo', (0, auth_1.hasPermission)(['submiss
                 const batch = db.batch();
                 const batchData = operation.previousValues.slice(i, i + BATCH_SIZE);
                 for (const item of batchData) {
-                    const submissionRef = db.collection('submissions').doc(item.submissionId);
+                    const submissionRef = db
+                        .collection("submissions")
+                        .doc(item.submissionId);
                     batch.update(submissionRef, {
                         ...item.previousData,
                         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -314,9 +326,12 @@ router.post('/api/bulk-operations/:id/undo', (0, auth_1.hasPermission)(['submiss
                 restoredBy: userId,
                 expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + UNDO_WINDOW_MS)),
             };
-            await db.collection('undoOperations').doc(undoOperationId).set(undoOperation);
+            await db
+                .collection("undoOperations")
+                .doc(undoOperationId)
+                .set(undoOperation);
             // Create audit log
-            const user = await db.collection('users').doc(userId).get();
+            const user = await db.collection("users").doc(userId).get();
             const userData = user.data();
             const auditLog = {
                 id: (0, uuid_1.v4)(),
@@ -326,40 +341,42 @@ router.post('/api/bulk-operations/:id/undo', (0, auth_1.hasPermission)(['submiss
                 submissionCount: operation.submissionIds.length,
                 createdBy: userId,
                 userId,
-                userName: userData?.name || 'Unknown',
-                userEmail: userData?.email || 'unknown@example.com',
-                action: 'undone',
+                userName: userData?.name || "Unknown",
+                userEmail: userData?.email || "unknown@example.com",
+                action: "undone",
                 details: { undoOperationId },
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
             };
-            await db.collection('bulkOperationLogs').doc(auditLog.id).set(auditLog);
+            await db.collection("bulkOperationLogs").doc(auditLog.id).set(auditLog);
             res.json({
                 ...undoOperation,
                 message: `Successfully restored ${processedCount} submissions`,
             });
         }
         else {
-            res.status(400).json({ error: 'No previous values stored for this operation' });
+            res
+                .status(400)
+                .json({ error: "No previous values stored for this operation" });
         }
     }
     catch (error) {
-        console.error('Undo operation error:', error);
-        res.status(500).json({ error: 'Failed to undo operation' });
+        console.error("Undo operation error:", error);
+        res.status(500).json({ error: "Failed to undo operation" });
     }
 });
-router.get('/api/bulk-operations/:id', (0, auth_1.hasPermission)(['submissions:read']), async (req, res) => {
+router.get("/api/bulk-operations/:id", (0, auth_1.hasPermission)(["submissions:read"]), async (req, res) => {
     try {
         const { id } = req.params;
-        const operationDoc = await db.collection('bulkOperations').doc(id).get();
+        const operationDoc = await db.collection("bulkOperations").doc(id).get();
         if (!operationDoc.exists) {
-            res.status(404).json({ error: 'Operation not found' });
+            res.status(404).json({ error: "Operation not found" });
             return;
         }
         res.json(operationDoc.data());
     }
     catch (error) {
-        console.error('Get operation error:', error);
-        res.status(500).json({ error: 'Failed to fetch operation' });
+        console.error("Get operation error:", error);
+        res.status(500).json({ error: "Failed to fetch operation" });
     }
 });
 exports.default = router;

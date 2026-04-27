@@ -1,6 +1,6 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import axios from 'axios';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import axios from "axios";
 
 const db = admin.firestore();
 const bucket = admin.storage().bucket();
@@ -10,30 +10,32 @@ const VIRUSTOTAL_API_KEY = process.env.VIRUSTOTAL_API_KEY;
 
 // Cleanup orphaned files - runs daily
 export const cleanupOrphanedAttachments = functions.pubsub
-  .schedule('every 24 hours')
-  .onRun(async (context) => {
-    console.log('Starting attachment cleanup...');
+  .schedule("every 24 hours")
+  .onRun(async () => {
+    console.log("Starting attachment cleanup...");
 
     try {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - CLEANUP_DAYS);
 
       // Find all submissions that were deleted or have old attachments
-      const snapshot = await db.collection('submissions').get();
+      const snapshot = await db.collection("submissions").get();
       const validAttachmentPaths = new Set<string>();
 
       snapshot.forEach((doc) => {
         const submission = doc.data();
         if (submission.attachments && Array.isArray(submission.attachments)) {
-          submission.attachments.forEach((attachment: any) => {
-            validAttachmentPaths.add(attachment.storagePath);
-          });
+          submission.attachments.forEach(
+            (attachment: Record<string, string>) => {
+              validAttachmentPaths.add(attachment.storagePath);
+            },
+          );
         }
       });
 
       // List all files in attachments directory
       const [files] = await bucket.getFiles({
-        prefix: 'attachments/',
+        prefix: "attachments/",
       });
 
       let deletedCount = 0;
@@ -53,20 +55,20 @@ export const cleanupOrphanedAttachments = functions.pubsub
       console.log(`Cleanup complete: deleted ${deletedCount} orphaned files`);
       return { deleted: deletedCount };
     } catch (error) {
-      console.error('Cleanup failed:', error);
+      console.error("Cleanup failed:", error);
       throw error;
     }
   });
 
 // Scan uploaded files with VirusTotal
 export const scanAttachmentOnUpload = functions.firestore
-  .document('submissions/{submissionId}')
+  .document("submissions/{submissionId}")
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
 
     if (!VIRUSTOTAL_API_KEY) {
-      console.log('VirusTotal API key not configured');
+      console.log("VirusTotal API key not configured");
       return;
     }
 
@@ -76,9 +78,10 @@ export const scanAttachmentOnUpload = functions.firestore
       const afterAttachments = after.attachments || [];
 
       const newAttachments = afterAttachments.filter(
-        (att: any) =>
-          !beforeAttachments.some((batt: any) => batt.id === att.id) &&
-          att.scanStatus === 'pending'
+        (att: Record<string, string>) =>
+          !beforeAttachments.some(
+            (batt: Record<string, string>) => batt.id === att.id,
+          ) && att.scanStatus === "pending",
       );
 
       for (const attachment of newAttachments) {
@@ -89,24 +92,28 @@ export const scanAttachmentOnUpload = functions.firestore
 
           // Submit to VirusTotal
           const formData = new FormData();
-          formData.append('file', new Blob([fileContent]), attachment.filename);
+          formData.append("file", new Blob([fileContent]), attachment.filename);
 
-          const response = await axios.post('https://www.virustotal.com/api/v3/files', formData, {
-            headers: {
-              'x-apikey': VIRUSTOTAL_API_KEY,
+          const response = await axios.post(
+            "https://www.virustotal.com/api/v3/files",
+            formData,
+            {
+              headers: {
+                "x-apikey": VIRUSTOTAL_API_KEY,
+              },
             },
-          });
+          );
 
           const analysisId = response.data.data.id;
           const submissionId = context.params.submissionId;
 
           // Queue analysis check (will run after delay)
-          await db.collection('virus_scan_queue').add({
+          await db.collection("virus_scan_queue").add({
             submissionId,
             attachmentId: attachment.id,
             analysisId,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            status: 'pending',
+            status: "pending",
           });
 
           console.log(`File queued for scanning: ${attachment.filename}`);
@@ -117,25 +124,25 @@ export const scanAttachmentOnUpload = functions.firestore
           await markScanStatus(
             context.params.submissionId,
             attachment.id,
-            'failed'
+            "failed",
           );
         }
       }
     } catch (error) {
-      console.error('Scan trigger failed:', error);
+      console.error("Scan trigger failed:", error);
     }
   });
 
 // Check VirusTotal scan results
 export const checkVirusScanResults = functions.pubsub
-  .schedule('every 5 minutes')
-  .onRun(async (context) => {
+  .schedule("every 5 minutes")
+  .onRun(async () => {
     if (!VIRUSTOTAL_API_KEY) return;
 
     try {
       const scanQueue = await db
-        .collection('virus_scan_queue')
-        .where('status', '==', 'pending')
+        .collection("virus_scan_queue")
+        .where("status", "==", "pending")
         .limit(10)
         .get();
 
@@ -147,9 +154,9 @@ export const checkVirusScanResults = functions.pubsub
             `https://www.virustotal.com/api/v3/analyses/${analysisId}`,
             {
               headers: {
-                'x-apikey': VIRUSTOTAL_API_KEY,
+                "x-apikey": VIRUSTOTAL_API_KEY,
               },
-            }
+            },
           );
 
           const stats = response.data.data.attributes.stats;
@@ -158,69 +165,74 @@ export const checkVirusScanResults = functions.pubsub
           await markScanStatus(
             submissionId,
             attachmentId,
-            isClean ? 'clean' : 'infected'
+            isClean ? "clean" : "infected",
           );
 
           await queueDoc.ref.update({
-            status: 'completed',
-            result: isClean ? 'clean' : 'infected',
+            status: "completed",
+            result: isClean ? "clean" : "infected",
             completedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
-        } catch (error: any) {
-          if (error.response?.status === 404) {
+        } catch (error: unknown) {
+          const err = error as Record<string, unknown>;
+          if ((err as Record<string, unknown>).response?.status === 404) {
             // Analysis not ready yet
             console.log(`Scan still pending: ${analysisId}`);
           } else {
             console.error(`Failed to check scan result: ${analysisId}`, error);
-            await queueDoc.ref.update({ status: 'failed' });
+            await queueDoc.ref.update({ status: "failed" });
           }
         }
       }
     } catch (error) {
-      console.error('Scan check failed:', error);
+      console.error("Scan check failed:", error);
     }
   });
 
 async function markScanStatus(
   submissionId: string,
   attachmentId: string,
-  status: 'clean' | 'infected' | 'failed'
+  status: "clean" | "infected" | "failed",
 ): Promise<void> {
-  const submissionDoc = await db.collection('submissions').doc(submissionId).get();
+  const submissionDoc = await db
+    .collection("submissions")
+    .doc(submissionId)
+    .get();
   if (!submissionDoc.exists) return;
 
   const submission = submissionDoc.data();
   const attachments = submission.attachments || [];
 
-  const updated = attachments.map((att: any) =>
+  const updated = attachments.map((att: Record<string, unknown>) =>
     att.id === attachmentId
       ? { ...att, scanned: true, scanStatus: status }
-      : att
+      : att,
   );
 
-  await db.collection('submissions').doc(submissionId).update({
+  await db.collection("submissions").doc(submissionId).update({
     attachments: updated,
   });
 }
 
 // Monthly storage reset
 export const resetMonthlyStorage = functions.pubsub
-  .schedule('0 0 1 * *') // First day of each month at midnight
-  .onRun(async (context) => {
+  .schedule("0 0 1 * *") // First day of each month at midnight
+  .onRun(async () => {
     try {
-      const companiesSnapshot = await db.collection('companies').get();
+      const companiesSnapshot = await db.collection("companies").get();
 
       for (const companyDoc of companiesSnapshot.docs) {
         await companyDoc.ref.update({
-          'usage.storage.usedBytes': 0,
-          'usage.storage.lastResetAt': admin.firestore.FieldValue.serverTimestamp(),
+          "usage.storage.usedBytes": 0,
+          "usage.storage.lastResetAt":
+            admin.firestore.FieldValue.serverTimestamp(),
         });
       }
 
-      console.log('Monthly storage reset complete');
+      console.log("Monthly storage reset complete");
       return { updated: companiesSnapshot.size };
     } catch (error) {
-      console.error('Storage reset failed:', error);
+      console.error("Storage reset failed:", error);
       throw error;
     }
   });

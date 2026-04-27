@@ -1,7 +1,7 @@
-import * as admin from 'firebase-admin';
-import * as crypto from 'crypto';
-import { Request, Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from './auth';
+import * as admin from "firebase-admin";
+import * as crypto from "crypto";
+import { Request, Response, NextFunction } from "express";
+import { AuthenticatedRequest } from "./auth";
 
 const db = admin.firestore();
 
@@ -18,7 +18,7 @@ function getNextMonthStart(): Date {
 export async function rateLimitMiddleware(
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
     const companyId = req.companyId;
@@ -30,20 +30,20 @@ export async function rateLimitMiddleware(
     }
 
     const keyRef = db
-      .collection('api_keys')
+      .collection("api_keys")
       .doc(companyId)
-      .collection('keys')
+      .collection("keys")
       .doc(apiKeyId);
 
     const keyDoc = await keyRef.get();
     if (!keyDoc.exists) {
-      res.status(401).json({ error: 'API key not found' });
+      res.status(401).json({ error: "API key not found" });
       return;
     }
 
     const keyData = keyDoc.data();
     if (!keyData) {
-      res.status(401).json({ error: 'Invalid API key' });
+      res.status(401).json({ error: "Invalid API key" });
       return;
     }
 
@@ -55,8 +55,8 @@ export async function rateLimitMiddleware(
     if (!lastReset || lastReset < monthStart) {
       currentUsage = 0;
       await keyRef.update({
-        'rateLimit.currentMonthUsage': 0,
-        'rateLimit.lastResetAt': admin.firestore.FieldValue.serverTimestamp(),
+        "rateLimit.currentMonthUsage": 0,
+        "rateLimit.lastResetAt": admin.firestore.FieldValue.serverTimestamp(),
       });
     }
 
@@ -65,7 +65,7 @@ export async function rateLimitMiddleware(
     if (currentUsage >= limit) {
       const nextMonth = getNextMonthStart();
       res.status(429).json({
-        error: 'Rate limit exceeded',
+        error: "Rate limit exceeded",
         retryAfter: Math.floor(nextMonth.getTime() / 1000),
         limit,
         current: currentUsage,
@@ -74,19 +74,22 @@ export async function rateLimitMiddleware(
     }
 
     await keyRef.update({
-      'rateLimit.currentMonthUsage': admin.firestore.FieldValue.increment(1),
+      "rateLimit.currentMonthUsage": admin.firestore.FieldValue.increment(1),
     });
 
-    res.set('X-RateLimit-Limit', limit.toString());
-    res.set('X-RateLimit-Remaining', Math.max(0, limit - currentUsage - 1).toString());
+    res.set("X-RateLimit-Limit", limit.toString());
     res.set(
-      'X-RateLimit-Reset',
-      Math.floor(getNextMonthStart().getTime() / 1000).toString()
+      "X-RateLimit-Remaining",
+      Math.max(0, limit - currentUsage - 1).toString(),
+    );
+    res.set(
+      "X-RateLimit-Reset",
+      Math.floor(getNextMonthStart().getTime() / 1000).toString(),
     );
 
     next();
   } catch (error) {
-    console.error('Rate limit error:', error);
+    console.error("Rate limit error:", error);
     next();
   }
 }
@@ -95,23 +98,33 @@ export async function rateLimitMiddleware(
 // Limit and window are configurable via environment variables:
 //   SUBMISSION_RATE_LIMIT  (default: 10)
 //   SUBMISSION_RATE_WINDOW_HOURS (default: 24)
-const SUBMISSION_LIMIT = parseInt(process.env.SUBMISSION_RATE_LIMIT || '10', 10);
+const SUBMISSION_LIMIT = parseInt(
+  process.env.SUBMISSION_RATE_LIMIT || "10",
+  10,
+);
 const SUBMISSION_WINDOW_MS =
-  parseInt(process.env.SUBMISSION_RATE_WINDOW_HOURS || '24', 10) * 60 * 60 * 1000;
+  parseInt(process.env.SUBMISSION_RATE_WINDOW_HOURS || "24", 10) *
+  60 *
+  60 *
+  1000;
 
 export async function submissionRateLimitMiddleware(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const ip =
-    (req.headers['x-forwarded-for'] as string)?.split(',')[0].trim() ||
+    (req.headers["x-forwarded-for"] as string)?.split(",")[0].trim() ||
     req.ip ||
-    'unknown';
+    "unknown";
   // Hash the IP so raw addresses are never stored
-  const ipKey = crypto.createHash('sha256').update(ip).digest('hex').substring(0, 24);
+  const ipKey = crypto
+    .createHash("sha256")
+    .update(ip)
+    .digest("hex")
+    .substring(0, 24);
   const now = Date.now();
-  const rateLimitRef = db.collection('_rate_limits').doc(`sub_${ipKey}`);
+  const rateLimitRef = db.collection("_rate_limits").doc(`sub_${ipKey}`);
 
   try {
     let limited = false;
@@ -123,14 +136,16 @@ export async function submissionRateLimitMiddleware(
       if (doc.exists) {
         const data = doc.data()!;
         const windowStart: number = data.windowStart || 0;
-        let count: number = data.count || 0;
+        const count: number = data.count || 0;
 
         if (now - windowStart > SUBMISSION_WINDOW_MS) {
           // New window: reset
           tx.set(rateLimitRef, { windowStart: now, count: 1 });
         } else if (count >= SUBMISSION_LIMIT) {
           limited = true;
-          retryAfter = Math.ceil((windowStart + SUBMISSION_WINDOW_MS - now) / 1000);
+          retryAfter = Math.ceil(
+            (windowStart + SUBMISSION_WINDOW_MS - now) / 1000,
+          );
         } else {
           tx.update(rateLimitRef, { count: count + 1 });
         }
@@ -141,7 +156,7 @@ export async function submissionRateLimitMiddleware(
 
     if (limited) {
       res.status(429).json({
-        error: 'Too many submissions. Please try again later.',
+        error: "Too many submissions. Please try again later.",
         retryAfter,
         limit: SUBMISSION_LIMIT,
         window: `${SUBMISSION_WINDOW_MS / 3600000}h`,
@@ -151,7 +166,7 @@ export async function submissionRateLimitMiddleware(
 
     next();
   } catch (error) {
-    console.error('Submission rate limit error:', error);
+    console.error("Submission rate limit error:", error);
     next(); // fail open to avoid blocking legitimate submissions
   }
 }
@@ -159,7 +174,7 @@ export async function submissionRateLimitMiddleware(
 export async function logApiRequest(
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const startTime = Date.now();
 
@@ -181,16 +196,16 @@ export async function logApiRequest(
         responseTime: duration,
         requestSize: JSON.stringify(req.body).length,
         responseSize: JSON.stringify(data).length,
-        ipAddress: req.ip || '',
-        userAgent: req.get('user-agent') || '',
+        ipAddress: req.ip || "",
+        userAgent: req.get("user-agent") || "",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       };
 
-      db.collection('api_logs')
+      db.collection("api_logs")
         .doc(companyId)
-        .collection('logs')
+        .collection("logs")
         .add(logEntry)
-        .catch((err) => console.error('Failed to log API request:', err));
+        .catch((err) => console.error("Failed to log API request:", err));
     }
 
     return originalSend.call(this, data);

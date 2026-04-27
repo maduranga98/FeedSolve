@@ -38,21 +38,21 @@ const functions = __importStar(require("firebase-functions"));
 const firestore_1 = require("firebase-admin/firestore");
 const auth_1 = require("firebase-admin/auth");
 exports.computeAnalyticsSnapshots = functions.pubsub
-    .schedule('every 24 hours')
-    .timeZone('UTC')
-    .onRun(async (context) => {
+    .schedule("every 24 hours")
+    .timeZone("UTC")
+    .onRun(async () => {
     const db = (0, firestore_1.getFirestore)();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     try {
-        const companiesSnapshot = await db.collection('companies').get();
+        const companiesSnapshot = await db.collection("companies").get();
         for (const companyDoc of companiesSnapshot.docs) {
             const companyId = companyDoc.id;
             console.log(`Computing analytics for company: ${companyId}`);
             const submissionsSnapshot = await db
-                .collection('companies')
+                .collection("companies")
                 .doc(companyId)
-                .collection('submissions')
+                .collection("submissions")
                 .get();
             const submissions = submissionsSnapshot.docs.map((doc) => ({
                 id: doc.id,
@@ -62,10 +62,10 @@ exports.computeAnalyticsSnapshots = functions.pubsub
             const metrics = calculateMetrics(submissions);
             // Store analytics snapshot
             await db
-                .collection('companies')
+                .collection("companies")
                 .doc(companyId)
-                .collection('analyticsSnapshots')
-                .doc(today.toISOString().split('T')[0])
+                .collection("analyticsSnapshots")
+                .doc(today.toISOString().split("T")[0])
                 .set({
                 ...metrics,
                 date: today,
@@ -73,24 +73,28 @@ exports.computeAnalyticsSnapshots = functions.pubsub
             });
             console.log(`Analytics snapshot created for company: ${companyId}`);
         }
-        console.log('Analytics computation completed successfully');
+        console.log("Analytics computation completed successfully");
         return;
     }
     catch (error) {
-        console.error('Error computing analytics snapshots:', error);
+        console.error("Error computing analytics snapshots:", error);
         throw error;
     }
 });
 function calculateMetrics(submissions) {
     const total = submissions.length;
-    const resolved = submissions.filter((s) => s.status === 'resolved').length;
+    const resolved = submissions.filter((s) => s.status === "resolved").length;
     const resolutionRate = total > 0 ? (resolved / total) * 100 : 0;
     // Calculate average resolution time
     const resolvedWithTime = submissions
-        .filter((s) => s.status === 'resolved' && s.resolvedAt)
+        .filter((s) => s.status === "resolved" && s.resolvedAt)
         .map((s) => {
-        const created = s.createdAt?.toDate ? s.createdAt.toDate() : new Date(s.createdAt);
-        const resolved = s.resolvedAt?.toDate ? s.resolvedAt.toDate() : new Date(s.resolvedAt);
+        const created = s.createdAt?.toDate
+            ? s.createdAt.toDate()
+            : new Date(s.createdAt);
+        const resolved = s.resolvedAt?.toDate
+            ? s.resolvedAt.toDate()
+            : new Date(s.resolvedAt);
         return Math.floor((resolved.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
     });
     const averageResolutionTime = resolvedWithTime.length > 0
@@ -99,22 +103,26 @@ function calculateMetrics(submissions) {
     // Count by status
     const byStatus = {};
     submissions.forEach((s) => {
-        byStatus[s.status] = (byStatus[s.status] || 0) + 1;
+        if (s.status)
+            byStatus[s.status] = (byStatus[s.status] || 0) + 1;
     });
     // Count by priority
     const byPriority = {};
     submissions.forEach((s) => {
-        byPriority[s.priority] = (byPriority[s.priority] || 0) + 1;
+        if (s.priority)
+            byPriority[s.priority] = (byPriority[s.priority] || 0) + 1;
     });
     // Count by category
     const byCategory = {};
     submissions.forEach((s) => {
-        byCategory[s.category] = (byCategory[s.category] || 0) + 1;
+        if (s.category)
+            byCategory[s.category] = (byCategory[s.category] || 0) + 1;
     });
     // Count by board
     const byBoard = {};
     submissions.forEach((s) => {
-        byBoard[s.boardId] = (byBoard[s.boardId] || 0) + 1;
+        if (s.boardId)
+            byBoard[s.boardId] = (byBoard[s.boardId] || 0) + 1;
     });
     return {
         totalSubmissions: total,
@@ -129,31 +137,33 @@ function calculateMetrics(submissions) {
 }
 exports.getAnalyticsSnapshot = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
-        throw new functions.https.HttpsError('unauthenticated', 'Authentication required');
+        throw new functions.https.HttpsError("unauthenticated", "Authentication required");
     }
     const db = (0, firestore_1.getFirestore)();
     const { date } = data;
     try {
         const user = await (0, auth_1.getAuth)().getUser(context.auth.uid);
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        const companyId = userDoc.get('companyId');
+        const userDoc = await db.collection("users").doc(user.uid).get();
+        const companyId = userDoc.get("companyId");
         if (!companyId) {
-            throw new functions.https.HttpsError('failed-precondition', 'Company not found');
+            throw new functions.https.HttpsError("failed-precondition", "Company not found");
         }
         const snapshot = await db
-            .collection('companies')
+            .collection("companies")
             .doc(companyId)
-            .collection('analyticsSnapshots')
+            .collection("analyticsSnapshots")
             .doc(date)
             .get();
         if (!snapshot.exists) {
-            throw new functions.https.HttpsError('not-found', 'Analytics snapshot not found');
+            throw new functions.https.HttpsError("not-found", "Analytics snapshot not found");
         }
         return snapshot.data();
     }
     catch (error) {
-        console.error('Error fetching analytics snapshot:', error);
-        throw new functions.https.HttpsError('internal', error.message || 'Internal error');
+        const err = error;
+        console.error("Error fetching analytics snapshot:", err);
+        throw new functions.https.HttpsError("internal", err.message ||
+            "Internal error");
     }
 });
 //# sourceMappingURL=analytics-scheduler.js.map

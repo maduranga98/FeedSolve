@@ -40,10 +40,19 @@ const rateLimit_1 = require("../middleware/rateLimit");
 const uuid_1 = require("uuid");
 const router = (0, express_1.Router)();
 const db = admin.firestore();
+const SUBJECT_MAX = 100;
+const DESCRIPTION_MAX = 5000;
+function log(level, message, data) {
+    console[level](JSON.stringify({ severity: level.toUpperCase(), message, ...data }));
+}
+// Generates #FSV-XXXX with exactly 4 uppercase alphanumeric characters.
 function generateTrackingCode() {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 7).toUpperCase();
-    return `#FSV-${timestamp}${random}`;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '#FSV-';
+    for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
 }
 // Strip HTML tags and dangerous patterns before storing user-supplied text.
 // React escapes output by default; this provides defence-in-depth for
@@ -64,16 +73,24 @@ function isValidEmail(email) {
         return false;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 }
-// Validate tracking code format: #FSV-<8-30 uppercase alphanumeric chars>
+// Validate tracking code format: #FSV-<exactly 4 uppercase alphanumeric chars>
 function isValidTrackingCode(code) {
-    return /^#FSV-[A-Z0-9]{8,30}$/.test(code);
+    return /^#FSV-[A-Z0-9]{4}$/i.test(code);
+}
+async function isTrackingCodeUnique(code) {
+    const snapshot = await db
+        .collection('submissions')
+        .where('trackingCode', '==', code)
+        .limit(1)
+        .get();
+    return snapshot.empty;
 }
 router.post('/api/submissions', rateLimit_1.submissionRateLimitMiddleware, async (req, res) => {
+    const start = Date.now();
     try {
         const { boardId, category, email, isAnonymous } = req.body;
-        // Sanitize and validate user-supplied text fields
-        const subject = sanitizeText(req.body.subject, 500);
-        const description = sanitizeText(req.body.description, 10000);
+        const subject = sanitizeText(req.body.subject, SUBJECT_MAX);
+        const description = sanitizeText(req.body.description, DESCRIPTION_MAX);
         if (!boardId || typeof boardId !== 'string' || boardId.length > 128) {
             res.status(400).json({ error: 'Invalid boardId' });
             return;
@@ -82,8 +99,16 @@ router.post('/api/submissions', rateLimit_1.submissionRateLimitMiddleware, async
             res.status(400).json({ error: 'subject is required' });
             return;
         }
+        if (subject.length > SUBJECT_MAX) {
+            res.status(400).json({ error: `subject must be at most ${SUBJECT_MAX} characters` });
+            return;
+        }
         if (!description) {
             res.status(400).json({ error: 'description is required' });
+            return;
+        }
+        if (description.length > DESCRIPTION_MAX) {
+            res.status(400).json({ error: `description must be at most ${DESCRIPTION_MAX} characters` });
             return;
         }
         if (email && !isAnonymous && !isValidEmail(email)) {
@@ -96,20 +121,35 @@ router.post('/api/submissions', rateLimit_1.submissionRateLimitMiddleware, async
             return;
         }
         const boardData = boardDoc.data();
-        const companyId = boardData?.companyId;
+        const companyId = boardData.companyId;
         if (!companyId) {
             res.status(400).json({ error: 'Invalid board configuration' });
             return;
         }
-        const trackingCode = generateTrackingCode();
+        // Validate category against the board's allowed list
+        const allowedCategories = boardData.categories || [];
+        const sanitizedCategory = sanitizeText(category, 100);
+        if (allowedCategories.length > 0 && !allowedCategories.includes(sanitizedCategory)) {
+            res.status(400).json({
+                error: 'Invalid category',
+                allowed: allowedCategories,
+            });
+            return;
+        }
+        // Generate a unique tracking code (collision probability ~1:1.6M per attempt)
+        let trackingCode = generateTrackingCode();
+        let attempts = 0;
+        while (!(await isTrackingCodeUnique(trackingCode)) && attempts < 5) {
+            trackingCode = generateTrackingCode();
+            attempts++;
+        }
         const submissionId = (0, uuid_1.v4)();
-        const sanitizedCategory = sanitizeText(category, 100) || 'General';
         const submission = {
             id: submissionId,
             boardId,
             companyId,
             trackingCode,
-            category: sanitizedCategory,
+            category: sanitizedCategory || (allowedCategories[0] ?? 'General'),
             subject,
             description,
             email: isAnonymous ? null : (email || null),
@@ -124,6 +164,13 @@ router.post('/api/submissions', rateLimit_1.submissionRateLimitMiddleware, async
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
         await db.collection('submissions').doc(submissionId).set(submission);
+        log('info', 'Submission created', {
+            submissionId,
+            boardId,
+            companyId,
+            trackingCode,
+            durationMs: Date.now() - start,
+        });
         res.status(201).json({
             id: submissionId,
             trackingCode,
@@ -132,21 +179,22 @@ router.post('/api/submissions', rateLimit_1.submissionRateLimitMiddleware, async
         });
     }
     catch (error) {
-        console.error('Create submission error:', error);
+        log('error', 'Create submission error', { error: String(error), durationMs: Date.now() - start });
         res.status(500).json({ error: 'Failed to create submission' });
     }
 });
 router.get('/api/submissions/:id', async (req, res) => {
+    const start = Date.now();
     try {
         const { id } = req.params;
-        // Validate tracking code format before hitting Firestore
-        if (!isValidTrackingCode(id)) {
+        const normalizedId = id.startsWith('#') ? id : `#${id}`;
+        if (!isValidTrackingCode(normalizedId)) {
             res.status(404).json({ error: 'Submission not found' });
             return;
         }
         const snapshot = await db
             .collection('submissions')
-            .where('trackingCode', '==', id)
+            .where('trackingCode', '==', normalizedId)
             .limit(1)
             .get();
         if (snapshot.empty) {
@@ -154,6 +202,10 @@ router.get('/api/submissions/:id', async (req, res) => {
             return;
         }
         const submission = snapshot.docs[0].data();
+        log('info', 'Submission fetched by tracking code', {
+            trackingCode: normalizedId,
+            durationMs: Date.now() - start,
+        });
         res.json({
             id: submission.id,
             trackingCode: submission.trackingCode,
@@ -167,7 +219,7 @@ router.get('/api/submissions/:id', async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Get submission error:', error);
+        log('error', 'Get submission error', { error: String(error), durationMs: Date.now() - start });
         res.status(500).json({ error: 'Failed to fetch submission' });
     }
 });
@@ -216,7 +268,7 @@ router.get('/api/company/submissions', (0, auth_1.hasPermission)(['submissions:r
         res.json({ submissions, total, limit: limitNum, offset: offsetNum });
     }
     catch (error) {
-        console.error('List submissions error:', error);
+        log('error', 'List submissions error', { error: String(error) });
         res.status(500).json({ error: 'Failed to list submissions' });
     }
 });
@@ -235,6 +287,10 @@ router.patch('/api/submissions/:id', (0, auth_1.hasPermission)(['submissions:wri
                 return;
             }
             updateData.status = status;
+            // resolvedAt is set only when transitioning to 'resolved' (not 'closed')
+            if (status === 'resolved') {
+                updateData.resolvedAt = admin.firestore.FieldValue.serverTimestamp();
+            }
         }
         if (priority !== undefined) {
             if (!ALLOWED_PRIORITIES.has(priority)) {
@@ -261,6 +317,7 @@ router.patch('/api/submissions/:id', (0, auth_1.hasPermission)(['submissions:wri
         const submissionDoc = snapshot.docs[0];
         await submissionDoc.ref.update(updateData);
         const updated = (await submissionDoc.ref.get()).data();
+        log('info', 'Submission updated', { submissionId: id, status, priority });
         res.json({
             id: updated.id,
             trackingCode: updated.trackingCode,
@@ -270,7 +327,7 @@ router.patch('/api/submissions/:id', (0, auth_1.hasPermission)(['submissions:wri
         });
     }
     catch (error) {
-        console.error('Update submission error:', error);
+        log('error', 'Update submission error', { error: String(error) });
         res.status(500).json({ error: 'Failed to update submission' });
     }
 });
@@ -287,10 +344,11 @@ router.delete('/api/submissions/:id', (0, auth_1.hasPermission)(['submissions:de
             return;
         }
         await snapshot.docs[0].ref.delete();
+        log('info', 'Submission deleted', { submissionId: id });
         res.status(204).send();
     }
     catch (error) {
-        console.error('Delete submission error:', error);
+        log('error', 'Delete submission error', { error: String(error) });
         res.status(500).json({ error: 'Failed to delete submission' });
     }
 });

@@ -38,40 +38,40 @@ const express_1 = require("express");
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
 const db = admin.firestore();
-router.post('/api/search/submissions', (0, auth_1.hasPermission)(['submissions:read']), async (req, res) => {
+router.post("/api/search/submissions", (0, auth_1.hasPermission)(["submissions:read"]), async (req, res) => {
     try {
         const companyId = req.companyId;
-        const { query = '', filters = {}, page = 1, pageSize = 50, sortBy = 'createdAt', sortOrder = 'desc' } = req.body;
+        const { query = "", filters = {}, page = 1, pageSize = 50, sortBy = "createdAt", sortOrder = "desc", } = req.body;
         if (!companyId) {
-            res.status(401).json({ error: 'Company not found' });
+            res.status(401).json({ error: "Company not found" });
             return;
         }
         let query_ = db
-            .collection('submissions')
-            .where('companyId', '==', companyId);
+            .collection("submissions")
+            .where("companyId", "==", companyId);
         // Apply filters
         const f = filters;
         if (f.status && f.status.length > 0) {
-            query_ = query_.where('status', 'in', f.status);
+            query_ = query_.where("status", "in", f.status);
         }
         if (f.priority && f.priority.length > 0) {
-            query_ = query_.where('priority', 'in', f.priority);
+            query_ = query_.where("priority", "in", f.priority);
         }
         if (f.boardId && f.boardId.length > 0) {
-            query_ = query_.where('boardId', 'in', f.boardId);
+            query_ = query_.where("boardId", "in", f.boardId);
         }
         if (f.category && f.category.length > 0) {
-            query_ = query_.where('category', 'in', f.category);
+            query_ = query_.where("category", "in", f.category);
         }
         if (f.assignedTo) {
-            query_ = query_.where('assignedTo', '==', f.assignedTo);
+            query_ = query_.where("assignedTo", "==", f.assignedTo);
         }
         if (f.dateRange) {
             const from = new Date(f.dateRange.from);
             const to = new Date(f.dateRange.to);
             query_ = query_
-                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(from))
-                .where('createdAt', '<=', admin.firestore.Timestamp.fromDate(to));
+                .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(from))
+                .where("createdAt", "<=", admin.firestore.Timestamp.fromDate(to));
         }
         // Get total count before pagination
         const totalSnapshot = await query_.get();
@@ -86,29 +86,29 @@ router.post('/api/search/submissions', (0, auth_1.hasPermission)(['submissions:r
         }
         // Sort
         results.sort((a, b) => {
-            let aVal;
-            let bVal;
-            if (sortBy === 'createdAt') {
+            let aVal = 0;
+            let bVal = 0;
+            if (sortBy === "createdAt") {
                 aVal = a.createdAt?.toDate?.()?.getTime?.() || 0;
                 bVal = b.createdAt?.toDate?.()?.getTime?.() || 0;
             }
-            else if (sortBy === 'priority') {
+            else if (sortBy === "priority") {
                 const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
                 aVal = priorityOrder[a.priority] || 0;
                 bVal = priorityOrder[b.priority] || 0;
             }
-            else if (sortBy === 'status') {
-                aVal = a.status || '';
-                bVal = b.status || '';
+            else if (sortBy === "status") {
+                aVal = a.status || "";
+                bVal = b.status || "";
             }
             else {
-                aVal = a[sortBy] || '';
-                bVal = b[sortBy] || '';
+                aVal = a[sortBy] || "";
+                bVal = b[sortBy] || "";
             }
             if (aVal < bVal)
-                return sortOrder === 'asc' ? -1 : 1;
+                return sortOrder === "asc" ? -1 : 1;
             if (aVal > bVal)
-                return sortOrder === 'asc' ? 1 : -1;
+                return sortOrder === "asc" ? 1 : -1;
             return 0;
         });
         // Pagination
@@ -141,75 +141,75 @@ router.post('/api/search/submissions', (0, auth_1.hasPermission)(['submissions:r
         });
     }
     catch (error) {
-        console.error('Search submissions error:', error);
-        res.status(500).json({ error: 'Failed to search submissions' });
+        console.error("Search submissions error:", error);
+        res.status(500).json({ error: "Failed to search submissions" });
     }
 });
-router.post('/api/search/export-csv', (0, auth_1.hasPermission)(['submissions:read']), async (req, res) => {
+router.post("/api/search/export-csv", (0, auth_1.hasPermission)(["submissions:read"]), async (req, res) => {
     try {
         const companyId = req.companyId;
         const { filters = {} } = req.body;
         if (!companyId) {
-            res.status(401).json({ error: 'Company not found' });
+            res.status(401).json({ error: "Company not found" });
             return;
         }
         let query_ = db
-            .collection('submissions')
-            .where('companyId', '==', companyId);
+            .collection("submissions")
+            .where("companyId", "==", companyId);
         // Apply filters
         const f = filters;
         if (f.status && f.status.length > 0) {
-            query_ = query_.where('status', 'in', f.status);
+            query_ = query_.where("status", "in", f.status);
         }
         if (f.priority && f.priority.length > 0) {
-            query_ = query_.where('priority', 'in', f.priority);
+            query_ = query_.where("priority", "in", f.priority);
         }
         if (f.boardId && f.boardId.length > 0) {
-            query_ = query_.where('boardId', 'in', f.boardId);
+            query_ = query_.where("boardId", "in", f.boardId);
         }
         if (f.dateRange) {
             const from = new Date(f.dateRange.from);
             const to = new Date(f.dateRange.to);
             query_ = query_
-                .where('createdAt', '>=', admin.firestore.Timestamp.fromDate(from))
-                .where('createdAt', '<=', admin.firestore.Timestamp.fromDate(to));
+                .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(from))
+                .where("createdAt", "<=", admin.firestore.Timestamp.fromDate(to));
         }
         const snapshot = await query_.get();
         const submissions = snapshot.docs.map((doc) => doc.data());
         // CSV headers
         const headers = [
-            'ID',
-            'Tracking Code',
-            'Subject',
-            'Description',
-            'Category',
-            'Status',
-            'Priority',
-            'Assigned To',
-            'Created At',
-            'Updated At',
+            "ID",
+            "Tracking Code",
+            "Subject",
+            "Description",
+            "Category",
+            "Status",
+            "Priority",
+            "Assigned To",
+            "Created At",
+            "Updated At",
         ];
         // CSV rows
         const rows = submissions.map((sub) => [
             sub.id,
             sub.trackingCode,
-            `"${(sub.subject || '').replace(/"/g, '""')}"`,
-            `"${(sub.description || '').replace(/"/g, '""')}"`,
-            sub.category || '',
-            sub.status || '',
-            sub.priority || '',
-            sub.assignedTo || '',
-            sub.createdAt?.toDate?.()?.toISOString() || '',
-            sub.updatedAt?.toDate?.()?.toISOString() || '',
+            `"${(sub.subject || "").replace(/"/g, '""')}"`,
+            `"${(sub.description || "").replace(/"/g, '""')}"`,
+            sub.category || "",
+            sub.status || "",
+            sub.priority || "",
+            sub.assignedTo || "",
+            sub.createdAt?.toDate?.()?.toISOString() || "",
+            sub.updatedAt?.toDate?.()?.toISOString() || "",
         ]);
-        const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
-        res.setHeader('Content-Type', 'text/csv');
-        res.setHeader('Content-Disposition', 'attachment; filename="submissions.csv"');
+        const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", 'attachment; filename="submissions.csv"');
         res.send(csv);
     }
     catch (error) {
-        console.error('Export CSV error:', error);
-        res.status(500).json({ error: 'Failed to export CSV' });
+        console.error("Export CSV error:", error);
+        res.status(500).json({ error: "Failed to export CSV" });
     }
 });
 exports.default = router;
