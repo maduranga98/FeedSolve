@@ -1,5 +1,4 @@
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import { stripe } from '../lib/stripe';
 import { useState } from 'react';
 
 export function useStripe() {
@@ -15,18 +14,11 @@ export function useStripe() {
       const fn = httpsCallable(functions, 'createCheckoutSession');
       const response = (await fn({ priceId })) as any;
 
-      const stripeInstance = await stripe;
-      if (!stripeInstance) {
-        throw new Error('Stripe failed to load');
+      if (!response.data.url) {
+        throw new Error('No checkout URL returned from server');
       }
 
-      const { error: stripeError } = await stripeInstance.redirectToCheckout({
-        sessionId: response.data.sessionId,
-      });
-
-      if (stripeError) {
-        setError(stripeError.message || 'Stripe checkout failed');
-      }
+      window.location.href = response.data.url;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create checkout session';
       setError(message);
