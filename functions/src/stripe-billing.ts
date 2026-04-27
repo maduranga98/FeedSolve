@@ -2,10 +2,6 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
 
-if (!admin.apps.length) {
-  admin.initializeApp();
-}
-
 // Maps Stripe price IDs (from src/config/stripe.ts) to app tier names
 const PRICE_TO_TIER: Record<string, string> = {
   price_1TQpweQQchLsdaEfeIg5uZ2A: 'starter',
