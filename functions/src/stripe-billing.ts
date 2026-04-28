@@ -52,7 +52,7 @@ export const createCheckoutSession = functions.https.onCall(
       );
     }
 
-    const { priceId } = data;
+    const { priceId, successUrl, cancelUrl } = data;
     if (!priceId || !PRICE_TO_TIER[priceId]) {
       throw new functions.https.HttpsError(
         "invalid-argument",
