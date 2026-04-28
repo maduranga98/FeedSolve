@@ -17,5 +17,5 @@ export function useTemplateInit() {
     };
 
     initTemplates();
-  }, [user?.uid]);
+  }, [user?.id]);
 }
