@@ -98,7 +98,8 @@ exports.onCommentUpdated = functions.firestore
     .onUpdate(async (change, context) => {
     const oldComment = change.before.data();
     const newComment = change.after.data();
-    const { submissionId, companyId } = context.params;
+    const { submissionId } = context.params;
+    const { companyId } = newComment;
     try {
         // Check if reactions were added
         const oldReactions = oldComment.reactions || [];
@@ -134,7 +135,8 @@ exports.onCommentDeleted = functions.firestore
     .document("submissions/{submissionId}/comments/{commentId}")
     .onDelete(async (snap, context) => {
     const comment = snap.data();
-    const { submissionId, companyId } = context.params;
+    const { submissionId } = context.params;
+    const { companyId } = comment;
     try {
         // Update submission comment count
         const submissionRef = db.collection("submissions").doc(submissionId);
@@ -164,7 +166,7 @@ exports.onCommentDeleted = functions.firestore
 });
 // Clear old notifications (older than 30 days)
 exports.clearOldNotifications = functions.pubsub
-    .schedule("every 7 days")
+    .schedule("0 0 * * 0") // every Sunday at midnight UTC
     .onRun(async () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

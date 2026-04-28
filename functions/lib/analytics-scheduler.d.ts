@@ -1,4 +1,3 @@
-import * as functions from "firebase-functions";
-export declare const computeAnalyticsSnapshots: functions.CloudFunction<unknown>;
-export declare const getAnalyticsSnapshot: functions.HttpsFunction & functions.Runnable<any>;
+export declare const computeAnalyticsSnapshots: any;
+export declare const getAnalyticsSnapshot: any;
 //# sourceMappingURL=analytics-scheduler.d.ts.map

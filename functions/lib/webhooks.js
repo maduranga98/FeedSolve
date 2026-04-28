@@ -314,8 +314,8 @@ exports.testWebhook = functions.https.onCall(async (data, context) => {
         priority: "medium",
         category: "Test",
         isAnonymous: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
     };
     try {
         const companyDoc = await db.collection("companies").doc(companyId).get();
