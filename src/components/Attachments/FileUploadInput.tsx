@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, X } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { ATTACHMENT_CONFIG, formatFileSize, isValidFileSize, isValidFileType } from '../../lib/attachments-config';
 
 interface FileUploadInputProps {

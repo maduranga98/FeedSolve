@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, X } from 'lucide-react';
+import { Timestamp } from 'firebase/firestore';
 import type { EmailWebhook } from '@/types';
 import { WEBHOOK_EVENTS, EMAIL_FREQUENCIES } from '@/lib/webhooks';
 
@@ -70,7 +71,7 @@ export function EmailSetup({ config, onSave, onCancel }: EmailSetupProps) {
         recipients,
         events: selectedEvents,
         frequency,
-        connectedAt: new Date(),
+        connectedAt: Timestamp.fromDate(new Date()),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save email webhook');

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { BulkOperation } from '../types';
+import type { BulkOperation } from '../types';
 
 interface BulkOperationState {
   selectedIds: Set<string>;

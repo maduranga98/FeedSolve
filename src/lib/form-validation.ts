@@ -1,4 +1,4 @@
-import { FormField, ConditionalLogicRule, FormSubmissionData } from '../types';
+import type { FormField, ConditionalLogicRule, FormSubmissionData } from '../types';
 
 interface ValidationResult {
   isValid: boolean;

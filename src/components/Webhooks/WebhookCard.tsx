@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, AlertCircle, CheckCircle2, MoreVertical } from 'lucide-react';
+import { AlertCircle, CheckCircle2, MoreVertical } from 'lucide-react';
 import type { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
 
 interface WebhookCardProps {

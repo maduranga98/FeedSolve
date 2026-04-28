@@ -267,7 +267,7 @@ export function SubmissionDetail() {
               <AttachmentGallery
                 attachments={submission.attachments}
                 onDownload={(attachment) => downloadFile(submission.id, attachment)}
-                onView={(attachment) => viewFile(submission.id, attachment)}
+                onView={(attachment) => { viewFile(submission.id, attachment); }}
                 loading={downloading}
               />
             </div>

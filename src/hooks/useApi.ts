@@ -20,7 +20,7 @@ export function useApi() {
   const initializeClient = useCallback((apiKey: string) => {
     apiClientInstance = new APIClient({
       apiKey,
-      baseUrl: process.env.REACT_APP_API_URL || 'https://api.feedsolve.com',
+      baseUrl: import.meta.env.VITE_API_URL || 'https://api.feedsolve.com',
     });
   }, []);
 
@@ -68,7 +68,7 @@ export function useApiData<T>(
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<APIError | null>(null);
-  const { client, execute } = useApi();
+  const { client } = useApi();
 
   const refetch = useCallback(async () => {
     if (!client) {

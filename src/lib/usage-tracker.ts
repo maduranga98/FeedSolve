@@ -1,6 +1,6 @@
-import { getCompany, updateDoc } from './firestore';
+import { getCompany } from './firestore';
 import { getLimit } from './tier-limits';
-import { doc, Timestamp } from 'firebase/firestore';
+import { doc, Timestamp, updateDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 export class UsageTracker {

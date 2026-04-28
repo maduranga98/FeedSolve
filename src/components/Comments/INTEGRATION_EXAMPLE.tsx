@@ -24,7 +24,7 @@ export const SubmissionDetailWithComments: React.FC<SubmissionDetailProps> = ({
   teamMembers,
 }) => {
   const [showComments, setShowComments] = useState(true);
-  const { unreadCount, notifications } = useCommentNotifications(
+  const { unreadCount } = useCommentNotifications(
     submission.companyId,
     currentUser.id
   );

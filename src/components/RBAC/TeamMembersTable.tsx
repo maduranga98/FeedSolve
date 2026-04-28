@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Trash2, Edit2 } from 'lucide-react';
-import { Button, Badge, LoadingSpinner } from '../Shared';
+import { Badge, LoadingSpinner } from '../Shared';
 import { RoleModal } from './RoleModal';
 import { usePermissions } from '../../hooks/usePermissions';
 import { ROLE_LABELS } from '../../lib/rbac';
@@ -110,7 +110,7 @@ export function TeamMembersTable({
                   <td className="py-3 px-4 text-color-muted-text">{member.email}</td>
                   <td className="py-3 px-4">
                     <Badge
-                      variant={member.role === 'owner' ? 'primary' : 'secondary'}
+                      variant={member.role === 'owner' ? 'primary' : undefined}
                       className="capitalize"
                     >
                       {ROLE_LABELS[member.role]}

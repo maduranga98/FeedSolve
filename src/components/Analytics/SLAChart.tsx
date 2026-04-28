@@ -7,7 +7,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import type { SLAMetric } from '../../lib/analytics';
@@ -67,7 +66,7 @@ export function SLAChart({ data }: SLAChartProps) {
           <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} tick={{ fill: '#6b7280' }} />
           <Tooltip
             contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-            formatter={(value: number, name: string) => [value, name]}
+            formatter={(value: any, name: any) => [value, name]}
           />
           <Legend />
           <Bar dataKey="Met" fill="#10b981" stackId="a" radius={[0, 0, 0, 0]} />

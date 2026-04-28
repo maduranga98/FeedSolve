@@ -1,6 +1,6 @@
 import React from 'react';
 import { usePermissions } from '../../hooks/usePermissions';
-import type { Permission } from '../../types';
+import type { Permission } from '../../lib/rbac';
 
 interface PermissionGuardProps {
   permission: Permission | Permission[];

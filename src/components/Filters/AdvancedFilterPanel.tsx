@@ -29,7 +29,6 @@ const priorityOptions: { value: Submission['priority']; label: string }[] = [
 
 export function AdvancedFilterPanel({
   boards,
-  users,
   categories,
   filters,
   onFiltersChange,

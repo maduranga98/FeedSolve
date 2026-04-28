@@ -3,7 +3,6 @@ import { onSnapshot, collection, Timestamp } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import {
   addComment,
-  getComments,
   updateComment,
   deleteComment,
   addReaction,
@@ -32,7 +31,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
   const [comments, setComments] = useState<(CommentType & { id: string })[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [unsubscribe, setUnsubscribe] = useState<(() => void) | null>(null);
+  const [_unsubscribe, setUnsubscribe] = useState<(() => void) | null>(null);
 
   // Set up real-time listener
   useEffect(() => {

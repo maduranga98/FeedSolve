@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormFieldType } from '../../types';
+import type { FormFieldType } from '../../types';
 
 interface FieldPaletteProps {
   onAddField: (type: FormFieldType) => void;

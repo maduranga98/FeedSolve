@@ -33,7 +33,7 @@ export function AdvancedSearch({
   const [page, setPage] = useState(1);
   const { searchText, setSearchText, filters, setFilters, results, clearAll: clearSearch } = useSearch(submissions);
   const { savedFilters, saveFilter, deleteFilter, togglePin } = useSavedFilters(user?.companyId || '');
-  const { filters: urlFilters, updateFilters: updateURLFilters, getShareURL } = useURLFilters();
+  const { updateFilters: updateURLFilters, getShareURL } = useURLFilters();
 
   const categories = Array.from(new Set(submissions.map((s) => s.category)));
 

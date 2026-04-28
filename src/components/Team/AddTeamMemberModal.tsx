@@ -13,7 +13,7 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
   const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'admin' | 'member'>('member');
+  const [role, setRole] = useState<'admin' | 'viewer'>('viewer');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -86,11 +86,11 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
             </label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as 'admin' | 'member')}
+              onChange={(e) => setRole(e.target.value as 'admin' | 'viewer')}
               disabled={loading}
               className="w-full px-3 py-2 border border-[#D3D1C7] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
             >
-              <option value="member">Member</option>
+              <option value="viewer">Viewer</option>
               <option value="admin">Admin</option>
             </select>
           </div>

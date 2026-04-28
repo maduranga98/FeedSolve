@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { onSnapshot, collection, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Comment } from '../types';

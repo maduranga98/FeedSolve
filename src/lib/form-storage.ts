@@ -11,7 +11,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { CustomForm, FormTemplate, Board } from '../types';
+import type { CustomForm, FormTemplate, Board } from '../types';
 
 export const saveFormToBoard = async (
   boardId: string,
@@ -129,7 +129,7 @@ export const deleteFormTemplate = async (
 
 export const saveFormSubmission = async (
   companyId: string,
-  boardId: string,
+  _boardId: string,
   submissionId: string,
   formData: Record<string, any>
 ): Promise<void> => {

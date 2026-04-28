@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FormBuilder, FormTemplateManager } from './index';
-import { CustomForm, Subscription } from '../../types';
+import type { CustomForm, Subscription } from '../../types';
 import { useFormBuilder } from '../../hooks/useFormBuilder';
 import { getFormTierLimits } from '../../lib/form-tier-limits';
 

@@ -81,7 +81,7 @@ export function initPerformanceMonitoring() {
 }
 
 function reportVitals(vitals: WebVitalsMetrics) {
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.MODE === "development") {
     console.log(
       `[${vitals.name}] ${vitals.value.toFixed(2)}ms (${vitals.rating})`,
     );
@@ -95,6 +95,6 @@ function reportVitals(vitals: WebVitalsMetrics) {
 
 declare global {
   interface Window {
-    __VITALS_DATA__?: WebVitalsMetrics[];
+    __VITALS_DATA__?: unknown[];
   }
 }

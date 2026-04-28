@@ -29,6 +29,7 @@ function wrapFirestoreError(error: unknown): never {
 }
 import type {
   User,
+  UserRole,
   Company,
   CompanyBranding,
   Board,
@@ -51,7 +52,7 @@ export async function createUser(
   email: string,
   name: string,
   companyId: string,
-  role: 'admin' | 'member' = 'admin'
+  role: UserRole = 'admin'
 ): Promise<User> {
   try {
     const userRef = doc(db, 'users', id);
@@ -225,9 +226,9 @@ export async function createSubmission(
       category: input.category,
       subject: input.subject,
       description: input.description,
-      submitterEmail: input.isAnonymous ? null : (input.email?.trim() || null),
-      submitterName: input.isAnonymous ? null : (input.submitterName?.trim() || null),
-      submitterMobile: input.isAnonymous ? null : (input.submitterMobile?.trim() || null),
+      submitterEmail: input.isAnonymous ? undefined : (input.email?.trim() || undefined),
+      submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
+      submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
       isAnonymous: input.isAnonymous,
       status: 'received',
       priority: 'medium',
@@ -350,7 +351,7 @@ export async function getSubmission(id: string): Promise<Submission | null> {
 export async function inviteTeamMember(
   companyId: string,
   email: string,
-  role: 'admin' | 'member',
+  role: UserRole,
   invitedBy: string
 ): Promise<TeamInvitation> {
   const inviteCode = generateTrackingCode();
@@ -412,7 +413,7 @@ export async function getTeamMembers(companyId: string): Promise<TeamMember[]> {
 
 export async function updateMemberRole(
   userId: string,
-  newRole: 'admin' | 'member'
+  newRole: UserRole
 ): Promise<void> {
   const userRef = doc(db, 'users', userId);
   await updateDoc(userRef, { role: newRole });

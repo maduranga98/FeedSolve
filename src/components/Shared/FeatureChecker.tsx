@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useHasFeature } from '../../hooks/useHasFeature';
 
 interface FeatureCheckerProps {

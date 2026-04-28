@@ -21,7 +21,7 @@ export function PricingPage() {
     }
 
     const priceId = getPriceId(tier, billing);
-    await createCheckoutSession(priceId, billing);
+    await createCheckoutSession(priceId);
   };
 
   const features = {

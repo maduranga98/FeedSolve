@@ -13,8 +13,6 @@ const ApiUsageChart: React.FC<ApiUsageChartProps> = ({
   remainingRequests,
 }) => {
   const usagePercentage = (requestsThisMonth / requestsLimit) * 100;
-  const remainingPercentage = (remainingRequests / requestsLimit) * 100;
-
   const getProgressColor = () => {
     if (usagePercentage < 50) return 'bg-blue-500';
     if (usagePercentage < 80) return 'bg-yellow-500';

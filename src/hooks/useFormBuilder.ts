@@ -8,7 +8,7 @@ import {
   deleteFormTemplate,
   updateFormTemplate,
 } from '../lib/form-storage';
-import { CustomForm, FormTemplate } from '../types';
+import type { CustomForm, FormTemplate } from '../types';
 
 interface UseFormBuilderOptions {
   boardId: string;
@@ -75,6 +75,7 @@ export const useFormBuilder = ({ boardId, companyId }: UseFormBuilderOptions) =>
       setError(null);
       try {
         const templateId = await saveFormTemplate(companyId, {
+          companyId,
           name,
           description,
           form: formData,
