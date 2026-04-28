@@ -105,9 +105,14 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update QR code when config changes
+  // Update QR code when config changes.
+  // Also re-appends the canvas when FrameWrapper remounts qrRef's DOM node
+  // (switching frame styles changes the wrapper structure, which unmounts/remounts children).
   useEffect(() => {
-    if (!qrCode.current) return;
+    if (!qrCode.current || !qrRef.current) return;
+    if (!qrRef.current.hasChildNodes()) {
+      qrCode.current.append(qrRef.current);
+    }
     qrCode.current.update({
       data: feedbackUrl,
       dotsOptions: { type: config.dotStyle, color: config.dotColor },
