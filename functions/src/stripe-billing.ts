@@ -80,7 +80,7 @@ export const createCheckoutSession = functions.https.onCall(
       });
     }
 
-    const appUrl = process.env.APP_URL || "https://feedsolve-e9483.web.app";
+    const appUrl = process.env.APP_URL || "https://app.feedsolve.com";
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
@@ -120,7 +120,7 @@ export const createBillingPortalSession = functions.https.onCall(
     }
 
     const stripe = getStripe();
-    const appUrl = process.env.APP_URL || "https://feedsolve-e9483.web.app";
+    const appUrl = process.env.APP_URL || "https://app.feedsolve.com";
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: `${appUrl}/billing`,

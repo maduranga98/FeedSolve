@@ -135,7 +135,7 @@ router.post(
           ? categories.map((c: string) => c.trim()).filter(Boolean)
           : [],
         isAnonymousAllowed: isAnonymousAllowed !== false,
-        qrCodeUrl: `https://feedsolve.com/b/${slug}`,
+        qrCodeUrl: `https://app.feedsolve.com/b/${slug}`,
         submissionCount: 0,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
