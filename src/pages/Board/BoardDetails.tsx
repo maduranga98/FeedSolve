@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { QRCodeCanvas } from 'qrcode.react';
-import { Download, Share2, ArrowLeft } from 'lucide-react';
+import { Share2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
+import { QRCustomizer } from '../../components/QR';
 import type { Board } from '../../types';
 
 export function BoardDetails() {
@@ -46,17 +46,6 @@ export function BoardDetails() {
 
     fetchBoard();
   }, [boardId, user]);
-
-  const handleDownloadQR = () => {
-    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement | null;
-    if (canvas) {
-      const url = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${board?.name || 'board'}-qr-code.png`;
-      link.click();
-    }
-  };
 
   const handleCopyLink = () => {
     if (board) {
@@ -129,7 +118,7 @@ export function BoardDetails() {
           Back to Dashboard
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Board Info */}
           <div className="bg-color-surface rounded-lg shadow-md p-6">
             <h1 className="text-3xl font-bold text-color-primary mb-2">{board.name}</h1>
@@ -202,29 +191,13 @@ export function BoardDetails() {
             </div>
           </div>
 
-          {/* QR Code */}
-          <div className="bg-color-surface rounded-lg shadow-md p-6 flex flex-col items-center justify-center">
-            <h2 className="text-xl font-semibold text-color-primary mb-6">QR Code</h2>
-            <div className="p-4 bg-white rounded-lg border-2 border-color-border mb-6">
-              <QRCodeCanvas
-                id="qr-canvas"
-                value={feedbackUrl}
-                size={256}
-                level="H"
-                includeMargin={true}
-              />
-            </div>
-            <p className="text-sm text-color-muted-text text-center mb-4">
-              Scan this QR code or share the link above to collect feedback
+          {/* QR Code Customizer */}
+          <div className="bg-color-surface rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-color-primary mb-1">QR Code</h2>
+            <p className="text-sm text-color-muted-text mb-5">
+              Customize style, colors, logo, and frame — then download.
             </p>
-            <Button
-              onClick={handleDownloadQR}
-              variant="secondary"
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Download size={18} />
-              Download QR Code
-            </Button>
+            <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />
           </div>
         </div>
       </div>
