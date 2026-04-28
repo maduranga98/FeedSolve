@@ -33,6 +33,7 @@ const EXPLICIT_ORIGINS = new Set([
   "http://localhost:5173",
   "http://localhost:3000",
   "https://feedsolve.com",
+  "https://app.feedsolve.com",
 ]);
 // Matches any https subdomain of feedsolve.com (no wildcards in the cors package)
 const SUBDOMAIN_RE = /^https:\/\/[a-z0-9-]+\.feedsolve\.com$/;
