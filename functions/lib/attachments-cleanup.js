@@ -71,7 +71,7 @@ exports.cleanupOrphanedAttachments = functions.pubsub
         for (const file of files) {
             if (!validAttachmentPaths.has(file.name)) {
                 const [metadata] = await file.getMetadata();
-                const fileAge = Date.now() - new Date(metadata.timeCreated).getTime();
+                const fileAge = Date.now() - new Date(metadata.timeCreated ?? 0).getTime();
                 // Delete if older than cutoff
                 if (fileAge > CLEANUP_DAYS * 24 * 60 * 60 * 1000) {
                     await file.delete();

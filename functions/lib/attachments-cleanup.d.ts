@@ -1,6 +1,5 @@
-import * as functions from "firebase-functions";
-export declare const cleanupOrphanedAttachments: functions.CloudFunction<unknown>;
-export declare const scanAttachmentOnUpload: functions.CloudFunction<functions.Change<functions.firestore.QueryDocumentSnapshot>>;
-export declare const checkVirusScanResults: functions.CloudFunction<unknown>;
-export declare const resetMonthlyStorage: functions.CloudFunction<unknown>;
+export declare const cleanupOrphanedAttachments: any;
+export declare const scanAttachmentOnUpload: any;
+export declare const checkVirusScanResults: any;
+export declare const resetMonthlyStorage: any;
 //# sourceMappingURL=attachments-cleanup.d.ts.map
