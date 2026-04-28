@@ -163,8 +163,8 @@ service cloud.firestore {
       allow read: if canReadSubmissions(resource.data.companyId);
       // Public tracking page: unauthenticated get by document ID
       allow get: if resource.data.trackingCode is string;
-      // Public tracking page: unauthenticated query by tracking code (limit enforced client-side)
-      allow list: if !isAuthenticated() && request.query.limit <= 1;
+      // Public tracking page: query by tracking code (open to all, limit enforced)
+      allow list: if request.query.limit <= 1;
       // Authenticated company member create
       allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
       // Public (unauthenticated) create from the feedback form
