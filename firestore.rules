@@ -109,7 +109,11 @@ service cloud.firestore {
       // Public get: branding data needed on the public submit-feedback and tracking pages
       allow get: if true;
       allow list: if canManageCompany(companyId);
-      allow write: if canManageCompany(companyId);
+      // Self-service create: the signing-up user may create the company whose ID equals
+      // their own UID (this is the pattern used in signUp / loginWithGoogle / loginWithApple).
+      // No user doc exists yet at this point so canManageCompany would fail.
+      allow create: if request.auth != null && request.auth.uid == companyId;
+      allow update: if canManageCompany(companyId);
       allow delete: if isOwner(companyId);
 
       match /webhook_logs/{logId} {
