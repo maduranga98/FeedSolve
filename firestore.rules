@@ -157,7 +157,10 @@ service cloud.firestore {
       allow read: if true;
       // create: resource doesn't exist yet, so use request.resource.data
       allow create: if canManageCompany(request.resource.data.companyId);
-      allow update: if canManageCompany(resource.data.companyId);
+      // Allow anyone to increment submissionCount by exactly 1 (public form submissions)
+      allow update: if canManageCompany(resource.data.companyId) ||
+        (only(['submissionCount']) &&
+         request.resource.data.submissionCount == resource.data.submissionCount + 1);
       allow delete: if isOwner(resource.data.companyId);
     }
 
