@@ -12,7 +12,12 @@ export function useStripe() {
 
     try {
       const fn = httpsCallable(functions, 'createCheckoutSession');
-      const response = (await fn({ priceId })) as any;
+      const origin = window.location.origin;
+      const response = (await fn({
+        priceId,
+        successUrl: `${origin}/billing?success=true`,
+        cancelUrl: `${origin}/pricing?canceled=true`,
+      })) as any;
 
       if (!response.data.url) {
         throw new Error('No checkout URL returned from server');

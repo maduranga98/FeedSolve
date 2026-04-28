@@ -86,8 +86,8 @@ export const createCheckoutSession = functions.https.onCall(
       payment_method_types: ["card"],
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/billing?success=true`,
-      cancel_url: `${appUrl}/pricing?canceled=true`,
+      success_url: successUrl || `${appUrl}/billing?success=true`,
+      cancel_url: cancelUrl || `${appUrl}/pricing?canceled=true`,
       metadata: { companyId },
       subscription_data: { metadata: { companyId } },
     });
