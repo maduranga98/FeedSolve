@@ -93,6 +93,8 @@ function PublicRoute({ children }: { children: ReactNode }) {
 }
 
 function AppContent() {
+  useTemplateInit();
+
   return (
     <ErrorBoundary>
       <Toaster position="top-right" richColors closeButton />
@@ -252,7 +254,6 @@ function AppContent() {
 }
 
 function App() {
-  useTemplateInit();
   useRTL();
 
   return (
