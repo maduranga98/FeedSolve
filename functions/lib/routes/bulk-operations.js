@@ -81,7 +81,9 @@ async function processBulkOperation(operationId) {
         throw new Error("Operation not found");
     }
     const operation = operationDoc.data();
-    const { submissionIds, updateData, companyId } = operation || {};
+    const submissionIds = operation.submissionIds;
+    const updateData = operation.updateData;
+    const companyId = operation.companyId;
     let processedCount = 0;
     const previousValues = [];
     try {
@@ -97,7 +99,7 @@ async function processBulkOperation(operationId) {
                     previousValues.push({
                         submissionId,
                         previousData: Object.keys(updateData).reduce((acc, key) => {
-                            acc[key] = data[key];
+                            acc[key] = data?.[key];
                             return acc;
                         }, {}),
                     });

@@ -42,7 +42,7 @@ const db = admin.firestore();
 router.post('/api/filters', (0, auth_1.hasPermission)(['submissions:read']), async (req, res) => {
     try {
         const companyId = req.companyId;
-        const userId = req.user?.uid;
+        const userId = req.userId;
         const { name, description, filters } = req.body;
         if (!companyId || !userId) {
             res.status(401).json({ error: 'Unauthorized' });
@@ -67,7 +67,6 @@ router.post('/api/filters', (0, auth_1.hasPermission)(['submissions:read']), asy
         const filterRef = db.collection('companies').doc(companyId).collection('filters').doc(filterId);
         await filterRef.set(filterData);
         res.status(201).json({
-            id: filterId,
             ...filterData,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

@@ -35,7 +35,6 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const admin = __importStar(require("firebase-admin"));
 const express_1 = require("express");
-const auth_1 = require("../middleware/auth");
 const uuid_1 = require("uuid");
 const router = (0, express_1.Router)();
 const db = admin.firestore();
@@ -185,9 +184,9 @@ router.post("/api/submissions/:submissionId/attachments", async (req, res) => {
             return;
         }
         const submission = submissionDoc.data();
-        const { companyId } = submission || {};
-        // Check if user is in company and has permission
-        if (!(0, auth_1.hasPermission)(req, companyId, "submissions:write")) {
+        const companyId = submission.companyId;
+        // Check if user has permission
+        if (!req.permissions?.includes("submissions:write")) {
             res.status(403).json({ error: "Forbidden" });
             return;
         }
@@ -218,7 +217,7 @@ router.post("/api/submissions/:submissionId/attachments", async (req, res) => {
             fileSize: filesize,
             storagePath,
             uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
-            uploadedBy: req.auth?.uid || "unknown",
+            uploadedBy: req.userId || "unknown",
             scanned: false,
             scanStatus: "pending",
         };
@@ -263,7 +262,7 @@ router.get("/api/submissions/:submissionId/attachments/:attachmentId/download", 
             return;
         }
         // Check access - company members can download
-        if (!(0, auth_1.hasPermission)(req, submission.companyId, "submissions:read")) {
+        if (req.companyId !== submission.companyId || !req.permissions?.includes("submissions:read")) {
             res.status(403).json({ error: "Forbidden" });
             return;
         }
@@ -273,7 +272,7 @@ router.get("/api/submissions/:submissionId/attachments/:attachmentId/download", 
             action: "read",
             expires: Date.now() + 3600 * 1000, // 1 hour
         });
-        res.json({ url, filename: attachment.filename });
+        res.json({ url, filename: attachment?.filename });
     }
     catch (error) {
         console.error("Download error:", error);
@@ -299,7 +298,7 @@ router.delete("/api/submissions/:submissionId/attachments/:attachmentId", async 
             return;
         }
         // Check permission - manage submissions required
-        if (!(0, auth_1.hasPermission)(req, submission.companyId, "submissions:write")) {
+        if (req.companyId !== submission.companyId || !req.permissions?.includes("submissions:write")) {
             res.status(403).json({ error: "Forbidden" });
             return;
         }
