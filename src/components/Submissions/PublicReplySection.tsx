@@ -1,5 +1,8 @@
 import { useState } from 'react';
+import { Lock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useHasFeature } from '../../hooks/useHasFeature';
 import { addPublicReply } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 import ReplyForm from './ReplyForm';
@@ -20,8 +23,29 @@ export default function PublicReplySection({
   onReplyAdded,
 }: PublicReplySectionProps) {
   const { user } = useAuth();
+  const { checkFeature } = useHasFeature();
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const canReply = checkFeature('canReply');
+
+  if (!canReply) {
+    return (
+      <div className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[#D3D1C7] bg-[#F8FAFB] text-sm text-[#6B7B8D]">
+        <Lock size={15} className="shrink-0 text-[#9AABBF]" />
+        <span>
+          Public replies are available on the <strong>Starter</strong> plan and above.{' '}
+          <button
+            onClick={() => navigate('/pricing')}
+            className="text-[#2E86AB] hover:underline font-medium"
+          >
+            Upgrade
+          </button>
+        </span>
+      </div>
+    );
+  }
 
   const handleSubmitReply = async (text: string) => {
     if (!user) return;

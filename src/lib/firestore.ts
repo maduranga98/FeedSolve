@@ -90,6 +90,7 @@ export async function createCompany(
   try {
     const companyRef = doc(db, 'companies', id);
     const now = Timestamp.now();
+    const trialEndsAt = Timestamp.fromMillis(now.toMillis() + 7 * 24 * 60 * 60 * 1000);
     const newCompany: Company = {
       id,
       name,
@@ -99,6 +100,7 @@ export async function createCompany(
         tier: 'free',
         billing: 'monthly',
         status: 'active',
+        trialEndsAt,
       },
       usage: {
         submissionsThisMonth: 0,

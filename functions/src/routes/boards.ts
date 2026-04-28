@@ -11,10 +11,10 @@ const CATEGORY_NAME_MAX = 100;
 
 // Board limits per subscription tier
 const TIER_BOARD_LIMITS: Record<string, number> = {
-  free: 3,
-  starter: 10,
-  growth: 25,
-  business: Infinity,
+  free: 2,
+  starter: 3,
+  growth: 10,
+  business: 20,
 };
 
 function log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>) {

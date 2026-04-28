@@ -6,6 +6,8 @@ import { generateApiKey } from '../utils/apiKeyGenerator';
 const router = Router();
 const db = admin.firestore();
 
+const API_TIER_REQUIRED = 'business';
+
 router.post(
   '/api/auth/api-keys',
   hasPermission(['keys:create']),
@@ -16,6 +18,16 @@ router.post(
 
       if (!companyId) {
         res.status(401).json({ error: 'Company not found' });
+        return;
+      }
+
+      const companyDoc = await db.collection('companies').doc(companyId).get();
+      const tier: string = companyDoc.data()?.subscription?.tier ?? 'free';
+      if (tier !== API_TIER_REQUIRED) {
+        res.status(403).json({
+          error: 'API key access requires the Pro plan. Please upgrade to create API keys.',
+          code: 'TIER_INSUFFICIENT',
+        });
         return;
       }
 
