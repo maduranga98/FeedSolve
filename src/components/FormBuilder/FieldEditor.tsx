@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormField } from '../../types';
+import type { FormField } from '../../types';
 import { ConditionalLogicBuilder } from './ConditionalLogicBuilder';
 
 interface FieldEditorProps {

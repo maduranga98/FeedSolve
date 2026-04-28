@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FormTemplate, CustomForm } from '../../types';
+import type { FormTemplate, CustomForm } from '../../types';
 import { useFormBuilder } from '../../hooks/useFormBuilder';
 import './FormTemplateManager.css';
 
@@ -28,7 +28,6 @@ export const FormTemplateManager: React.FC<FormTemplateManagerProps> = ({
     applyTemplate,
   } = useFormBuilder({ boardId, companyId });
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [newTemplate, setNewTemplate] = useState({ name: '', description: '' });
 

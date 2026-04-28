@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Star, Trash2, Edit2 } from 'lucide-react';
 import type { SavedFilter } from '../../types';
-import { Button } from '../Shared';
+
 
 interface SavedFiltersProps {
   filters: SavedFilter[];

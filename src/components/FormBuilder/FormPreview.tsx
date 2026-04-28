@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormField, FormSubmissionData } from '../../types';
+import type { FormField, FormSubmissionData } from '../../types';
 import { evaluateConditionalLogic } from '../../lib/form-validation';
 
 interface FormPreviewProps {
@@ -65,7 +65,7 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ fields }) => {
                   <input
                     type="text"
                     placeholder={field.placeholder}
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                   />
                 )}
@@ -73,7 +73,7 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ fields }) => {
                 {field.type === 'longtext' && (
                   <textarea
                     placeholder={field.placeholder}
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                     rows={4}
                   />
@@ -83,14 +83,14 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ fields }) => {
                   <input
                     type="email"
                     placeholder={field.placeholder || 'name@example.com'}
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                   />
                 )}
 
                 {field.type === 'select' && (
                   <select
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                   >
                     <option value="">Select an option</option>
@@ -147,7 +147,7 @@ export const FormPreview: React.FC<FormPreviewProps> = ({ fields }) => {
                 {field.type === 'date' && (
                   <input
                     type="date"
-                    value={formData[field.id] || ''}
+                    value={(formData[field.id] as string) || ''}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
                   />
                 )}

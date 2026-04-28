@@ -22,7 +22,7 @@ export function initializeSentry() {
     dsn: sentryDsn,
     environment: isProduction ? 'production' : 'staging',
     integrations: [
-      new Sentry.Replay({
+      Sentry.replayIntegration({
         maskAllText: true,
         blockAllMedia: true,
       }),

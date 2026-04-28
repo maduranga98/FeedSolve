@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { onSnapshot, collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { onSnapshot, collection, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { CommentNotification } from '../types';
 

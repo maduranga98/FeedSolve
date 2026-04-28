@@ -26,7 +26,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
   const [mentions, setMentions] = useState<string[]>([]);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionSearchTerm, setMentionSearchTerm] = useState('');
-  const [cursorPosition, setCursorPosition] = useState(0);
+  const [_cursorPosition, setCursorPosition] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {

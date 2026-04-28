@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, setDoc, updateDoc, query, where, getDocs, deleteDoc, deleteField } from 'firebase/firestore';
+import { collection, doc, getDoc, updateDoc, query, where, getDocs, deleteField } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog } from '@/types';
 

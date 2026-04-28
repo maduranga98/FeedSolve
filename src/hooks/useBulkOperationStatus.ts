@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { BulkOperation } from '../types';
+import type { BulkOperation } from '../types';
 
 export function useBulkOperationStatus(operationId: string | null) {
   const [operation, setOperation] = useState<BulkOperation | null>(null);

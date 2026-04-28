@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AlertCircle, CheckCircle2, Clock, ChevronDown } from 'lucide-react';
 import type { WebhookLog } from '@/types';
 

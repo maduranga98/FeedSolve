@@ -138,7 +138,7 @@ export function localizeDateString(utcDateString: string, locale: string = 'en-U
 }
 
 // Parse date string considering timezone
-export function parseDateString(dateString: string, timezone: string = getUserTimezone()): Date {
+export function parseDateString(dateString: string, _timezone: string = getUserTimezone()): Date {
   // Try parsing as ISO string
   const date = new Date(dateString);
 

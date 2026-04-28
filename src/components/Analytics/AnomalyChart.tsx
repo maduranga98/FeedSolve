@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Scatter,
 } from 'recharts';
 import { AlertTriangle } from 'lucide-react';
 import type { AnomalyDataPoint } from '../../lib/analytics';
@@ -70,7 +69,7 @@ export function AnomalyChart({ data }: AnomalyChartProps) {
             <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} tick={{ fill: '#6b7280' }} />
             <Tooltip
               contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-              formatter={(value: any, name: string) => {
+              formatter={(value: any, name: any) => {
                 if (name === 'count') return [value, 'Actual'];
                 if (name === 'rollingAvg') return [value, '7-day avg'];
                 return [value, name];

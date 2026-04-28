@@ -1,5 +1,5 @@
 import { useNetworkStatus } from '../../hooks/useNetworkStatus';
-import { Wifi, WifiOff } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 
 export function OfflineIndicator() {
   const isOnline = useNetworkStatus();

@@ -5,7 +5,7 @@ export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   delayMs: number
 ): (...args: Parameters<T>) => void {
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
     if (timeoutId) {
@@ -25,7 +25,7 @@ export function throttle<T extends (...args: any[]) => any>(
   delayMs: number
 ): (...args: Parameters<T>) => void {
   let lastCallTime = 0;
-  let timeoutId: NodeJS.Timeout | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
     const now = Date.now();
@@ -51,7 +51,7 @@ export function throttle<T extends (...args: any[]) => any>(
 // Prevent double submission
 export class SubmissionGuard {
   private isSubmitting = false;
-  private timeoutId: NodeJS.Timeout | null = null;
+  private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   async execute<T>(fn: () => Promise<T>): Promise<T | null> {
     if (this.isSubmitting) {
@@ -177,7 +177,7 @@ export class RaceConditionDetector {
       const duration = Date.now() - startTime;
       this.activeOperations.delete(operationId);
 
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.MODE === 'development') {
         console.log(`Operation ${operationId} completed in ${duration}ms`);
       }
     }

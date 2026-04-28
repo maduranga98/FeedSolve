@@ -1,6 +1,7 @@
 import { useAuth } from './useAuth';
 import { hasPermission, canManageRole, getAssignableRoles, isRoleHigherOrEqual } from '../lib/rbac';
-import type { Permission, UserRole } from '../types';
+import type { Permission } from '../lib/rbac';
+import type { UserRole } from '../types';
 
 export function usePermissions() {
   const { user } = useAuth();

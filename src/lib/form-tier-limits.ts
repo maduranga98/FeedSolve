@@ -1,4 +1,4 @@
-import { Subscription } from '../types';
+import type { Subscription } from '../types';
 
 export interface FormTierLimits {
   maxFormFields: number;
@@ -59,7 +59,7 @@ export const canCreateTemplate = (
   return currentTemplateCount < limits.maxTemplates;
 };
 
-export const formatFieldLimit = (tier: string, maxFields: number): string => {
+export const formatFieldLimit = (_tier: string, maxFields: number): string => {
   if (maxFields === Infinity) {
     return 'Unlimited';
   }

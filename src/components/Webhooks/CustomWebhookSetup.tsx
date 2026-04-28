@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import { Timestamp } from 'firebase/firestore';
 import type { CustomWebhook } from '@/types';
 import { WEBHOOK_EVENTS } from '@/lib/webhooks';
 
@@ -69,7 +70,7 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
         url: url.trim(),
         secret,
         events: selectedEvents,
-        connectedAt: new Date(),
+        connectedAt: Timestamp.fromDate(new Date()),
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save custom webhook');

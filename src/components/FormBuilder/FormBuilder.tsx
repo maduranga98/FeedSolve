@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormField, CustomForm, FormFieldType } from '../../types';
+import type { FormField, CustomForm, FormFieldType } from '../../types';
 import { FieldPalette } from './FieldPalette';
 import { FieldEditor } from './FieldEditor';
 import { FormPreview } from './FormPreview';

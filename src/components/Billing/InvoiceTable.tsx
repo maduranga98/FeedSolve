@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Download, ExternalLink } from 'lucide-react';
+import { Download } from 'lucide-react';
 import type { Invoice } from '../../types';
 
 interface InvoiceTableProps {

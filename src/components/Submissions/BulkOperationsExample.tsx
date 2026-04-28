@@ -11,7 +11,7 @@
 import { useState } from 'react';
 import { useBulkOperations } from '../../hooks/useBulkOperations';
 import { useBulkOperationStatus } from '../../hooks/useBulkOperationStatus';
-import { Submission, User } from '../../types';
+import type { Submission, User } from '../../types';
 import { SelectAllCheckbox } from './SelectAllCheckbox';
 import { BulkActionBar } from './BulkActionBar';
 import { BulkActionModal } from './BulkActionModal';

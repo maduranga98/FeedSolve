@@ -163,7 +163,7 @@ export function checkRateLimit(key: string, maxAttempts: number = 5): boolean {
   // Clean up old entries
   if (rateLimitStore.size > 1000) {
     const firstKey = rateLimitStore.keys().next().value;
-    rateLimitStore.delete(firstKey);
+    if (firstKey !== undefined) rateLimitStore.delete(firstKey);
   }
 
   return true; // Allowed

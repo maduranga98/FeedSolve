@@ -68,7 +68,7 @@ export function ForecastChart({ data }: ForecastChartProps) {
           <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} tick={{ fill: '#6b7280' }} />
           <Tooltip
             contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-            formatter={(value: any, name: string) => {
+            formatter={(value: any, name: any) => {
               if (name === 'actual') return [value, 'Actual'];
               if (name === 'forecast') return [value, 'Forecast'];
               return [value, name];

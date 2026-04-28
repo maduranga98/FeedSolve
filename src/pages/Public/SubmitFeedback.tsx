@@ -8,7 +8,7 @@ import {
 } from "../../lib/firestore";
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
-import { LoadingSpinner, Input, Select, Button } from "../../components/Shared";
+import { LoadingSpinner, Input, Select } from "../../components/Shared";
 import {
   FileUploadInput,
   FilePreview,
