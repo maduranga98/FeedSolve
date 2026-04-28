@@ -1,1 +1,10 @@
-{"version":3,"file":"analytics-scheduler.d.ts","sourceRoot":"","sources":["../src/analytics-scheduler.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,SAAS,MAAM,oBAAoB,CAAC;AAIhD,eAAO,MAAM,yBAAyB,kCAkDlC,CAAC;AA0EL,eAAO,MAAM,oBAAoB,mDAiDhC,CAAC"}
+{
+  "version": 3,
+  "file": "analytics-scheduler.d.ts",
+  "sourceRoot": "",
+  "sources": [
+    "../src/analytics-scheduler.ts"
+  ],
+  "names": [],
+  "mappings": "AAIA,eAAO,MAAM,yBAAyB,KAkDlC,CAAC;AA0EL,eAAO,MAAM,oBAAoB,KAiDhC,CAAC"
+}

@@ -1,1 +1,10 @@
-{"version":3,"file":"bulk-operations.d.ts","sourceRoot":"","sources":["../../src/routes/bulk-operations.ts"],"names":[],"mappings":"AAKA,QAAA,MAAM,MAAM,4CAAW,CAAC;AAwgBxB,eAAe,MAAM,CAAC"}
+{
+  "version": 3,
+  "file": "bulk-operations.d.ts",
+  "sourceRoot": "",
+  "sources": [
+    "../../src/routes/bulk-operations.ts"
+  ],
+  "names": [],
+  "mappings": "AAKA,QAAA,MAAM,MAAM,KAAW,CAAC;AAwgBxB,eAAe,MAAM,CAAC"
+}

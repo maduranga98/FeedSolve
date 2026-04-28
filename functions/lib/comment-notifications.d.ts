@@ -1,6 +1,5 @@
-import * as functions from "firebase-functions";
-export declare const onCommentCreated: functions.CloudFunction<functions.firestore.QueryDocumentSnapshot>;
-export declare const onCommentUpdated: functions.CloudFunction<functions.Change<functions.firestore.QueryDocumentSnapshot>>;
-export declare const onCommentDeleted: functions.CloudFunction<functions.firestore.QueryDocumentSnapshot>;
-export declare const clearOldNotifications: functions.CloudFunction<unknown>;
+export declare const onCommentCreated: any;
+export declare const onCommentUpdated: any;
+export declare const onCommentDeleted: any;
+export declare const clearOldNotifications: any;
 //# sourceMappingURL=comment-notifications.d.ts.map
