@@ -38,6 +38,7 @@ export interface Subscription {
   canceledAt?: Timestamp;
   upgradedAt?: Timestamp;
   downgradedAt?: Timestamp;
+  trialEndsAt?: Timestamp;
 }
 
 export interface StorageUsage {

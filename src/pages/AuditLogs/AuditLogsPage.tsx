@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useHasFeature } from '../../hooks/useHasFeature';
 import { getAuditLogs } from '../../lib/firestore';
 import type { AuditLog } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
@@ -12,6 +14,8 @@ import {
   Layers,
   Clock,
   Search,
+  Lock,
+  Zap,
 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 
@@ -92,6 +96,8 @@ function exportJSON(logs: AuditLog[]) {
 
 export function AuditLogsPage() {
   const { user } = useAuth();
+  const { getCurrentTier } = useHasFeature();
+  const navigate = useNavigate();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -118,6 +124,31 @@ export function AuditLogsPage() {
   useEffect(() => {
     loadLogs();
   }, [loadLogs]);
+
+  if (getCurrentTier() !== 'business') {
+    return (
+      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
+          <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
+            <Lock size={28} className="text-[#2E86AB]" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">Audit Logs</h2>
+            <p className="text-[#6B7B8D] text-sm leading-relaxed">
+              Audit logs are available on the <strong>Pro</strong> plan. Upgrade to track every action taken in your workspace.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/pricing')}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
+          >
+            <Zap size={16} />
+            Upgrade to Pro
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const filtered = logs.filter((log) => {
     const matchesType = filterType === 'all' || log.resourceType === filterType;

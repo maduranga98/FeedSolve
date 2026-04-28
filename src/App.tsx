@@ -11,6 +11,7 @@ import { useTemplateInit } from './hooks/useTemplateInit';
 import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
+import { TrialBanner } from './components/Shared/TrialBanner';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { OfflineIndicator } from './components/Shared/OfflineIndicator';
 
@@ -43,12 +44,6 @@ const BillingPage = lazy(() => import('./pages/Billing/BillingPage').then(m => (
 
 // Templates Pages
 const TemplatesPage = lazy(() => import('./pages/Templates/TemplatesPage').then(m => ({ default: m.TemplatesPage })));
-
-// Integrations Pages
-const IntegrationsPage = lazy(() => import('./pages/Integrations/IntegrationsPage').then(m => ({ default: m.IntegrationsPage })));
-
-// Developer Pages
-const DeveloperDashboard = lazy(() => import('./pages/Developer/DeveloperDashboard'));
 
 // Branding Pages
 const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m => ({ default: m.BrandingPage })));
@@ -101,6 +96,7 @@ function AppContent() {
   return (
     <ErrorBoundary>
       <Toaster position="top-right" richColors closeButton />
+      <TrialBanner />
       <OfflineIndicator />
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
@@ -187,15 +183,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/integrations"
-          element={
-            <ProtectedRoute>
-              <Navbar />
-              <IntegrationsPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/integrations" element={<Navigate to="/dashboard" replace />} />
         <Route
           path="/branding"
           element={
@@ -205,15 +193,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/developer"
-          element={
-            <ProtectedRoute>
-              <Navbar />
-              <DeveloperDashboard />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/developer" element={<Navigate to="/dashboard" replace />} />
         <Route
           path="/audit-logs"
           element={

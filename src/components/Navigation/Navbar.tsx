@@ -5,7 +5,6 @@ import {
   Users,
   BarChart3,
   CreditCard,
-  Zap,
   LayoutDashboard,
   LayoutTemplate,
   Inbox,
@@ -56,7 +55,6 @@ export function Navbar() {
     { path: "/team", label: t("team"), icon: <Users size={15} /> },
     { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} /> },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
-    { path: "/integrations", label: t("integrations"), icon: <Zap size={15} /> },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} /> },
   ];

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useHasFeature } from "../../hooks/useHasFeature";
 import {
   getCompany,
   updateCompanyBranding,
@@ -13,11 +15,13 @@ import {
 } from "../../lib/color-utils";
 import type { Company, CompanyBranding } from "../../types";
 import { Button, Input, LoadingSpinner } from "../../components/Shared";
-import { Upload, Trash2, Check, Palette, Building2, AlertCircle } from "lucide-react";
+import { Upload, Trash2, Check, Palette, Building2, AlertCircle, Lock, Zap } from "lucide-react";
 
 export function BrandingPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { checkFeature } = useHasFeature();
+  const navigate = useNavigate();
 
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -144,6 +148,31 @@ export function BrandingPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!checkFeature('canRemoveBranding')) {
+    return (
+      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
+          <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
+            <Lock size={28} className="text-[#2E86AB]" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">Custom Branding</h2>
+            <p className="text-[#6B7B8D] text-sm leading-relaxed">
+              Custom branding — logo, brand colors, custom domain and email sender — is available on the <strong>Growth</strong> plan and above.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/pricing')}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
+          >
+            <Zap size={16} />
+            Upgrade to Growth
+          </button>
+        </div>
       </div>
     );
   }

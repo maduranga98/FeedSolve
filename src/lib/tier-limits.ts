@@ -15,7 +15,7 @@ export const tierLimits: Record<string, TierLimits> = {
     boards: 3,
     submissions: 1500,
     teamMembers: 3,
-    canReply: false,
+    canReply: true,
     canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
