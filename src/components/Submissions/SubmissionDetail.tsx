@@ -107,7 +107,7 @@ export default function SubmissionDetail({
   };
 
   const handleCopyTrackingLink = () => {
-    const url = `${window.location.origin}/track/${submission.trackingCode}`;
+    const url = `${window.location.origin}/track/${submission.trackingCode.replace(/^#/, '')}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -162,7 +162,7 @@ export default function SubmissionDetail({
             </button>
             {/* Track in new tab */}
             <a
-              href={`/track/${submission.trackingCode}`}
+              href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
@@ -354,7 +354,7 @@ export default function SubmissionDetail({
             </label>
             <div className="flex items-center gap-2">
               <code className="flex-1 text-xs text-[#2E86AB] bg-white border border-[#E8ECF0] px-3 py-2 rounded-lg truncate">
-                {window.location.origin}/track/{submission.trackingCode}
+                {window.location.origin}/track/{submission.trackingCode.replace(/^#/, '')}
               </code>
               <button
                 onClick={handleCopyTrackingLink}
@@ -383,7 +383,7 @@ export default function SubmissionDetail({
               Export CSV
             </button>
             <a
-              href={`/track/${submission.trackingCode}`}
+              href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#F4F7FA] hover:bg-[#E8ECF0] rounded-xl transition-colors"
