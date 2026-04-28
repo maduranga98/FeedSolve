@@ -1,1 +1,1 @@
-{"version":3,"file":"attachments-cleanup.d.ts","sourceRoot":"","sources":["../src/attachments-cleanup.ts"],"names":[],"mappings":"AAWA,eAAO,MAAM,0BAA0B,KAiDnC,CAAC;AAGL,eAAO,MAAM,sBAAsB,KAsE/B,CAAC;AAGL,eAAO,MAAM,qBAAqB,KAqD9B,CAAC;AA4BL,eAAO,MAAM,mBAAmB,KAoB5B,CAAC"}
+{"version":3,"file":"attachments-cleanup.d.ts","sourceRoot":"","sources":["../src/attachments-cleanup.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,SAAS,MAAM,oBAAoB,CAAC;AAWhD,eAAO,MAAM,0BAA0B,kCAiDnC,CAAC;AAGL,eAAO,MAAM,sBAAsB,sFAsE/B,CAAC;AAGL,eAAO,MAAM,qBAAqB,kCAqD9B,CAAC;AA4BL,eAAO,MAAM,mBAAmB,kCAoB5B,CAAC"}
