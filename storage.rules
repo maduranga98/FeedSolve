@@ -1,0 +1,42 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function userData() {
+      return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Member of the company (any role)
+    function isCompanyMember(companyId) {
+      return isAuthenticated() && userData().companyId == companyId;
+    }
+
+    // Owner or admin of the company
+    function isCompanyAdmin(companyId) {
+      let role = userData().role;
+      return isCompanyMember(companyId) && (role == 'owner' || role == 'admin');
+    }
+
+    // ── Company logos ────────────────────────────────────────────────────────
+    // Path: logos/{companyId}/logo.{ext}
+    // Uploads and deletes are performed client-side by admins/owners.
+    // Public read allows the logo URL to resolve on the public submit form.
+    match /logos/{companyId}/{filename} {
+      allow read: if true;
+      allow write: if isCompanyAdmin(companyId);
+    }
+
+    // ── Submission attachments ───────────────────────────────────────────────
+    // Path: attachments/{companyId}/{submissionId}/{attachmentId}
+    // All uploads and deletes are handled by Cloud Functions (Admin SDK),
+    // which bypass these rules. Client-side only calls getDownloadURL.
+    match /attachments/{companyId}/{submissionId}/{attachmentId} {
+      allow read: if isCompanyMember(companyId);
+      allow write: if false;
+    }
+  }
+}
