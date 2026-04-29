@@ -365,7 +365,13 @@ export async function inviteTeamMember(
   const inviteCode = generateTrackingCode();
   const invitationsRef = collection(db, 'teamInvitations');
 
-  const newInvitation: Omit<TeamInvitation, 'id'> = {
+  const newInvitation: Omit<TeamInvitation, 'id'> & {
+    emailDelivery?: {
+      from: string;
+      smtpHost: string;
+      smtpPort: number;
+    };
+  } = {
     companyId,
     email,
     role,
@@ -377,6 +383,11 @@ export async function inviteTeamMember(
       Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
       0
     ),
+    emailDelivery: {
+      from: 'hello@feedsolve.com',
+      smtpHost: 'mail.spacemail.com',
+      smtpPort: 465,
+    },
   };
 
   const docRef = await addDoc(invitationsRef, newInvitation);
