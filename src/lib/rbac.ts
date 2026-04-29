@@ -31,7 +31,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'submissions:delete',
     'submissions:assign',
     'submissions:reply',
-    'team:read',
     'team:invite',
     'team:manage',
     'team:remove',
@@ -45,7 +44,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'company:delete',
     'billing:read',
     'billing:manage',
-    'audit:read',
   ]),
   admin: new Set([
     'submissions:read',
@@ -64,6 +62,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'integrations:write',
     'analytics:read',
     'company:read',
+    'company:update',
+    'billing:read',
     'audit:read',
   ]),
   manager: new Set([
@@ -71,9 +71,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'submissions:update',
     'submissions:assign',
     'submissions:reply',
-    'team:read',
     'analytics:read',
-    'audit:read',
   ]),
   viewer: new Set([
     'submissions:read',
