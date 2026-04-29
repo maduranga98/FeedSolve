@@ -95,7 +95,10 @@ function PermissionRoute({ children, permission }: { children: ReactNode; permis
     return <Navigate to="/login" replace />;
   }
 
-  if (!hasPermission(user.role, permission)) {
+  const normalizedRole = user.role.toLowerCase();
+  const isPrivilegedRole = normalizedRole === 'owner' || normalizedRole === 'admin';
+
+  if (!isPrivilegedRole && !hasPermission(user.role, permission)) {
     return <Navigate to="/submissions" replace />;
   }
 

@@ -62,7 +62,9 @@ export function Navbar() {
 
   const navItems = allNavItems.filter((item) => {
     if (!user) return false;
-    if (!item.permission) return user.role === "owner" || user.role === "admin";
+    const normalizedRole = user.role.toLowerCase();
+    if (normalizedRole === "owner" || normalizedRole === "admin") return true;
+    if (!item.permission) return false;
     return hasPermission(user.role, item.permission);
   });
 
