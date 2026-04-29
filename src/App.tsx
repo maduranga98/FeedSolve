@@ -14,6 +14,7 @@ import { LoadingSpinner } from './components/Shared';
 import { TrialBanner } from './components/Shared/TrialBanner';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { OfflineIndicator } from './components/Shared/OfflineIndicator';
+import { hasPermission, type Permission } from './lib/rbac';
 
 // Auth Pages
 const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
@@ -74,6 +75,28 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}
+
+function PermissionRoute({ children, permission }: { children: ReactNode; permission: Permission }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!hasPermission(user.role, permission)) {
+    return <Navigate to="/submissions" replace />;
   }
 
   return children;
@@ -144,9 +167,9 @@ function AppContent() {
         <Route
           path="/templates"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="submissions:create">
               <TemplatesPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
 
@@ -163,84 +186,84 @@ function AppContent() {
         <Route
           path="/analytics"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="analytics:read">
               <Navbar />
               <AnalyticsDashboard />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/team"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="team:read">
               <Navbar />
               <TeamManagement />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/billing"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="billing:read">
               <Navbar />
               <BillingPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route path="/integrations" element={<Navigate to="/dashboard" replace />} />
         <Route
           path="/branding"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="company:update">
               <Navbar />
               <BrandingPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route path="/developer" element={<Navigate to="/dashboard" replace />} />
         <Route
           path="/audit-logs"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="audit:read">
               <Navbar />
               <AuditLogsPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/board/create"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="submissions:create">
               <Navbar />
               <CreateBoard />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/board/:boardId"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="submissions:create">
               <Navbar />
               <BoardDetails />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/submission/:submissionId"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="submissions:read">
               <Navbar />
               <SubmissionDetail />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
         <Route
           path="/submissions"
           element={
-            <ProtectedRoute>
+            <PermissionRoute permission="submissions:read">
               <Navbar />
               <SubmissionsPage />
-            </ProtectedRoute>
+            </PermissionRoute>
           }
         />
 
