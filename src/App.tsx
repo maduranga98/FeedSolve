@@ -18,6 +18,7 @@ import { OfflineIndicator } from './components/Shared/OfflineIndicator';
 // Auth Pages
 const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
 const Login = lazy(() => import('./pages/Auth/Login').then(m => ({ default: m.Login })));
+const AcceptInvite = lazy(() => import('./pages/Auth/AcceptInvite').then(m => ({ default: m.AcceptInvite })));
 
 // Dashboard Pages
 const DashboardHome = lazy(() => import('./pages/Dashboard/DashboardHome').then(m => ({ default: m.DashboardHome })));
@@ -105,6 +106,7 @@ function AppContent() {
         {/* Auth Routes */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/accept-invite" element={<AcceptInvite />} />
 
         {/* Public Routes */}
         <Route
