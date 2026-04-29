@@ -26,13 +26,15 @@ export function PricingPage() {
 
   const features = {
     free: [
-      '2 feedback boards',
+      '7-day free trial with full access',
+      '2 feedback boards (after trial)',
       'Unlimited submissions during trial',
       '1 team member',
       'QR code generation & shareable links',
       'Anonymous submission option',
       'Multi-language submission forms',
       'Zero login for submitters',
+      'Free forever — no credit card required',
     ],
     starter: [
       '3 feedback boards',

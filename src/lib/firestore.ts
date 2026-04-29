@@ -221,19 +221,25 @@ export async function createSubmission(
     const trackingCode = generateTrackingCode();
     const submissionsRef = collection(db, 'submissions');
 
-    const newSubmission: Omit<Submission, 'id'> = {
+    const identityFields = input.isAnonymous
+      ? {}
+      : {
+          ...(input.email?.trim() ? { submitterEmail: input.email.trim() } : {}),
+          ...(input.submitterName?.trim() ? { submitterName: input.submitterName.trim() } : {}),
+          ...(input.submitterMobile?.trim() ? { submitterMobile: input.submitterMobile.trim() } : {}),
+        };
+
+    const newSubmission = {
       boardId,
       companyId,
       trackingCode,
       category: input.category,
       subject: input.subject,
       description: input.description,
-      submitterEmail: input.isAnonymous ? undefined : (input.email?.trim() || undefined),
-      submitterName: input.isAnonymous ? undefined : (input.submitterName?.trim() || undefined),
-      submitterMobile: input.isAnonymous ? undefined : (input.submitterMobile?.trim() || undefined),
+      ...identityFields,
       isAnonymous: input.isAnonymous,
-      status: 'received',
-      priority: 'medium',
+      status: 'received' as const,
+      priority: 'medium' as const,
       internalNotes: [],
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),

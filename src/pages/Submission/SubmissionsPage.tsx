@@ -110,6 +110,9 @@ export function SubmissionsPage() {
       setHasMore(pageResult.hasMore);
       lastDocRef.current = pageResult.lastDoc;
       setUsers(usersData);
+      setSelectedSubmission((prev) =>
+        prev ? (pageResult.submissions.find((s) => s.id === prev.id) ?? prev) : null
+      );
     } catch (error) {
       console.error('Failed to load submissions workspace:', error);
     } finally {

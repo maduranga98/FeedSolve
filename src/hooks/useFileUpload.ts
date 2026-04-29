@@ -107,22 +107,22 @@ export function useFileUpload(): UseFileUploadReturn {
           throw new Error('Total file size exceeds submission limit');
         }
 
-        // Upload files sequentially
-        const uploadPromises = files.map((file) => {
-          const fileId = `${Date.now()}-${Math.random()}`;
-          return uploadSingleFile(submissionId, file, fileId);
-        });
-
-        const results = await Promise.all(uploadPromises);
+        // Upload files sequentially to avoid overloading the endpoint
+        const results: boolean[] = [];
+        for (let i = 0; i < files.length; i++) {
+          const fileId = `${Date.now()}-${i}-${Math.random()}`;
+          const ok = await uploadSingleFile(submissionId, files[i], fileId);
+          results.push(ok);
+        }
 
         if (!results.every((r) => r)) {
-          console.warn('Some files failed to upload');
+          throw new Error('Some files failed to upload. Please try re-uploading the failed files.');
         }
       } catch (error: any) {
-        console.error('Upload batch error:', error);
-      } finally {
         setUploading(false);
+        throw error;
       }
+      setUploading(false);
     },
     [uploading, uploadSingleFile]
   );

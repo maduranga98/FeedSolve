@@ -15,10 +15,9 @@ export const priceIds = {
     monthly: STRIPE_PRODUCTS.GROWTH.prices.monthly,
     annual: STRIPE_PRODUCTS.GROWTH.prices.annual,
   },
-  // "business" in the app maps to the "PRO" product in Stripe
   business: {
-    monthly: STRIPE_PRODUCTS.PRO.prices.monthly,
-    annual: STRIPE_PRODUCTS.PRO.prices.annual,
+    monthly: STRIPE_PRODUCTS.BUSINESS.prices.monthly,
+    annual: STRIPE_PRODUCTS.BUSINESS.prices.annual,
   },
 };
 

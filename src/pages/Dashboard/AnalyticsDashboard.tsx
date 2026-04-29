@@ -377,7 +377,7 @@ export function AnalyticsDashboard() {
         {activeTab === 'advanced' && (
           <div className="space-y-8">
             {!hasAdvanced ? (
-              <UpgradeGate requiredTier="business" label="Advanced Analytics requires the Pro plan" />
+              <UpgradeGate requiredTier="business" label="Advanced Analytics requires the Business plan" />
             ) : (
               <>
                 {/* Row 1: SLA + Funnel */}
