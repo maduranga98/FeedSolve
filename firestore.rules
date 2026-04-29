@@ -227,10 +227,18 @@ service cloud.firestore {
 
     // Team invitations - flat collection used by client code
     match /teamInvitations/{inviteId} {
-      allow read: if isAuthenticated() && canManageTeam(resource.data.companyId);
+      // Unauthenticated get is intentional: the Firestore doc ID acts as the
+      // secret token embedded in the invite link. Without the exact ID the
+      // document cannot be discovered (list is still auth-gated).
+      allow get: if true;
+      allow list: if isAuthenticated() && canManageTeam(resource.data.companyId);
       allow create: if isAuthenticated() && canManageTeam(request.resource.data.companyId);
       allow delete: if isAuthenticated() && canManageTeam(resource.data.companyId);
-      allow update: if false;
+      // Invitee may mark only their own invitation as accepted (email must match)
+      allow update: if isAuthenticated() &&
+        request.auth.token.email == resource.data.email &&
+        request.resource.data.status == 'accepted' &&
+        only(['status']);
     }
 
     // Team invitations - Team managers and above (legacy nested path)
