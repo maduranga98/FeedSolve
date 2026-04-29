@@ -43,10 +43,10 @@ const BOARD_NAME_MAX = 100;
 const CATEGORY_NAME_MAX = 100;
 // Board limits per subscription tier
 const TIER_BOARD_LIMITS = {
-    free: 3,
-    starter: 10,
-    growth: 25,
-    business: Infinity,
+    free: 2,
+    starter: 3,
+    growth: 10,
+    business: 20,
 };
 function log(level, message, data) {
     console[level](JSON.stringify({ severity: level.toUpperCase(), message, ...data }));
@@ -148,7 +148,7 @@ router.post('/api/boards', (0, auth_1.hasPermission)(['boards:create']), async (
                 ? categories.map((c) => c.trim()).filter(Boolean)
                 : [],
             isAnonymousAllowed: isAnonymousAllowed !== false,
-            qrCodeUrl: `https://feedsolve.com/b/${slug}`,
+            qrCodeUrl: `https://app.feedsolve.com/b/${slug}`,
             submissionCount: 0,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
