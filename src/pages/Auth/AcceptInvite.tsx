@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Lock, User } from 'lucide-react';
 import { auth } from '../../lib/firebase';
-import { createUser, getInvitationByCode, acceptInvitation } from '../../lib/firestore';
+import { createUser, getInvitationById, getInvitationByCode, acceptInvitation } from '../../lib/firestore';
 import { Button, Input, LoadingSpinner } from '../../components/Shared';
 import { validatePassword, sanitizeInput } from '../../lib/security';
 import { getFirebaseErrorMessage } from '../../lib/firebase-errors';
@@ -12,10 +12,8 @@ import type { TeamInvitation } from '../../types';
 export function AcceptInvite() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // Some email clients decode %23 → # causing the code to land in the URL hash
-  // instead of the query param. Fall back to the hash when the param is missing.
-  const rawCode = searchParams.get('code') ?? '';
-  const code = rawCode || window.location.hash.replace(/^#/, '');
+  const invitationId = searchParams.get('id') ?? '';
+  const legacyCode = searchParams.get('code') ?? '';
 
   const [invitation, setInvitation] = useState<TeamInvitation | null>(null);
   const [loadingInvite, setLoadingInvite] = useState(true);
@@ -32,12 +30,15 @@ export function AcceptInvite() {
   }, []);
 
   useEffect(() => {
-    if (!code) {
+    if (!invitationId && !legacyCode) {
       setInviteError('Invalid or missing invitation link.');
       setLoadingInvite(false);
       return;
     }
-    getInvitationByCode(code)
+    const lookup = invitationId
+      ? getInvitationById(invitationId)
+      : getInvitationByCode(legacyCode);
+    lookup
       .then((inv) => {
         if (!inv) {
           setInviteError('This invitation link is invalid or has already been used.');
@@ -49,7 +50,7 @@ export function AcceptInvite() {
       })
       .catch(() => setInviteError('Failed to load invitation. Please try again.'))
       .finally(() => setLoadingInvite(false));
-  }, [code]);
+  }, [invitationId, legacyCode]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
