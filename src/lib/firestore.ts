@@ -362,7 +362,7 @@ export async function inviteTeamMember(
   role: UserRole,
   invitedBy: string
 ): Promise<TeamInvitation> {
-  const inviteCode = generateTrackingCode();
+  const inviteCode = generateTrackingCode().replace(/^#/, '');
   const invitationsRef = collection(db, 'teamInvitations');
 
   const newInvitation: Omit<TeamInvitation, 'id'> & {
@@ -400,10 +400,20 @@ export async function getInvitationByCode(
   const invitationsRef = collection(db, 'teamInvitations');
   const q = query(invitationsRef, where('inviteCode', '==', code));
   const snapshot = await getDocs(q);
-  if (snapshot.empty) return null;
-
-  const doc = snapshot.docs[0];
-  return { ...doc.data(), id: doc.id } as TeamInvitation;
+  if (!snapshot.empty) {
+    const doc = snapshot.docs[0];
+    return { ...doc.data(), id: doc.id } as TeamInvitation;
+  }
+  // Backward compat: old records were stored with a leading '#'
+  if (!code.startsWith('#')) {
+    const q2 = query(invitationsRef, where('inviteCode', '==', `#${code}`));
+    const snapshot2 = await getDocs(q2);
+    if (!snapshot2.empty) {
+      const doc = snapshot2.docs[0];
+      return { ...doc.data(), id: doc.id } as TeamInvitation;
+    }
+  }
+  return null;
 }
 
 export async function acceptInvitation(invitationId: string): Promise<void> {
