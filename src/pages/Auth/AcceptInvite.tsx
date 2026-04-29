@@ -12,7 +12,10 @@ import type { TeamInvitation } from '../../types';
 export function AcceptInvite() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const code = searchParams.get('code') ?? '';
+  // Some email clients decode %23 → # causing the code to land in the URL hash
+  // instead of the query param. Fall back to the hash when the param is missing.
+  const rawCode = searchParams.get('code') ?? '';
+  const code = rawCode || window.location.hash.replace(/^#/, '');
 
   const [invitation, setInvitation] = useState<TeamInvitation | null>(null);
   const [loadingInvite, setLoadingInvite] = useState(true);
