@@ -628,23 +628,24 @@ export function SubmitFeedback() {
               </div>
 
               {/* Anonymous */}
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={formData.isAnonymous}
-                  onChange={e => setFormData({ ...formData, isAnonymous: e.target.checked })}
-                  disabled={!board.isAnonymousAllowed}
-                  className="w-4.5 h-4.5 rounded"
-                />
-                <span className="text-sm font-medium" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
-                  {t("forms:feedback.anonymous")}
-                </span>
-              </label>
+              {board.isAnonymousAllowed && (
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={formData.isAnonymous}
+                    onChange={e => setFormData({ ...formData, isAnonymous: e.target.checked })}
+                    className="w-4.5 h-4.5 rounded"
+                  />
+                  <span className="text-sm font-medium" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+                    {t("forms:feedback.anonymous")}
+                  </span>
+                </label>
+              )}
 
               {/* Email */}
               {!formData.isAnonymous && (
                 <Input
-                  label={t("forms:feedback.email")}
+                  label={board.isAnonymousAllowed ? t("forms:feedback.email") : "Email"}
                   type="email"
                   placeholder="your@email.com"
                   value={formData.email || ""}
@@ -658,7 +659,7 @@ export function SubmitFeedback() {
               {!formData.isAnonymous && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label={t("forms:feedback.name") || "Name (optional)"}
+                    label={board.isAnonymousAllowed ? (t("forms:feedback.name") || "Name (optional)") : "Name"}
                     placeholder={t("forms:feedback.name_placeholder") || "Your name"}
                     value={formData.submitterName || ""}
                     onChange={e => setFormData({ ...formData, submitterName: e.target.value })}
