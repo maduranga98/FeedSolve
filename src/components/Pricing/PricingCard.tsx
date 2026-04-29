@@ -53,10 +53,10 @@ export function PricingCard({
             <span className="text-4xl font-bold">Free</span>
             <div className="mt-2">
               <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
-                7-day trial included
+                7-day trial
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Free forever after trial</p>
+            <p className="text-xs text-gray-500 mt-1">Select a plan after your trial ends</p>
           </div>
         ) : (
           <div className="mb-6">
