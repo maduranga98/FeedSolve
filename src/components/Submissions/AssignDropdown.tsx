@@ -18,6 +18,11 @@ export default function AssignDropdown({
   const { user } = useAuth();
   const [members, setMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [localAssignedId, setLocalAssignedId] = useState(assignedToId);
+
+  useEffect(() => {
+    setLocalAssignedId(assignedToId);
+  }, [assignedToId]);
 
   useEffect(() => {
     const loadMembers = async () => {
@@ -34,6 +39,7 @@ export default function AssignDropdown({
   }, [user]);
 
   const handleAssign = async (userId: string) => {
+    setLocalAssignedId(userId);
     setLoading(true);
     try {
       await assignSubmission(submissionId, userId);
@@ -51,6 +57,7 @@ export default function AssignDropdown({
       }
       onAssigned?.();
     } catch (error) {
+      setLocalAssignedId(assignedToId);
       console.error('Failed to assign submission:', error);
       alert('Failed to assign submission');
     } finally {
@@ -59,6 +66,7 @@ export default function AssignDropdown({
   };
 
   const handleUnassign = async () => {
+    setLocalAssignedId(undefined);
     setLoading(true);
     try {
       await unassignSubmission(submissionId);
@@ -75,6 +83,7 @@ export default function AssignDropdown({
       }
       onAssigned?.();
     } catch (error) {
+      setLocalAssignedId(assignedToId);
       console.error('Failed to unassign submission:', error);
       alert('Failed to unassign submission');
     } finally {
@@ -82,7 +91,7 @@ export default function AssignDropdown({
     }
   };
 
-  const assignedMember = members.find((m) => m.id === assignedToId);
+  const assignedMember = members.find((m) => m.id === localAssignedId);
 
   const handleChange = async (value: string) => {
     if (!value) {
@@ -98,7 +107,7 @@ export default function AssignDropdown({
         <div className="relative flex-1">
           <UserPlus size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9AABBF]" />
           <select
-            value={assignedToId || ''}
+            value={localAssignedId || ''}
             onChange={(e) => handleChange(e.target.value)}
             disabled={loading || members.length === 0}
             className="w-full pl-8 pr-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#1E3A5F] bg-white focus:outline-none focus:ring-2 focus:ring-[#2E86AB] disabled:opacity-50"
@@ -113,7 +122,7 @@ export default function AssignDropdown({
         </div>
         <button
           type="button"
-          disabled={!assignedToId || loading}
+          disabled={!localAssignedId || loading}
           onClick={handleUnassign}
           className="px-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#6B7B8D] hover:bg-[#F4F7FA] disabled:opacity-50 inline-flex items-center gap-1"
         >

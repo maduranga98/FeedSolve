@@ -51,6 +51,12 @@ export function PricingCard({
         {tier === 'free' ? (
           <div className="mb-6">
             <span className="text-4xl font-bold">Free</span>
+            <div className="mt-2">
+              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+                7-day trial included
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Free forever after trial</p>
           </div>
         ) : (
           <div className="mb-6">
