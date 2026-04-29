@@ -40,7 +40,8 @@ export const onTeamInvitationCreated = functions.firestore
       ? (inviterDoc.data()?.name as string | undefined) || 'Your teammate'
       : 'Your teammate';
 
-    const appUrl = process.env.APP_URL || 'https://app.feedsolve.com';
+    const configuredUrl = process.env.APP_URL || '';
+    const appUrl = /localhost/i.test(configuredUrl) ? 'https://app.feedsolve.com' : (configuredUrl || 'https://app.feedsolve.com');
     const inviteLink = `${appUrl.replace(/\/$/, '')}/accept-invite?code=${invitation.inviteCode}`;
 
     try {
