@@ -52,7 +52,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'submissions:delete',
     'submissions:assign',
     'submissions:reply',
-    'team:read',
     'team:invite',
     'team:manage',
     'team:remove',
