@@ -42,7 +42,7 @@ export const onTeamInvitationCreated = functions.firestore
 
     const configuredUrl = process.env.APP_URL || '';
     const appUrl = /localhost/i.test(configuredUrl) ? 'https://app.feedsolve.com' : (configuredUrl || 'https://app.feedsolve.com');
-    const inviteLink = `${appUrl.replace(/\/$/, '')}/accept-invite?code=${invitation.inviteCode}`;
+    const inviteLink = `${appUrl.replace(/\/$/, '')}/accept-invite?code=${encodeURIComponent(invitation.inviteCode)}`;
 
     try {
       await transporter.sendMail({
