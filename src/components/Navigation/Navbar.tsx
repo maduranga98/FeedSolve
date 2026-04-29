@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
+import { hasPermission } from "../../lib/rbac";
 import { Button } from "../Shared";
 import { LanguageSwitcher } from "../Language/LanguageSwitcher";
 
@@ -40,24 +41,31 @@ export function Navbar() {
       ? location.pathname === path
       : location.pathname.startsWith(path);
 
-  const navItems: NavItem[] = [
+  const allNavItems: Array<NavItem & { permission?: Parameters<typeof hasPermission>[1] }> = [
     {
       path: "/dashboard",
       label: t("dashboard"),
       icon: <LayoutDashboard size={15} />,
     },
-    { path: "/submissions", label: t("submissions"), icon: <Inbox size={15} /> },
+    { path: "/submissions", label: t("submissions"), icon: <Inbox size={15} />, permission: "submissions:read" },
     {
       path: "/templates",
       label: t("boards:templates.title"),
       icon: <LayoutTemplate size={15} />,
     },
-    { path: "/team", label: t("team"), icon: <Users size={15} /> },
-    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} /> },
-    { path: "/billing", label: t("billing"), icon: <CreditCard size={15} /> },
+    { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
+    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
+    { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
-    { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} /> },
+    { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
   ];
+
+  const navItems = allNavItems.filter((item) => {
+    if (!user) return false;
+    if (user.role === "owner" || user.role === "admin") return true;
+    if (!item.permission) return false;
+    return hasPermission(user.role, item.permission);
+  });
 
   const initials = user?.name
     ? user.name
