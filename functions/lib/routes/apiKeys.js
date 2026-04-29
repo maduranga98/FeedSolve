@@ -39,12 +39,22 @@ const auth_1 = require("../middleware/auth");
 const apiKeyGenerator_1 = require("../utils/apiKeyGenerator");
 const router = (0, express_1.Router)();
 const db = admin.firestore();
+const API_TIER_REQUIRED = 'business';
 router.post('/api/auth/api-keys', (0, auth_1.hasPermission)(['keys:create']), async (req, res) => {
     try {
         const { name, permissions, expiresAt, ipWhitelist } = req.body;
         const companyId = req.companyId;
         if (!companyId) {
             res.status(401).json({ error: 'Company not found' });
+            return;
+        }
+        const companyDoc = await db.collection('companies').doc(companyId).get();
+        const tier = companyDoc.data()?.subscription?.tier ?? 'free';
+        if (tier !== API_TIER_REQUIRED) {
+            res.status(403).json({
+                error: 'API key access requires the Pro plan. Please upgrade to create API keys.',
+                code: 'TIER_INSUFFICIENT',
+            });
             return;
         }
         if (!name || !Array.isArray(permissions)) {
