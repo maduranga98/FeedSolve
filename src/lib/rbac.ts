@@ -61,6 +61,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'integrations:write',
     'analytics:read',
     'company:read',
+    'company:update',
+    'billing:read',
+    'audit:read',
   ]),
   manager: new Set([
     'submissions:read',
