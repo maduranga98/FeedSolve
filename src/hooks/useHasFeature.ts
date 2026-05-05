@@ -4,7 +4,7 @@ import { hasFeature, getLimit } from '../lib/tier-limits';
 export function useHasFeature() {
   const { subscription } = useSubscription();
 
-  const checkFeature = (feature: 'canReply' | 'canViewAnalytics' | 'canRemoveBranding' | 'canAccessAPI'): boolean => {
+  const checkFeature = (feature: 'canReply' | 'canViewAnalytics' | 'canRemoveBranding' | 'canAccessAPI' | 'canUseTemplates'): boolean => {
     if (!subscription) return false;
     return hasFeature(subscription.tier, feature);
   };

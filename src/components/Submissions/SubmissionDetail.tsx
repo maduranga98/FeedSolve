@@ -401,6 +401,7 @@ export default function SubmissionDetail({
               publicReplyAt={submission.publicReplyAt}
               publicReplyBy={submission.publicReplyBy}
               onReplyAdded={onUpdated}
+              submission={submission}
             />
           </div>
 

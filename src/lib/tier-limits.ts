@@ -9,6 +9,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
+    canUseTemplates: false,
     analyticsLevel: 'basic',
   },
   starter: {
@@ -19,6 +20,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
+    canUseTemplates: false,
     analyticsLevel: 'basic',
   },
   growth: {
@@ -29,6 +31,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: true,
     canAccessAPI: false,
+    canUseTemplates: true,
     analyticsLevel: 'full',
   },
   business: {
@@ -39,6 +42,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: true,
     canAccessAPI: true,
+    canUseTemplates: true,
     analyticsLevel: 'advanced',
   },
 };

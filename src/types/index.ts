@@ -290,7 +290,19 @@ export interface TierLimits {
   canViewAnalytics: boolean;
   canRemoveBranding: boolean;
   canAccessAPI: boolean;
+  canUseTemplates: boolean;
   analyticsLevel: 'none' | 'basic' | 'full' | 'advanced';
+}
+
+export interface ReplyTemplate {
+  id: string;
+  title: string;
+  body: string;
+  category: string | null;
+  usageCount: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  createdBy: string;
 }
 
 export interface AuthContextType {

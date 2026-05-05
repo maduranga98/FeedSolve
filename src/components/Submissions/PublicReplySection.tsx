@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
-import { addPublicReply } from '../../lib/firestore';
+import { addPublicReply, getBoard } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 import ReplyForm from './ReplyForm';
+import type { Submission } from '../../types';
 
 interface PublicReplySectionProps {
   submissionId: string;
@@ -13,6 +14,7 @@ interface PublicReplySectionProps {
   publicReplyAt?: any;
   publicReplyBy?: string;
   onReplyAdded?: () => void;
+  submission?: Submission;
 }
 
 export default function PublicReplySection({
@@ -21,14 +23,24 @@ export default function PublicReplySection({
   publicReplyAt,
   publicReplyBy,
   onReplyAdded,
+  submission,
 }: PublicReplySectionProps) {
   const { user } = useAuth();
   const { checkFeature } = useHasFeature();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [boardName, setBoardName] = useState('');
 
   const canReply = checkFeature('canReply');
+
+  // Load board name for template variable resolution
+  useEffect(() => {
+    if (!submission?.boardId) return;
+    getBoard(submission.boardId)
+      .then((board) => { if (board) setBoardName(board.name); })
+      .catch(() => {});
+  }, [submission?.boardId]);
 
   if (!canReply) {
     return (
@@ -49,7 +61,6 @@ export default function PublicReplySection({
 
   const handleSubmitReply = async (text: string) => {
     if (!user) return;
-
     setLoading(true);
     try {
       await addPublicReply(submissionId, text, user.name);
@@ -94,12 +105,12 @@ export default function PublicReplySection({
           loading={loading}
           initialValue={publicReply}
           onCancel={() => setIsEditing(false)}
+          submission={submission}
+          boardName={boardName}
         />
       ) : (
         <div className="bg-[#F8FAFB] border border-[#D3D1C7] rounded-lg p-4">
-          <p className="text-[#444441] whitespace-pre-wrap mb-2">
-            {publicReply}
-          </p>
+          <p className="text-[#444441] whitespace-pre-wrap mb-2">{publicReply}</p>
           {publicReplyAt && publicReplyBy && (
             <p className="text-xs text-[#6B7B8D]">
               {publicReplyBy} • {formatDate(publicReplyAt.toDate())}

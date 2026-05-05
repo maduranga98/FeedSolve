@@ -50,6 +50,9 @@ const TemplatesPage = lazy(() => import('./pages/Templates/TemplatesPage').then(
 // Branding Pages
 const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m => ({ default: m.BrandingPage })));
 
+// Settings Pages
+const ReplyTemplatesPage = lazy(() => import('./pages/Settings/ReplyTemplatesPage').then(m => ({ default: m.ReplyTemplatesPage })));
+
 // Audit Logs Pages
 const AuditLogsPage = lazy(() => import('./pages/AuditLogs/AuditLogsPage').then(m => ({ default: m.AuditLogsPage })));
 
@@ -267,6 +270,15 @@ function AppContent() {
               <Navbar />
               <SubmissionsPage />
             </PermissionRoute>
+          }
+        />
+
+        <Route
+          path="/reply-templates"
+          element={
+            <ProtectedRoute>
+              <ReplyTemplatesPage />
+            </ProtectedRoute>
           }
         />
 
