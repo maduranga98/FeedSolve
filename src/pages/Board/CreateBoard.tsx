@@ -19,6 +19,8 @@ export function CreateBoard() {
     description: '',
     categories: ['Bug Report', 'Feature Request', 'Complaint'],
     isAnonymousAllowed: false,
+    showSatisfactionRating: false,
+    satisfactionRequired: false,
   });
   const [newCategory, setNewCategory] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -245,6 +247,47 @@ export function CreateBoard() {
               {t('forms:board.anonymous_allowed')}
             </span>
           </label>
+
+          <div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.showSatisfactionRating}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    showSatisfactionRating: e.target.checked,
+                    satisfactionRequired: e.target.checked ? formData.satisfactionRequired : false,
+                  })
+                }
+                className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+              />
+              <div>
+                <span className="text-[#1E3A5F] font-medium block">Collect satisfaction rating</span>
+                <span className="text-[#6B7B8D] text-xs">Add an emoji mood selector to your submission form</span>
+              </div>
+            </label>
+
+            {formData.showSatisfactionRating && (
+              <label className="flex items-center gap-3 cursor-pointer mt-3 ml-8">
+                <input
+                  type="checkbox"
+                  checked={formData.satisfactionRequired}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      satisfactionRequired: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+                />
+                <div>
+                  <span className="text-[#1E3A5F] font-medium text-sm block">Rating required</span>
+                  <span className="text-[#6B7B8D] text-xs">Submitters must select a rating before submitting</span>
+                </div>
+              </label>
+            )}
+          </div>
 
           <div className="flex gap-4">
             <Button

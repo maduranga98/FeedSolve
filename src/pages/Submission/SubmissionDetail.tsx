@@ -17,6 +17,38 @@ import {
 import { formatDate } from '../../lib/utils';
 import type { Submission, TeamMember } from '../../types';
 
+const SATISFACTION_CONFIG: Record<number, { emoji: string; color: string; bg: string }> = {
+  1: { emoji: "😠", color: "#E74C3C", bg: "#FDEDEC" },
+  2: { emoji: "😕", color: "#E67E22", bg: "#FEF5E7" },
+  3: { emoji: "😐", color: "#6B7B8D", bg: "#EFF3F6" },
+  4: { emoji: "😊", color: "#2E86AB", bg: "#EBF5FB" },
+  5: { emoji: "😄", color: "#27AE60", bg: "#EBF9F1" },
+};
+
+function SatisfactionBadge({ score, label }: { score: number; label?: string }) {
+  const cfg = SATISFACTION_CONFIG[score];
+  if (!cfg) return null;
+  return (
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "4px 12px",
+        borderRadius: 20,
+        backgroundColor: cfg.bg,
+        color: cfg.color,
+        fontWeight: 600,
+        fontSize: "0.875rem",
+        border: `1px solid ${cfg.color}40`,
+      }}
+    >
+      <span style={{ fontSize: "1.1rem" }}>{cfg.emoji}</span>
+      {label || `Score ${score}`}
+    </span>
+  );
+}
+
 export function SubmissionDetail() {
   const { submissionId } = useParams<{ submissionId: string }>();
   const navigate = useNavigate();
@@ -279,6 +311,13 @@ export function SubmissionDetail() {
               <p className="text-color-body-text">
                 {submission.isAnonymous ? 'Anonymous' : submission.submitterEmail}
               </p>
+            </div>
+          )}
+
+          {submission.satisfactionScore != null && (
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-color-primary mb-2">Satisfaction Rating</h2>
+              <SatisfactionBadge score={submission.satisfactionScore} label={submission.satisfactionLabel ?? undefined} />
             </div>
           )}
 

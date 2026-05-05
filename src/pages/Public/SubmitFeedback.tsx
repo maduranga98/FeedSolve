@@ -9,6 +9,8 @@ import {
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
+import { SatisfactionRating } from "../../components/Public/SatisfactionRating";
+import type { SatisfactionScore } from "../../components/Public/SatisfactionRating";
 import {
   FileUploadInput,
   FilePreview,
@@ -134,6 +136,8 @@ export function SubmitFeedback() {
     submitterMobile: "",
     isAnonymous: false,
     submissionLanguage: i18n.language || "en",
+    satisfactionScore: null,
+    satisfactionLabel: null,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -206,6 +210,11 @@ export function SubmitFeedback() {
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
         newErrors.email = t("forms:validation.email");
     }
+
+    if (board?.satisfactionRequired && !formData.satisfactionScore) {
+      newErrors.satisfactionScore = "Please select your satisfaction level";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -485,7 +494,7 @@ export function SubmitFeedback() {
               </button>
 
               <button
-                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", submitterName: "", submitterMobile: "", isAnonymous: false, submissionLanguage: i18n.language || "en" }); }}
+                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", submitterName: "", submitterMobile: "", isAnonymous: false, submissionLanguage: i18n.language || "en", satisfactionScore: null, satisfactionLabel: null }); }}
                 className="mt-3 w-full px-5 py-2.5 text-sm text-[#6B7B8D] hover:text-[#1E3A5F] transition-colors"
               >
                 Submit another response
@@ -710,6 +719,25 @@ export function SubmitFeedback() {
                   </div>
                 )}
               </div>
+
+              {/* Satisfaction Rating */}
+              {board.showSatisfactionRating && (
+                <div className="border-t brand-section-divider pt-5">
+                  <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+                    How satisfied are you?
+                    {board.satisfactionRequired && (
+                      <span className="text-[#E74C3C] ml-1">*</span>
+                    )}
+                  </h3>
+                  <SatisfactionRating
+                    value={(formData.satisfactionScore as SatisfactionScore) ?? null}
+                    onChange={(score, label) =>
+                      setFormData({ ...formData, satisfactionScore: score, satisfactionLabel: label })
+                    }
+                    error={errors.satisfactionScore}
+                  />
+                </div>
+              )}
 
               <button
                 type="submit"

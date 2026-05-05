@@ -73,6 +73,12 @@ service cloud.firestore {
     // Validate submission fields on direct create (Cloud Functions bypass rules)
     function isValidSubmissionCreate() {
       let d = request.resource.data;
+      let validScore = !('satisfactionScore' in d) ||
+                       d.satisfactionScore == null ||
+                       (d.satisfactionScore is int && d.satisfactionScore >= 1 && d.satisfactionScore <= 5);
+      let validLabel = !('satisfactionLabel' in d) ||
+                       d.satisfactionLabel == null ||
+                       (d.satisfactionLabel is string && d.satisfactionLabel.size() <= 50);
       return d.boardId is string && d.boardId.size() > 0 && d.boardId.size() <= 128 &&
              d.companyId is string && d.companyId.size() > 0 && d.companyId.size() <= 128 &&
              d.subject is string && d.subject.size() > 0 && d.subject.size() <= 100 &&
@@ -80,7 +86,9 @@ service cloud.firestore {
              d.trackingCode is string && isValidTrackingCode(d.trackingCode) &&
              d.status == 'received' &&
              d.priority in ['low', 'medium', 'high', 'critical'] &&
-             d.isAnonymous is bool;
+             d.isAnonymous is bool &&
+             validScore &&
+             validLabel;
     }
 
     // Webhook logs - Cloud Functions write, Admin+ read
