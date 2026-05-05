@@ -147,6 +147,8 @@ export interface Board {
   slug: string;
   categories: string[];
   isAnonymousAllowed: boolean;
+  showSatisfactionRating: boolean;
+  satisfactionRequired: boolean;
   qrCodeUrl: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -195,6 +197,8 @@ export interface Submission {
   publicReplyAt?: Timestamp;
   publicReplyBy?: string;
   submissionLanguage?: string;
+  satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
+  satisfactionLabel?: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   resolvedAt?: Timestamp;
@@ -210,6 +214,8 @@ export interface SubmissionFormInput {
   isAnonymous: boolean;
   assignedTo?: string;
   submissionLanguage?: string;
+  satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
+  satisfactionLabel?: string | null;
 }
 
 export interface BoardFormInput {
@@ -217,6 +223,8 @@ export interface BoardFormInput {
   description: string;
   categories: string[];
   isAnonymousAllowed: boolean;
+  showSatisfactionRating: boolean;
+  satisfactionRequired: boolean;
 }
 
 export interface TeamInvitation {

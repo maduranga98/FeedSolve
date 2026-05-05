@@ -153,6 +153,8 @@ export async function createBoard(
       slug,
       categories: input.categories,
       isAnonymousAllowed: input.isAnonymousAllowed,
+      showSatisfactionRating: input.showSatisfactionRating ?? false,
+      satisfactionRequired: input.satisfactionRequired ?? false,
       qrCodeUrl: `${import.meta.env.VITE_APP_URL}/submit/${slug}`,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
@@ -192,7 +194,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'isAnonymousAllowed'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
@@ -241,6 +243,8 @@ export async function createSubmission(
       status: 'received' as const,
       priority: 'medium' as const,
       internalNotes: [],
+      satisfactionScore: input.satisfactionScore ?? null,
+      satisfactionLabel: input.satisfactionLabel ?? null,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
