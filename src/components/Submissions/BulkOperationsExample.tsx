@@ -13,7 +13,6 @@ import { useBulkOperations } from '../../hooks/useBulkOperations';
 import { useBulkOperationStatus } from '../../hooks/useBulkOperationStatus';
 import type { Submission, User } from '../../types';
 import { SelectAllCheckbox } from './SelectAllCheckbox';
-import { BulkActionBar } from './BulkActionBar';
 import { BulkActionModal } from './BulkActionModal';
 import { BulkProgressIndicator } from './BulkProgressIndicator';
 
@@ -164,20 +163,19 @@ export function BulkOperationsExample({
         </table>
       </div>
 
-      {/* Bulk Action Bar */}
-      <BulkActionBar
-        selectedCount={bulk.selectedCount}
-        totalCount={submissions.length}
-        onSelectAll={() => bulk.selectAll(submissions.map((s) => s.id))}
-        onDeselectAll={() => bulk.deselectAll()}
-        onStatusChange={() => setSelectedAction('status')}
-        onPriorityChange={() => setSelectedAction('priority')}
-        onAssign={() => setSelectedAction('assign')}
-        onCategoryChange={() => setSelectedAction('category')}
-        onDelete={() => setSelectedAction('delete')}
-        onClose={() => bulk.deselectAll()}
-        isLoading={isProcessing || bulk.isLoading}
-      />
+      {/* Inline bulk action strip (example only) */}
+      {bulk.selectedCount > 0 && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <span className="text-sm font-semibold text-blue-900">
+            {bulk.selectedCount} selected
+          </span>
+          <button onClick={() => setSelectedAction('status')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Status</button>
+          <button onClick={() => setSelectedAction('priority')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Priority</button>
+          <button onClick={() => setSelectedAction('assign')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Assign To</button>
+          <button onClick={() => setSelectedAction('delete')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-red-50 text-red-700 border border-red-300 rounded-lg hover:bg-red-100 disabled:opacity-50">Delete</button>
+          <button onClick={() => bulk.deselectAll()} className="ml-auto text-sm text-blue-600 hover:underline">Clear</button>
+        </div>
+      )}
 
       {/* Action Modals */}
       <BulkActionModal
