@@ -1,5 +1,6 @@
 import { memo, useMemo, useState } from 'react';
 import { SubmissionCard } from '../Cards/SubmissionCard';
+import { SelectAllCheckbox } from '../Submissions/SelectAllCheckbox';
 import type { Submission, User } from '../../types';
 import { LayoutGrid, Rows3, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -11,6 +12,10 @@ interface SearchResultsProps {
   page: number;
   pageSize?: number;
   onPageChange: (page: number) => void;
+  selectedIds?: Set<string>;
+  isSelectionMode?: boolean;
+  onToggleSelect?: (id: string) => void;
+  onSelectAll?: (ids: string[]) => void;
 }
 
 export const SearchResults = memo(function SearchResults({
@@ -21,6 +26,10 @@ export const SearchResults = memo(function SearchResults({
   page,
   pageSize = 20,
   onPageChange,
+  selectedIds,
+  isSelectionMode = false,
+  onToggleSelect,
+  onSelectAll,
 }: SearchResultsProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -39,6 +48,16 @@ export const SearchResults = memo(function SearchResults({
     inProgress: results.filter((s) => s.status === 'in_progress').length,
     resolved: results.filter((s) => s.status === 'resolved').length,
   }), [results]);
+
+  // Select-all state is computed against ALL filtered results (not just this page)
+  // so that selections persist across pages per spec.
+  const allResultIds = useMemo(() => results.map((s) => s.id), [results]);
+  const allSelected = allResultIds.length > 0 && allResultIds.every((id) => selectedIds?.has(id));
+  const someSelected = allResultIds.some((id) => selectedIds?.has(id));
+
+  const handleSelectAllChange = (checked: boolean) => {
+    onSelectAll?.(checked ? allResultIds : []);
+  };
 
   if (loading) {
     return (
@@ -61,15 +80,26 @@ export const SearchResults = memo(function SearchResults({
     <div className="space-y-6">
       <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[#6B7B8D] text-sm">
-              Showing {start + 1}–{Math.min(end, results.length)} of {results.length} submissions
-            </p>
-            {totalPages > 1 && (
-              <p className="text-[#9AABBF] text-xs mt-1">
-                Page {safePage} of {totalPages}
-              </p>
+          <div className="flex items-center gap-3">
+            {/* Select-all checkbox — visible in selection mode or when a toggle handler is provided */}
+            {onToggleSelect && (isSelectionMode || someSelected) && (
+              <SelectAllCheckbox
+                isChecked={allSelected}
+                isIndeterminate={someSelected && !allSelected}
+                onChange={handleSelectAllChange}
+                title={allSelected ? 'Deselect all' : 'Select all'}
+              />
             )}
+            <div>
+              <p className="text-[#6B7B8D] text-sm">
+                Showing {start + 1}–{Math.min(end, results.length)} of {results.length} submissions
+              </p>
+              {totalPages > 1 && (
+                <p className="text-[#9AABBF] text-xs mt-1">
+                  Page {safePage} of {totalPages}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="inline-flex items-center bg-[#F4F7FA] rounded-lg p-1">
@@ -118,6 +148,9 @@ export const SearchResults = memo(function SearchResults({
             onClick={() => onSubmissionClick(submission)}
             compact={viewMode === 'list'}
             usersMap={usersMap}
+            isSelected={selectedIds?.has(submission.id) ?? false}
+            isSelectionMode={isSelectionMode}
+            onToggleSelect={onToggleSelect}
           />
         ))}
       </div>

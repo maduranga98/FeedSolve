@@ -10,6 +10,9 @@ interface SubmissionCardProps {
   onClick?: (submission: Submission) => void;
   compact?: boolean;
   usersMap?: Record<string, User>;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 const priorityDot: Record<string, string> = {
@@ -23,7 +26,15 @@ const priorityLabel: Record<string, string> = {
   low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical',
 };
 
-function SubmissionCardComponent({ submission, onClick, compact = false, usersMap }: SubmissionCardProps) {
+function SubmissionCardComponent({
+  submission,
+  onClick,
+  compact = false,
+  usersMap,
+  isSelected = false,
+  isSelectionMode = false,
+  onToggleSelect,
+}: SubmissionCardProps) {
   const [fetchedUser, setFetchedUser] = useState<User | null>(null);
 
   const assignedUser: User | null | undefined = submission.assignedTo
@@ -37,26 +48,62 @@ function SubmissionCardComponent({ submission, onClick, compact = false, usersMa
       .catch(() => {});
   }, [submission.assignedTo, usersMap]);
 
-  const handleClick = useCallback(() => onClick?.(submission), [submission, onClick]);
+  const handleClick = useCallback(() => {
+    onClick?.(submission);
+  }, [submission, onClick]);
+
+  const handleCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      onToggleSelect?.(submission.id);
+    },
+    [submission.id, onToggleSelect]
+  );
 
   const dot = priorityDot[submission.priority] || priorityDot.medium;
 
   return (
     <div
       onClick={handleClick}
-      className={`bg-white border border-[#E8ECF0] rounded-xl p-5 transition-all duration-150
+      className={`group relative bg-white rounded-xl p-5 transition-all duration-150 border
+        ${isSelected
+          ? 'border-[#E8ECF0] border-l-[3px] border-l-[#2E86AB]'
+          : 'border-[#E8ECF0]'
+        }
         ${onClick ? 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer' : ''}
       `}
     >
       {/* Top row */}
-      <div className={`flex items-start justify-between gap-3 ${compact ? 'mb-2' : 'mb-3'}`}>
-        <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold text-[#1E3A5F] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
-            {submission.subject}
-          </h3>
-          <p className="text-xs text-[#9AABBF] font-mono">{submission.trackingCode}</p>
+      <div className={`flex items-start gap-3 ${compact ? 'mb-2' : 'mb-3'}`}>
+        {/* Checkbox — always visible on mobile, hover-reveal on desktop (always visible in selection mode) */}
+        {onToggleSelect && (
+          <div
+            className={`flex-shrink-0 mt-0.5 transition-opacity ${
+              isSelectionMode
+                ? 'opacity-100'
+                : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'
+            }`}
+          >
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={handleCheckboxChange}
+              onClick={(e) => e.stopPropagation()}
+              className="w-4 h-4 cursor-pointer accent-[#2E86AB]"
+              aria-label={`Select ${submission.subject}`}
+            />
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0 flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <h3 className={`font-semibold text-[#1E3A5F] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
+              {submission.subject}
+            </h3>
+            <p className="text-xs text-[#9AABBF] font-mono">{submission.trackingCode}</p>
+          </div>
+          <Badge status={submission.status} className="flex-shrink-0" />
         </div>
-        <Badge status={submission.status} className="flex-shrink-0" />
       </div>
 
       {/* Description */}
