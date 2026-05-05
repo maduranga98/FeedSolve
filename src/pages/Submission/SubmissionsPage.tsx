@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { useSubmissionSelection } from '../../hooks/useSubmissionSelection';
 import { getCompanySubmissionsPage, getCompanyMembers } from '../../lib/firestore';
 import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
 import type { Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
 import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
+import { BulkActionBar } from '../../components/Submissions/BulkActionBar';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import {
   Users,
@@ -93,6 +95,18 @@ export function SubmissionsPage() {
   const [showTeamProgress, setShowTeamProgress] = useState(false);
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
+  const {
+    selectedIds,
+    selectedCount,
+    isSelectionMode,
+    toggleSelection,
+    selectAll,
+    clearSelection,
+    bulkUpdateStatus,
+    bulkAssign,
+    bulkClose,
+  } = useSubmissionSelection();
+
   const usersMap = useMemo(
     () => Object.fromEntries(users.map((u) => [u.id, u])),
     [users]
@@ -146,6 +160,47 @@ export function SubmissionsPage() {
   useEffect(() => {
     loadInitial();
   }, [loadInitial]);
+
+  const handleTabChange = useCallback(
+    (tab: Tab) => {
+      setActiveTab(tab);
+      clearSelection();
+    },
+    [clearSelection]
+  );
+
+  // Bulk action after completion: reload to reflect updated statuses
+  const handleBulkUpdateStatus = useCallback(
+    async (status: Submission['status']) => {
+      await bulkUpdateStatus(status);
+      loadInitial();
+    },
+    [bulkUpdateStatus, loadInitial]
+  );
+
+  const handleBulkAssign = useCallback(
+    async (userId: string, userName: string) => {
+      await bulkAssign(userId, userName);
+      loadInitial();
+    },
+    [bulkAssign, loadInitial]
+  );
+
+  const handleBulkClose = useCallback(async () => {
+    await bulkClose();
+    loadInitial();
+  }, [bulkClose, loadInitial]);
+
+  const handleSelectAll = useCallback(
+    (ids: string[]) => {
+      if (ids.length === 0) {
+        clearSelection();
+      } else {
+        selectAll(ids);
+      }
+    },
+    [selectAll, clearSelection]
+  );
 
   const totalCount = submissions.length;
   const newCount = submissions.filter((s) => s.status === 'received').length;
@@ -242,8 +297,8 @@ export function SubmissionsPage() {
         </div>
       </div>
 
-      {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      {/* Scrollable content area — pad bottom when bulk bar is visible */}
+      <div className={`flex-1 overflow-y-auto min-h-0 ${isSelectionMode ? 'pb-24' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
           {loading ? (
             <div className="flex items-center justify-center py-32">
@@ -352,7 +407,7 @@ export function SubmissionsPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <TabButton
                   active={activeTab === 'active'}
-                  onClick={() => setActiveTab('active')}
+                  onClick={() => handleTabChange('active')}
                   count={activeSubmissions.length}
                 >
                   <ListChecks size={14} />
@@ -360,7 +415,7 @@ export function SubmissionsPage() {
                 </TabButton>
                 <TabButton
                   active={activeTab === 'completed'}
-                  onClick={() => setActiveTab('completed')}
+                  onClick={() => handleTabChange('completed')}
                   count={completedSubmissions.length}
                 >
                   <CheckCircle2 size={14} />
@@ -380,6 +435,10 @@ export function SubmissionsPage() {
                   users={users}
                   usersMap={usersMap}
                   onSubmissionClick={setSelectedSubmission}
+                  selectedIds={selectedIds}
+                  isSelectionMode={isSelectionMode}
+                  onToggleSelect={toggleSelection}
+                  onSelectAll={handleSelectAll}
                 />
               </div>
 
@@ -409,6 +468,18 @@ export function SubmissionsPage() {
           )}
         </div>
       </div>
+
+      {/* Bulk action floating bar */}
+      {isSelectionMode && (
+        <BulkActionBar
+          selectedCount={selectedCount}
+          users={users}
+          onBulkStatusChange={handleBulkUpdateStatus}
+          onBulkAssign={handleBulkAssign}
+          onBulkClose={handleBulkClose}
+          onClear={clearSelection}
+        />
+      )}
 
       {selectedSubmission && (
         <SubmissionDetail

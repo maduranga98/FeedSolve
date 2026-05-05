@@ -10,10 +10,12 @@ import {
   Inbox,
   Paintbrush,
   ClipboardList,
+  FileText,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { useSubscription } from "../../hooks/useSubscription";
+import { useTemplates } from "../../hooks/useTemplates";
 import { hasPermission } from "../../lib/rbac";
 import { Button } from "../Shared";
 import { LanguageSwitcher } from "../Language/LanguageSwitcher";
@@ -30,6 +32,7 @@ export function Navbar() {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
   useSubscription();
+  const { templates } = useTemplates();
 
   const handleLogout = async () => {
     await logout();
@@ -58,6 +61,7 @@ export function Navbar() {
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
+    { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
   ];
 
   const navItems = allNavItems.filter((item) => {
@@ -118,6 +122,11 @@ export function Navbar() {
                     {item.icon}
                   </span>
                   {item.label}
+                  {item.path === '/reply-templates' && templates.length > 0 && (
+                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#EBF5FB] text-[#2E86AB]">
+                      {templates.length}
+                    </span>
+                  )}
                 </button>
               );
             })}

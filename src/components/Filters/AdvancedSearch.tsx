@@ -19,6 +19,10 @@ interface AdvancedSearchProps {
   users: User[];
   usersMap?: Record<string, User>;
   onSubmissionClick: (submission: Submission) => void;
+  selectedIds?: Set<string>;
+  isSelectionMode?: boolean;
+  onToggleSelect?: (id: string) => void;
+  onSelectAll?: (ids: string[]) => void;
 }
 
 export function AdvancedSearch({
@@ -26,6 +30,10 @@ export function AdvancedSearch({
   users,
   usersMap,
   onSubmissionClick,
+  selectedIds,
+  isSelectionMode,
+  onToggleSelect,
+  onSelectAll,
 }: AdvancedSearchProps) {
   const { user } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
@@ -220,6 +228,10 @@ export function AdvancedSearch({
               page={page}
               pageSize={20}
               onPageChange={setPage}
+              selectedIds={selectedIds}
+              isSelectionMode={isSelectionMode}
+              onToggleSelect={onToggleSelect}
+              onSelectAll={onSelectAll}
             />
           )}
         </div>
