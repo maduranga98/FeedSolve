@@ -11,6 +11,7 @@ import {
   Paintbrush,
   ClipboardList,
   FileText,
+  Settings,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -60,6 +61,7 @@ export function Navbar() {
     { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
+    { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
     { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
   ];

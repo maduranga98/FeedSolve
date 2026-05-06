@@ -1,0 +1,268 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { CheckCircle2, ExternalLink, Radio, ShieldCheck } from 'lucide-react';
+import type { Company, Submission, Board } from '../../types';
+import {
+  getCompanyBoards,
+  getCompanyBySlug,
+  getPublicFeedSubmissions,
+  getRecentResolvedSubmissions,
+} from '../../lib/firestore';
+import { ResolutionMetricCard } from '../../components/public/ResolutionMetricCard';
+import { RecentActivityFeed } from '../../components/public/RecentActivityFeed';
+
+const APP_ORIGIN = import.meta.env.VITE_APP_URL || 'https://feedsolve.com';
+const FEEDSOLVE_OG_IMAGE = `${APP_ORIGIN}/og-feedsolve.png`;
+
+function toDate(value: Submission['createdAt'] | undefined): Date | null {
+  if (!value) return null;
+  if ('toDate' in value && typeof value.toDate === 'function') return value.toDate();
+  return null;
+}
+
+function formatDurationFromHours(hours: number): string {
+  if (!Number.isFinite(hours) || hours <= 0) return 'under 1 hour';
+  if (hours < 24) return `${Math.max(1, Math.round(hours))} hour${Math.round(hours) === 1 ? '' : 's'}`;
+  const days = Math.round(hours / 24);
+  return `${days} day${days === 1 ? '' : 's'}`;
+}
+
+function resolutionTone(rate: number): 'success' | 'amber' | 'danger' {
+  if (rate > 80) return 'success';
+  if (rate >= 50) return 'amber';
+  return 'danger';
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#F8FAFB] px-4 py-10">
+      <div className="mx-auto max-w-5xl animate-pulse space-y-6">
+        <div className="h-48 rounded-2xl bg-white" />
+        <div className="grid gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-36 rounded-xl bg-white" />
+          ))}
+        </div>
+        <div className="h-80 rounded-xl bg-white" />
+      </div>
+    </div>
+  );
+}
+
+export function PublicResolutionFeed() {
+  const { companySlug } = useParams<{ companySlug: string }>();
+  const [company, setCompany] = useState<Company | null>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [recentResolved, setRecentResolved] = useState<Submission[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadPublicFeed = async () => {
+      if (!companySlug) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const companyData = await getCompanyBySlug(companySlug);
+        if (!companyData) {
+          setNotFound(true);
+          return;
+        }
+
+        setCompany(companyData);
+        if (!companyData.showPublicFeed) return;
+
+        const [publicSubmissions, recent, companyBoards] = await Promise.all([
+          getPublicFeedSubmissions(companyData.id),
+          getRecentResolvedSubmissions(companyData.id, 10),
+          getCompanyBoards(companyData.id),
+        ]);
+        setSubmissions(publicSubmissions);
+        setRecentResolved(recent);
+        setBoards(companyBoards);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unable to load this public feed.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPublicFeed();
+  }, [companySlug]);
+
+  const stats = useMemo(() => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const resolved = submissions.filter((submission) => submission.status === 'resolved' && submission.resolvedAt);
+    const resolutionRate = submissions.length ? Math.round((resolved.length / submissions.length) * 100) : 0;
+
+    const totalResolvedHours = resolved.reduce((sum, submission) => {
+      const createdAt = toDate(submission.createdAt);
+      const resolvedAt = toDate(submission.resolvedAt);
+      if (!createdAt || !resolvedAt) return sum;
+      return sum + Math.max(0, resolvedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+    }, 0);
+
+    const thisMonth = submissions.filter((submission) => {
+      const createdAt = toDate(submission.createdAt);
+      return createdAt ? createdAt >= monthStart : false;
+    });
+    const resolvedThisMonth = resolved.filter((submission) => {
+      const resolvedAt = toDate(submission.resolvedAt);
+      return resolvedAt ? resolvedAt >= monthStart : false;
+    });
+
+    return {
+      resolutionRate,
+      resolvedCount: resolved.length,
+      averageResolutionTime: resolved.length ? formatDurationFromHours(totalResolvedHours / resolved.length) : 'No resolved data yet',
+      activeBoards: boards.length,
+      submissionsThisMonth: thisMonth.length,
+      resolvedThisMonth: resolvedThisMonth.length,
+      monthlyResolutionRate: thisMonth.length ? Math.round((resolvedThisMonth.length / thisMonth.length) * 100) : 0,
+    };
+  }, [boards.length, submissions]);
+
+  useEffect(() => {
+    if (!company) return;
+    const title = `${company.name} — Feedback Transparency | FeedSolve`;
+    const description = `${company.name} has resolved ${stats.resolvedCount} submissions with a ${stats.resolutionRate}% resolution rate. Powered by FeedSolve.`;
+    document.title = title;
+
+    const upsertMeta = (selector: string, attr: 'name' | 'property', key: string, content: string) => {
+      let tag = document.head.querySelector<HTMLMetaElement>(selector);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, key);
+        document.head.appendChild(tag);
+      }
+      tag.content = content;
+    };
+
+    upsertMeta('meta[name="description"]', 'name', 'description', description);
+    upsertMeta('meta[property="og:title"]', 'property', 'og:title', title);
+    upsertMeta('meta[property="og:description"]', 'property', 'og:description', description);
+    upsertMeta('meta[property="og:image"]', 'property', 'og:image', FEEDSOLVE_OG_IMAGE);
+  }, [company, stats.resolutionRate, stats.resolvedCount]);
+
+  if (loading) return <LoadingSkeleton />;
+
+  if (notFound) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFB] px-4">
+        <div className="max-w-md rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
+          <h1 className="text-3xl font-bold text-[#1E3A5F]">Public feed not found</h1>
+          <p className="mt-3 text-[#6B7B8D]">We couldn't find a company transparency page for this link.</p>
+          <a className="mt-6 inline-flex rounded-lg bg-[#2E86AB] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
+            Visit FeedSolve
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (!company?.showPublicFeed) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFB] px-4">
+        <div className="max-w-lg rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
+          <ShieldCheck className="mx-auto h-12 w-12 text-[#2E86AB]" />
+          <h1 className="mt-4 text-2xl font-bold text-[#1E3A5F]">
+            {company?.name || 'This company'} hasn't enabled their public feed yet.
+          </h1>
+          <p className="mt-3 text-[#6B7B8D]">FeedSolve public feeds are optional and controlled by each company.</p>
+          <a className="mt-6 inline-flex rounded-lg bg-[#2E86AB] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
+            Powered by FeedSolve
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  const displayName = company.branding?.companyName || company.name;
+  const publicTitle = company.publicFeedTitle || `${displayName} Feedback Transparency`;
+  const firstBoard = boards[0];
+  const submitLink = firstBoard ? `${APP_ORIGIN}/submit/${firstBoard.slug}` : null;
+
+  return (
+    <div className="min-h-screen bg-[#F8FAFB] text-[#1E3A5F]">
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
+        <header className="overflow-hidden rounded-2xl border border-[#D3D1C7] bg-white shadow-sm">
+          <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2E86AB] px-6 py-8 text-white sm:px-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-4">
+                {company.branding?.logoUrl ? (
+                  <img src={company.branding.logoUrl} alt={`${displayName} logo`} className="h-16 w-16 rounded-xl bg-white object-contain p-2" />
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/15 text-2xl font-bold">
+                    {displayName.slice(0, 1).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm font-medium text-white/80">{displayName}</p>
+                  <h1 className="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">{publicTitle}</h1>
+                </div>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium">
+                <Radio size={16} className="text-[#27AE60]" /> Updated live
+              </div>
+            </div>
+            {company.publicFeedMessage && <p className="mt-6 max-w-2xl text-lg leading-8 text-white/90">{company.publicFeedMessage}</p>}
+          </div>
+          <div className="flex flex-col gap-3 px-6 py-4 text-sm text-[#6B7B8D] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <span className="inline-flex items-center gap-2"><CheckCircle2 size={16} className="text-[#27AE60]" /> Public accountability metrics, anonymized by design</span>
+            <span>Powered by FeedSolve</span>
+          </div>
+        </header>
+
+        {error && <div className="mt-6 rounded-lg border border-[#F2B7B0] bg-[#FDECEC] p-4 text-[#C0392B]">{error}</div>}
+
+        <section className="mt-6 grid gap-4 md:grid-cols-4">
+          <ResolutionMetricCard label="Resolution Rate" value={`${stats.resolutionRate}%`} tone={resolutionTone(stats.resolutionRate)} isHero helperText="All-time resolved submissions divided by submissions received." />
+          <ResolutionMetricCard label="Resolved all time" value={stats.resolvedCount} tone="primary" />
+          <ResolutionMetricCard label="Average resolution time" value={stats.averageResolutionTime} tone="neutral" />
+          <ResolutionMetricCard label="Active boards" value={stats.activeBoards} tone="neutral" />
+        </section>
+
+        <section className="mt-6 rounded-xl border border-[#D3D1C7] bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-bold">This month</h2>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <ResolutionMetricCard label="Submissions received" value={stats.submissionsThisMonth} tone="neutral" />
+            <ResolutionMetricCard label="Submissions resolved" value={stats.resolvedThisMonth} tone="success" />
+            <ResolutionMetricCard label="Monthly resolution rate" value={`${stats.monthlyResolutionRate}%`} tone={resolutionTone(stats.monthlyResolutionRate)} />
+          </div>
+        </section>
+
+        <section className="mt-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold">Recent resolved activity</h2>
+            <p className="mt-1 text-sm text-[#6B7B8D]">Last 10 resolved submissions, shown without personal data.</p>
+          </div>
+          <RecentActivityFeed submissions={recentResolved} formatResolutionTime={(submission) => {
+            const createdAt = toDate(submission.createdAt);
+            const resolvedAt = toDate(submission.resolvedAt);
+            if (!createdAt || !resolvedAt) return 'a short time';
+            return formatDurationFromHours((resolvedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60));
+          }} />
+        </section>
+      </main>
+
+      <footer className="border-t border-[#D3D1C7] bg-white px-4 py-6">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 text-sm text-[#6B7B8D] sm:flex-row sm:items-center sm:justify-between">
+          <a href="https://feedsolve.com" className="inline-flex w-fit items-center gap-2 rounded-full border border-[#D3D1C7] px-4 py-2 font-semibold text-[#1E3A5F]">
+            Powered by FeedSolve <ExternalLink size={14} />
+          </a>
+          {company.showPublicFeedbackLink && submitLink && (
+            <Link to={submitLink.replace(APP_ORIGIN, '')} className="font-semibold text-[#2E86AB]">
+              Submit feedback to {displayName}
+            </Link>
+          )}
+        </div>
+      </footer>
+    </div>
+  );
+}
