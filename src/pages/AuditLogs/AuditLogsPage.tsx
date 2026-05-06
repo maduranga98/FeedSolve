@@ -27,6 +27,7 @@ const RESOURCE_TYPE_LABELS: Record<AuditLog['resourceType'], string> = {
   billing: 'Billing',
   settings: 'Settings',
   escalation: 'Escalation',
+  template: 'Template',
 };
 
 const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
@@ -37,6 +38,7 @@ const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
   billing: 'bg-pink-100 text-pink-700',
   settings: 'bg-slate-100 text-slate-700',
   escalation: 'bg-orange-100 text-orange-700',
+  template: 'bg-indigo-100 text-indigo-700',
 };
 
 function formatDate(ts: Timestamp | Date | undefined): string {
