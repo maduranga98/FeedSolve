@@ -14,10 +14,19 @@ import { RecentActivityFeed } from '../../components/public/RecentActivityFeed';
 const APP_ORIGIN = import.meta.env.VITE_APP_URL || 'https://feedsolve.com';
 const FEEDSOLVE_OG_IMAGE = `${APP_ORIGIN}/og-feedsolve.png`;
 
-function toDate(value: Submission['createdAt'] | undefined): Date | null {
+function toDate(value: Submission['createdAt'] | Date | string | number | undefined): Date | null {
   if (!value) return null;
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
   if ('toDate' in value && typeof value.toDate === 'function') return value.toDate();
   return null;
+}
+
+function isResolvedSubmission(submission: Submission): boolean {
+  return (submission.status === 'resolved' || submission.status === 'closed') && Boolean(submission.resolvedAt);
 }
 
 function formatDurationFromHours(hours: number): string {
@@ -98,29 +107,27 @@ export function PublicResolutionFeed() {
   const stats = useMemo(() => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const resolved = submissions.filter((submission) => submission.status === 'resolved' && submission.resolvedAt);
+    const resolved = submissions.filter(isResolvedSubmission);
     const resolutionRate = submissions.length ? Math.round((resolved.length / submissions.length) * 100) : 0;
 
-    const totalResolvedHours = resolved.reduce((sum, submission) => {
+    const resolutionDurations = resolved.flatMap((submission) => {
       const createdAt = toDate(submission.createdAt);
       const resolvedAt = toDate(submission.resolvedAt);
-      if (!createdAt || !resolvedAt) return sum;
-      return sum + Math.max(0, resolvedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
-    }, 0);
+      if (!createdAt || !resolvedAt) return [];
+      return [Math.max(0, resolvedAt.getTime() - createdAt.getTime()) / (1000 * 60 * 60)];
+    });
+    const totalResolvedHours = resolutionDurations.reduce((sum, hours) => sum + hours, 0);
 
     const thisMonth = submissions.filter((submission) => {
       const createdAt = toDate(submission.createdAt);
       return createdAt ? createdAt >= monthStart : false;
     });
-    const resolvedThisMonth = resolved.filter((submission) => {
-      const resolvedAt = toDate(submission.resolvedAt);
-      return resolvedAt ? resolvedAt >= monthStart : false;
-    });
+    const resolvedThisMonth = thisMonth.filter(isResolvedSubmission);
 
     return {
       resolutionRate,
       resolvedCount: resolved.length,
-      averageResolutionTime: resolved.length ? formatDurationFromHours(totalResolvedHours / resolved.length) : 'No resolved data yet',
+      averageResolutionTime: resolutionDurations.length ? formatDurationFromHours(totalResolvedHours / resolutionDurations.length) : 'No resolved data yet',
       activeBoards: boards.length,
       submissionsThisMonth: thisMonth.length,
       resolvedThisMonth: resolvedThisMonth.length,
