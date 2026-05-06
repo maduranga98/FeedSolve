@@ -69,7 +69,7 @@ function MergedSubmissionPreview({ submission, onClose }: { submission: Submissi
             <h3 className="mt-1 text-lg font-bold text-[#1E3A5F]">{submission.subject}</h3>
             <p className="font-mono text-xs text-[#2E86AB]">{submission.trackingCode}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#F4F7FA] hover:text-[#444441]">
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#EEF3F7] hover:text-[#444441]">
             <X size={18} />
           </button>
         </div>
@@ -208,7 +208,7 @@ export default function SubmissionDetail({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <StatusBadge status={submission.status} />
-              <span className="font-mono text-xs text-[#9AABBF] bg-[#F4F7FA] px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-[#9AABBF] bg-[#EEF3F7] px-2 py-0.5 rounded">
                 {submission.trackingCode}
               </span>
             </div>
@@ -261,7 +261,7 @@ export default function SubmissionDetail({
                       setActionsOpen(false);
                       setMergeModalOpen(true);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-[#6B7B8D] transition hover:bg-[#F8FAFB] hover:text-[#1E3A5F] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-[#6B7B8D] transition hover:bg-[#F1F5F8] hover:text-[#1E3A5F] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <GitMerge size={15} />
                     Merge with another
@@ -271,7 +271,7 @@ export default function SubmissionDetail({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#F4F7FA] rounded-lg transition-colors ml-1"
+              className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#EEF3F7] rounded-lg transition-colors ml-1"
             >
               <X size={20} />
             </button>
@@ -433,7 +433,7 @@ export default function SubmissionDetail({
           {/* Inline file preview */}
           {previewUrl && (
             <div className="border border-[#E8ECF0] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2 bg-[#F4F7FA] border-b border-[#E8ECF0]">
+              <div className="flex items-center justify-between px-4 py-2 bg-[#EEF3F7] border-b border-[#E8ECF0]">
                 <span className="text-xs font-medium text-[#6B7B8D] flex items-center gap-1">
                   <Eye size={13} />
                   File Preview
@@ -476,7 +476,7 @@ export default function SubmissionDetail({
                     key={merged.id}
                     type="button"
                     onClick={() => setReadOnlySubmission(merged)}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#E8ECF0] px-3 py-2 text-left transition hover:bg-[#F8FAFB]"
+                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#E8ECF0] px-3 py-2 text-left transition hover:bg-[#F1F5F8]"
                   >
                     <span className="min-w-0 text-sm text-[#444441]">
                       <span className="font-mono font-semibold text-[#2E86AB]">{merged.trackingCode}</span>
@@ -528,7 +528,7 @@ export default function SubmissionDetail({
               href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#F4F7FA] hover:bg-[#E8ECF0] rounded-xl transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#EEF3F7] hover:bg-[#E8ECF0] rounded-xl transition-colors"
             >
               <ExternalLink size={15} />
               Public Tracking Page

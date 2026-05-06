@@ -154,7 +154,7 @@ export function BrandingPage() {
 
   if (!checkFeature('canRemoveBranding')) {
     return (
-      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
           <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
             <Lock size={28} className="text-[#2E86AB]" />
@@ -180,7 +180,7 @@ export function BrandingPage() {
   const theme = previewTheme || DEFAULT_COLOR_THEME;
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA]">
+    <div className="min-h-screen bg-[#EEF3F7]">
       {/* Header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -261,7 +261,7 @@ export function BrandingPage() {
               </div>
             ) : (
               <label
-                className={`flex flex-col items-center justify-center h-28 border-2 border-dashed border-[#D3D1C7] rounded-lg cursor-pointer hover:border-[#2E86AB] hover:bg-[#F8FAFB] transition-colors ${
+                className={`flex flex-col items-center justify-center h-28 border-2 border-dashed border-[#D3D1C7] rounded-lg cursor-pointer hover:border-[#2E86AB] hover:bg-[#F1F5F8] transition-colors ${
                   uploading ? "opacity-50 pointer-events-none" : ""
                 }`}
               >

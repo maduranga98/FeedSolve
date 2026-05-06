@@ -3,7 +3,7 @@ import { Copy, ExternalLink, Share2, Radio, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button, Input, LoadingSpinner } from '../../../components/Shared';
 import { useAuth } from '../../../hooks/useAuth';
-import { getCompany, getCompanySubmissions, updateCompanyPublicFeedSettings } from '../../../lib/firestore';
+import { addAuditLog, getCompany, getCompanySubmissions, updateCompanyPublicFeedSettings } from '../../../lib/firestore';
 import { generateBoardSlug } from '../../../lib/utils';
 import type { Company } from '../../../types';
 
@@ -69,7 +69,10 @@ export function CompanySettings() {
     loadSettings();
   }, [user?.companyId]);
 
-  const previewUrl = useMemo(() => `${APP_ORIGIN}/r/${form.companySlug || 'your-slug'}`, [form.companySlug]);
+  const savedSlug = company?.companySlug || '';
+  const currentSafeSlug = generateBoardSlug(form.companySlug || company?.name || '');
+  const hasUnsavedSlug = Boolean(currentSafeSlug && savedSlug && currentSafeSlug !== savedSlug);
+  const previewUrl = useMemo(() => `${APP_ORIGIN}/r/${currentSafeSlug || 'your-slug'}`, [currentSafeSlug]);
   const defaultTitle = `${company?.branding?.companyName || company?.name || 'Your Company'} Feedback Transparency`;
 
   const handleSave = async () => {
@@ -82,13 +85,25 @@ export function CompanySettings() {
 
     setSaving(true);
     try {
-      await updateCompanyPublicFeedSettings(user.companyId, {
+      const nextSettings = {
         showPublicFeed: form.showPublicFeed,
         companySlug: safeSlug,
         publicFeedTitle: form.publicFeedTitle.trim() || null,
         publicFeedMessage: form.publicFeedMessage.trim() || null,
         showPublicFeedbackLink: form.showPublicFeedbackLink,
+      };
+      await updateCompanyPublicFeedSettings(user.companyId, nextSettings);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: form.showPublicFeed ? `Updated public resolution feed ${safeSlug}` : 'Disabled public resolution feed',
+        resourceType: 'settings',
+        resourceId: user.companyId,
+        resourceName: 'Public Resolution Feed',
+        details: nextSettings,
       });
+      setCompany((prev) => (prev ? { ...prev, ...nextSettings } : prev));
       setForm((prev) => ({ ...prev, companySlug: safeSlug }));
       toast.success('Public feed settings saved.');
     } catch (error) {
@@ -99,11 +114,19 @@ export function CompanySettings() {
   };
 
   const copyLink = async () => {
+    if (hasUnsavedSlug) {
+      toast.error('Save the new slug before copying this public feed link.');
+      return;
+    }
     await navigator.clipboard.writeText(previewUrl);
     toast.success('Public feed link copied.');
   };
 
   const shareOnLinkedIn = () => {
+    if (hasUnsavedSlug) {
+      toast.error('Save the new slug before sharing this public feed link.');
+      return;
+    }
     const companyName = company?.branding?.companyName || company?.name || 'We';
     const text = `${companyName} has resolved ${resolvedCount} submissions with a ${resolutionRate}% resolution rate. See our Feedback Transparency page powered by FeedSolve: ${previewUrl}`;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(previewUrl)}&summary=${encodeURIComponent(text)}`;
@@ -119,7 +142,7 @@ export function CompanySettings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA]">
+    <div className="min-h-screen bg-[#EEF3F7]">
       <div className="border-b border-[#E8ECF0] bg-white">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-[#1E3A5F]">Company Settings</h1>
@@ -158,12 +181,12 @@ export function CompanySettings() {
                   label="Preview URL"
                   value={previewUrl}
                   readOnly
-                  helperText="This link opens in a new tab and is visible without sign-in."
+                  helperText={hasUnsavedSlug ? "Save public feed settings before opening or copying the new slug." : "This link opens in a new tab and is visible without sign-in."}
                 />
-                <a href={previewUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#D3D1C7] bg-white px-4 py-2.5 text-sm font-medium text-[#1E3A5F] hover:bg-[#F8FAFB]">
+                <a href={hasUnsavedSlug ? undefined : previewUrl} target="_blank" rel="noreferrer" aria-disabled={hasUnsavedSlug} className={`inline-flex items-center justify-center gap-2 rounded-lg border border-[#D3D1C7] bg-white px-4 py-2.5 text-sm font-medium text-[#1E3A5F] hover:bg-[#F1F5F8] ${hasUnsavedSlug ? 'pointer-events-none opacity-50' : ''}`}>
                   Preview <ExternalLink size={16} />
                 </a>
-                <Button type="button" variant="secondary" onClick={copyLink}><Copy size={16} /> Copy Link</Button>
+                <Button type="button" variant="secondary" onClick={copyLink} disabled={hasUnsavedSlug}><Copy size={16} /> Copy Link</Button>
               </div>
 
               <Input
@@ -192,7 +215,7 @@ export function CompanySettings() {
                 <p className="mt-1.5 text-xs text-[#6B7B8D]">{form.publicFeedMessage.length}/{MESSAGE_LIMIT} characters</p>
               </div>
 
-              <label className="flex items-start gap-3 rounded-lg border border-[#D3D1C7] bg-[#F8FAFB] p-4">
+              <label className="flex items-start gap-3 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] p-4">
                 <input
                   type="checkbox"
                   className="mt-1 h-4 w-4 rounded border-[#D3D1C7] text-[#2E86AB]"
@@ -207,7 +230,7 @@ export function CompanySettings() {
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Button type="button" onClick={handleSave} isLoading={saving}><Save size={16} /> Save public feed settings</Button>
-                <Button type="button" variant="secondary" onClick={shareOnLinkedIn}><Share2 size={16} /> Share on LinkedIn</Button>
+                <Button type="button" variant="secondary" onClick={shareOnLinkedIn} disabled={hasUnsavedSlug}><Share2 size={16} /> Share on LinkedIn</Button>
               </div>
             </div>
           )}

@@ -16,7 +16,7 @@ export function RecentActivityFeed({ submissions, formatResolutionTime }: Recent
 
   return (
     <div className="rounded-xl border border-[#D3D1C7] bg-white p-5 shadow-sm">
-      <div className="mb-5 rounded-lg bg-[#F8FAFB] px-4 py-3 text-sm text-[#6B7B8D]">
+      <div className="mb-5 rounded-lg bg-[#F1F5F8] px-4 py-3 text-sm text-[#6B7B8D]">
         Activity is anonymized. FeedSolve shows only category and resolution time — never names, emails,
         subjects, or descriptions.
       </div>

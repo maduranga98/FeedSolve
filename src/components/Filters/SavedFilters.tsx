@@ -34,7 +34,7 @@ export function SavedFilters({
       {filters.map((filter) => (
         <div
           key={filter.id}
-          className="p-3 border border-[#D3D1C7] rounded-lg hover:bg-[#F8FAFB] transition-colors"
+          className="p-3 border border-[#D3D1C7] rounded-lg hover:bg-[#F1F5F8] transition-colors"
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">

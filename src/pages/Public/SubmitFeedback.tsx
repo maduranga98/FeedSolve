@@ -266,7 +266,7 @@ export function SubmitFeedback() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F1F5F8] flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -274,7 +274,7 @@ export function SubmitFeedback() {
 
   if (!board) {
     return (
-      <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F1F5F8] flex items-center justify-center p-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-[#1E3A5F] mb-4">{t("common:not_found")}</h1>
           <p className="text-[#6B7B8D]">{t("common:board_not_found")}</p>

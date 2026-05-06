@@ -97,7 +97,7 @@ export function InternalDiscussion({ submission, currentUser, onMigrated }: Inte
             type="button"
             onClick={handleLoadEarlier}
             disabled={loading}
-            className="w-full rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#F8FAFB] disabled:opacity-50"
+            className="w-full rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#F1F5F8] disabled:opacity-50"
           >
             Load earlier comments
           </button>

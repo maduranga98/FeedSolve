@@ -134,7 +134,7 @@ function SubmissionCardComponent({
           )}
 
           {/* Priority with color dot */}
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F4F7FA] text-[#6B7B8D] text-xs font-medium">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#EEF3F7] text-[#6B7B8D] text-xs font-medium">
             <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
             {priorityLabel[submission.priority] || submission.priority}
           </span>

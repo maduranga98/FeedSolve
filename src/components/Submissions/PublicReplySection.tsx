@@ -44,7 +44,7 @@ export default function PublicReplySection({
 
   if (!canReply) {
     return (
-      <div className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[#D3D1C7] bg-[#F8FAFB] text-sm text-[#6B7B8D]">
+      <div className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[#D3D1C7] bg-[#F1F5F8] text-sm text-[#6B7B8D]">
         <Lock size={15} className="shrink-0 text-[#9AABBF]" />
         <span>
           Public replies are available on the <strong>Starter</strong> plan and above.{' '}
@@ -78,7 +78,7 @@ export default function PublicReplySection({
     return (
       <button
         onClick={() => setIsEditing(true)}
-        className="w-full py-4 px-4 border border-dashed border-[#D3D1C7] rounded-lg text-[#6B7B8D] hover:bg-[#F8FAFB] transition-colors text-sm"
+        className="w-full py-4 px-4 border border-dashed border-[#D3D1C7] rounded-lg text-[#6B7B8D] hover:bg-[#F1F5F8] transition-colors text-sm"
       >
         + Add public reply
       </button>
@@ -109,7 +109,7 @@ export default function PublicReplySection({
           boardName={boardName}
         />
       ) : (
-        <div className="bg-[#F8FAFB] border border-[#D3D1C7] rounded-lg p-4">
+        <div className="bg-[#F1F5F8] border border-[#D3D1C7] rounded-lg p-4">
           <p className="text-[#444441] whitespace-pre-wrap mb-2">{publicReply}</p>
           {publicReplyAt && publicReplyBy && (
             <p className="text-xs text-[#6B7B8D]">

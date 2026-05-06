@@ -102,7 +102,7 @@ export const SearchResults = memo(function SearchResults({
             </div>
           </div>
 
-          <div className="inline-flex items-center bg-[#F4F7FA] rounded-lg p-1">
+          <div className="inline-flex items-center bg-[#EEF3F7] rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors inline-flex items-center gap-1.5 ${
@@ -125,7 +125,7 @@ export const SearchResults = memo(function SearchResults({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-          <div className="rounded-lg bg-[#F4F7FA] px-3 py-2">
+          <div className="rounded-lg bg-[#EEF3F7] px-3 py-2">
             <p className="text-xs text-[#6B7B8D]">New</p>
             <p className="text-lg font-semibold text-[#1E3A5F]">{statusSummary.received}</p>
           </div>

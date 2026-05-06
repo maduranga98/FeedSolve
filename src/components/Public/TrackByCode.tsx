@@ -15,7 +15,7 @@ export function TrackByCode() {
 
   return (
     <div className="space-y-5 text-left">
-      <div className="rounded-xl border border-[#E3EDF4] bg-[#F8FAFB] p-4 text-center">
+      <div className="rounded-xl border border-[#E3EDF4] bg-[#F1F5F8] p-4 text-center">
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EBF5FB]">
           <Search size={22} className="text-[#2E86AB]" />
         </div>

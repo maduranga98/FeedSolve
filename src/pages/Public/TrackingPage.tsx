@@ -54,7 +54,7 @@ function TrackingLookup() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4 font-[Inter]">
+    <div className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F1F5F8] to-white flex items-center justify-center p-4 font-[Inter]">
       <div className="w-full max-w-lg">
         <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-xl px-5 py-7 sm:px-8 sm:py-9">
           <div className="mb-6 text-center">
@@ -163,7 +163,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center">
+      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -171,7 +171,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (error || !submission) {
     return (
-      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="w-14 h-14 bg-[#FDECEA] rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle size={24} className="text-[#C0392B]" />
@@ -198,7 +198,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (passwordRequired && !passwordAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <div className="w-14 h-14 bg-[#FFF3CD] rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock size={24} className="text-[#F39C12]" />
@@ -258,7 +258,7 @@ function TrackingView({ code }: { code: string }) {
   ].filter(Boolean) as { date: Timestamp; label: string }[];
 
   return (
-    <div id="tracking-root" className="min-h-screen bg-[#F4F7FA] py-6 px-4">
+    <div id="tracking-root" className="min-h-screen bg-[#EEF3F7] py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-4">
 
         {/* Top nav bar */}
@@ -363,19 +363,19 @@ function TrackingView({ code }: { code: string }) {
             {publicSubmission.description}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
+            <div className="rounded-xl bg-[#F1F5F8] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1 flex items-center gap-1">
                 <Tag size={9} />Category
               </p>
               <p className="text-sm font-semibold text-[#1E3A5F]">{publicSubmission.category}</p>
             </div>
-            <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
+            <div className="rounded-xl bg-[#F1F5F8] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Priority</p>
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[publicSubmission.priority] ?? "text-[#6B7B8D] bg-[#F4F7FA]"}`}>
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[publicSubmission.priority] ?? "text-[#6B7B8D] bg-[#EEF3F7]"}`}>
                 {publicSubmission.priority}
               </span>
             </div>
-            <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
+            <div className="rounded-xl bg-[#F1F5F8] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Status</p>
               <p className="text-sm font-semibold text-[#1E3A5F]">{getStatusLabel(publicSubmission.status)}</p>
             </div>

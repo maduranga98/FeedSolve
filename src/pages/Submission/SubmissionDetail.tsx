@@ -326,7 +326,7 @@ export function SubmissionDetail() {
             )}
           </div>
 
-          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-4">
+          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4">
             <div className="mb-3 flex items-center gap-2 text-[#1E3A5F]">
               <History size={17} />
               <h2 className="text-base font-semibold">Escalation History</h2>

@@ -84,7 +84,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-[#9AABBF] transition hover:bg-[#F4F7FA] hover:text-[#444441]"
+            className="rounded-lg p-2 text-[#9AABBF] transition hover:bg-[#EEF3F7] hover:text-[#444441]"
             aria-label="Close merge modal"
           >
             <X size={18} />
@@ -126,7 +126,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
               </div>
 
               <div className="rounded-xl border border-[#E8ECF0]">
-                <div className="border-b border-[#E8ECF0] bg-[#F8FAFB] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">
+                <div className="border-b border-[#E8ECF0] bg-[#F1F5F8] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">
                   Matching submissions
                 </div>
                 {searching ? (
@@ -142,7 +142,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
                         key={submission.id}
                         type="button"
                         onClick={() => handleSelectMaster(submission)}
-                        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#F8FAFB]"
+                        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#F1F5F8]"
                       >
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
           ) : null}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-[#E8ECF0] bg-[#F8FAFB] px-6 py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-[#E8ECF0] bg-[#F1F5F8] px-6 py-4">
           {step === "confirm" ? (
             <button
               type="button"

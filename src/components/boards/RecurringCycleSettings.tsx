@@ -80,12 +80,12 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
       </div>
 
       {!allowed ? (
-        <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-[#F8FAFB] p-4 text-sm text-[#6B7B8D]">
+        <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-[#F1F5F8] p-4 text-sm text-[#6B7B8D]">
           Recurring cycles are available on Growth and Business plans.
         </div>
       ) : (
         <div className="space-y-4">
-          <label className="flex items-start gap-3 rounded-xl border border-[#E8ECF0] bg-[#F8FAFB] p-4">
+          <label className="flex items-start gap-3 rounded-xl border border-[#E8ECF0] bg-[#F1F5F8] p-4">
             <input
               type="checkbox"
               checked={enabled}
@@ -146,7 +146,7 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
                 Next cycle starts: {nextCycleDate ? nextCycleDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Choose a start date'}
               </div>
 
-              <div className="md:col-span-3 rounded-lg border border-[#D3D1C7] bg-[#F8FAFB] px-3 py-2 text-sm text-[#6B7B8D]">
+              <div className="md:col-span-3 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] px-3 py-2 text-sm text-[#6B7B8D]">
                 Existing submissions will be assigned to the current cycle. New cycles don't delete submissions — they're archived and viewable.
               </div>
             </div>
