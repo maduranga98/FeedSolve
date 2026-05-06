@@ -11,6 +11,7 @@ export interface InternalComment {
   isEdited: boolean;
   isDeleted: boolean;
   parentId: string | null;
+  authorType?: "user" | "system";
 }
 
 export interface InternalCommentInput {

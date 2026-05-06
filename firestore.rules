@@ -83,6 +83,21 @@ service cloud.firestore {
       return isUserInCompany(companyId) && canRoleManageSubmissions(getCurrentUserRole(companyId));
     }
 
+
+    function isGrowthOrBusiness(companyId) {
+      return exists(/databases/$(database)/documents/companies/$(companyId)) &&
+        get(/databases/$(database)/documents/companies/$(companyId)).data.subscription.tier in ['growth', 'business'];
+    }
+
+    function isValidEscalationRule(companyId) {
+      let d = request.resource.data;
+      return isGrowthOrBusiness(companyId) &&
+        d.name is string && d.name.size() > 0 && d.name.size() <= 120 &&
+        d.isActive is bool &&
+        d.trigger.type in ['time_since_created', 'time_since_status_change', 'time_unassigned'] &&
+        (d.trigger.hours is int || d.trigger.hours is float) && d.trigger.hours >= 1 && d.trigger.hours <= 720;
+    }
+
     function isPublicFeedCompany(companyId) {
       return exists(/databases/$(database)/documents/companies/$(companyId)) &&
         get(/databases/$(database)/documents/companies/$(companyId)).data.showPublicFeed == true;
@@ -207,6 +222,14 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      // Escalation rules - Growth and Business tiers only, managed by owner/admin.
+      match /escalationRules/{ruleId} {
+        allow read: if canManageCompany(companyId);
+        allow create: if canManageCompany(companyId) && isValidEscalationRule(companyId);
+        allow update: if canManageCompany(companyId) && isValidEscalationRule(companyId);
+        allow delete: if canManageCompany(companyId);
+      }
+
       match /audit_logs/{logId} {
         allow read: if canManageCompany(companyId);
         // Authenticated company members may create audit log entries; no updates/deletes
@@ -294,6 +317,13 @@ service cloud.firestore {
         allow create: if isValidInternalCommentCreate(submissionId);
         allow update: if isValidInternalCommentUpdate(submissionId);
         allow delete: if canReadSubmissionDocument(submissionId) && resource.data.authorId == request.auth.uid;
+      }
+
+
+      // Escalation history is informational and written only by Cloud Functions.
+      match /escalationLog/{logId} {
+        allow read: if canReadSubmissionDocument(submissionId);
+        allow write: if false;
       }
 
       // Attachments subcollection - company members read; Cloud Functions write

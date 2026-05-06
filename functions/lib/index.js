@@ -50,5 +50,6 @@ __exportStar(require("./analytics-scheduler"), exports);
 __exportStar(require("./data-cleanup"), exports);
 __exportStar(require("./stripe-billing"), exports);
 __exportStar(require("./team-invitations"), exports);
+__exportStar(require("./evaluateEscalationRules"), exports);
 exports.api = functions.https.onRequest(api_1.default);
 //# sourceMappingURL=index.js.map

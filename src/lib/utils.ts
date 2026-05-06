@@ -29,6 +29,7 @@ export function getStatusColor(status: string): { bg: string; text: string } {
     received: { bg: 'bg-[#EFF3F6]', text: 'text-[#6B7B8D]' },
     in_review: { bg: 'bg-[#EBF5FB]', text: 'text-[#185FA5]' },
     in_progress: { bg: 'bg-[#FEF5E7]', text: 'text-[#854F0B]' },
+    escalated: { bg: 'bg-[#FDECEA]', text: 'text-[#C0392B]' },
     resolved: { bg: 'bg-[#EBF9F1]', text: 'text-[#0F6E56]' },
     closed: { bg: 'bg-[#F1EFE8]', text: 'text-[#5F5E5A]' },
   };
@@ -40,6 +41,7 @@ export function getStatusLabel(status: string): string {
     received: 'Received',
     in_review: 'In Review',
     in_progress: 'In Progress',
+    escalated: 'Escalated',
     resolved: 'Resolved',
     closed: 'Closed',
   };

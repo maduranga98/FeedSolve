@@ -7,5 +7,6 @@ export * from './analytics-scheduler';
 export * from './data-cleanup';
 export * from './stripe-billing';
 export * from './team-invitations';
+export * from './evaluateEscalationRules';
 export declare const api: functions.HttpsFunction;
 //# sourceMappingURL=index.d.ts.map

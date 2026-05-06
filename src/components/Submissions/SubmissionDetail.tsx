@@ -33,6 +33,7 @@ function StatusBadge({ status }: { status: Submission["status"] }) {
     received: { label: "Received", cls: "bg-[#EBF5FB] text-[#1E6A9A]" },
     in_review: { label: "In Review", cls: "bg-[#FFF3CD] text-[#856404]" },
     in_progress: { label: "In Progress", cls: "bg-[#FFF8E6] text-[#B06F00]" },
+    escalated: { label: "Escalated", cls: "bg-[#FDECEA] text-[#C0392B]" },
     resolved: { label: "Resolved", cls: "bg-[#EAF9F2] text-[#1D8A57]" },
     closed: { label: "Closed", cls: "bg-[#F0F4F8] text-[#6B7B8D]" },
   };
@@ -199,6 +200,7 @@ export default function SubmissionDetail({
                 <option value="received">Received</option>
                 <option value="in_review">In Review</option>
                 <option value="in_progress">In Progress</option>
+                <option value="escalated">Escalated</option>
                 <option value="resolved">Resolved</option>
                 <option value="closed">Closed</option>
               </select>

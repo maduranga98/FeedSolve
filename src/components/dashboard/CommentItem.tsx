@@ -31,18 +31,26 @@ export function CommentItem({
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const isOwnComment = comment.authorId === currentUserId;
+  const isSystemComment = comment.authorType === "system" || comment.authorId === "feedsolve_bot";
+  const isOwnComment = comment.authorId === currentUserId && !isSystemComment;
 
   return (
     <div className={isReply ? "pl-8 border-l-2 border-[#D3D1C7]" : ""}>
-      <div className="group rounded-xl bg-white p-3 shadow-sm ring-1 ring-[#D3D1C7]/70">
+      <div className={`group rounded-xl p-3 shadow-sm ring-1 ${isSystemComment ? "bg-[#F1EFE8] ring-[#D3D1C7]" : "bg-white ring-[#D3D1C7]/70"}`}>
         <div className="flex gap-3">
-          <Avatar userId={comment.authorId} name={comment.authorName} />
+          {isSystemComment ? (
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-[#D3D1C7]">
+              <img src="/logo.png" alt="FeedSolve" className="h-5 w-5 object-contain" />
+            </div>
+          ) : (
+            <Avatar userId={comment.authorId} name={comment.authorName} />
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <p className="truncate text-sm font-semibold text-[#1E3A5F]">{comment.authorName}</p>
+                  <p className="truncate text-sm font-semibold text-[#1E3A5F]">{isSystemComment ? "FeedSolve" : comment.authorName}</p>
+                  {isSystemComment && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#6B7B8D]">system</span>}
                   <span className="text-xs text-[#6B7B8D]">{relativeTime(comment)}</span>
                   {comment.isEdited && !comment.isDeleted && (
                     <span className="text-xs font-medium text-[#6B7B8D]">Edited</span>
@@ -114,7 +122,7 @@ export function CommentItem({
               </div>
             )}
 
-            {!isReply && !comment.isDeleted && !isEditing && (
+            {!isSystemComment && !isReply && !comment.isDeleted && !isEditing && (
               <button
                 type="button"
                 onClick={() => setIsReplying(true)}
