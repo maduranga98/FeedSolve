@@ -8,6 +8,7 @@ import { QRCustomizer } from '../../components/QR';
 import type { Board, Company } from '../../types';
 import { LocationManager } from '../../components/boards/LocationManager';
 import { LocationQRSection } from '../../components/boards/LocationQRSection';
+import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSettings';
 
 export function BoardDetails() {
   const { boardId } = useParams<{ boardId: string }>();
@@ -21,7 +22,7 @@ export function BoardDetails() {
 
   useEffect(() => {
     if (!user || !boardId) {
-      setLoading(false);
+      void Promise.resolve().then(() => setLoading(false));
       return;
     }
 
@@ -207,6 +208,11 @@ export function BoardDetails() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-8">
+          <RecurringCycleSettings
+            board={board}
+            company={company}
+            onBoardChange={setBoard}
+          />
           <LocationManager
             board={board}
             company={company}

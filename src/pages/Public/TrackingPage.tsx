@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-import { getSubmissionByTrackingCode, getBoard, getCompany } from "../../lib/firestore";
+import { getSubmission, getSubmissionByTrackingCode, getBoard, getCompany } from "../../lib/firestore";
 import { applyBrandColors } from "../../lib/color-utils";
 import { AttachmentGallery } from "../../components/Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
@@ -103,6 +103,7 @@ function TrackingView({ code }: { code: string }) {
   const normalizedCode = code.startsWith("#") ? code : `#${code}`;
 
   const [submission, setSubmission] = useState<Submission | null>(null);
+  const [masterSubmission, setMasterSubmission] = useState<Submission | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -122,8 +123,16 @@ function TrackingView({ code }: { code: string }) {
         const data = await getSubmissionByTrackingCode(normalizedCode);
         if (data) {
           setSubmission(data);
+          let publicSubmission = data;
+          if (data.isMerged && data.mergedInto) {
+            const master = await getSubmission(data.mergedInto);
+            if (master) {
+              setMasterSubmission(master);
+              publicSubmission = master;
+            }
+          }
           try {
-            const boardData = await getBoard(data.boardId);
+            const boardData = await getBoard(publicSubmission.boardId);
             if (boardData) {
               setBoard(boardData);
               if (boardData.accessPassword) setPasswordRequired(true);
@@ -230,19 +239,21 @@ function TrackingView({ code }: { code: string }) {
     );
   }
 
+  const publicSubmission = masterSubmission ?? submission;
+  const mergedMasterCode = masterSubmission?.trackingCode ?? null;
   const branding = company?.branding;
   const companyName = branding?.companyName || company?.name || board?.name || "";
-  const currentStep = getStepIndex(submission.status);
-  const isClosed = submission.status === "closed";
-  const isResolved = submission.status === "resolved";
+  const currentStep = getStepIndex(publicSubmission.status);
+  const isClosed = publicSubmission.status === "closed";
+  const isResolved = publicSubmission.status === "resolved";
 
   const timelineEvents = [
-    { date: submission.createdAt, label: "Submitted" },
-    submission.status !== "received"
-      ? { date: submission.updatedAt, label: "Updated" }
+    { date: publicSubmission.createdAt, label: "Submitted" },
+    publicSubmission.status !== "received"
+      ? { date: publicSubmission.updatedAt, label: "Updated" }
       : null,
-    (isResolved || isClosed) && submission.resolvedAt
-      ? { date: submission.resolvedAt, label: "Resolved" }
+    (isResolved || isClosed) && publicSubmission.resolvedAt
+      ? { date: publicSubmission.resolvedAt, label: "Resolved" }
       : null,
   ].filter(Boolean) as { date: Timestamp; label: string }[];
 
@@ -263,9 +274,27 @@ function TrackingView({ code }: { code: string }) {
             <p className="text-sm font-bold text-[#1E3A5F] font-mono">{normalizedCode}</p>
           </div>
           <div className="ml-auto">
-            <Badge status={submission.status} />
+            <Badge status={publicSubmission.status} />
           </div>
         </div>
+
+        {submission.isMerged && masterSubmission && (
+          <div className="rounded-2xl border border-[#D6EAF3] bg-white px-5 py-5 shadow-sm">
+            <div className="mb-3 inline-flex rounded-full bg-[#EBF5FB] px-3 py-1 text-xs font-bold text-[#2E86AB]">
+              Combined with a related report
+            </div>
+            <p className="text-sm leading-relaxed text-[#444441]">
+              Your submission has been combined with a related report and is being handled together. You can track the progress here:
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate(`/track/${masterSubmission.trackingCode.replace(/^#/, "")}`)}
+              className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#2E86AB] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#1E3A5F]"
+            >
+              Track {mergedMasterCode}
+            </button>
+          </div>
+        )}
 
         {/* Company brand card */}
         {companyName && (
@@ -323,67 +352,67 @@ function TrackingView({ code }: { code: string }) {
               in_progress: "We're actively working on your feedback. Updates coming soon.",
               resolved: "Your feedback has been resolved. Thank you for helping us improve!",
               closed: "This submission has been closed.",
-            } as Record<string, string>)[submission.status] ?? "Thank you for your feedback."}
+            } as Record<string, string>)[publicSubmission.status] ?? "Thank you for your feedback."}
           </div>
         </div>
 
         {/* Submission details */}
         <div className="bg-white rounded-2xl border border-[#E8ECF0] shadow-sm px-6 py-6">
-          <h2 className="text-lg font-bold text-[#1E3A5F] mb-3">{submission.subject}</h2>
+          <h2 className="text-lg font-bold text-[#1E3A5F] mb-3">{publicSubmission.subject}</h2>
           <p className="text-sm text-[#444441] leading-relaxed whitespace-pre-wrap mb-5">
-            {submission.description}
+            {publicSubmission.description}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1 flex items-center gap-1">
                 <Tag size={9} />Category
               </p>
-              <p className="text-sm font-semibold text-[#1E3A5F]">{submission.category}</p>
+              <p className="text-sm font-semibold text-[#1E3A5F]">{publicSubmission.category}</p>
             </div>
             <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Priority</p>
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[submission.priority] ?? "text-[#6B7B8D] bg-[#F4F7FA]"}`}>
-                {submission.priority}
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[publicSubmission.priority] ?? "text-[#6B7B8D] bg-[#F4F7FA]"}`}>
+                {publicSubmission.priority}
               </span>
             </div>
             <div className="rounded-xl bg-[#F8FAFB] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Status</p>
-              <p className="text-sm font-semibold text-[#1E3A5F]">{getStatusLabel(submission.status)}</p>
+              <p className="text-sm font-semibold text-[#1E3A5F]">{getStatusLabel(publicSubmission.status)}</p>
             </div>
           </div>
         </div>
 
         {/* Public reply */}
-        {submission.publicReply && (
+        {publicSubmission.publicReply && (
           <div className="bg-[#EAF9F2] border border-[#A8DFC4] rounded-2xl shadow-sm px-6 py-5">
             <div className="flex items-center gap-2 mb-3 flex-wrap">
               <MessageSquare size={15} className="text-[#1D8A57]" />
               <h2 className="text-sm font-bold text-[#1D6B45]">
-                Response from {submission.publicReplyBy}
+                Response from {publicSubmission.publicReplyBy}
               </h2>
-              {submission.publicReplyAt && (
+              {publicSubmission.publicReplyAt && (
                 <span className="ml-auto text-xs text-[#2C8C5A]">
-                  {formatDate(submission.publicReplyAt.toDate())}
+                  {formatDate(publicSubmission.publicReplyAt.toDate())}
                 </span>
               )}
             </div>
             <p className="text-sm text-[#1D6B45] leading-relaxed whitespace-pre-wrap">
-              {submission.publicReply}
+              {publicSubmission.publicReply}
             </p>
           </div>
         )}
 
         {/* Attachments */}
-        {submission.attachments && submission.attachments.length > 0 && (
+        {publicSubmission.attachments && publicSubmission.attachments.length > 0 && (
           <div className="bg-white rounded-2xl border border-[#E8ECF0] shadow-sm px-6 py-5">
             <div className="flex items-center gap-2 mb-4">
               <Paperclip size={14} className="text-[#6B7B8D]" />
               <h2 className="text-sm font-semibold text-[#1E3A5F]">Attachments</h2>
             </div>
             <AttachmentGallery
-              attachments={submission.attachments}
-              onDownload={attachment => downloadFile(submission.id, attachment)}
-              onView={attachment => { viewFile(submission.id, attachment); }}
+              attachments={publicSubmission.attachments}
+              onDownload={attachment => downloadFile(publicSubmission.id, attachment)}
+              onView={attachment => { viewFile(publicSubmission.id, attachment); }}
               loading={downloading}
             />
           </div>

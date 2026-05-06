@@ -10,5 +10,7 @@ export * from './data-cleanup';
 export * from './stripe-billing';
 export * from './team-invitations';
 export * from './evaluateEscalationRules';
+export * from './rotateBoardCycles';
+export * from './onSubmissionCreate';
 
 export const api = functions.https.onRequest(app);

@@ -8,6 +8,9 @@ import { LoadingSpinner } from '../../components/Shared';
 import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import { BulkActionBar } from '../../components/Submissions/BulkActionBar';
+import { CycleSwitcher, type CycleSelection } from '../../components/dashboard/CycleSwitcher';
+import { CycleStatsBanner } from '../../components/dashboard/CycleStatsBanner';
+import { useBoardCycles } from '../../hooks/useBoardCycles';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import {
   Users,
@@ -93,7 +96,11 @@ export function SubmissionsPage() {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('active');
   const [showTeamProgress, setShowTeamProgress] = useState(false);
+  const [showMerged, setShowMerged] = useState(false);
+  const [selectedCycle, setSelectedCycle] = useState<CycleSelection>('current');
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
+
+  const { cycles, currentCyclesByBoard } = useBoardCycles(user?.companyId);
 
   const {
     selectedIds,
@@ -158,7 +165,7 @@ export function SubmissionsPage() {
   }, []);
 
   useEffect(() => {
-    loadInitial();
+    void Promise.resolve().then(() => loadInitial());
   }, [loadInitial]);
 
   const handleTabChange = useCallback(
@@ -212,8 +219,22 @@ export function SubmissionsPage() {
   const assignedCount = submissions.filter((s) => s.assignedTo).length;
   const unassignedCount = totalCount - assignedCount;
 
-  const activeSubmissions = submissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
-  const completedSubmissions = submissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
+  const selectedPastCycle = cycles.find((cycle) => cycle.id === selectedCycle) ?? null;
+  const cycleFilteredSubmissions = (() => {
+    if (selectedCycle === 'all') return submissions;
+    if (selectedCycle !== 'current') {
+      return submissions.filter((submission) => submission.cycleId === selectedCycle);
+    }
+    return submissions.filter((submission) => {
+      if (!submission.cycleId) return true;
+      const currentCycle = currentCyclesByBoard.get(submission.boardId);
+      return currentCycle?.id === submission.cycleId;
+    });
+  })();
+  const visibleSubmissions = showMerged ? cycleFilteredSubmissions : cycleFilteredSubmissions.filter((s) => !s.isMerged);
+  const mergedCount = cycleFilteredSubmissions.filter((s) => s.isMerged).length;
+  const activeSubmissions = visibleSubmissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
+  const completedSubmissions = visibleSubmissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
 
   const memberProgress = users
     .map((member) => {
@@ -403,6 +424,27 @@ export function SubmissionsPage() {
                 </div>
               )}
 
+              {/* Cycle selector */}
+              {cycles.length > 0 && (
+                <>
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#E8ECF0] bg-white p-4">
+                    <div>
+                      <p className="text-sm font-bold text-[#1E3A5F]">Board cycles</p>
+                      <p className="text-xs text-[#6B7B8D]">Default view shows the current cycle.</p>
+                    </div>
+                    <CycleSwitcher
+                      cycles={cycles}
+                      selectedCycle={selectedCycle}
+                      onChange={(value) => {
+                        setSelectedCycle(value);
+                        clearSelection();
+                      }}
+                    />
+                  </div>
+                  <CycleStatsBanner cycle={selectedPastCycle} />
+                </>
+              )}
+
               {/* Tabs + description inline */}
               <div className="flex items-center gap-2 flex-wrap">
                 <TabButton
@@ -421,7 +463,18 @@ export function SubmissionsPage() {
                   <CheckCircle2 size={14} />
                   Completed
                 </TabButton>
-                <p className="ml-auto text-xs text-[#9AABBF]">
+                {mergedCount > 0 && (
+                  <label className="ml-auto inline-flex items-center gap-2 rounded-xl border border-[#E8ECF0] bg-white px-3 py-2 text-xs font-semibold text-[#6B7B8D]">
+                    <input
+                      type="checkbox"
+                      checked={showMerged}
+                      onChange={(event) => setShowMerged(event.target.checked)}
+                      className="h-4 w-4 accent-[#2E86AB]"
+                    />
+                    Show merged ({mergedCount})
+                  </label>
+                )}
+                <p className="text-xs text-[#9AABBF]">
                   {activeTab === 'active'
                     ? 'New, in review, and in progress submissions'
                     : 'Resolved and closed — archived for reference'}

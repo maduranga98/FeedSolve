@@ -150,6 +150,12 @@ router.post('/api/boards', (0, auth_1.hasPermission)(['boards:create']), async (
             isAnonymousAllowed: isAnonymousAllowed !== false,
             qrCodeUrl: `https://app.feedsolve.com/b/${slug}`,
             submissionCount: 0,
+            recurringEnabled: false,
+            recurringFrequency: null,
+            recurringCustomDays: null,
+            recurringStartDate: null,
+            currentCycleId: null,
+            nextCycleDate: null,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
