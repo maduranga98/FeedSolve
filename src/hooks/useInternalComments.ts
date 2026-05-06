@@ -15,6 +15,7 @@ import {
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { addAuditLog } from "../lib/firestore";
 import type { User } from "../types";
 import type { InternalComment, InternalCommentInput } from "../types/comment";
 
@@ -97,6 +98,15 @@ export function useInternalComments(submissionId: string, user: User | null) {
 
     try {
       await setDoc(doc(commentsCollection(submissionId), newComment.id), newComment);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: input.parentId ? 'Added internal discussion reply' : 'Added internal discussion comment',
+        resourceType: 'submission',
+        resourceId: submissionId,
+        details: { commentId: newComment.id, parentId: input.parentId ?? null },
+      });
       return newComment;
     } catch (err) {
       setComments(current => current.filter(comment => comment.id !== newComment.id));
@@ -124,6 +134,17 @@ export function useInternalComments(submissionId: string, user: User | null) {
         editedAt,
         isEdited: true,
       });
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: 'Edited internal discussion comment',
+          resourceType: 'submission',
+          resourceId: submissionId,
+          details: { commentId },
+        });
+      }
     } catch (err) {
       setComments(previous);
       setError(err instanceof Error ? err.message : "Failed to edit comment.");
@@ -131,7 +152,7 @@ export function useInternalComments(submissionId: string, user: User | null) {
     } finally {
       setSaving(false);
     }
-  }, [comments, submissionId]);
+  }, [comments, submissionId, user]);
 
   const deleteComment = useCallback(async (commentId: string) => {
     const previous = comments;
@@ -160,6 +181,17 @@ export function useInternalComments(submissionId: string, user: User | null) {
       } else {
         await deleteDoc(doc(commentsCollection(submissionId), commentId));
       }
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: hasReplies ? 'Deleted internal discussion comment with replies' : 'Deleted internal discussion comment',
+          resourceType: 'submission',
+          resourceId: submissionId,
+          details: { commentId, hadReplies: hasReplies },
+        });
+      }
     } catch (err) {
       setComments(previous);
       setError(err instanceof Error ? err.message : "Failed to delete comment.");
@@ -167,7 +199,7 @@ export function useInternalComments(submissionId: string, user: User | null) {
     } finally {
       setSaving(false);
     }
-  }, [comments, submissionId]);
+  }, [comments, submissionId, user]);
 
   const setMigratedComments = useCallback((migratedComments: InternalComment[]) => {
     setComments(current => sortNewestFirst([...migratedComments, ...current]));

@@ -3,7 +3,7 @@ import { Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
-import { addPublicReply, getBoard } from '../../lib/firestore';
+import { addAuditLog, addPublicReply, getBoard } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 import ReplyForm from './ReplyForm';
 import type { Submission } from '../../types';
@@ -64,6 +64,16 @@ export default function PublicReplySection({
     setLoading(true);
     try {
       await addPublicReply(submissionId, text, user.name);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: publicReply ? 'Updated public reply' : 'Added public reply',
+        resourceType: 'submission',
+        resourceId: submissionId,
+        resourceName: submission?.subject,
+        details: { replyLength: text.trim().length, hadPreviousReply: Boolean(publicReply) },
+      });
       setIsEditing(false);
       onReplyAdded?.();
     } catch (error) {

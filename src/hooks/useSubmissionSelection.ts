@@ -2,10 +2,13 @@ import { useState, useCallback } from 'react';
 import { doc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { batchedFirestoreUpdate } from '../utils/firestoreBatch';
+import { useAuth } from './useAuth';
+import { addAuditLog } from '../lib/firestore';
 import { toast } from 'sonner';
 import type { Submission } from '../types';
 
 export function useSubmissionSelection() {
+  const { user } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const toggleSelection = useCallback((id: string) => {
@@ -44,10 +47,20 @@ export function useSubmissionSelection() {
       }));
       await batchedFirestoreUpdate(updates);
       const n = ids.length;
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Bulk changed status to ${status}`,
+          resourceType: 'submission',
+          details: { submissionIds: ids, count: n, status },
+        });
+      }
       toast.success(`${n} submission${n !== 1 ? 's' : ''} updated`);
       setSelectedIds(new Set());
     },
-    [selectedIds]
+    [selectedIds, user]
   );
 
   const bulkAssign = useCallback(
@@ -60,10 +73,20 @@ export function useSubmissionSelection() {
       }));
       await batchedFirestoreUpdate(updates);
       const n = ids.length;
+      if (user) {
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Bulk assigned submissions to ${userName}`,
+          resourceType: 'submission',
+          details: { submissionIds: ids, count: n, assignedToId: userId, assignedToName: userName },
+        });
+      }
       toast.success(`${n} submission${n !== 1 ? 's' : ''} assigned to ${userName}`);
       setSelectedIds(new Set());
     },
-    [selectedIds]
+    [selectedIds, user]
   );
 
   const bulkClose = useCallback(async () => {
@@ -76,9 +99,19 @@ export function useSubmissionSelection() {
     }));
     await batchedFirestoreUpdate(updates);
     const n = ids.length;
+    if (user) {
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: 'Bulk closed submissions',
+        resourceType: 'submission',
+        details: { submissionIds: ids, count: n, status: 'closed' },
+      });
+    }
     toast.success(`${n} submission${n !== 1 ? 's' : ''} closed`);
     setSelectedIds(new Set());
-  }, [selectedIds]);
+  }, [selectedIds, user]);
 
   return {
     selectedIds,

@@ -12,6 +12,7 @@ import {
   query,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { addAuditLog } from '../lib/firestore';
 import { useAuth } from './useAuth';
 import type { ReplyTemplate } from '../types';
 
@@ -46,16 +47,26 @@ export function useTemplates() {
   const createTemplate = useCallback(
     async (data: Pick<ReplyTemplate, 'title' | 'body' | 'category'>) => {
       if (!user?.companyId) return;
-      await addDoc(collection(db, 'companies', user.companyId, 'replyTemplates'), {
+      const templateRef = await addDoc(collection(db, 'companies', user.companyId, 'replyTemplates'), {
         ...data,
         usageCount: 0,
         createdBy: user.id,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
       });
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Created reply template ${data.title}`,
+        resourceType: 'template',
+        resourceId: templateRef.id,
+        resourceName: data.title,
+        details: { category: data.category ?? null },
+      });
       await load();
     },
-    [user?.companyId, user?.id, load]
+    [user, load]
   );
 
   const updateTemplate = useCallback(
@@ -65,18 +76,39 @@ export function useTemplates() {
         ...data,
         updatedAt: Timestamp.now(),
       });
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Updated reply template ${data.title}`,
+        resourceType: 'template',
+        resourceId: id,
+        resourceName: data.title,
+        details: { category: data.category ?? null },
+      });
       await load();
     },
-    [user?.companyId, load]
+    [user, load]
   );
 
   const deleteTemplate = useCallback(
     async (id: string) => {
       if (!user?.companyId) return;
+      const template = templates.find((item) => item.id === id);
       await deleteDoc(doc(db, 'companies', user.companyId, 'replyTemplates', id));
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Deleted reply template ${template?.title ?? id}`,
+        resourceType: 'template',
+        resourceId: id,
+        resourceName: template?.title,
+        details: { category: template?.category ?? null },
+      });
       await load();
     },
-    [user?.companyId, load]
+    [user, templates, load]
   );
 
   const incrementUsage = useCallback(

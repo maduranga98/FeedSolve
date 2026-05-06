@@ -19,6 +19,23 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
 
+
+function removeUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => removeUndefinedDeep(item)) as T;
+  }
+
+  if (value && typeof value === 'object' && !(value instanceof Timestamp)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([, nestedValue]) => nestedValue !== undefined)
+        .map(([key, nestedValue]) => [key, removeUndefinedDeep(nestedValue)])
+    ) as T;
+  }
+
+  return value;
+}
+
 function wrapFirestoreError(error: unknown): never {
   if (isQuotaError(error)) {
     throw new Error(

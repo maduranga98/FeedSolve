@@ -84,14 +84,9 @@ service cloud.firestore {
     }
 
 
-    function isGrowthOrBusiness(companyId) {
-      return exists(/databases/$(database)/documents/companies/$(companyId)) &&
-        get(/databases/$(database)/documents/companies/$(companyId)).data.subscription.tier in ['growth', 'business'];
-    }
-
     function isValidEscalationRule(companyId) {
       let d = request.resource.data;
-      return isGrowthOrBusiness(companyId) &&
+      return request.resource.data.keys().hasAll(['name', 'isActive', 'trigger']) &&
         d.name is string && d.name.size() > 0 && d.name.size() <= 120 &&
         d.isActive is bool &&
         d.trigger.type in ['time_since_created', 'time_since_status_change', 'time_unassigned'] &&
@@ -230,9 +225,9 @@ service cloud.firestore {
         allow write: if false;
       }
 
-      // Escalation rules - Growth and Business tiers only, managed by owner/admin.
+      // Escalation rules are feature-gated in the app; rules enforce company membership and owner/admin writes.
       match /escalationRules/{ruleId} {
-        allow read: if canManageCompany(companyId);
+        allow read: if isUserInCompany(companyId);
         allow create: if canManageCompany(companyId) && isValidEscalationRule(companyId);
         allow update: if canManageCompany(companyId) && isValidEscalationRule(companyId);
         allow delete: if canManageCompany(companyId);
