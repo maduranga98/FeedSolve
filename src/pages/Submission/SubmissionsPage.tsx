@@ -93,6 +93,7 @@ export function SubmissionsPage() {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('active');
   const [showTeamProgress, setShowTeamProgress] = useState(false);
+  const [showMerged, setShowMerged] = useState(false);
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
   const {
@@ -158,7 +159,7 @@ export function SubmissionsPage() {
   }, []);
 
   useEffect(() => {
-    loadInitial();
+    void Promise.resolve().then(() => loadInitial());
   }, [loadInitial]);
 
   const handleTabChange = useCallback(
@@ -212,8 +213,10 @@ export function SubmissionsPage() {
   const assignedCount = submissions.filter((s) => s.assignedTo).length;
   const unassignedCount = totalCount - assignedCount;
 
-  const activeSubmissions = submissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
-  const completedSubmissions = submissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
+  const visibleSubmissions = showMerged ? submissions : submissions.filter((s) => !s.isMerged);
+  const mergedCount = submissions.filter((s) => s.isMerged).length;
+  const activeSubmissions = visibleSubmissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
+  const completedSubmissions = visibleSubmissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
 
   const memberProgress = users
     .map((member) => {
@@ -421,7 +424,18 @@ export function SubmissionsPage() {
                   <CheckCircle2 size={14} />
                   Completed
                 </TabButton>
-                <p className="ml-auto text-xs text-[#9AABBF]">
+                {mergedCount > 0 && (
+                  <label className="ml-auto inline-flex items-center gap-2 rounded-xl border border-[#E8ECF0] bg-white px-3 py-2 text-xs font-semibold text-[#6B7B8D]">
+                    <input
+                      type="checkbox"
+                      checked={showMerged}
+                      onChange={(event) => setShowMerged(event.target.checked)}
+                      className="h-4 w-4 accent-[#2E86AB]"
+                    />
+                    Show merged ({mergedCount})
+                  </label>
+                )}
+                <p className="text-xs text-[#9AABBF]">
                   {activeTab === 'active'
                     ? 'New, in review, and in progress submissions'
                     : 'Resolved and closed — archived for reference'}

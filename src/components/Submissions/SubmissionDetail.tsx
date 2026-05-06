@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FileAttachment, Submission } from "../../types";
 import { Button } from "../Shared";
 import {
@@ -10,15 +10,19 @@ import {
   FileText,
   Eye,
   ExternalLink,
+  GitMerge,
   MapPin,
+  MoreVertical,
 } from "lucide-react";
 import { AttachmentGallery } from "../Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
 import { useAuth } from "../../hooks/useAuth";
+import { useMergeSubmission } from "../../hooks/useMergeSubmission";
 import AssignDropdown from "./AssignDropdown";
 import PriorityDropdown from "./PriorityDropdown";
 import PublicReplySection from "./PublicReplySection";
 import { InternalDiscussion } from "../dashboard/InternalDiscussion";
+import { MergeModal } from "../dashboard/MergeModal";
 import { updateSubmissionStatus, addAuditLog } from "../../lib/firestore";
 import { formatDate } from "../../lib/utils";
 
@@ -42,6 +46,48 @@ function StatusBadge({ status }: { status: Submission["status"] }) {
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>
       {label}
     </span>
+  );
+}
+
+function formatMergedAt(submission: Submission) {
+  if (!submission.mergedAt) return "merged recently";
+  const diffMs = Date.now() - submission.mergedAt.toDate().getTime();
+  const diffMinutes = Math.max(1, Math.floor(diffMs / 60000));
+  if (diffMinutes < 60) return `merged ${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `merged ${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+  return `merged ${Math.floor(diffHours / 24)} day${Math.floor(diffHours / 24) === 1 ? "" : "s"} ago`;
+}
+
+function MergedSubmissionPreview({ submission, onClose }: { submission: Submission; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-end bg-black/40 p-4">
+      <div className="h-full w-full max-w-md overflow-y-auto rounded-xl bg-white shadow-2xl">
+        <div className="sticky top-0 flex items-start justify-between gap-3 border-b border-[#E8ECF0] bg-white px-5 py-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">Merged submission</p>
+            <h3 className="mt-1 text-lg font-bold text-[#1E3A5F]">{submission.subject}</h3>
+            <p className="font-mono text-xs text-[#2E86AB]">{submission.trackingCode}</p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#F4F7FA] hover:text-[#444441]">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="space-y-4 p-5 text-sm">
+          <div className="rounded-xl bg-[#F1EFE8] px-3 py-2 text-xs font-semibold text-[#5F5E5A]">Read-only merged record</div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><p className="text-xs text-[#9AABBF]">Category</p><p className="font-semibold text-[#444441]">{submission.category}</p></div>
+            <div><p className="text-xs text-[#9AABBF]">Status</p><StatusBadge status={submission.status} /></div>
+            <div><p className="text-xs text-[#9AABBF]">Submitted</p><p className="font-semibold text-[#444441]">{formatDate(submission.createdAt.toDate())}</p></div>
+            <div><p className="text-xs text-[#9AABBF]">Merged</p><p className="font-semibold text-[#444441]">{submission.mergedAt ? formatDate(submission.mergedAt.toDate()) : "Recently"}</p></div>
+          </div>
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#9AABBF]">Description</p>
+            <p className="whitespace-pre-wrap rounded-xl border border-[#E8ECF0] bg-[#FAFAFA] p-4 leading-relaxed text-[#444441]">{submission.description}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -82,7 +128,31 @@ export default function SubmissionDetail({
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
+  const [mergedSubmissions, setMergedSubmissions] = useState<Submission[]>([]);
+  const [readOnlySubmission, setReadOnlySubmission] = useState<Submission | null>(null);
   const { loading: downloading, downloadFile, viewFile } = useFileDownload();
+  const { loadMergedSubmissions } = useMergeSubmission(user);
+
+  useEffect(() => {
+    const ids = submission.mergedSubmissions ?? [];
+    if (ids.length === 0) {
+      Promise.resolve().then(() => setMergedSubmissions([]));
+      return;
+    }
+
+    let active = true;
+    loadMergedSubmissions(ids)
+      .then((items) => {
+        if (active) setMergedSubmissions(items);
+      })
+      .catch((error) => console.error("Failed to load merged submissions:", error));
+
+    return () => {
+      active = false;
+    };
+  }, [loadMergedSubmissions, submission.mergedSubmissions]);
 
   const handleStatusChange = async (newStatus: Submission["status"]) => {
     setLoading(true);
@@ -173,6 +243,32 @@ export default function SubmissionDetail({
             >
               <ExternalLink size={18} />
             </a>
+            <div className="relative">
+              <button
+                onClick={() => setActionsOpen((open) => !open)}
+                className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+                title="More actions"
+                aria-label="More actions"
+              >
+                <MoreVertical size={18} />
+              </button>
+              {actionsOpen && (
+                <div className="absolute right-0 top-10 z-20 w-52 overflow-hidden rounded-lg border border-[#E8ECF0] bg-white shadow-lg">
+                  <button
+                    type="button"
+                    disabled={submission.isMerged}
+                    onClick={() => {
+                      setActionsOpen(false);
+                      setMergeModalOpen(true);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-[#6B7B8D] transition hover:bg-[#F8FAFB] hover:text-[#1E3A5F] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <GitMerge size={15} />
+                    Merge with another
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={onClose}
               className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#F4F7FA] rounded-lg transition-colors ml-1"
@@ -231,6 +327,12 @@ export default function SubmissionDetail({
               onAssigned={onUpdated}
             />
           </div>
+
+          {submission.isMerged && (
+            <div className="rounded-xl border border-[#D3D1C7] bg-[#F1EFE8] p-4 text-sm text-[#5F5E5A]">
+              This submission has been merged into another master submission and is kept here as a read-only archive reference.
+            </div>
+          )}
 
           {/* Description */}
           <div>
@@ -362,6 +464,31 @@ export default function SubmissionDetail({
             </div>
           )}
 
+          {mergedSubmissions.length > 0 && (
+            <div className="rounded-xl border border-[#E8ECF0] bg-white p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <GitMerge size={16} className="text-[#2E86AB]" />
+                <h3 className="text-sm font-bold text-[#1E3A5F]">Merged submissions</h3>
+              </div>
+              <div className="space-y-2">
+                {mergedSubmissions.map((merged) => (
+                  <button
+                    key={merged.id}
+                    type="button"
+                    onClick={() => setReadOnlySubmission(merged)}
+                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#E8ECF0] px-3 py-2 text-left transition hover:bg-[#F8FAFB]"
+                  >
+                    <span className="min-w-0 text-sm text-[#444441]">
+                      <span className="font-mono font-semibold text-[#2E86AB]">{merged.trackingCode}</span>
+                      <span> — {merged.category} — {formatMergedAt(merged)}</span>
+                    </span>
+                    <span className="flex-shrink-0 text-xs font-semibold text-[#2E86AB]">Open</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Share link */}
           <div className="bg-[#F8FBFD] border border-[#E4ECF3] rounded-xl p-4">
             <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-2">
@@ -437,6 +564,20 @@ export default function SubmissionDetail({
           </div>
         </div>
       </div>
+      {mergeModalOpen && (
+        <MergeModal
+          sourceSubmission={submission}
+          currentUser={user}
+          onClose={() => setMergeModalOpen(false)}
+          onMerged={() => onUpdated?.()}
+        />
+      )}
+      {readOnlySubmission && (
+        <MergedSubmissionPreview
+          submission={readOnlySubmission}
+          onClose={() => setReadOnlySubmission(null)}
+        />
+      )}
     </div>
   );
 }

@@ -100,7 +100,14 @@ function SubmissionCardComponent({
             <h3 className={`font-semibold text-[#1E3A5F] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
               {submission.subject}
             </h3>
-            <p className="text-xs text-[#9AABBF] font-mono">{submission.trackingCode}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-[#9AABBF] font-mono">{submission.trackingCode}</p>
+              {submission.isMerged && (
+                <span className="rounded-full bg-[#F1EFE8] px-2 py-0.5 text-xs font-semibold text-[#5F5E5A]">
+                  Merged
+                </span>
+              )}
+            </div>
           </div>
           <Badge status={submission.status} className="flex-shrink-0" />
         </div>

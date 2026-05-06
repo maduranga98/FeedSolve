@@ -144,7 +144,8 @@ service cloud.firestore {
         d.isEdited == false &&
         d.isDeleted == false &&
         d.editedAt == null &&
-        (!('parentId' in d) || d.parentId == null || d.parentId is string);
+        (!('parentId' in d) || d.parentId == null || d.parentId is string) &&
+        (!('authorType' in d) || d.authorType in ['user', 'system']);
     }
 
     function isValidInternalCommentUpdate(submissionId) {
@@ -157,6 +158,13 @@ service cloud.firestore {
         d.isDeleted is bool &&
         ((d.isDeleted == true && d.body == null) ||
          (d.body is string && d.body.size() > 0 && d.body.size() <= 2000));
+    }
+
+    function isSubmissionMergeUpdate() {
+      return canManageSubmissions(resource.data.companyId) && (
+        only(['isMerged', 'mergedInto', 'mergedAt', 'mergedBy', 'status', 'resolvedAt', 'updatedAt']) ||
+        only(['mergedSubmissions', 'updatedAt'])
+      );
     }
 
     function isValidSubmissionCreate() {
@@ -306,7 +314,8 @@ service cloud.firestore {
       allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
       // Public (unauthenticated) create from the feedback form
       allow create: if !isAuthenticated() && isValidSubmissionCreate();
-      allow update: if canManageSubmissions(resource.data.companyId) ||
+      allow update: if isSubmissionMergeUpdate() ||
+        canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
 

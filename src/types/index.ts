@@ -203,6 +203,11 @@ export interface Submission {
   publicReply?: string;
   publicReplyAt?: Timestamp;
   publicReplyBy?: string;
+  mergedInto?: string | null;
+  mergedSubmissions?: string[];
+  isMerged?: boolean;
+  mergedAt?: Timestamp | null;
+  mergedBy?: string | null;
   submissionLanguage?: string;
   satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
   satisfactionLabel?: string | null;
