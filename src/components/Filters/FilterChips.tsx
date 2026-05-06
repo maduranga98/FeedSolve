@@ -9,6 +9,7 @@ interface FilterChipsProps {
   onRemovePriority: (priority: string) => void;
   onRemoveBoard: (boardId: string) => void;
   onRemoveCategory: (category: string) => void;
+  onRemoveLocation: (location: string) => void;
   onRemoveAssignee: () => void;
   onRemoveDateRange: () => void;
   onClearAll: () => void;
@@ -37,6 +38,7 @@ export function FilterChips({
   onRemovePriority,
   onRemoveBoard,
   onRemoveCategory,
+  onRemoveLocation,
   onRemoveAssignee,
   onRemoveDateRange,
   onClearAll,
@@ -46,6 +48,7 @@ export function FilterChips({
     (filters.priority && filters.priority.length > 0) ||
     (filters.boardId && filters.boardId.length > 0) ||
     (filters.category && filters.category.length > 0) ||
+    (filters.location && filters.location.length > 0) ||
     filters.assignedTo ||
     filters.dateRange;
 
@@ -114,6 +117,23 @@ export function FilterChips({
             onClick={() => onRemoveCategory(category)}
             className="hover:text-[#444441]"
             aria-label={`Remove ${category} filter`}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      ))}
+
+
+      {filters.location?.map((location) => (
+        <div
+          key={location}
+          className="inline-flex items-center gap-2 px-3 py-1 bg-[#EFF3F6] text-[#6B7B8D] rounded-full text-sm font-medium"
+        >
+          <span>Location: {location}</span>
+          <button
+            onClick={() => onRemoveLocation(location)}
+            className="hover:text-[#444441]"
+            aria-label={`Remove ${location} location filter`}
           >
             <X size={14} />
           </button>

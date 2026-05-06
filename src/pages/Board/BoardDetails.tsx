@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Share2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { getBoard } from '../../lib/firestore';
+import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
 import { QRCustomizer } from '../../components/QR';
-import type { Board } from '../../types';
+import type { Board, Company } from '../../types';
+import { LocationManager } from '../../components/boards/LocationManager';
+import { LocationQRSection } from '../../components/boards/LocationQRSection';
 
 export function BoardDetails() {
   const { boardId } = useParams<{ boardId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [board, setBoard] = useState<Board | null>(null);
+  const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
@@ -34,7 +37,9 @@ export function BoardDetails() {
           setError('Unauthorized');
           return;
         }
-        setBoard(boardData);
+        setBoard({ ...boardData, locations: boardData.locations || [] });
+        const companyData = await getCompany(boardData.companyId);
+        setCompany(companyData);
         document.title = `${boardData.name} | FeedSolve`;
       } catch (err) {
         setError('Failed to load board');
@@ -199,6 +204,15 @@ export function BoardDetails() {
             </p>
             <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />
           </div>
+        </div>
+
+        <div className="mt-8 grid grid-cols-1 gap-8">
+          <LocationManager
+            board={board}
+            company={company}
+            onBoardChange={setBoard}
+          />
+          <LocationQRSection board={board} feedbackUrl={feedbackUrl} />
         </div>
       </div>
     </main>

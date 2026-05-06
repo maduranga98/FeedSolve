@@ -146,6 +146,7 @@ export interface Board {
   description: string;
   slug: string;
   categories: string[];
+  locations: string[];
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
   satisfactionRequired: boolean;
@@ -187,6 +188,7 @@ export interface Submission {
   submitterEmail?: string;
   submitterName?: string;
   submitterMobile?: string;
+  location: string | null;
   isAnonymous: boolean;
   status: "received" | "in_review" | "in_progress" | "resolved" | "closed";
   priority: "low" | "medium" | "high" | "critical";
@@ -211,6 +213,7 @@ export interface SubmissionFormInput {
   email?: string;
   submitterName?: string;
   submitterMobile?: string;
+  location?: string | null;
   isAnonymous: boolean;
   assignedTo?: string;
   submissionLanguage?: string;
@@ -410,6 +413,7 @@ export interface SearchFilters {
   priority?: Submission["priority"][];
   boardId?: string[];
   category?: string[];
+  location?: string[];
   assignedTo?: string;
   dateRange?: {
     from: Timestamp | Date;

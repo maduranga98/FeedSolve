@@ -10,6 +10,7 @@ import { StatusChart } from '../../components/Analytics/StatusChart';
 import { PriorityChart } from '../../components/Analytics/PriorityChart';
 import { CategoryChart } from '../../components/Analytics/CategoryChart';
 import { SourceChart } from '../../components/Analytics/SourceChart';
+import { LocationChart } from '../../components/Analytics/LocationChart';
 import { ReportBuilder, type ReportOptions } from '../../components/Analytics/ReportBuilder';
 import { calculateAnalytics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
@@ -59,6 +60,16 @@ export function AnalyticsDashboard() {
     acc[b.id] = b.name;
     return acc;
   }, {} as Record<string, string>);
+  const submissionsByLocation = Object.entries(
+    submissions.reduce((acc, submission) => {
+      if (submission.location) {
+        acc[submission.location] = (acc[submission.location] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>)
+  )
+    .map(([location, count]) => ({ location, count }))
+    .sort((a, b) => b.count - a.count);
 
   const handleExportPDF = async () => {
     try {
@@ -153,6 +164,10 @@ export function AnalyticsDashboard() {
             boardNames={boardMap}
             loading={false}
           />
+          <LocationChart data={submissionsByLocation} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <ReportBuilder
             onGenerateReport={handleGenerateReport}
             onExportCSV={handleExportCSV}

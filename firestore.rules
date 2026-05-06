@@ -79,6 +79,9 @@ service cloud.firestore {
       let validLabel = !('satisfactionLabel' in d) ||
                        d.satisfactionLabel == null ||
                        (d.satisfactionLabel is string && d.satisfactionLabel.size() <= 50);
+      let validLocation = !('location' in d) ||
+                          d.location == null ||
+                          (d.location is string && d.location.size() > 0 && d.location.size() <= 120);
       return d.boardId is string && d.boardId.size() > 0 && d.boardId.size() <= 128 &&
              d.companyId is string && d.companyId.size() > 0 && d.companyId.size() <= 128 &&
              d.subject is string && d.subject.size() > 0 && d.subject.size() <= 100 &&
@@ -88,7 +91,8 @@ service cloud.firestore {
              d.priority in ['low', 'medium', 'high', 'critical'] &&
              d.isAnonymous is bool &&
              validScore &&
-             validLabel;
+             validLabel &&
+             validLocation;
     }
 
     // Webhook logs - Cloud Functions write, Admin+ read
@@ -175,12 +179,13 @@ service cloud.firestore {
 
     // Boards collection - Role-based access; board doc must carry companyId
     match /boards/{boardId} {
-      // Public read: board config is needed by the public submit-feedback form
-      // (slug query) and the public tracking page (get by ID)
+      // Public read: board config (including locations) is needed by the public
+      // submit-feedback form (slug query) and the public tracking page (get by ID)
       allow read: if true;
       // create: resource doesn't exist yet, so use request.resource.data
       allow create: if canManageCompany(request.resource.data.companyId);
       // Allow anyone to increment submissionCount by exactly 1 (public form submissions)
+      // Location lists and all other board settings are writable by company admins only.
       allow update: if canManageCompany(resource.data.companyId) ||
         (only(['submissionCount']) &&
          request.resource.data.submissionCount == resource.data.submissionCount + 1);

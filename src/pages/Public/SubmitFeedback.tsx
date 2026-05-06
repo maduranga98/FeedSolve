@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   getBoardBySlug,
@@ -112,6 +112,7 @@ const LANGUAGES = [
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const { uploads, uploadFiles, uploading: fileUploading } = useFileUpload();
 
@@ -124,6 +125,7 @@ export function SubmitFeedback() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingTrackingCode, setExistingTrackingCode] = useState("");
+  const locationTag = searchParams.get("loc")?.trim() || null;
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -138,6 +140,7 @@ export function SubmitFeedback() {
     submissionLanguage: i18n.language || "en",
     satisfactionScore: null,
     satisfactionLabel: null,
+    location: locationTag,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -150,7 +153,9 @@ export function SubmitFeedback() {
           setBoard(boardData);
           document.title = `${boardData.name} | FeedSolve`;
           if (boardData.categories.length > 0) {
-            setFormData(prev => ({ ...prev, category: boardData.categories[0] }));
+            setFormData(prev => ({ ...prev, category: boardData.categories[0], location: locationTag }));
+          } else {
+            setFormData(prev => ({ ...prev, location: locationTag }));
           }
           try {
             const companyData = await getCompany(boardData.companyId);
@@ -166,7 +171,7 @@ export function SubmitFeedback() {
       }
     };
     fetchBoard();
-  }, [slug]);
+  }, [slug, locationTag]);
 
   useEffect(() => {
     if (company?.branding && formRef.current) {
@@ -494,7 +499,7 @@ export function SubmitFeedback() {
               </button>
 
               <button
-                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", submitterName: "", submitterMobile: "", isAnonymous: false, submissionLanguage: i18n.language || "en", satisfactionScore: null, satisfactionLabel: null }); }}
+                onClick={() => { setStep("intro"); setSuccess(null); setFormData({ category: board?.categories[0] || "", subject: "", description: "", email: "", submitterName: "", submitterMobile: "", location: locationTag, isAnonymous: false, submissionLanguage: i18n.language || "en", satisfactionScore: null, satisfactionLabel: null }); }}
                 className="mt-3 w-full px-5 py-2.5 text-sm text-[#6B7B8D] hover:text-[#1E3A5F] transition-colors"
               >
                 Submit another response
@@ -568,6 +573,13 @@ export function SubmitFeedback() {
             <p className="text-sm text-[#6B7B8D] mb-6">
               {board.description || t("forms:feedback.form_description") || "Fill in the details below"}
             </p>
+
+            {locationTag && (
+              <div className="mb-5 inline-flex w-full sm:w-auto items-center gap-2 rounded-full bg-[#EBF5FB] px-4 py-2 text-sm font-semibold text-[#185FA5] shadow-sm">
+                <MapPin size={16} />
+                <span>📍 {locationTag}</span>
+              </div>
+            )}
 
             {errors.submit && (
               <div className="mb-5 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-xl">

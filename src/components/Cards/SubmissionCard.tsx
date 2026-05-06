@@ -3,7 +3,7 @@ import type { Submission, User } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
 import { getUser } from '../../lib/firestore';
-import { MessageSquare, UserCircle } from 'lucide-react';
+import { MapPin, MessageSquare, UserCircle } from 'lucide-react';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -118,6 +118,13 @@ function SubmissionCardComponent({
           <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#EBF5FB] text-[#2E86AB] text-xs font-medium">
             {submission.category}
           </span>
+
+          {submission.location && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFF3F6] text-[#6B7B8D] text-xs font-medium">
+              <MapPin size={11} />
+              {submission.location}
+            </span>
+          )}
 
           {/* Priority with color dot */}
           <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F4F7FA] text-[#6B7B8D] text-xs font-medium">

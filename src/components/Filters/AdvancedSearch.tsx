@@ -44,6 +44,7 @@ export function AdvancedSearch({
   const { updateFilters: updateURLFilters, getShareURL } = useURLFilters();
 
   const categories = Array.from(new Set(submissions.map((s) => s.category)));
+  const locations = Array.from(new Set(boards.flatMap((board) => board.locations || []))).sort();
 
   useEffect(() => {
     const loadBoards = async () => {
@@ -121,6 +122,7 @@ export function AdvancedSearch({
             boards={boards}
             users={users}
             categories={categories}
+            locations={locations}
             filters={filters}
             onFiltersChange={(newFilters) => {
               setFilters(newFilters);
@@ -174,6 +176,12 @@ export function AdvancedSearch({
                 setFilters({
                   ...filters,
                   category: filters.category?.filter((c) => c !== category),
+                })
+              }
+              onRemoveLocation={(location) =>
+                setFilters({
+                  ...filters,
+                  location: filters.location?.filter((item) => item !== location),
                 })
               }
               onRemoveAssignee={() =>
