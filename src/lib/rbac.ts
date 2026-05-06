@@ -44,6 +44,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'company:delete',
     'billing:read',
     'billing:manage',
+    'audit:read',
   ]),
   admin: new Set([
     'submissions:read',

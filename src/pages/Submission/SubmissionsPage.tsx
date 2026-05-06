@@ -71,7 +71,7 @@ function TabButton({
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
         active
           ? 'bg-[#2E86AB] text-white shadow-sm'
-          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#F4F7FA]'
+          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#EEF3F7]'
       }`}
     >
       {children}
@@ -260,7 +260,7 @@ export function SubmissionsPage() {
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
   return (
-    <div className="h-screen flex flex-col bg-[#F4F7FA] overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#EEF3F7] overflow-hidden">
       {/* Fixed header */}
       <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -368,7 +368,7 @@ export function SubmissionsPage() {
                 <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
                   <button
                     onClick={() => setShowTeamProgress(!showTeamProgress)}
-                    className="w-full px-5 py-3 flex items-center gap-2 hover:bg-[#F8FAFB] transition-colors text-left"
+                    className="w-full px-5 py-3 flex items-center gap-2 hover:bg-[#F1F5F8] transition-colors text-left"
                   >
                     <TrendingUp size={14} className="text-[#2E86AB]" />
                     <h2 className="text-sm font-semibold text-[#1E3A5F]">Team Progress</h2>

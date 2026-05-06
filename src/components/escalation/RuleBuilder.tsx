@@ -121,7 +121,7 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
             <p className="text-xs font-bold uppercase tracking-wide text-[#2E86AB]">Step {step} of 5</p>
             <h2 className="text-xl font-bold text-[#1E3A5F]">{initialRule ? 'Edit escalation rule' : 'Create escalation rule'}</h2>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#6B7B8D] hover:bg-[#F8FAFB]">
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#6B7B8D] hover:bg-[#F1F5F8]">
             <X size={18} />
           </button>
         </div>
@@ -177,7 +177,7 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
 
           {step === 5 && (
             <div className="space-y-4">
-              <div className="rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-5">
+              <div className="rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-5">
                 <h3 className="font-bold text-[#1E3A5F]">Review this rule</h3>
                 <p className="mt-2 text-sm leading-6 text-[#444441]">{getRuleSummary(previewRule)}</p>
                 <p className="mt-3 text-sm text-[#6B7B8D]">It will {activeActions.join(', ') || 'take no actions yet'}.</p>
@@ -186,7 +186,7 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#D3D1C7] bg-[#F8FAFB] px-6 py-4">
+        <div className="flex items-center justify-between border-t border-[#D3D1C7] bg-[#F1F5F8] px-6 py-4">
           <button type="button" onClick={() => setStep((current) => Math.max(1, current - 1))} disabled={step === 1} className="rounded-lg px-4 py-2 text-sm font-semibold text-[#6B7B8D] disabled:opacity-40">Back</button>
           {step < 5 ? <button type="button" onClick={() => setStep((current) => Math.min(5, current + 1))} className="rounded-lg bg-[#2E86AB] px-4 py-2 text-sm font-semibold text-white">Next</button> : <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-lg bg-[#1E3A5F] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{saving ? 'Saving...' : 'Save Rule'}</button>}
         </div>

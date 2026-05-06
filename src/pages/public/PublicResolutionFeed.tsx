@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { CheckCircle2, ExternalLink, Radio, ShieldCheck } from 'lucide-react';
 import type { Company, Submission, Board } from '../../types';
 import {
@@ -44,7 +44,7 @@ function resolutionTone(rate: number): 'success' | 'amber' | 'danger' {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-[#F8FAFB] px-4 py-10">
+    <div className="min-h-screen bg-[#F1F5F8] px-4 py-10">
       <div className="mx-auto max-w-5xl animate-pulse space-y-6">
         <div className="h-48 rounded-2xl bg-white" />
         <div className="grid gap-4 md:grid-cols-4">
@@ -161,7 +161,7 @@ export function PublicResolutionFeed() {
 
   if (notFound) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFB] px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[#F1F5F8] px-4">
         <div className="max-w-md rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
           <h1 className="text-3xl font-bold text-[#1E3A5F]">Public feed not found</h1>
           <p className="mt-3 text-[#6B7B8D]">We couldn't find a company transparency page for this link.</p>
@@ -175,7 +175,7 @@ export function PublicResolutionFeed() {
 
   if (!company?.showPublicFeed) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFB] px-4">
+      <div className="flex min-h-screen items-center justify-center bg-[#F1F5F8] px-4">
         <div className="max-w-lg rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
           <ShieldCheck className="mx-auto h-12 w-12 text-[#2E86AB]" />
           <h1 className="mt-4 text-2xl font-bold text-[#1E3A5F]">
@@ -196,7 +196,7 @@ export function PublicResolutionFeed() {
   const submitLink = firstBoard ? `${APP_ORIGIN}/submit/${firstBoard.slug}` : null;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFB] text-[#1E3A5F]">
+    <div className="min-h-screen bg-[#F1F5F8] text-[#1E3A5F]">
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
         <header className="overflow-hidden rounded-2xl border border-[#D3D1C7] bg-white shadow-sm">
           <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2E86AB] px-6 py-8 text-white sm:px-8">
@@ -264,9 +264,9 @@ export function PublicResolutionFeed() {
             Powered by FeedSolve <ExternalLink size={14} />
           </a>
           {company.showPublicFeedbackLink && submitLink && (
-            <Link to={submitLink.replace(APP_ORIGIN, '')} className="font-semibold text-[#2E86AB]">
+            <a href={submitLink} className="font-semibold text-[#2E86AB]">
               Submit feedback to {displayName}
-            </Link>
+            </a>
           )}
         </div>
       </footer>

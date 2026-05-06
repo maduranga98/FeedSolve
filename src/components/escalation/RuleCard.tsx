@@ -51,7 +51,7 @@ export function RuleCard({ rule, onToggle, onEdit, onDelete, disabled }: RuleCar
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#D3D1C7] bg-[#F8FAFB] px-3 py-2 text-sm font-semibold text-[#1E3A5F]">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] px-3 py-2 text-sm font-semibold text-[#1E3A5F]">
             <input
               type="checkbox"
               checked={rule.isActive}

@@ -95,7 +95,7 @@ export function SearchBar({
             <div
               key={idx}
               onClick={() => handleSelect(suggestion)}
-              className="px-4 py-2 hover:bg-[#F8FAFB] cursor-pointer border-b border-[#E0E8EF] last:border-b-0 flex items-center justify-between group"
+              className="px-4 py-2 hover:bg-[#F1F5F8] cursor-pointer border-b border-[#E0E8EF] last:border-b-0 flex items-center justify-between group"
             >
               <span className="text-[#444441] text-sm">{suggestion}</span>
               {value.length === 0 && (

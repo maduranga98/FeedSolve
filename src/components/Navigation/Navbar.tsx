@@ -131,7 +131,7 @@ export function Navbar() {
                     ${
                       active
                         ? "text-[#2E86AB] bg-[#EBF5FB]"
-                        : "text-[#6B7B8D] hover:text-[#1E3A5F] hover:bg-[#F4F7FA]"
+                        : "text-[#6B7B8D] hover:text-[#1E3A5F] hover:bg-[#EEF3F7]"
                     }`}
                 >
                   <span className={active ? "text-[#2E86AB]" : "text-[#9AABBF]"}>

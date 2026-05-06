@@ -70,7 +70,7 @@ export default function ReplyForm({
               type="button"
               onClick={() => navigate('/pricing')}
               title="Reply templates available on Growth plan"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#F4F7FA] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#EEF3F7] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
             >
               <Lock size={12} />
               Use Template

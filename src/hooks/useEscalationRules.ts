@@ -12,12 +12,39 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { addAuditLog } from '../lib/firestore';
 import { useAuth } from './useAuth';
 import { useSubscription } from './useSubscription';
 import type { EscalationLog, EscalationRule, EscalationRuleInput } from '../types/escalationRule';
 
 const GROWTH_ACTIVE_RULE_LIMIT = 5;
 const ELIGIBLE_TIERS = new Set(['growth', 'business']);
+
+function removeUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => removeUndefinedDeep(item)) as T;
+  }
+
+  if (value && typeof value === 'object' && !(value instanceof Timestamp)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([, nestedValue]) => nestedValue !== undefined)
+        .map(([key, nestedValue]) => [key, removeUndefinedDeep(nestedValue)])
+    ) as T;
+  }
+
+  return value;
+}
+
+function summarizeRule(input: Partial<EscalationRuleInput>) {
+  return removeUndefinedDeep({
+    name: input.name,
+    isActive: input.isActive,
+    trigger: input.trigger,
+    conditions: input.conditions,
+    actions: input.actions,
+  });
+}
 
 function rulesCollection(companyId: string) {
   return collection(db, 'companies', companyId, 'escalationRules');
@@ -80,11 +107,22 @@ export function useEscalationRules() {
     setSaving(true);
     setError(null);
     try {
+      const cleanedInput = removeUndefinedDeep(input);
       const docRef = await addDoc(rulesCollection(user.companyId), {
-        ...input,
+        ...cleanedInput,
         createdAt: Timestamp.now(),
         lastTriggeredAt: null,
         triggerCount: 0,
+      });
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Created escalation rule ${cleanedInput.name}`,
+        resourceType: 'escalation',
+        resourceId: docRef.id,
+        resourceName: cleanedInput.name,
+        details: summarizeRule(cleanedInput),
       });
       await loadRules();
       return docRef.id;
@@ -104,7 +142,19 @@ export function useEscalationRules() {
     setSaving(true);
     setError(null);
     try {
-      await updateDoc(doc(db, 'companies', user.companyId, 'escalationRules', ruleId), input);
+      const cleanedInput = removeUndefinedDeep(input);
+      await updateDoc(doc(db, 'companies', user.companyId, 'escalationRules', ruleId), cleanedInput);
+      const existingRule = rules.find((rule) => rule.id === ruleId);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Updated escalation rule ${existingRule?.name ?? ruleId}`,
+        resourceType: 'escalation',
+        resourceId: ruleId,
+        resourceName: existingRule?.name,
+        details: summarizeRule(cleanedInput),
+      });
       await loadRules();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update escalation rule.';
@@ -113,7 +163,7 @@ export function useEscalationRules() {
     } finally {
       setSaving(false);
     }
-  }, [assertCanActivate, loadRules, user]);
+  }, [assertCanActivate, loadRules, rules, user]);
 
   const deleteRule = useCallback(async (ruleId: string) => {
     if (!user) throw new Error('You must be signed in to delete rules.');
@@ -121,7 +171,18 @@ export function useEscalationRules() {
     setSaving(true);
     setError(null);
     try {
+      const existingRule = rules.find((rule) => rule.id === ruleId);
       await deleteDoc(doc(db, 'companies', user.companyId, 'escalationRules', ruleId));
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Deleted escalation rule ${existingRule?.name ?? ruleId}`,
+        resourceType: 'escalation',
+        resourceId: ruleId,
+        resourceName: existingRule?.name,
+        details: existingRule ? summarizeRule(existingRule) : {},
+      });
       setRules((current) => current.filter((rule) => rule.id !== ruleId));
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete escalation rule.';
@@ -130,7 +191,7 @@ export function useEscalationRules() {
     } finally {
       setSaving(false);
     }
-  }, [user]);
+  }, [rules, user]);
 
   const getEscalationLog = useCallback(async (submissionId: string) => {
     const logQuery = query(

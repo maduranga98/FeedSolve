@@ -46,7 +46,7 @@ export default function InternalNotesSection({
       </div>
 
       {sortedNotes.length === 0 ? (
-        <div className="text-center py-8 bg-[#F8FAFB] rounded-lg border border-[#D3D1C7]">
+        <div className="text-center py-8 bg-[#F1F5F8] rounded-lg border border-[#D3D1C7]">
           <p className="text-[#6B7B8D] text-sm">No internal notes yet</p>
         </div>
       ) : (

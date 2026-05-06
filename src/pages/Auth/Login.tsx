@@ -177,7 +177,7 @@ export function Login() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#F4F7FA]">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#EEF3F7]">
         {/* Mobile logo */}
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
@@ -217,7 +217,7 @@ export function Login() {
               type="button"
               onClick={handleGoogleLogin}
               disabled={anyLoading}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E8ECF0] rounded-xl bg-white hover:bg-[#F8FAFB] text-sm font-medium text-[#1E3A5F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E8ECF0] rounded-xl bg-white hover:bg-[#F1F5F8] text-sm font-medium text-[#1E3A5F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
               {socialLoading === "google" ? (
                 <span className="w-4 h-4 border-2 border-[#6B7B8D] border-t-transparent rounded-full animate-spin" />
@@ -247,7 +247,7 @@ export function Login() {
               <div className="w-full border-t border-[#E8ECF0]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-[#F4F7FA] text-[#9AABBF] font-medium">
+              <span className="px-3 bg-[#EEF3F7] text-[#9AABBF] font-medium">
                 or sign in with email
               </span>
             </div>

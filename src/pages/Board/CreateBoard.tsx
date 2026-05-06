@@ -185,7 +185,7 @@ export function CreateBoard() {
               {formData.categories.map((category, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-[#F8FAFB] p-3 rounded-lg border border-[#D3D1C7]"
+                  className="flex items-center justify-between bg-[#F1F5F8] p-3 rounded-lg border border-[#D3D1C7]"
                 >
                   <span className="text-[#1E3A5F]">{category}</span>
                   <button
