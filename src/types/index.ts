@@ -265,10 +265,10 @@ export interface Invoice {
   status: "draft" | "open" | "paid" | "uncollectible" | "void";
   paidAt?: Timestamp;
   dueDate?: Timestamp;
-  pdfUrl: string;
-  description: string;
-  periodStart: Timestamp;
-  periodEnd: Timestamp;
+  pdfUrl?: string | null;
+  description?: string;
+  periodStart?: Timestamp | null;
+  periodEnd?: Timestamp | null;
   createdAt: Timestamp;
 }
 

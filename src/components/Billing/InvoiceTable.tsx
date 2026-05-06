@@ -26,12 +26,21 @@ export function InvoiceTable({ invoices, isLoading }: InvoiceTableProps) {
 
   const formatDate = (timestamp: any) => {
     if (!timestamp) return 'N/A';
-    const date = new Date(timestamp.seconds * 1000);
+    const date = typeof timestamp.toDate === 'function'
+      ? timestamp.toDate()
+      : new Date((timestamp.seconds || 0) * 1000);
     return format(date, 'MMM d, yyyy');
   };
 
-  const formatAmount = (amount: number) => {
-    return `$${(amount / 100).toFixed(2)}`;
+  const formatAmount = (amount: number, currency = 'usd') => {
+    // Older webhook writes stored dollar amounts instead of Stripe's cents.
+    // Treat small whole-number amounts as legacy dollars so existing invoices display correctly.
+    const amountInCents = Number.isInteger(amount) && amount > 0 && amount < 100 ? amount * 100 : amount;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amountInCents / 100);
   };
 
   return (
@@ -50,9 +59,11 @@ export function InvoiceTable({ invoices, isLoading }: InvoiceTableProps) {
           {invoices.map((invoice) => (
             <tr key={invoice.id} className="border-b border-gray-200 hover:bg-gray-50">
               <td className="py-4 px-4">{formatDate(invoice.createdAt)}</td>
-              <td className="py-4 px-4 text-gray-900 font-medium">{invoice.description}</td>
+              <td className="py-4 px-4 text-gray-900 font-medium">
+                {invoice.description || 'FeedSolve subscription invoice'}
+              </td>
               <td className="py-4 px-4 text-right font-bold text-gray-900">
-                {formatAmount(invoice.amount)}
+                {formatAmount(invoice.amount, invoice.currency)}
               </td>
               <td className="py-4 px-4 text-center">
                 <span
@@ -68,15 +79,20 @@ export function InvoiceTable({ invoices, isLoading }: InvoiceTableProps) {
                 </span>
               </td>
               <td className="py-4 px-4 text-center">
-                <a
-                  href={invoice.pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  <Download className="w-4 h-4" />
-                  <span className="hidden sm:inline">Download</span>
-                </a>
+                {invoice.pdfUrl ? (
+                  <a
+                    href={invoice.pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">Download PDF</span>
+                  </a>
+                ) : (
+                  <span className="text-sm text-gray-500">PDF unavailable</span>
+                )}
               </td>
             </tr>
           ))}
