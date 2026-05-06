@@ -145,8 +145,11 @@ export async function getCompany(id: string): Promise<Company | null> {
 
 export async function getCompanyBySlug(slug: string): Promise<Company | null> {
   try {
+    const safeSlug = generateBoardSlug(slug);
+    if (!safeSlug) return null;
+
     const companiesRef = collection(db, 'companies');
-    const q = query(companiesRef, where('companySlug', '==', slug), limit(1));
+    const q = query(companiesRef, where('companySlug', '==', safeSlug), limit(1));
     const snapshot = await getDocs(q);
     if (snapshot.empty) return null;
     const companyDoc = snapshot.docs[0];
@@ -161,8 +164,19 @@ export async function updateCompanyPublicFeedSettings(
   data: Pick<Company, 'showPublicFeed' | 'companySlug' | 'publicFeedTitle' | 'publicFeedMessage' | 'showPublicFeedbackLink'>
 ): Promise<void> {
   try {
+    const safeSlug = generateBoardSlug(data.companySlug || '');
+    if (!safeSlug) throw new Error('Please enter a URL-safe public feed slug.');
+
+    const companiesRef = collection(db, 'companies');
+    const slugQuery = query(companiesRef, where('companySlug', '==', safeSlug), limit(1));
+    const slugSnapshot = await getDocs(slugQuery);
+    const slugOwner = slugSnapshot.docs[0];
+    if (slugOwner && slugOwner.id !== companyId) {
+      throw new Error('This public feed slug is already in use. Please choose another slug.');
+    }
+
     const companyRef = doc(db, 'companies', companyId);
-    await updateDoc(companyRef, { ...data, updatedAt: Timestamp.now() });
+    await updateDoc(companyRef, { ...data, companySlug: safeSlug, updatedAt: Timestamp.now() });
   } catch (error) {
     wrapFirestoreError(error);
   }

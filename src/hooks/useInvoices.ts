@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Invoice } from '../types';
 
@@ -19,9 +19,12 @@ export function useInvoices() {
     const fetchInvoices = async () => {
       try {
         const invoicesRef = collection(db, 'invoices', user.companyId, 'invoices');
-        const q = query(invoicesRef);
+        const q = query(invoicesRef, orderBy('createdAt', 'desc'));
         const snapshot = await getDocs(q);
-        const invoicesList = snapshot.docs.map((doc) => doc.data() as Invoice);
+        const invoicesList = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        } as Invoice));
         setInvoices(invoicesList.sort((a, b) => {
           const aTime = a.createdAt?.seconds || 0;
           const bTime = b.createdAt?.seconds || 0;

@@ -379,26 +379,44 @@ async function handleInvoicePaymentSucceeded(
   const companyId = companiesQuery.docs[0].id;
 
   // Path: invoices/{companyId}/invoices/{docId} (matches useInvoices.ts)
+  const description =
+    invoice.description ||
+    invoice.lines?.data?.[0]?.description ||
+    "FeedSolve subscription invoice";
+
   await db
     .collection("invoices")
     .doc(companyId)
     .collection("invoices")
-    .add({
+    .doc(invoice.id)
+    .set({
+      id: invoice.id,
       stripeInvoiceId: invoice.id,
       stripeCustomerId: customerId,
       companyId,
-      amount: invoice.amount_paid / 100,
+      amount: invoice.amount_paid,
       currency: invoice.currency,
-      status: "paid",
-      pdfUrl: invoice.invoice_pdf,
+      status: invoice.status || "paid",
+      pdfUrl: invoice.invoice_pdf || invoice.hosted_invoice_url || null,
+      description,
+      paidAt: invoice.status_transitions?.paid_at
+        ? admin.firestore.Timestamp.fromMillis(
+          invoice.status_transitions.paid_at * 1000,
+        )
+        : null,
+      dueDate: invoice.due_date
+        ? admin.firestore.Timestamp.fromMillis(invoice.due_date * 1000)
+        : null,
       periodStart: invoice.period_start
         ? admin.firestore.Timestamp.fromMillis(invoice.period_start * 1000)
         : null,
       periodEnd: invoice.period_end
         ? admin.firestore.Timestamp.fromMillis(invoice.period_end * 1000)
         : null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+      createdAt: invoice.created
+        ? admin.firestore.Timestamp.fromMillis(invoice.created * 1000)
+        : admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
 }
 
 async function handleInvoicePaymentFailed(

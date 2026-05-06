@@ -91,7 +91,7 @@ export function BulkActionBar({
   return (
     <>
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-        <div className="pointer-events-auto bg-[#1E3A5F] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 overflow-x-auto max-w-[calc(100vw-2rem)]">
+        <div className="pointer-events-auto bg-[#1E3A5F] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 max-w-[calc(100vw-2rem)]">
           {/* Count */}
           <span className="text-white text-sm font-semibold whitespace-nowrap flex-shrink-0">
             {selectedCount} selected

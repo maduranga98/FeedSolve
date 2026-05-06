@@ -15,6 +15,34 @@ service cloud.firestore {
       return getUserDoc(request.auth.uid).role;
     }
 
+    function isOwnerRole(role) {
+      return role in ['owner', 'Owner', 'OWNER'];
+    }
+
+    function isAdminRole(role) {
+      return role in ['admin', 'Admin', 'ADMIN'];
+    }
+
+    function isManagerRole(role) {
+      return role in ['manager', 'Manager', 'MANAGER'];
+    }
+
+    function isViewerRole(role) {
+      return role in ['viewer', 'Viewer', 'VIEWER'];
+    }
+
+    function canRoleReadSubmissions(role) {
+      return isOwnerRole(role) || isAdminRole(role) || isManagerRole(role) || isViewerRole(role);
+    }
+
+    function canRoleManageSubmissions(role) {
+      return isOwnerRole(role) || isAdminRole(role) || isManagerRole(role);
+    }
+
+    function canRoleManageCompany(role) {
+      return isOwnerRole(role) || isAdminRole(role);
+    }
+
     function isUserInCompany(companyId) {
       return isAuthenticated() &&
         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
@@ -24,40 +52,35 @@ service cloud.firestore {
     function hasRolePermission(companyId, permission) {
       let role = getCurrentUserRole(companyId);
       return (
-        (role == 'owner') ||
-        (role == 'admin' && permission in ['submissions:read', 'submissions:write', 'team:manage', 'webhooks:write', 'integrations:write', 'analytics:read', 'audit:read']) ||
-        (role == 'manager' && permission in ['submissions:read', 'submissions:write', 'submissions:reply', 'analytics:read', 'audit:read']) ||
-        (role == 'viewer' && permission in ['submissions:read', 'analytics:read'])
+        isOwnerRole(role) ||
+        (isAdminRole(role) && permission in ['submissions:read', 'submissions:write', 'team:manage', 'webhooks:write', 'integrations:write', 'analytics:read', 'audit:read']) ||
+        (isManagerRole(role) && permission in ['submissions:read', 'submissions:write', 'submissions:reply', 'analytics:read', 'audit:read']) ||
+        (isViewerRole(role) && permission in ['submissions:read', 'analytics:read'])
       );
     }
 
     function canManageCompany(companyId) {
-      return isUserInCompany(companyId) &&
-        (getCurrentUserRole(companyId) == 'owner' || getCurrentUserRole(companyId) == 'admin');
+      return isUserInCompany(companyId) && canRoleManageCompany(getCurrentUserRole(companyId));
     }
 
     function isOwner(companyId) {
-      return isUserInCompany(companyId) && getCurrentUserRole(companyId) == 'owner';
+      return isUserInCompany(companyId) && isOwnerRole(getCurrentUserRole(companyId));
     }
 
     function canManageTeam(companyId) {
-      return isUserInCompany(companyId) &&
-        (getCurrentUserRole(companyId) == 'owner' || getCurrentUserRole(companyId) == 'admin');
+      return isUserInCompany(companyId) && canRoleManageCompany(getCurrentUserRole(companyId));
     }
 
     function canReadSubmissions(companyId) {
-      return isUserInCompany(companyId) &&
-        getCurrentUserRole(companyId) in ['owner', 'admin', 'manager', 'viewer'];
+      return isUserInCompany(companyId) && canRoleReadSubmissions(getCurrentUserRole(companyId));
     }
 
     function canManageSubmissions(companyId) {
-      return isUserInCompany(companyId) &&
-        (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
+      return isUserInCompany(companyId) && canRoleManageSubmissions(getCurrentUserRole(companyId));
     }
 
     function canReplyToSubmissions(companyId) {
-      return isUserInCompany(companyId) &&
-        (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
+      return isUserInCompany(companyId) && canRoleManageSubmissions(getCurrentUserRole(companyId));
     }
 
     function isPublicFeedCompany(companyId) {
@@ -306,6 +329,13 @@ service cloud.firestore {
       }
     }
 
+    // Stripe invoices - company members can read their own invoice history.
+    // Writes are server-only via Cloud Functions/Admin SDK webhooks.
+    match /invoices/{companyId}/invoices/{invoiceId} {
+      allow read: if isUserInCompany(companyId);
+      allow write: if false;
+    }
+
     // API Keys collection - Admin+ only
     match /api_keys/{companyId}/{keyId} {
       allow read: if canManageCompany(companyId);
@@ -361,7 +391,7 @@ service cloud.firestore {
     match /bulkOperations/{operationId} {
       allow read: if isAuthenticated() &&
         isUserInCompany(resource.data.companyId) &&
-        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
+        (canRoleManageSubmissions(getCurrentUserRole(resource.data.companyId)));
       allow write: if false;
     }
 
@@ -370,7 +400,7 @@ service cloud.firestore {
       allow read: if isAuthenticated() &&
         exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
         isUserInCompany(resource.data.companyId) &&
-        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin']);
+        (canRoleManageCompany(getCurrentUserRole(resource.data.companyId)));
       allow write: if false;
     }
 
@@ -378,7 +408,7 @@ service cloud.firestore {
     match /undoOperations/{undoId} {
       allow read: if isAuthenticated() &&
         isUserInCompany(resource.data.companyId) &&
-        (getCurrentUserRole(resource.data.companyId) in ['owner', 'admin', 'manager']);
+        (canRoleManageSubmissions(getCurrentUserRole(resource.data.companyId)));
       allow write: if false;
     }
 
