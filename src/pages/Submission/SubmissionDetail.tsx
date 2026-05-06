@@ -10,11 +10,11 @@ import {
   updateSubmissionStatus,
   updateSubmissionPriority,
   updateSubmissionAssignment,
-  addInternalNote,
   updateSubmissionPublicReply,
   getTeamMembers,
 } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
+import { InternalDiscussion } from '../../components/dashboard/InternalDiscussion';
 import type { Submission, TeamMember } from '../../types';
 
 const SATISFACTION_CONFIG: Record<number, { emoji: string; color: string; bg: string }> = {
@@ -58,7 +58,6 @@ export function SubmissionDetail() {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [newNote, setNewNote] = useState('');
   const [publicReply, setPublicReply] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -135,24 +134,6 @@ export function SubmissionDetail() {
       setTimeout(() => setSuccess(''), 2000);
     } catch (err) {
       setError('Failed to update assignment');
-      console.error(err);
-    } finally {
-      setUpdating(false);
-    }
-  }
-
-  async function handleAddNote() {
-    if (!user) return;
-    if (!submission || !newNote.trim()) return;
-    try {
-      setUpdating(true);
-      await addInternalNote(submission.id, newNote, user.id);
-      setSuccess('Note added');
-      setNewNote('');
-      await loadData();
-      setTimeout(() => setSuccess(''), 2000);
-    } catch (err) {
-      setError('Failed to add note');
       console.error(err);
     } finally {
       setUpdating(false);
@@ -339,6 +320,14 @@ export function SubmissionDetail() {
           </div>
 
           <div className="mb-6 pb-6 border-b border-color-border">
+            <InternalDiscussion
+              submission={submission}
+              currentUser={user}
+              onMigrated={loadData}
+            />
+          </div>
+
+          <div className="mb-6 pb-6 border-b border-color-border">
             <h2 className="text-lg font-semibold text-color-primary mb-4">Public Reply</h2>
             <textarea
               value={publicReply}
@@ -356,46 +345,6 @@ export function SubmissionDetail() {
             >
               Save Reply
             </Button>
-          </div>
-
-          <div>
-            <h2 className="text-lg font-semibold text-color-primary mb-4">Internal Notes</h2>
-            <div className="mb-4 space-y-3">
-              {submission.internalNotes.length === 0 ? (
-                <p className="text-color-muted-text text-sm">No internal notes yet.</p>
-              ) : (
-                submission.internalNotes.map((note) => (
-                  <div key={note.id} className="p-3 bg-blue-50 rounded-md border border-color-accent-light">
-                    <div className="flex justify-between items-start mb-2">
-                      <p className="font-medium text-sm text-color-primary">Internal Note</p>
-                      <p className="text-xs text-color-muted-text">
-                        {formatDate(new Date(note.createdAt.toMillis()))}
-                      </p>
-                    </div>
-                    <p className="text-sm text-color-body-text whitespace-pre-wrap">{note.text}</p>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div>
-              <textarea
-                value={newNote}
-                onChange={(e) => setNewNote(e.target.value)}
-                disabled={updating}
-                placeholder="Add an internal note..."
-                className="w-full px-4 py-3 border border-color-border rounded-md focus:ring-2 focus:ring-color-accent focus:border-transparent disabled:opacity-50 resize-none"
-                rows={3}
-              />
-              <Button
-                onClick={handleAddNote}
-                disabled={updating || !newNote.trim()}
-                isLoading={updating}
-                className="mt-3"
-              >
-                Add Note
-              </Button>
-            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,8 @@ import { AttachmentGallery } from "../../components/Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
 import type { Submission, Board, Company } from "../../types";
 import { Badge, LoadingSpinner, Button, Input } from "../../components/Shared";
+import { TrackByCode } from "../../components/Public/TrackByCode";
+import { FindByEmail } from "../../components/Public/FindByEmail";
 import { formatDate, getStatusLabel } from "../../lib/utils";
 import {
   Lock,
@@ -19,7 +21,6 @@ import {
   Calendar,
   Tag,
   AlertCircle,
-  Search,
 } from "lucide-react";
 
 const STATUS_STEPS = [
@@ -45,38 +46,49 @@ const PRIORITY_COLOR: Record<string, string> = {
 
 /* ─── Standalone lookup screen (shown when no code in URL) ─── */
 function TrackingLookup() {
-  const navigate = useNavigate();
-  const [inputCode, setInputCode] = useState("");
+  const [activeTab, setActiveTab] = useState<"code" | "email">("code");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = inputCode.trim().replace(/^#/, "");
-    if (trimmed) navigate(`/track/${trimmed}`);
-  };
+  const tabs = [
+    { id: "code" as const, label: "Track by Code" },
+    { id: "email" as const, label: "Find by Email" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-xl px-8 py-10 text-center">
-          <div className="w-14 h-14 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <Search size={24} className="text-[#2E86AB]" />
+    <div className="min-h-screen bg-gradient-to-br from-[#EEF6FB] via-[#F8FAFB] to-white flex items-center justify-center p-4 font-[Inter]">
+      <div className="w-full max-w-lg">
+        <div className="bg-white rounded-2xl border border-[#E3EDF4] shadow-xl px-5 py-7 sm:px-8 sm:py-9">
+          <div className="mb-6 text-center">
+            <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">Track Your Submission</h1>
+            <p className="text-sm text-[#6B7B8D]">
+              Use your tracking code, or find submissions connected to your email.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-[#1E3A5F] mb-2">Track Your Submission</h1>
-          <p className="text-sm text-[#6B7B8D] mb-6">
-            Enter the tracking code you received after submitting your feedback.
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <Input
-              placeholder="Enter tracking code (e.g. ABC-1234)"
-              value={inputCode}
-              onChange={e => setInputCode(e.target.value)}
-              autoFocus
-            />
-            <Button type="submit" variant="primary" size="lg" className="w-full">
-              Track Submission
-            </Button>
-          </form>
+
+          <div className="mb-6 flex border-b border-[#D3D1C7]" role="tablist" aria-label="Tracking lookup options">
+            {tabs.map(tab => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`-mb-px flex-1 border-b-2 px-3 py-3 text-sm font-semibold transition-colors ${
+                    isActive
+                      ? "border-[#1E3A5F] text-[#1E3A5F]"
+                      : "border-transparent text-[#6B7B8D] hover:text-[#1E3A5F]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {activeTab === "code" ? <TrackByCode /> : <FindByEmail />}
         </div>
+        <p className="mt-4 text-center text-xs text-[#9AABBF]">Powered by FeedSolve</p>
       </div>
     </div>
   );
@@ -131,7 +143,7 @@ function TrackingView({ code }: { code: string }) {
       }
     };
     fetchSubmission();
-  }, [code]);
+  }, [normalizedCode]);
 
   useEffect(() => {
     if (company?.branding) {
