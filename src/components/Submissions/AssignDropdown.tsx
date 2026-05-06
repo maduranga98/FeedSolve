@@ -124,7 +124,7 @@ export default function AssignDropdown({
           type="button"
           disabled={!localAssignedId || loading}
           onClick={handleUnassign}
-          className="px-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#6B7B8D] hover:bg-[#EEF3F7] disabled:opacity-50 inline-flex items-center gap-1"
+          className="px-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#6B7B8D] hover:bg-[#E1E8EF] disabled:opacity-50 inline-flex items-center gap-1"
         >
           <UserX size={14} />
           Clear

@@ -235,7 +235,7 @@ export function SignUp() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#EEF3F7] overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E1E8EF] overflow-y-auto">
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
           <span className="text-xl font-bold text-[#1E3A5F]">FeedSolve</span>
@@ -304,7 +304,7 @@ export function SignUp() {
               <div className="w-full border-t border-[#E8ECF0]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-[#EEF3F7] text-[#9AABBF] font-medium">
+              <span className="px-3 bg-[#E1E8EF] text-[#9AABBF] font-medium">
                 or create an account with email
               </span>
             </div>

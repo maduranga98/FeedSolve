@@ -84,7 +84,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-[#9AABBF] transition hover:bg-[#EEF3F7] hover:text-[#444441]"
+            className="rounded-lg p-2 text-[#9AABBF] transition hover:bg-[#E1E8EF] hover:text-[#444441]"
             aria-label="Close merge modal"
           >
             <X size={18} />

@@ -96,7 +96,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#9AABBF] hover:text-[#444441] hover:bg-[#EEF3F7] rounded-lg transition-colors"
+            className="p-1.5 text-[#9AABBF] hover:text-[#444441] hover:bg-[#E1E8EF] rounded-lg transition-colors"
           >
             <X size={18} />
           </button>

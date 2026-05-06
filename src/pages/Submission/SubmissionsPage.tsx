@@ -71,7 +71,7 @@ function TabButton({
       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
         active
           ? 'bg-[#2E86AB] text-white shadow-sm'
-          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#EEF3F7]'
+          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#E1E8EF]'
       }`}
     >
       {children}
@@ -260,7 +260,7 @@ export function SubmissionsPage() {
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
   return (
-    <div className="h-screen flex flex-col bg-[#EEF3F7] overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#E1E8EF] overflow-hidden">
       {/* Fixed header */}
       <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

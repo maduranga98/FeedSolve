@@ -150,7 +150,7 @@ export function CompanySettings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF3F7]">
+    <div className="min-h-screen bg-[#E1E8EF]">
       <div className="border-b border-[#E8ECF0] bg-white">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-[#1E3A5F]">Company Settings</h1>

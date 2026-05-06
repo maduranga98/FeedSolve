@@ -110,7 +110,7 @@ export function AcceptInvite() {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#EEF3F7] overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E1E8EF] overflow-y-auto">
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
           <span className="text-xl font-bold text-[#1E3A5F]">FeedSolve</span>
