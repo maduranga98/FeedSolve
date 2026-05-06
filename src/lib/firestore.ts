@@ -357,7 +357,7 @@ export async function getRecentResolvedSubmissions(companyId: string, limitCount
   const q = query(
     submissionsRef,
     where('companyId', '==', companyId),
-    where('status', '==', 'resolved'),
+    where('status', 'in', ['resolved', 'closed']),
     orderBy('resolvedAt', 'desc'),
     limit(limitCount)
   );

@@ -58,7 +58,7 @@ export function CompanySettings() {
         });
 
         const submissions = await getCompanySubmissions(user.companyId, 500);
-        const resolved = submissions.filter((submission) => submission.status === 'resolved').length;
+        const resolved = submissions.filter((submission) => submission.status === 'resolved' || submission.status === 'closed').length;
         setResolvedCount(resolved);
         setResolutionRate(submissions.length ? Math.round((resolved / submissions.length) * 100) : 0);
       } finally {
