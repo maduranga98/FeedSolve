@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Submission } from "../../types";
+import type { FileAttachment, Submission } from "../../types";
 import { Button } from "../Shared";
 import {
   X,
@@ -17,8 +17,8 @@ import { useFileDownload } from "../../hooks/useFileDownload";
 import { useAuth } from "../../hooks/useAuth";
 import AssignDropdown from "./AssignDropdown";
 import PriorityDropdown from "./PriorityDropdown";
-import InternalNotesSection from "./InternalNotesSection";
 import PublicReplySection from "./PublicReplySection";
+import { InternalDiscussion } from "../dashboard/InternalDiscussion";
 import { updateSubmissionStatus, addAuditLog } from "../../lib/firestore";
 import { formatDate } from "../../lib/utils";
 
@@ -115,7 +115,7 @@ export default function SubmissionDetail({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleViewFile = async (attachment: any) => {
+  const handleViewFile = async (attachment: FileAttachment) => {
     // Try to open via viewFile (gets a signed download URL)
     try {
       const result = await viewFile(submission.id, attachment);
@@ -406,6 +406,15 @@ export default function SubmissionDetail({
             </a>
           </div>
 
+          {/* Internal Discussion */}
+          <div className="border-t border-[#E8ECF0] pt-5">
+            <InternalDiscussion
+              submission={submission}
+              currentUser={user}
+              onMigrated={onUpdated}
+            />
+          </div>
+
           {/* Public Reply */}
           <div className="border-t border-[#E8ECF0] pt-5">
             <PublicReplySection
@@ -415,15 +424,6 @@ export default function SubmissionDetail({
               publicReplyBy={submission.publicReplyBy}
               onReplyAdded={onUpdated}
               submission={submission}
-            />
-          </div>
-
-          {/* Internal Notes */}
-          <div className="border-t border-[#E8ECF0] pt-5">
-            <InternalNotesSection
-              submissionId={submission.id}
-              notes={submission.internalNotes}
-              onNoteAdded={onUpdated}
             />
           </div>
 
