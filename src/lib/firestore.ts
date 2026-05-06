@@ -96,6 +96,11 @@ export async function createCompany(
       name,
       email,
       billingEmail: email,
+      showPublicFeed: false,
+      companySlug: generateBoardSlug(name),
+      publicFeedTitle: null,
+      publicFeedMessage: null,
+      showPublicFeedbackLink: true,
       subscription: {
         tier: 'free',
         billing: 'monthly',
@@ -132,6 +137,32 @@ export async function getCompany(id: string): Promise<Company | null> {
     const companyRef = doc(db, 'companies', id);
     const snapshot = await getDoc(companyRef);
     return snapshot.exists() ? (snapshot.data() as Company) : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
+
+export async function getCompanyBySlug(slug: string): Promise<Company | null> {
+  try {
+    const companiesRef = collection(db, 'companies');
+    const q = query(companiesRef, where('companySlug', '==', slug), limit(1));
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    const companyDoc = snapshot.docs[0];
+    return { ...companyDoc.data(), id: companyDoc.id } as Company;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
+export async function updateCompanyPublicFeedSettings(
+  companyId: string,
+  data: Pick<Company, 'showPublicFeed' | 'companySlug' | 'publicFeedTitle' | 'publicFeedMessage' | 'showPublicFeedbackLink'>
+): Promise<void> {
+  try {
+    const companyRef = doc(db, 'companies', companyId);
+    await updateDoc(companyRef, { ...data, updatedAt: Timestamp.now() });
   } catch (error) {
     wrapFirestoreError(error);
   }
@@ -288,6 +319,32 @@ export async function getCompanySubmissions(companyId: string, limitCount: numbe
     submissionsRef,
     where('companyId', '==', companyId),
     orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
+
+
+export async function getPublicFeedSubmissions(companyId: string): Promise<Submission[]> {
+  const submissionsRef = collection(db, 'submissions');
+  const q = query(
+    submissionsRef,
+    where('companyId', '==', companyId),
+    orderBy('createdAt', 'desc'),
+    limit(1000)
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Submission));
+}
+
+export async function getRecentResolvedSubmissions(companyId: string, limitCount: number = 10): Promise<Submission[]> {
+  const submissionsRef = collection(db, 'submissions');
+  const q = query(
+    submissionsRef,
+    where('companyId', '==', companyId),
+    where('status', '==', 'resolved'),
+    orderBy('resolvedAt', 'desc'),
     limit(limitCount)
   );
   const snapshot = await getDocs(q);

@@ -90,6 +90,11 @@ export interface Company {
   webhooks?: WebhookConfig;
   webhookStats?: WebhookStats;
   branding?: CompanyBranding;
+  showPublicFeed?: boolean;
+  companySlug?: string;
+  publicFeedTitle?: string | null;
+  publicFeedMessage?: string | null;
+  showPublicFeedbackLink?: boolean;
 }
 
 export type FormFieldType =

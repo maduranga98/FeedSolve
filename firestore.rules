@@ -60,6 +60,11 @@ service cloud.firestore {
         (getCurrentUserRole(companyId) in ['owner', 'admin', 'manager']);
     }
 
+    function isPublicFeedCompany(companyId) {
+      return exists(/databases/$(database)/documents/companies/$(companyId)) &&
+        get(/databases/$(database)/documents/companies/$(companyId)).data.showPublicFeed == true;
+    }
+
     // Returns true when the update touches only the listed fields
     function only(fields) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
@@ -118,9 +123,10 @@ service cloud.firestore {
 
     // Companies collection
     match /companies/{companyId} {
-      // Public get: branding data needed on the public submit-feedback and tracking pages
+      // Public get: branding and public feed fields are needed on public pages.
       allow get: if true;
-      allow list: if canManageCompany(companyId);
+      // Public slug lookup for /r/:companySlug is limited to one company document.
+      allow list: if canManageCompany(companyId) || request.query.limit <= 1;
       // Self-service create: the signing-up user may create the company whose ID equals
       // their own UID (this is the pattern used in signUp / loginWithGoogle / loginWithApple).
       // No user doc exists yet at this point so canManageCompany would fail.
@@ -194,12 +200,16 @@ service cloud.firestore {
 
     // Submissions collection - Role-based access
     match /submissions/{submissionId} {
-      // Authenticated company members can read their own submissions
+      // Authenticated company members can read their own submissions.
       allow read: if canReadSubmissions(resource.data.companyId);
-      // Public tracking page: unauthenticated get by document ID
+      // Public tracking page: unauthenticated get by document ID.
       allow get: if resource.data.trackingCode is string;
-      // Public tracking page: query by tracking code (open to all, limit enforced)
-      allow list: if request.query.limit <= 1;
+      // Public tracking page query by tracking code remains limited to one doc.
+      // Public resolution feed can list opted-in company submissions for browser aggregation;
+      // the UI renders only category/status/createdAt/resolvedAt and never personal fields.
+      // For stricter field isolation, move this aggregation behind a Cloud Function.
+      allow list: if request.query.limit <= 1 ||
+        (request.query.limit <= 1000 && isPublicFeedCompany(resource.data.companyId));
       // Authenticated company member create
       allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
       // Public (unauthenticated) create from the feedback form

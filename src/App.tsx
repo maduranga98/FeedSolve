@@ -52,6 +52,8 @@ const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m =
 
 // Settings Pages
 const ReplyTemplatesPage = lazy(() => import('./pages/Settings/ReplyTemplatesPage').then(m => ({ default: m.ReplyTemplatesPage })));
+const CompanySettings = lazy(() => import('./pages/dashboard/settings/CompanySettings').then(m => ({ default: m.CompanySettings })));
+const PublicResolutionFeed = lazy(() => import('./pages/public/PublicResolutionFeed').then(m => ({ default: m.PublicResolutionFeed })));
 
 // Audit Logs Pages
 const AuditLogsPage = lazy(() => import('./pages/AuditLogs/AuditLogsPage').then(m => ({ default: m.AuditLogsPage })));
@@ -171,6 +173,14 @@ function AppContent() {
           }
         />
         <Route
+          path="/r/:companySlug"
+          element={
+            <PublicRoute>
+              <PublicResolutionFeed />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/track/:code"
           element={
             <PublicRoute>
@@ -277,6 +287,16 @@ function AppContent() {
             <PermissionRoute permission="submissions:read">
               <Navbar />
               <SubmissionsPage />
+            </PermissionRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <PermissionRoute permission="company:update">
+              <Navbar />
+              <CompanySettings />
             </PermissionRoute>
           }
         />
