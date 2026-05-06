@@ -602,7 +602,7 @@ export interface AuditLog {
   userName: string;
   userEmail: string;
   action: string;
-  resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing' | 'settings' | 'escalation' | 'template';
+  resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing' | 'settings' | 'escalation';
   resourceId?: string;
   resourceName?: string;
   details: Record<string, unknown>;

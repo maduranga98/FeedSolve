@@ -1627,18 +1627,20 @@ export async function addAuditLog(
     userName: string;
     userEmail: string;
     action: string;
-    resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing' | 'settings' | 'escalation' | 'template';
+    resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing' | 'settings' | 'escalation';
     resourceId?: string;
     resourceName?: string;
     details?: Record<string, unknown>;
   }
 ): Promise<void> {
   const logsRef = collection(db, 'companies', companyId, 'audit_logs');
-  const sanitizedEntry = removeUndefinedDeep(entry);
+  const sanitizedEntry = Object.fromEntries(
+    Object.entries(entry).filter(([, value]) => value !== undefined)
+  );
   await addDoc(logsRef, {
     companyId,
     ...sanitizedEntry,
-    details: removeUndefinedDeep(entry.details ?? {}),
+    details: entry.details ?? {},
     createdAt: Timestamp.now(),
   });
 }
