@@ -8,6 +8,9 @@ import { LoadingSpinner } from '../../components/Shared';
 import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import { BulkActionBar } from '../../components/Submissions/BulkActionBar';
+import { CycleSwitcher, type CycleSelection } from '../../components/dashboard/CycleSwitcher';
+import { CycleStatsBanner } from '../../components/dashboard/CycleStatsBanner';
+import { useBoardCycles } from '../../hooks/useBoardCycles';
 import type { QueryDocumentSnapshot } from 'firebase/firestore';
 import {
   Users,
@@ -94,7 +97,10 @@ export function SubmissionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('active');
   const [showTeamProgress, setShowTeamProgress] = useState(false);
   const [showMerged, setShowMerged] = useState(false);
+  const [selectedCycle, setSelectedCycle] = useState<CycleSelection>('current');
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
+
+  const { cycles, currentCyclesByBoard } = useBoardCycles(user?.companyId);
 
   const {
     selectedIds,
@@ -213,8 +219,20 @@ export function SubmissionsPage() {
   const assignedCount = submissions.filter((s) => s.assignedTo).length;
   const unassignedCount = totalCount - assignedCount;
 
-  const visibleSubmissions = showMerged ? submissions : submissions.filter((s) => !s.isMerged);
-  const mergedCount = submissions.filter((s) => s.isMerged).length;
+  const selectedPastCycle = cycles.find((cycle) => cycle.id === selectedCycle) ?? null;
+  const cycleFilteredSubmissions = (() => {
+    if (selectedCycle === 'all') return submissions;
+    if (selectedCycle !== 'current') {
+      return submissions.filter((submission) => submission.cycleId === selectedCycle);
+    }
+    return submissions.filter((submission) => {
+      if (!submission.cycleId) return true;
+      const currentCycle = currentCyclesByBoard.get(submission.boardId);
+      return currentCycle?.id === submission.cycleId;
+    });
+  })();
+  const visibleSubmissions = showMerged ? cycleFilteredSubmissions : cycleFilteredSubmissions.filter((s) => !s.isMerged);
+  const mergedCount = cycleFilteredSubmissions.filter((s) => s.isMerged).length;
   const activeSubmissions = visibleSubmissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
   const completedSubmissions = visibleSubmissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
 
@@ -404,6 +422,27 @@ export function SubmissionsPage() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Cycle selector */}
+              {cycles.length > 0 && (
+                <>
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#E8ECF0] bg-white p-4">
+                    <div>
+                      <p className="text-sm font-bold text-[#1E3A5F]">Board cycles</p>
+                      <p className="text-xs text-[#6B7B8D]">Default view shows the current cycle.</p>
+                    </div>
+                    <CycleSwitcher
+                      cycles={cycles}
+                      selectedCycle={selectedCycle}
+                      onChange={(value) => {
+                        setSelectedCycle(value);
+                        clearSelection();
+                      }}
+                    />
+                  </div>
+                  <CycleStatsBanner cycle={selectedPastCycle} />
+                </>
               )}
 
               {/* Tabs + description inline */}

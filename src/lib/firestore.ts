@@ -205,6 +205,12 @@ export async function createBoard(
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
       submissionCount: 0,
+      recurringEnabled: false,
+      recurringFrequency: null,
+      recurringCustomDays: null,
+      recurringStartDate: null,
+      currentCycleId: null,
+      nextCycleDate: null,
     };
 
     const docRef = await addDoc(boardsRef, newBoard);
@@ -240,7 +246,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
@@ -268,6 +274,9 @@ export async function createSubmission(
   try {
     const trackingCode = generateTrackingCode();
     const submissionsRef = collection(db, 'submissions');
+    const boardRef = doc(db, 'boards', boardId);
+    const boardData = await getDoc(boardRef);
+    const board = boardData.exists() ? (boardData.data() as Board) : null;
 
     const identityFields = input.isAnonymous
       ? {}
@@ -295,6 +304,7 @@ export async function createSubmission(
       isMerged: false,
       mergedAt: null,
       mergedBy: null,
+      cycleId: board?.currentCycleId ?? null,
       satisfactionScore: input.satisfactionScore ?? null,
       satisfactionLabel: input.satisfactionLabel ?? null,
       createdAt: Timestamp.now(),
@@ -303,10 +313,8 @@ export async function createSubmission(
 
     const docRef = await addDoc(submissionsRef, newSubmission);
 
-    const boardRef = doc(db, 'boards', boardId);
-    const boardData = await getDoc(boardRef);
     if (boardData.exists()) {
-      const currentCount = (boardData.data() as Board).submissionCount || 0;
+      const currentCount = board?.submissionCount || 0;
       await updateDoc(boardRef, { submissionCount: currentCount + 1 });
     }
 

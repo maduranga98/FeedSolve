@@ -144,6 +144,27 @@ export interface CustomForm {
   updatedAt: Timestamp;
 }
 
+export type RecurringFrequency = "monthly" | "quarterly" | "custom";
+
+export interface BoardCycleStats {
+  totalSubmissions: number;
+  resolvedSubmissions: number;
+  resolutionRate: number;
+  avgResolutionHours: number;
+}
+
+export interface BoardCycle {
+  id: string;
+  boardId: string;
+  companyId: string;
+  cycleNumber: number;
+  label: string;
+  startDate: Timestamp;
+  endDate: Timestamp | null;
+  isCurrent: boolean;
+  stats: BoardCycleStats;
+}
+
 export interface Board {
   id: string;
   companyId: string;
@@ -161,6 +182,12 @@ export interface Board {
   submissionCount: number;
   customForm?: CustomForm;
   accessPassword?: string;
+  recurringEnabled?: boolean;
+  recurringFrequency?: RecurringFrequency | null;
+  recurringCustomDays?: number | null;
+  recurringStartDate?: Timestamp | null;
+  currentCycleId?: string | null;
+  nextCycleDate?: Timestamp | null;
 }
 
 export interface InternalNote {
@@ -208,6 +235,7 @@ export interface Submission {
   isMerged?: boolean;
   mergedAt?: Timestamp | null;
   mergedBy?: string | null;
+  cycleId?: string | null;
   submissionLanguage?: string;
   satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
   satisfactionLabel?: string | null;

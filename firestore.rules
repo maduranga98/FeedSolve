@@ -368,6 +368,22 @@ service cloud.firestore {
       }
     }
 
+
+    // Board cycle archives - company members read, admins manage settings-created cycles.
+    match /boardCycles/{cycleId} {
+      allow read: if canReadSubmissions(resource.data.companyId);
+      allow create: if canManageCompany(request.resource.data.companyId) &&
+        request.resource.data.boardId is string &&
+        request.resource.data.companyId is string &&
+        request.resource.data.cycleNumber is int &&
+        request.resource.data.label is string &&
+        request.resource.data.isCurrent is bool;
+      allow update: if canManageCompany(resource.data.companyId) &&
+        request.resource.data.companyId == resource.data.companyId &&
+        request.resource.data.boardId == resource.data.boardId;
+      allow delete: if canManageCompany(resource.data.companyId);
+    }
+
     // Stripe invoices - company members can read their own invoice history.
     // Writes are server-only via Cloud Functions/Admin SDK webhooks.
     match /invoices/{companyId}/invoices/{invoiceId} {
