@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, History } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Badge, LoadingSpinner } from '../../components/Shared';
 import { AttachmentGallery } from '../../components/Attachments';
@@ -14,8 +15,9 @@ import {
   getTeamMembers,
 } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
+import { useEscalationRules } from '../../hooks/useEscalationRules';
 import { InternalDiscussion } from '../../components/dashboard/InternalDiscussion';
-import type { Submission, TeamMember } from '../../types';
+import type { EscalationLog, Submission, TeamMember } from '../../types';
 
 const SATISFACTION_CONFIG: Record<number, { emoji: string; color: string; bg: string }> = {
   1: { emoji: "😠", color: "#E74C3C", bg: "#FDEDEC" },
@@ -55,7 +57,9 @@ export function SubmissionDetail() {
   const { user } = useAuth();
   const { loading: downloading, downloadFile, viewFile } = useFileDownload();
   const [submission, setSubmission] = useState<Submission | null>(null);
+  const { getEscalationLog } = useEscalationRules();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [escalationLog, setEscalationLog] = useState<EscalationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [publicReply, setPublicReply] = useState('');
@@ -66,9 +70,10 @@ export function SubmissionDetail() {
     if (!submissionId || !user) return;
     try {
       setLoading(true);
-      const [submissionData, members] = await Promise.all([
+      const [submissionData, members, logEntries] = await Promise.all([
         getSubmission(submissionId),
         getTeamMembers(user.companyId),
+        getEscalationLog(submissionId),
       ]);
 
       if (!submissionData) {
@@ -78,6 +83,7 @@ export function SubmissionDetail() {
 
       setSubmission(submissionData);
       setTeamMembers(members);
+      setEscalationLog(logEntries);
       setPublicReply(submissionData.publicReply || '');
     } catch (err) {
       setError('Failed to load submission');
@@ -85,7 +91,7 @@ export function SubmissionDetail() {
     } finally {
       setLoading(false);
     }
-  }, [submissionId, user]);
+  }, [getEscalationLog, submissionId, user]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -248,6 +254,7 @@ export function SubmissionDetail() {
                 <option value="received">Received</option>
                 <option value="in_review">In Review</option>
                 <option value="in_progress">In Progress</option>
+                <option value="escalated">Escalated</option>
                 <option value="resolved">Resolved</option>
                 <option value="closed">Closed</option>
               </select>
@@ -316,6 +323,24 @@ export function SubmissionDetail() {
               <p className="text-sm text-color-muted-text">
                 Resolved: {formatDate(new Date(submission.resolvedAt.toMillis()))}
               </p>
+            )}
+          </div>
+
+          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-4">
+            <div className="mb-3 flex items-center gap-2 text-[#1E3A5F]">
+              <History size={17} />
+              <h2 className="text-base font-semibold">Escalation History</h2>
+            </div>
+            {escalationLog.length === 0 ? (
+              <p className="text-sm text-[#6B7B8D]">No automated escalations have triggered for this submission.</p>
+            ) : (
+              <ul className="space-y-2">
+                {escalationLog.map((entry) => (
+                  <li key={entry.id} className="rounded-lg bg-white px-3 py-2 text-sm text-[#444441] ring-1 ring-[#D3D1C7]/70">
+                    Rule <span className="font-semibold text-[#1E3A5F]">“{entry.ruleName}”</span> triggered {entry.triggeredAt ? formatDistanceToNow(entry.triggeredAt.toDate(), { addSuffix: true }) : 'recently'} → {entry.actionsTaken.join(', ')}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 

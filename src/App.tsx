@@ -53,6 +53,7 @@ const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m =
 // Settings Pages
 const ReplyTemplatesPage = lazy(() => import('./pages/Settings/ReplyTemplatesPage').then(m => ({ default: m.ReplyTemplatesPage })));
 const CompanySettings = lazy(() => import('./pages/dashboard/settings/CompanySettings').then(m => ({ default: m.CompanySettings })));
+const EscalationRulesPage = lazy(() => import('./pages/dashboard/settings/EscalationRulesPage').then(m => ({ default: m.EscalationRulesPage })));
 const PublicResolutionFeed = lazy(() => import('./pages/public/PublicResolutionFeed').then(m => ({ default: m.PublicResolutionFeed })));
 
 // Audit Logs Pages
@@ -287,6 +288,16 @@ function AppContent() {
             <PermissionRoute permission="submissions:read">
               <Navbar />
               <SubmissionsPage />
+            </PermissionRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/settings/escalation-rules"
+          element={
+            <PermissionRoute permission="company:update">
+              <Navbar />
+              <EscalationRulesPage />
             </PermissionRoute>
           }
         />

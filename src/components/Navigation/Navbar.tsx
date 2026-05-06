@@ -12,6 +12,8 @@ import {
   ClipboardList,
   FileText,
   Settings,
+  ShieldAlert,
+  Lock,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -25,6 +27,8 @@ type NavItem = {
   path: string;
   label: string;
   icon: ReactNode;
+  locked?: boolean;
+  lockedMessage?: string;
 };
 
 export function Navbar() {
@@ -32,7 +36,7 @@ export function Navbar() {
   const location = useLocation();
   const { user, logout } = useAuth();
   const { t } = useTranslation();
-  useSubscription();
+  const { subscription } = useSubscription();
   const { templates } = useTemplates();
 
   const handleLogout = async () => {
@@ -44,6 +48,8 @@ export function Navbar() {
     path === "/dashboard"
       ? location.pathname === path
       : location.pathname.startsWith(path);
+
+  const escalationLocked = !["growth", "business"].includes(subscription?.tier ?? "free");
 
   const allNavItems: Array<NavItem & { permission?: Parameters<typeof hasPermission>[1] }> = [
     {
@@ -62,6 +68,14 @@ export function Navbar() {
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
+    {
+      path: "/dashboard/settings/escalation-rules",
+      label: "Escalation Rules",
+      icon: <ShieldAlert size={15} />,
+      permission: "company:update",
+      locked: escalationLocked,
+      lockedMessage: "Escalation rules are available on Growth plan",
+    },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
     { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
   ];
@@ -123,7 +137,12 @@ export function Navbar() {
                   <span className={active ? "text-[#2E86AB]" : "text-[#9AABBF]"}>
                     {item.icon}
                   </span>
-                  {item.label}
+                  <span className="truncate">{item.label}</span>
+                  {item.locked && (
+                    <span className="ml-auto text-[#F39C12]" title={item.lockedMessage}>
+                      <Lock size={13} />
+                    </span>
+                  )}
                   {item.path === '/reply-templates' && templates.length > 0 && (
                     <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#EBF5FB] text-[#2E86AB]">
                       {templates.length}

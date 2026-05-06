@@ -195,7 +195,7 @@ export interface Submission {
   submitterMobile?: string;
   location: string | null;
   isAnonymous: boolean;
-  status: "received" | "in_review" | "in_progress" | "resolved" | "closed";
+  status: "received" | "in_review" | "in_progress" | "escalated" | "resolved" | "closed";
   priority: "low" | "medium" | "high" | "critical";
   assignedTo?: string;
   internalNotes: InternalNote[];
@@ -575,3 +575,5 @@ export interface AuditLog {
   details: Record<string, unknown>;
   createdAt: Timestamp;
 }
+
+export type { EscalationRule, EscalationLog, EscalationRuleInput, EscalationRuleActions, EscalationRuleConditions, EscalationRuleTrigger, EscalationTriggerType } from './escalationRule';
