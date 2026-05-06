@@ -10,9 +10,8 @@ import {
 } from '../../lib/firestore';
 import { ResolutionMetricCard } from '../../components/public/ResolutionMetricCard';
 import { RecentActivityFeed } from '../../components/public/RecentActivityFeed';
+import { getAppOrigin } from '../../lib/app-url';
 
-const APP_ORIGIN = import.meta.env.VITE_APP_URL || 'https://feedsolve.com';
-const FEEDSOLVE_OG_IMAGE = `${APP_ORIGIN}/og-feedsolve.png`;
 
 function toDate(value: Submission['createdAt'] | Date | string | number | undefined): Date | null {
   if (!value) return null;
@@ -67,6 +66,8 @@ export function PublicResolutionFeed() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const appOrigin = useMemo(() => getAppOrigin(), []);
+  const feedsolveOgImage = useMemo(() => `${appOrigin}/og-feedsolve.png`, [appOrigin]);
 
   useEffect(() => {
     const loadPublicFeed = async () => {
@@ -154,8 +155,8 @@ export function PublicResolutionFeed() {
     upsertMeta('meta[name="description"]', 'name', 'description', description);
     upsertMeta('meta[property="og:title"]', 'property', 'og:title', title);
     upsertMeta('meta[property="og:description"]', 'property', 'og:description', description);
-    upsertMeta('meta[property="og:image"]', 'property', 'og:image', FEEDSOLVE_OG_IMAGE);
-  }, [company, stats.resolutionRate, stats.resolvedCount]);
+    upsertMeta('meta[property="og:image"]', 'property', 'og:image', feedsolveOgImage);
+  }, [company, feedsolveOgImage, stats.resolutionRate, stats.resolvedCount]);
 
   if (loading) return <LoadingSkeleton />;
 
@@ -193,7 +194,7 @@ export function PublicResolutionFeed() {
   const displayName = company.branding?.companyName || company.name;
   const publicTitle = company.publicFeedTitle || `${displayName} Feedback Transparency`;
   const firstBoard = boards[0];
-  const submitLink = firstBoard ? `${APP_ORIGIN}/submit/${firstBoard.slug}` : null;
+  const submitLink = firstBoard ? `${appOrigin}/submit/${firstBoard.slug}` : null;
 
   return (
     <div className="min-h-screen bg-[#F1F5F8] text-[#1E3A5F]">
