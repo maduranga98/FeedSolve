@@ -29,7 +29,7 @@ export function Input({ label, error, helperText, leftIcon, className = '', ...p
               ? 'border-[#E74C3C] focus:ring-[#E74C3C]/30 focus:border-[#E74C3C]'
               : 'border-[#D3D1C7] hover:border-[#9AABBF] focus:ring-[#2E86AB]/30 focus:border-[#2E86AB]'
             }
-            disabled:bg-[#F8FAFB] disabled:text-[#9AABBF] disabled:cursor-not-allowed
+            disabled:bg-[#F1F5F8] disabled:text-[#9AABBF] disabled:cursor-not-allowed
             ${className}`}
           {...props}
         />

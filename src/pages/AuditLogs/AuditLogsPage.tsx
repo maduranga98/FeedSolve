@@ -25,6 +25,9 @@ const RESOURCE_TYPE_LABELS: Record<AuditLog['resourceType'], string> = {
   team: 'Team',
   webhook: 'Webhook',
   billing: 'Billing',
+  settings: 'Settings',
+  escalation: 'Escalation',
+  template: 'Template',
 };
 
 const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
@@ -33,6 +36,9 @@ const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
   team: 'bg-[#FFF8E6] text-[#B06F00]',
   webhook: 'bg-purple-100 text-purple-700',
   billing: 'bg-pink-100 text-pink-700',
+  settings: 'bg-slate-100 text-slate-700',
+  escalation: 'bg-orange-100 text-orange-700',
+  template: 'bg-indigo-100 text-indigo-700',
 };
 
 function formatDate(ts: Timestamp | Date | undefined): string {
@@ -127,7 +133,7 @@ export function AuditLogsPage() {
 
   if (getCurrentTier() !== 'business') {
     return (
-      <div className="min-h-screen bg-[#F4F7FA] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
           <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
             <Lock size={28} className="text-[#2E86AB]" />
@@ -163,7 +169,7 @@ export function AuditLogsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F4F7FA]">
+    <div className="min-h-screen bg-[#EEF3F7]">
       {/* Header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -202,7 +208,7 @@ export function AuditLogsPage() {
                         exportCSV(filtered);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#F4F7FA] text-left"
+                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#EEF3F7] text-left"
                     >
                       Export as CSV
                     </button>
@@ -211,7 +217,7 @@ export function AuditLogsPage() {
                         exportJSON(filtered);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#F4F7FA] text-left border-t border-[#F0F4F8]"
+                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#EEF3F7] text-left border-t border-[#F0F4F8]"
                     >
                       Export as JSON
                     </button>
@@ -267,7 +273,7 @@ export function AuditLogsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white border border-[#E8ECF0] rounded-xl p-12 text-center">
-            <div className="w-14 h-14 bg-[#F4F7FA] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 bg-[#EEF3F7] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <ClipboardList size={28} className="text-[#9AABBF]" />
             </div>
             <h3 className="text-base font-semibold text-[#1E3A5F] mb-1">
@@ -282,7 +288,7 @@ export function AuditLogsPage() {
         ) : (
           <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
             {/* Table header */}
-            <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-[#F8FAFB] border-b border-[#E8ECF0]">
+            <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-[#F1F5F8] border-b border-[#E8ECF0]">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
                 <Clock size={12} />
                 Timestamp

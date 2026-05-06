@@ -19,6 +19,23 @@ import {
 } from 'firebase/firestore';
 import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
 
+
+function removeUndefinedDeep<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => removeUndefinedDeep(item)) as T;
+  }
+
+  if (value && typeof value === 'object' && !(value instanceof Timestamp)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .filter(([, nestedValue]) => nestedValue !== undefined)
+        .map(([key, nestedValue]) => [key, removeUndefinedDeep(nestedValue)])
+    ) as T;
+  }
+
+  return value;
+}
+
 function wrapFirestoreError(error: unknown): never {
   if (isQuotaError(error)) {
     throw new Error(
@@ -1610,17 +1627,18 @@ export async function addAuditLog(
     userName: string;
     userEmail: string;
     action: string;
-    resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing';
+    resourceType: 'submission' | 'board' | 'team' | 'webhook' | 'billing' | 'settings' | 'escalation' | 'template';
     resourceId?: string;
     resourceName?: string;
     details?: Record<string, unknown>;
   }
 ): Promise<void> {
   const logsRef = collection(db, 'companies', companyId, 'audit_logs');
+  const sanitizedEntry = removeUndefinedDeep(entry);
   await addDoc(logsRef, {
     companyId,
-    ...entry,
-    details: entry.details ?? {},
+    ...sanitizedEntry,
+    details: removeUndefinedDeep(entry.details ?? {}),
     createdAt: Timestamp.now(),
   });
 }

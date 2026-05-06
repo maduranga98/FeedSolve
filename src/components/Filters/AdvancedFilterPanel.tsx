@@ -111,7 +111,7 @@ export function AdvancedFilterPanel({
       <div className="flex items-center justify-between gap-2">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-[#D3D1C7] rounded-lg text-sm text-[#444441] hover:bg-[#F8FAFB] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-[#D3D1C7] rounded-lg text-sm text-[#444441] hover:bg-[#F1F5F8] transition-colors"
         >
           <span>Advanced Filters</span>
           {activeFilterCount > 0 && (

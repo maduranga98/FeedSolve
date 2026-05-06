@@ -117,7 +117,7 @@ export default function FilterBar({
             setShowFilters(!showFilters);
             loadMembers();
           }}
-          className="flex items-center gap-2 px-3 py-2 bg-white border border-[#D3D1C7] rounded text-sm text-[#444441] hover:bg-[#F8FAFB] transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-white border border-[#D3D1C7] rounded text-sm text-[#444441] hover:bg-[#F1F5F8] transition-colors"
         >
           <span>Filters</span>
           {activeFilterCount > 0 && (

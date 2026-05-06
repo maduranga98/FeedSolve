@@ -136,7 +136,7 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
           ))}
         </div>
       ) : (
-        <p className="rounded-lg border border-dashed border-[#D3D1C7] bg-[#F8FAFB] p-4 text-sm text-[#6B7B8D]">
+        <p className="rounded-lg border border-dashed border-[#D3D1C7] bg-[#F1F5F8] p-4 text-sm text-[#6B7B8D]">
           No locations yet. Free boards can keep the default board QR; paid tiers can add location variants.
         </p>
       )}

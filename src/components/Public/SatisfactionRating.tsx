@@ -56,7 +56,7 @@ export function SatisfactionRating({ value, onChange, error }: SatisfactionRatin
                 padding: "10px 4px 8px",
                 borderRadius: 8,
                 border: `2px solid ${highlight ? r.border : "#D3D1C7"}`,
-                backgroundColor: highlight ? r.bg : "#F8FAFB",
+                backgroundColor: highlight ? r.bg : "#F1F5F8",
                 cursor: "pointer",
                 transition: "all 0.15s ease",
                 transform: isHovered ? "translateY(-2px)" : "none",

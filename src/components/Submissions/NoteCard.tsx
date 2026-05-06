@@ -7,7 +7,7 @@ interface NoteCardProps {
 
 export default function NoteCard({ note }: NoteCardProps) {
   return (
-    <div className="bg-[#F8FAFB] border border-[#D3D1C7] rounded-lg p-4">
+    <div className="bg-[#F1F5F8] border border-[#D3D1C7] rounded-lg p-4">
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="font-medium text-[#1E3A5F] text-sm">{note.createdBy}</p>

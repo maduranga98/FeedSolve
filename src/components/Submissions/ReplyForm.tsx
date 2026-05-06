@@ -5,6 +5,8 @@ import { Button } from '../Shared';
 import { TemplatePickerPopover } from '../Templates/TemplatePickerPopover';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useHasFeature } from '../../hooks/useHasFeature';
+import { useAuth } from '../../hooks/useAuth';
+import { addAuditLog } from '../../lib/firestore';
 import type { Submission } from '../../types';
 
 interface ReplyFormProps {
@@ -25,8 +27,9 @@ export default function ReplyForm({
   boardName = '',
 }: ReplyFormProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { checkFeature } = useHasFeature();
-  const { templates } = useTemplates();
+  const { templates, incrementUsage } = useTemplates();
   const [text, setText] = useState(initialValue);
   const [showPicker, setShowPicker] = useState(false);
 
@@ -46,9 +49,24 @@ export default function ReplyForm({
     }
   };
 
-  const handleTemplateInsert = (resolvedText: string) => {
+  const handleTemplateInsert = (resolvedText: string, templateId: string) => {
     setText(resolvedText);
     setShowPicker(false);
+    incrementUsage(templateId);
+
+    const template = templates.find((item) => item.id === templateId);
+    if (user && submission) {
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Inserted reply template ${template?.title ?? templateId}`,
+        resourceType: 'submission',
+        resourceId: submission.id,
+        resourceName: submission.subject,
+        details: { templateId, templateTitle: template?.title ?? null },
+      });
+    }
   };
 
   return (
@@ -70,7 +88,7 @@ export default function ReplyForm({
               type="button"
               onClick={() => navigate('/pricing')}
               title="Reply templates available on Growth plan"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#F4F7FA] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#EEF3F7] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
             >
               <Lock size={12} />
               Use Template

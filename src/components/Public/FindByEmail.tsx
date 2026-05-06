@@ -121,7 +121,7 @@ export function FindByEmail() {
 
   return (
     <div className="space-y-5 text-left">
-      <div className="rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-4">
+      <div className="rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EBF5FB]">
             <ShieldCheck size={20} className="text-[#2E86AB]" />

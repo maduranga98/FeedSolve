@@ -13,6 +13,7 @@ import {
   updateSubmissionAssignment,
   updateSubmissionPublicReply,
   getTeamMembers,
+  addAuditLog,
 } from '../../lib/firestore';
 import { formatDate } from '../../lib/utils';
 import { useEscalationRules } from '../../hooks/useEscalationRules';
@@ -99,10 +100,20 @@ export function SubmissionDetail() {
   }, [loadData]);
 
   async function handleStatusChange(newStatus: Submission['status']) {
-    if (!submission) return;
+    if (!submission || !user) return;
     try {
       setUpdating(true);
       await updateSubmissionStatus(submission.id, newStatus);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Changed status to "${newStatus}"`,
+        resourceType: 'submission',
+        resourceId: submission.id,
+        resourceName: submission.subject,
+        details: { from: submission.status, to: newStatus },
+      });
       setSuccess('Status updated');
       setSubmission({ ...submission, status: newStatus });
       setTimeout(() => setSuccess(''), 2000);
@@ -115,10 +126,20 @@ export function SubmissionDetail() {
   }
 
   async function handlePriorityChange(newPriority: Submission['priority']) {
-    if (!submission) return;
+    if (!submission || !user) return;
     try {
       setUpdating(true);
       await updateSubmissionPriority(submission.id, newPriority);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: `Changed priority to "${newPriority}"`,
+        resourceType: 'submission',
+        resourceId: submission.id,
+        resourceName: submission.subject,
+        details: { from: submission.priority, to: newPriority },
+      });
       setSuccess('Priority updated');
       setSubmission({ ...submission, priority: newPriority });
       setTimeout(() => setSuccess(''), 2000);
@@ -131,10 +152,21 @@ export function SubmissionDetail() {
   }
 
   async function handleAssignmentChange(userId?: string) {
-    if (!submission) return;
+    if (!submission || !user) return;
     try {
       setUpdating(true);
       await updateSubmissionAssignment(submission.id, userId);
+      const assignedMember = teamMembers.find((member) => member.userId === userId);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: userId ? `Assigned submission to ${assignedMember?.name ?? userId}` : 'Unassigned submission',
+        resourceType: 'submission',
+        resourceId: submission.id,
+        resourceName: submission.subject,
+        details: { from: submission.assignedTo ?? null, to: userId ?? null, assignedToName: assignedMember?.name ?? null },
+      });
       setSuccess('Assignment updated');
       setSubmission({ ...submission, assignedTo: userId });
       setTimeout(() => setSuccess(''), 2000);
@@ -147,10 +179,20 @@ export function SubmissionDetail() {
   }
 
   async function handlePublicReplyChange() {
-    if (!submission) return;
+    if (!submission || !user) return;
     try {
       setUpdating(true);
       await updateSubmissionPublicReply(submission.id, publicReply);
+      void addAuditLog(user.companyId, {
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        action: submission.publicReply ? 'Updated public reply' : 'Added public reply',
+        resourceType: 'submission',
+        resourceId: submission.id,
+        resourceName: submission.subject,
+        details: { replyLength: publicReply.trim().length, hadPreviousReply: Boolean(submission.publicReply) },
+      });
       setSuccess('Public reply updated');
       setTimeout(() => setSuccess(''), 2000);
     } catch (err) {
@@ -326,7 +368,7 @@ export function SubmissionDetail() {
             )}
           </div>
 
-          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-4">
+          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4">
             <div className="mb-3 flex items-center gap-2 text-[#1E3A5F]">
               <History size={17} />
               <h2 className="text-base font-semibold">Escalation History</h2>

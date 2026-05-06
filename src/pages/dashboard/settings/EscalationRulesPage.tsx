@@ -65,7 +65,7 @@ export function EscalationRulesPage() {
   const locked = !canUseEscalations;
 
   return (
-    <main className="min-h-screen bg-[#F8FAFB] px-4 py-8">
+    <main className="min-h-screen bg-[#F1F5F8] px-4 py-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>

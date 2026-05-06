@@ -12,7 +12,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
-import { getSubmission } from "../lib/firestore";
+import { addAuditLog, getSubmission } from "../lib/firestore";
 import type { Submission, User } from "../types";
 import type { InternalComment } from "../types/comment";
 
@@ -120,6 +120,21 @@ export function useMergeSubmission(user: User | null) {
         });
         batch.set(commentRef, { ...comment, createdAt: now });
         await batch.commit();
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Merged ${source.trackingCode} into ${master.trackingCode}`,
+          resourceType: 'submission',
+          resourceId: master.id,
+          resourceName: master.subject,
+          details: {
+            sourceSubmissionId: source.id,
+            sourceTrackingCode: source.trackingCode,
+            masterSubmissionId: master.id,
+            masterTrackingCode: master.trackingCode,
+          },
+        });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to merge submissions.";
         setError(message);

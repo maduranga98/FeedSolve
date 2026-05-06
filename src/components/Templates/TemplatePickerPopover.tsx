@@ -72,7 +72,7 @@ export function TemplatePickerPopover({
           <div className="flex gap-2">
             <button
               onClick={() => setPendingTemplate(null)}
-              className="flex-1 px-3 py-1.5 text-sm font-medium text-[#6B7B8D] bg-white border border-[#D3D1C7] rounded-lg hover:bg-[#F4F7FA] transition-colors"
+              className="flex-1 px-3 py-1.5 text-sm font-medium text-[#6B7B8D] bg-white border border-[#D3D1C7] rounded-lg hover:bg-[#EEF3F7] transition-colors"
             >
               Keep draft
             </button>
@@ -113,7 +113,7 @@ export function TemplatePickerPopover({
             className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
               activeCategory === null
                 ? 'bg-[#2E86AB] text-white'
-                : 'bg-[#F4F7FA] text-[#6B7B8D] hover:bg-[#E8ECF0]'
+                : 'bg-[#EEF3F7] text-[#6B7B8D] hover:bg-[#E8ECF0]'
             }`}
           >
             All
@@ -125,7 +125,7 @@ export function TemplatePickerPopover({
               className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeCategory === cat
                   ? 'bg-[#2E86AB] text-white'
-                  : 'bg-[#F4F7FA] text-[#6B7B8D] hover:bg-[#E8ECF0]'
+                  : 'bg-[#EEF3F7] text-[#6B7B8D] hover:bg-[#E8ECF0]'
               }`}
             >
               {cat}
@@ -145,7 +145,7 @@ export function TemplatePickerPopover({
             <button
               key={template.id}
               onClick={() => handleSelect(template)}
-              className="w-full text-left px-4 py-3 hover:bg-[#F4F7FA] transition-colors border-b border-[#F8FAFB] last:border-0"
+              className="w-full text-left px-4 py-3 hover:bg-[#EEF3F7] transition-colors border-b border-[#F1F5F8] last:border-0"
             >
               <p className="text-sm font-medium text-[#1E3A5F] leading-snug">{template.title}</p>
               <p className="text-xs text-[#9AABBF] mt-0.5 line-clamp-2 leading-relaxed">

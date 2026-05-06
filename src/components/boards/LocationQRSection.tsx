@@ -96,7 +96,7 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-[#6B7B8D] mb-1">Tagged URL</p>
-            <code className="block rounded-lg border border-[#D3D1C7] bg-[#F8FAFB] px-3 py-2 text-xs text-[#1E3A5F] break-all">
+            <code className="block rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] px-3 py-2 text-xs text-[#1E3A5F] break-all">
               {selectedUrl}
             </code>
           </div>
@@ -119,7 +119,7 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
           </div>
 
           {progress && (
-            <div className="rounded-lg bg-[#F8FAFB] border border-[#D3D1C7] p-3">
+            <div className="rounded-lg bg-[#F1F5F8] border border-[#D3D1C7] p-3">
               <div className="flex items-center justify-between text-xs text-[#6B7B8D] mb-2">
                 <span>Packaging QR codes…</span>
                 <span>{progress.completed} / {progress.total}</span>
@@ -134,7 +134,7 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
           )}
         </div>
 
-        <div className="rounded-xl border border-[#D3D1C7] bg-[#F8FAFB] p-4 text-center printable-qr-card">
+        <div className="rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4 text-center printable-qr-card">
           <div className="inline-block bg-white p-3 rounded-lg border border-[#E8ECF0]">
             <QRCodeCanvas
               ref={previewRef}

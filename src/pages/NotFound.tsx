@@ -6,7 +6,7 @@ export function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFB] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F1F5F8] flex items-center justify-center p-4">
       <div className="max-w-md w-full text-center">
         <div className="w-20 h-20 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-6">
           <FileQuestion className="w-10 h-10 text-[#2E86AB]" />
