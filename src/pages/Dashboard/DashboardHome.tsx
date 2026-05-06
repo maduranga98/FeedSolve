@@ -223,7 +223,7 @@ export function DashboardHome() {
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="min-h-screen bg-[#EEF3F7]">
+    <div className="min-h-screen bg-[#E1E8EF]">
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -389,7 +389,7 @@ export function DashboardHome() {
                           "_blank"
                         )
                       }
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#6B7B8D] bg-[#EEF3F7] hover:bg-[#E8ECF0] py-2 rounded-lg transition-colors"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] py-2 rounded-lg transition-colors"
                     >
                       <ExternalLink size={13} />
                       Open Form

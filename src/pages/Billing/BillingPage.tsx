@@ -29,7 +29,7 @@ export function BillingPage() {
 
   if (!subscription) {
     return (
-      <div className="min-h-screen bg-[#EEF3F7]">
+      <div className="min-h-screen bg-[#E1E8EF]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <p className="text-[#6B7B8D]">Unable to load billing information</p>
@@ -40,7 +40,7 @@ export function BillingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF3F7]">
+    <div className="min-h-screen bg-[#E1E8EF]">
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

@@ -115,7 +115,7 @@ export function IntegrationsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center">
+      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center">
         <Loader className="animate-spin text-[#2E86AB]" size={32} />
       </div>
     );
@@ -128,7 +128,7 @@ export function IntegrationsPage() {
   const hasAnyConnected = hasSlack || hasEmail || hasCustom;
 
   return (
-    <div className="min-h-screen bg-[#EEF3F7]">
+    <div className="min-h-screen bg-[#E1E8EF]">
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

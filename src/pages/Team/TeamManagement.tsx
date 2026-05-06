@@ -167,7 +167,7 @@ export function TeamManagement() {
   }
 
   return (
-    <main className="min-h-screen bg-[#EEF3F7]">
+    <main className="min-h-screen bg-[#E1E8EF]">
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">

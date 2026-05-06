@@ -69,7 +69,7 @@ function MergedSubmissionPreview({ submission, onClose }: { submission: Submissi
             <h3 className="mt-1 text-lg font-bold text-[#1E3A5F]">{submission.subject}</h3>
             <p className="font-mono text-xs text-[#2E86AB]">{submission.trackingCode}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#EEF3F7] hover:text-[#444441]">
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#E1E8EF] hover:text-[#444441]">
             <X size={18} />
           </button>
         </div>
@@ -208,7 +208,7 @@ export default function SubmissionDetail({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <StatusBadge status={submission.status} />
-              <span className="font-mono text-xs text-[#9AABBF] bg-[#EEF3F7] px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-[#9AABBF] bg-[#E1E8EF] px-2 py-0.5 rounded">
                 {submission.trackingCode}
               </span>
             </div>
@@ -271,7 +271,7 @@ export default function SubmissionDetail({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#EEF3F7] rounded-lg transition-colors ml-1"
+              className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#E1E8EF] rounded-lg transition-colors ml-1"
             >
               <X size={20} />
             </button>
@@ -433,7 +433,7 @@ export default function SubmissionDetail({
           {/* Inline file preview */}
           {previewUrl && (
             <div className="border border-[#E8ECF0] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2 bg-[#EEF3F7] border-b border-[#E8ECF0]">
+              <div className="flex items-center justify-between px-4 py-2 bg-[#E1E8EF] border-b border-[#E8ECF0]">
                 <span className="text-xs font-medium text-[#6B7B8D] flex items-center gap-1">
                   <Eye size={13} />
                   File Preview
@@ -528,7 +528,7 @@ export default function SubmissionDetail({
               href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#EEF3F7] hover:bg-[#E8ECF0] rounded-xl transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] rounded-xl transition-colors"
             >
               <ExternalLink size={15} />
               Public Tracking Page

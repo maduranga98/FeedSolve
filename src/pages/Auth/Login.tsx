@@ -177,7 +177,7 @@ export function Login() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#EEF3F7]">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E1E8EF]">
         {/* Mobile logo */}
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
@@ -247,7 +247,7 @@ export function Login() {
               <div className="w-full border-t border-[#E8ECF0]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-[#EEF3F7] text-[#9AABBF] font-medium">
+              <span className="px-3 bg-[#E1E8EF] text-[#9AABBF] font-medium">
                 or sign in with email
               </span>
             </div>

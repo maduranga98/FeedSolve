@@ -163,7 +163,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center">
+      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -171,7 +171,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (error || !submission) {
     return (
-      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 text-center">
           <div className="w-14 h-14 bg-[#FDECEA] rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle size={24} className="text-[#C0392B]" />
@@ -198,7 +198,7 @@ function TrackingView({ code }: { code: string }) {
 
   if (passwordRequired && !passwordAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
           <div className="w-14 h-14 bg-[#FFF3CD] rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock size={24} className="text-[#F39C12]" />
@@ -258,7 +258,7 @@ function TrackingView({ code }: { code: string }) {
   ].filter(Boolean) as { date: Timestamp; label: string }[];
 
   return (
-    <div id="tracking-root" className="min-h-screen bg-[#EEF3F7] py-6 px-4">
+    <div id="tracking-root" className="min-h-screen bg-[#E1E8EF] py-6 px-4">
       <div className="max-w-2xl mx-auto space-y-4">
 
         {/* Top nav bar */}
@@ -371,7 +371,7 @@ function TrackingView({ code }: { code: string }) {
             </div>
             <div className="rounded-xl bg-[#F1F5F8] px-3 py-2.5">
               <p className="text-xs text-[#9AABBF] uppercase tracking-wide font-medium mb-1">Priority</p>
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[publicSubmission.priority] ?? "text-[#6B7B8D] bg-[#EEF3F7]"}`}>
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${PRIORITY_COLOR[publicSubmission.priority] ?? "text-[#6B7B8D] bg-[#E1E8EF]"}`}>
                 {publicSubmission.priority}
               </span>
             </div>

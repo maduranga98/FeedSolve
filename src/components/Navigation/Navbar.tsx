@@ -63,11 +63,7 @@ export function Navbar() {
       label: t("boards:templates.title"),
       icon: <LayoutTemplate size={15} />,
     },
-    { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
-    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
-    { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
-    { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
-    { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
+    { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
     {
       path: "/dashboard/settings/escalation-rules",
       label: "Escalation Rules",
@@ -76,8 +72,12 @@ export function Navbar() {
       locked: escalationLocked,
       lockedMessage: "Escalation rules are available on Growth plan",
     },
+    { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
+    { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
+    { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
+    { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
-    { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
+    { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
   ];
 
   const navItems = allNavItems.filter((item) => {
@@ -131,7 +131,7 @@ export function Navbar() {
                     ${
                       active
                         ? "text-[#2E86AB] bg-[#EBF5FB]"
-                        : "text-[#6B7B8D] hover:text-[#1E3A5F] hover:bg-[#EEF3F7]"
+                        : "text-[#6B7B8D] hover:text-[#1E3A5F] hover:bg-[#E1E8EF]"
                     }`}
                 >
                   <span className={active ? "text-[#2E86AB]" : "text-[#9AABBF]"}>

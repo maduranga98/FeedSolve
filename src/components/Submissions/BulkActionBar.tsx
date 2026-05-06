@@ -118,7 +118,7 @@ export function BulkActionBar({
                   <button
                     key={value}
                     onClick={() => handleStatusSelect(value)}
-                    className="w-full text-left px-4 py-2.5 text-sm text-[#1E3A5F] hover:bg-[#EEF3F7] transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm text-[#1E3A5F] hover:bg-[#E1E8EF] transition-colors"
                   >
                     {label}
                   </button>
@@ -149,7 +149,7 @@ export function BulkActionBar({
                     <button
                       key={u.id}
                       onClick={() => handleAssignSelect(u.id, u.name)}
-                      className="w-full text-left px-4 py-2.5 text-sm text-[#1E3A5F] hover:bg-[#EEF3F7] transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-[#1E3A5F] hover:bg-[#E1E8EF] transition-colors flex items-center gap-2"
                     >
                       <div className="w-6 h-6 rounded-full bg-[#EBF5FB] flex items-center justify-center text-xs font-bold text-[#2E86AB] flex-shrink-0">
                         {u.name.charAt(0).toUpperCase()}

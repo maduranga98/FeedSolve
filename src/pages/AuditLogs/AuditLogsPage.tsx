@@ -133,7 +133,7 @@ export function AuditLogsPage() {
 
   if (getCurrentTier() !== 'business') {
     return (
-      <div className="min-h-screen bg-[#EEF3F7] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
           <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
             <Lock size={28} className="text-[#2E86AB]" />
@@ -169,7 +169,7 @@ export function AuditLogsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#EEF3F7]">
+    <div className="min-h-screen bg-[#E1E8EF]">
       {/* Header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -208,7 +208,7 @@ export function AuditLogsPage() {
                         exportCSV(filtered);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#EEF3F7] text-left"
+                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left"
                     >
                       Export as CSV
                     </button>
@@ -217,7 +217,7 @@ export function AuditLogsPage() {
                         exportJSON(filtered);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#EEF3F7] text-left border-t border-[#F0F4F8]"
+                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
                     >
                       Export as JSON
                     </button>
@@ -273,7 +273,7 @@ export function AuditLogsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="bg-white border border-[#E8ECF0] rounded-xl p-12 text-center">
-            <div className="w-14 h-14 bg-[#EEF3F7] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-14 h-14 bg-[#E1E8EF] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <ClipboardList size={28} className="text-[#9AABBF]" />
             </div>
             <h3 className="text-base font-semibold text-[#1E3A5F] mb-1">
