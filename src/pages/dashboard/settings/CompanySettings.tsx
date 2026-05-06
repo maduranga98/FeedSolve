@@ -4,10 +4,10 @@ import { toast } from 'sonner';
 import { Button, Input, LoadingSpinner } from '../../../components/Shared';
 import { useAuth } from '../../../hooks/useAuth';
 import { addAuditLog, getCompany, getCompanySubmissions, updateCompanyPublicFeedSettings } from '../../../lib/firestore';
+import { getAppOrigin } from '../../../lib/app-url';
 import { generateBoardSlug } from '../../../lib/utils';
 import type { Company } from '../../../types';
 
-const APP_ORIGIN = import.meta.env.VITE_APP_URL || 'https://feedsolve.com';
 const MESSAGE_LIMIT = 200;
 
 type PublicFeedForm = {
@@ -72,7 +72,15 @@ export function CompanySettings() {
   const savedSlug = company?.companySlug || '';
   const currentSafeSlug = generateBoardSlug(form.companySlug || company?.name || '');
   const hasUnsavedSlug = Boolean(currentSafeSlug && savedSlug && currentSafeSlug !== savedSlug);
-  const previewUrl = useMemo(() => `${APP_ORIGIN}/r/${currentSafeSlug || 'your-slug'}`, [currentSafeSlug]);
+  const appOrigin = useMemo(() => getAppOrigin(), []);
+  const appHostname = useMemo(() => {
+    try {
+      return new URL(appOrigin).hostname;
+    } catch {
+      return appOrigin.replace(/^https?:\/\//, '');
+    }
+  }, [appOrigin]);
+  const previewUrl = useMemo(() => `${appOrigin}/r/${currentSafeSlug || 'your-slug'}`, [appOrigin, currentSafeSlug]);
   const defaultTitle = `${company?.branding?.companyName || company?.name || 'Your Company'} Feedback Transparency`;
 
   const handleSave = async () => {
@@ -159,7 +167,7 @@ export function CompanySettings() {
                 <h2 className="text-xl font-bold text-[#1E3A5F]">Public Resolution Feed</h2>
               </div>
               <p className="mt-2 text-sm text-[#6B7B8D]">
-                Share your resolution stats publicly at feedsolve.com/r/your-slug.
+                Share your resolution stats publicly at {appHostname}/r/your-slug.
               </p>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">
