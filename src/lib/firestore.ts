@@ -152,6 +152,7 @@ export async function createBoard(
       description: input.description,
       slug,
       categories: input.categories,
+      locations: [],
       isAnonymousAllowed: input.isAnonymousAllowed,
       showSatisfactionRating: input.showSatisfactionRating ?? false,
       satisfactionRequired: input.satisfactionRequired ?? false,
@@ -194,7 +195,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
@@ -238,6 +239,7 @@ export async function createSubmission(
       category: input.category,
       subject: input.subject,
       description: input.description,
+      location: input.location?.trim() || null,
       ...identityFields,
       isAnonymous: input.isAnonymous,
       status: 'received' as const,

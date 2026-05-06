@@ -28,7 +28,8 @@ export function useSearch(submissions: Submission[]) {
         submission.subject.toLowerCase().includes(query) ||
         submission.description.toLowerCase().includes(query) ||
         submission.category.toLowerCase().includes(query) ||
-        submission.trackingCode.toLowerCase().includes(query)
+        submission.trackingCode.toLowerCase().includes(query) ||
+        (submission.location?.toLowerCase().includes(query) ?? false)
       );
     }
 
@@ -50,6 +51,11 @@ export function useSearch(submissions: Submission[]) {
     // Filter by category
     if (filters.category && filters.category.length > 0) {
       filtered = filtered.filter((sub) => filters.category!.includes(sub.category));
+    }
+
+    // Filter by location
+    if (filters.location && filters.location.length > 0) {
+      filtered = filtered.filter((sub) => sub.location != null && filters.location!.includes(sub.location));
     }
 
     // Filter by assignee

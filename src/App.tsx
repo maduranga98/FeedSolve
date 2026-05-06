@@ -155,6 +155,14 @@ function AppContent() {
           }
         />
         <Route
+          path="/b/:slug"
+          element={
+            <PublicRoute>
+              <SubmitFeedback />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/track"
           element={
             <PublicRoute>

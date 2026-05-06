@@ -28,6 +28,11 @@ export function useURLFilters() {
       filters.category = category;
     }
 
+    const location = searchParams.getAll('location');
+    if (location.length > 0) {
+      filters.location = location;
+    }
+
     const assignedTo = searchParams.get('assignedTo');
     if (assignedTo) {
       filters.assignedTo = assignedTo;
@@ -63,6 +68,10 @@ export function useURLFilters() {
 
       if (newFilters.category && newFilters.category.length > 0) {
         newFilters.category.forEach((c) => params.append('category', c));
+      }
+
+      if (newFilters.location && newFilters.location.length > 0) {
+        newFilters.location.forEach((location) => params.append('location', location));
       }
 
       if (newFilters.assignedTo) {

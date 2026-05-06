@@ -10,6 +10,7 @@ import {
   FileText,
   Eye,
   ExternalLink,
+  MapPin,
 } from "lucide-react";
 import { AttachmentGallery } from "../Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
@@ -51,6 +52,7 @@ function exportSubmissionCSV(submission: Submission) {
     ["Category", submission.category],
     ["Status", submission.status],
     ["Priority", submission.priority],
+    ["Location", submission.location ?? ""],
     ["Description", `"${submission.description.replace(/"/g, '""')}"`],
     ["Submitter Email", submission.submitterEmail ?? "Anonymous"],
     ["Submitter Name", submission.submitterName ?? ""],
@@ -256,6 +258,17 @@ export default function SubmissionDetail({
                 {formatDate(submission.createdAt.toDate())}
               </p>
             </div>
+            {submission.location && (
+              <div>
+                <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                  Location
+                </label>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF3F6] px-2.5 py-1 text-xs font-medium text-[#6B7B8D]">
+                  <MapPin size={12} />
+                  {submission.location}
+                </span>
+              </div>
+            )}
             {submission.isAnonymous ? (
               <div>
                 <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">

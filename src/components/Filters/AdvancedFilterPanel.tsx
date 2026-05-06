@@ -7,6 +7,7 @@ interface AdvancedFilterPanelProps {
   boards: Board[];
   users: User[];
   categories: string[];
+  locations: string[];
   filters: SearchFilters;
   onFiltersChange: (filters: SearchFilters) => void;
   onSaveFilter?: (name: string, description?: string) => Promise<void>;
@@ -30,6 +31,7 @@ const priorityOptions: { value: Submission['priority']; label: string }[] = [
 export function AdvancedFilterPanel({
   boards,
   categories,
+  locations,
   filters,
   onFiltersChange,
   onSaveFilter,
@@ -72,6 +74,14 @@ export function AdvancedFilterPanel({
     onFiltersChange({ ...filters, category: newCategories });
   };
 
+  const handleLocationToggle = (location: string) => {
+    const newLocations = filters.location?.includes(location)
+      ? filters.location.filter((item) => item !== location)
+      : [...(filters.location || []), location];
+
+    onFiltersChange({ ...filters, location: newLocations });
+  };
+
   const handleSaveFilter = async () => {
     if (!filterName.trim() || !onSaveFilter) return;
 
@@ -91,6 +101,7 @@ export function AdvancedFilterPanel({
     ...(filters.priority || []),
     ...(filters.boardId || []),
     ...(filters.category || []),
+    ...(filters.location || []),
     ...(filters.assignedTo ? [filters.assignedTo] : []),
     ...(filters.dateRange ? ['dateRange'] : []),
   ].length;
@@ -199,6 +210,28 @@ export function AdvancedFilterPanel({
                       className="rounded border-[#D3D1C7]"
                     />
                     <span className="text-sm text-[#6B7B8D]">{category}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+
+
+          {/* Locations */}
+          {locations.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-[#444441] mb-2">Location</label>
+              <div className="grid grid-cols-2 gap-2">
+                {locations.map((location) => (
+                  <label key={location} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={filters.location?.includes(location) || false}
+                      onChange={() => handleLocationToggle(location)}
+                      className="rounded border-[#D3D1C7]"
+                    />
+                    <span className="text-sm text-[#6B7B8D]">{location}</span>
                   </label>
                 ))}
               </div>
