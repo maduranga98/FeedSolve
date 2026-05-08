@@ -58,9 +58,13 @@ function cycleFromSnapshot(snapshot: { id: string; data: () => unknown }) {
   return { ...(snapshot.data() as BoardCycle), id: snapshot.id } as BoardCycle;
 }
 
-async function assignExistingSubmissionsToCycle(boardId: string, cycleId: string) {
+async function assignExistingSubmissionsToCycle(companyId: string, boardId: string, cycleId: string) {
   const submissionsSnapshot = await getDocs(
-    query(collection(db, 'submissions'), where('boardId', '==', boardId))
+    query(
+      collection(db, 'submissions'),
+      where('companyId', '==', companyId),
+      where('boardId', '==', boardId)
+    )
   );
   const unassigned = submissionsSnapshot.docs.filter((submissionDoc) => !submissionDoc.data().cycleId);
 
@@ -89,7 +93,7 @@ export function useBoardCycles(companyId?: string, boardId?: string | null) {
     setError(null);
     try {
       const constraints = boardId
-        ? [where('boardId', '==', boardId), orderBy('cycleNumber', 'desc')]
+        ? [where('companyId', '==', companyId), where('boardId', '==', boardId), orderBy('cycleNumber', 'desc')]
         : [where('companyId', '==', companyId), orderBy('startDate', 'desc')];
       const snapshot = await getDocs(query(collection(db, 'boardCycles'), ...constraints));
       const loaded = snapshot.docs.map(cycleFromSnapshot);
@@ -161,7 +165,7 @@ export function useBoardCycles(companyId?: string, boardId?: string | null) {
           await setDoc(cycleRef, cycle);
         }
 
-        await assignExistingSubmissionsToCycle(board.id, currentCycleId);
+        await assignExistingSubmissionsToCycle(companyId, board.id, currentCycleId);
 
         await updateBoard(board.id, {
           recurringEnabled: true,

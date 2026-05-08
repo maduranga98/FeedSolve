@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
 import { getAuditLogs } from '../../lib/firestore';
+import { downloadAuditLogsPDF } from '../../lib/export-report';
+import { downloadTextFile } from '../../lib/download';
 import type { AuditLog } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
 import {
@@ -73,13 +75,7 @@ function exportCSV(logs: AuditLog[]) {
     JSON.stringify(log.details ?? {}),
   ]);
   const csv = [header, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `audit-logs-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadTextFile(csv, `audit-logs-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv;charset=utf-8;');
 }
 
 function exportJSON(logs: AuditLog[]) {
@@ -91,13 +87,7 @@ function exportJSON(logs: AuditLog[]) {
     null,
     2
   );
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `audit-logs-${new Date().toISOString().split('T')[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadTextFile(json, `audit-logs-${new Date().toISOString().split('T')[0]}.json`, 'application/json;charset=utf-8;');
 }
 
 export function AuditLogsPage() {
@@ -128,7 +118,7 @@ export function AuditLogsPage() {
   }, []);
 
   useEffect(() => {
-    loadLogs();
+    void Promise.resolve().then(() => loadLogs());
   }, [loadLogs]);
 
   if (getCurrentTier() !== 'business') {
@@ -202,7 +192,7 @@ export function AuditLogsPage() {
                   Export
                 </button>
                 {exportMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white border border-[#E8ECF0] rounded-xl shadow-lg z-10 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-[#E8ECF0] rounded-xl shadow-lg z-10 overflow-hidden">
                     <button
                       onClick={() => {
                         exportCSV(filtered);
@@ -211,6 +201,15 @@ export function AuditLogsPage() {
                       className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left"
                     >
                       Export as CSV
+                    </button>
+                    <button
+                      onClick={() => {
+                        downloadAuditLogsPDF(filtered, user?.name || 'FeedSolve Workspace');
+                        setExportMenuOpen(false);
+                      }}
+                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
+                    >
+                      Export as PDF
                     </button>
                     <button
                       onClick={() => {

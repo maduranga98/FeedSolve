@@ -1,3 +1,4 @@
+import { downloadTextFile } from '../../lib/download';
 import { useEffect, useState } from "react";
 import type { FileAttachment, Submission } from "../../types";
 import { Button } from "../Shared";
@@ -110,13 +111,7 @@ function exportSubmissionCSV(submission: Submission) {
     ["Attachments", String(submission.attachments?.length ?? 0)],
   ];
   const csv = rows.map((r) => r.join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `submission-${submission.trackingCode}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadTextFile(csv, `submission-${submission.trackingCode}.csv`, 'text/csv;charset=utf-8;');
 }
 
 export default function SubmissionDetail({
