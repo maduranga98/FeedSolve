@@ -14,6 +14,7 @@ import { LocationChart } from '../../components/Analytics/LocationChart';
 import { ReportBuilder, type ReportOptions } from '../../components/Analytics/ReportBuilder';
 import { calculateAnalytics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
+import { downloadTextFile } from '../../lib/download';
 import { getDateRangePreset, type DateRange } from '../../lib/date-ranges';
 import { useBoardCycles } from '../../hooks/useBoardCycles';
 import type { Submission, Board, Company } from '../../types';
@@ -125,13 +126,7 @@ export function AnalyticsDashboard() {
       ]),
     ];
     const csv = rows.map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'board-cycle-analytics.csv';
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(csv, 'board-cycle-analytics.csv', 'text/csv;charset=utf-8;');
   };
 
   return (

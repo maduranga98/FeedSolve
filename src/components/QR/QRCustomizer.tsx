@@ -1,3 +1,4 @@
+import { downloadDataUrl } from '../../lib/download';
 import { useState, useEffect, useRef } from 'react';
 import QRCodeStyling from 'qr-code-styling';
 import type { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling';
@@ -220,10 +221,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
     ctx.textBaseline = 'middle';
     ctx.fillText(config.labelText, totalWidth / 2, labelY + LABEL_HEIGHT / 2);
 
-    const link = document.createElement('a');
-    link.href = out.toDataURL('image/png');
-    link.download = `${boardName}-qr-code.png`;
-    link.click();
+    downloadDataUrl(out.toDataURL('image/png'), `${boardName}-qr-code.png`);
   };
 
   const downloadSVG = async () => {

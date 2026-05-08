@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useSubmissionSelection } from '../../hooks/useSubmissionSelection';
 import { getCompanySubmissionsPage, getCompanyMembers } from '../../lib/firestore';
+import { downloadCSV } from '../../lib/export-report';
 import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
 import type { Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
@@ -23,6 +24,7 @@ import {
   AlertCircle,
   ChevronDown,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 
 const PAGE_SIZE = 20;
@@ -259,6 +261,10 @@ export function SubmissionsPage() {
   const displayedSubmissions =
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
+  const handleExportCSV = () => {
+    downloadCSV(displayedSubmissions);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-[#E1E8EF] overflow-hidden">
       {/* Fixed header */}
@@ -277,6 +283,15 @@ export function SubmissionsPage() {
 
             {!loading && totalCount > 0 && (
               <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={handleExportCSV}
+                  disabled={displayedSubmissions.length === 0}
+                  title="Export the current submissions view as CSV"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Download size={13} />
+                  Export CSV
+                </button>
                 <StatBadge
                   label="new"
                   value={newCount}

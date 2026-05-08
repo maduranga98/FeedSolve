@@ -1,3 +1,5 @@
+import { downloadBlob } from '../lib/download';
+
 type ZipEntry = {
   name: string;
   data: Uint8Array;
@@ -130,12 +132,7 @@ export function buildLocationUrl(baseUrl: string, location: string): string {
 
 export async function downloadCanvasPng(canvas: HTMLCanvasElement, filename: string) {
   const blob = await canvasToBlob(canvas);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }
 
 export async function exportLocationQrZip({
@@ -162,10 +159,5 @@ export async function exportLocationQrZip({
   }
 
   const zipBlob = createZip(entries);
-  const url = URL.createObjectURL(zipBlob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `${sanitizeFilename(boardName)}-location-qr-codes.zip`;
-  link.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(zipBlob, `${sanitizeFilename(boardName)}-location-qr-codes.zip`);
 }

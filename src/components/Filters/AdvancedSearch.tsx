@@ -4,7 +4,8 @@ import { useSearch } from '../../hooks/useSearch';
 import { useSavedFilters } from '../../hooks/useSavedFilters';
 import { useURLFilters } from '../../hooks/useURLFilters';
 import { getCompanyBoards } from '../../lib/firestore';
-import type { Submission, Board, User } from '../../types';
+import { downloadUrl } from '../../lib/download';
+import type { Submission, Board, User, SavedFilter, SearchFilters } from '../../types';
 import { SearchBar } from './SearchBar';
 import { FilterChips } from './FilterChips';
 import { AdvancedFilterPanel } from './AdvancedFilterPanel';
@@ -61,7 +62,7 @@ export function AdvancedSearch({
 
   // Reset to page 1 whenever search results change
   useEffect(() => {
-    setPage(1);
+    void Promise.resolve().then(() => setPage(1));
   }, [results.length, searchText]);
 
   const handleSaveFilter = async (name: string, description?: string) => {
@@ -74,13 +75,13 @@ export function AdvancedSearch({
     }
   };
 
-  const handleApplyQuickFilter = useCallback((quickFilters: any) => {
+  const handleApplyQuickFilter = useCallback((quickFilters: SearchFilters) => {
     setFilters(quickFilters);
     updateURLFilters(quickFilters);
     setPage(1);
   }, [setFilters, updateURLFilters]);
 
-  const handleSelectSavedFilter = useCallback((filter: any) => {
+  const handleSelectSavedFilter = useCallback((filter: SavedFilter) => {
     setFilters(filter.filters);
     updateURLFilters(filter.filters);
     setPage(1);
@@ -94,9 +95,7 @@ export function AdvancedSearch({
   const handleExportCSV = async () => {
     if (!user) return;
     try {
-      const link = document.createElement('a');
-      link.href = `/api/search/export-csv?companyId=${user.companyId}&filters=${encodeURIComponent(JSON.stringify(filters))}`;
-      link.click();
+      downloadUrl(`/api/search/export-csv?companyId=${user.companyId}&filters=${encodeURIComponent(JSON.stringify(filters))}`);
     } catch (error) {
       console.error('Failed to export CSV:', error);
     }

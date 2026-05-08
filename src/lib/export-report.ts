@@ -1,15 +1,16 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import type { Submission } from '../types';
+import { autoTable } from 'jspdf-autotable';
+import type { AuditLog, Submission } from '../types';
+import { downloadBlob, downloadTextFile } from './download';
 import type { AnalyticsMetrics } from './analytics';
 import { formatDateRange, type DateRange } from './date-ranges';
 
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-    lastAutoTable: { finalY: number };
-  }
+type AutoTableDocument = jsPDF & { lastAutoTable?: { finalY: number } };
+
+function getLastTableY(doc: jsPDF, fallback: number): number {
+  return (doc as AutoTableDocument).lastAutoTable?.finalY ?? fallback;
 }
+
 
 export async function exportPDFReport(
   metrics: AnalyticsMetrics,
@@ -48,18 +49,18 @@ export async function exportPDFReport(
     ['Avg Resolution Time', `${metrics.averageResolutionTime.toFixed(1)} days`],
   ];
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: yPosition,
     head: metricsData.slice(0, 1),
     body: metricsData.slice(1),
     margin: { left: margin, right: margin },
-    width: contentWidth,
+    tableWidth: contentWidth,
     theme: 'grid',
     headStyles: { fillColor: [66, 139, 202], textColor: 255 },
     alternateRowStyles: { fillColor: [240, 240, 240] },
   });
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15;
+  yPosition = getLastTableY(doc, yPosition) + 15;
 
   // Status breakdown
   if (yPosition > pageHeight - 50) {
@@ -78,17 +79,17 @@ export async function exportPDFReport(
     ]),
   ];
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: yPosition,
     head: statusData.slice(0, 1),
     body: statusData.slice(1),
     margin: { left: margin, right: margin },
-    width: contentWidth,
+    tableWidth: contentWidth,
     theme: 'grid',
     headStyles: { fillColor: [66, 139, 202], textColor: 255 },
   });
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15;
+  yPosition = getLastTableY(doc, yPosition) + 15;
 
   // Priority breakdown
   if (yPosition > pageHeight - 50) {
@@ -107,17 +108,17 @@ export async function exportPDFReport(
     ]),
   ];
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: yPosition,
     head: priorityData.slice(0, 1),
     body: priorityData.slice(1),
     margin: { left: margin, right: margin },
-    width: contentWidth,
+    tableWidth: contentWidth,
     theme: 'grid',
     headStyles: { fillColor: [66, 139, 202], textColor: 255 },
   });
 
-  yPosition = (doc as any).lastAutoTable.finalY + 15;
+  yPosition = getLastTableY(doc, yPosition) + 15;
 
   // Category breakdown
   if (yPosition > pageHeight - 50) {
@@ -137,17 +138,17 @@ export async function exportPDFReport(
       ]),
     ];
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPosition,
       head: categoryData.slice(0, 1),
       body: categoryData.slice(1),
       margin: { left: margin, right: margin },
-      width: contentWidth,
+      tableWidth: contentWidth,
       theme: 'grid',
       headStyles: { fillColor: [66, 139, 202], textColor: 255 },
     });
 
-    yPosition = (doc as any).lastAutoTable.finalY + 15;
+    yPosition = getLastTableY(doc, yPosition) + 15;
   }
 
   // Team performance
@@ -171,12 +172,12 @@ export async function exportPDFReport(
       ]),
     ];
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: yPosition,
       head: teamData.slice(0, 1),
       body: teamData.slice(1),
       margin: { left: margin, right: margin },
-      width: contentWidth,
+      tableWidth: contentWidth,
       theme: 'grid',
       headStyles: { fillColor: [66, 139, 202], textColor: 255 },
       columnStyles: {
@@ -199,14 +200,7 @@ export async function downloadPDFReport(
   companyName: string
 ): Promise<void> {
   const blob = await exportPDFReport(metrics, dateRange, companyName);
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `analytics-report-${new Date().toISOString().split('T')[0]}.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `analytics-report-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 export function exportCSVSubmissions(submissions: Submission[]): string {
@@ -252,15 +246,60 @@ export function exportCSVSubmissions(submissions: Submission[]): string {
 
 export function downloadCSV(submissions: Submission[]): void {
   const csv = exportCSVSubmissions(submissions);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `submissions-${new Date().toISOString().split('T')[0]}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  downloadTextFile(csv, `submissions-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv;charset=utf-8;');
+}
+
+function formatAuditDate(value: AuditLog['createdAt']): string {
+  if (!value) return '—';
+  if (value instanceof Date) return value.toLocaleString();
+  return value.toDate().toLocaleString();
+}
+
+export function exportAuditLogsPDF(logs: AuditLog[], companyName: string): Blob {
+  const doc = new jsPDF({ orientation: 'landscape' });
+  const margin = 14;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('Audit Logs Report', margin, 18);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text(`Company: ${companyName}`, margin, 26);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, margin, 32);
+  doc.text(`Total Records: ${logs.length}`, margin, 38);
+
+  autoTable(doc, {
+    startY: 44,
+    head: [['Timestamp', 'User', 'Action', 'Resource Type', 'Resource', 'Details']],
+    body: logs.map((log) => [
+      formatAuditDate(log.createdAt),
+      `${log.userName || 'Unknown'}\n${log.userEmail || ''}`,
+      log.action,
+      log.resourceType.replace(/_/g, ' '),
+      log.resourceName ?? log.resourceId ?? '',
+      JSON.stringify(log.details ?? {}),
+    ]),
+    margin: { left: margin, right: margin },
+    theme: 'grid',
+    headStyles: { fillColor: [46, 134, 171], textColor: 255 },
+    styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 34 },
+      1: { cellWidth: 48 },
+      2: { cellWidth: 42 },
+      3: { cellWidth: 30 },
+      4: { cellWidth: 46 },
+      5: { cellWidth: 68 },
+    },
+  });
+
+  return doc.output('blob');
+}
+
+export function downloadAuditLogsPDF(logs: AuditLog[], companyName: string): void {
+  const blob = exportAuditLogsPDF(logs, companyName);
+  downloadBlob(blob, `audit-logs-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 function addSectionTitle(doc: jsPDF, title: string, x: number, y: number): void {
