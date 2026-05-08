@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, ArrowLeft } from 'lucide-react';
+import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
@@ -9,6 +9,14 @@ import type { Board, Company } from '../../types';
 import { LocationManager } from '../../components/boards/LocationManager';
 import { LocationQRSection } from '../../components/boards/LocationQRSection';
 import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSettings';
+
+type SetupStep = 'qr' | 'cycle' | 'locations';
+
+const setupSteps: Array<{ id: SetupStep; label: string; description: string; icon: typeof QrCode }> = [
+  { id: 'qr', label: 'QR Code', description: 'Style & share', icon: QrCode },
+  { id: 'cycle', label: 'Recurring Cycle', description: 'Automate resets', icon: CalendarClock },
+  { id: 'locations', label: 'Locations', description: 'Manage spots', icon: MapPin },
+];
 
 export function BoardDetails() {
   const { boardId } = useParams<{ boardId: string }>();
@@ -19,6 +27,7 @@ export function BoardDetails() {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const [activeSetupStep, setActiveSetupStep] = useState<SetupStep>('cycle');
 
   useEffect(() => {
     if (!user || !boardId) {
@@ -115,24 +124,29 @@ export function BoardDetails() {
 
   return (
     <main className="min-h-screen bg-color-bg">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="mx-auto max-w-6xl px-4 py-8">
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-color-accent hover:text-color-primary mb-6 font-medium"
+          className="mb-6 flex items-center gap-2 font-medium text-color-accent hover:text-color-primary"
         >
           <ArrowLeft size={20} />
           Back to Dashboard
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)] lg:items-start">
           {/* Board Info */}
-          <div className="bg-color-surface rounded-lg shadow-md p-6">
-            <h1 className="text-3xl font-bold text-color-primary mb-2">{board.name}</h1>
-            <p className="text-color-muted-text mb-6">{board.description}</p>
+          <div className="rounded-2xl border border-color-border bg-color-surface p-6 shadow-md lg:sticky lg:top-6">
+            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#EBF5FB] to-white p-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#2E86AB]">
+                Feedback board
+              </p>
+              <h1 className="text-3xl font-bold text-color-primary">{board.name}</h1>
+              <p className="mt-2 text-color-muted-text">{board.description}</p>
+            </div>
 
-            <div className="space-y-4 mb-6">
+            <div className="space-y-5 mb-6">
               <div>
-                <p className="text-sm text-color-muted-text mb-1">Categories</p>
+                <p className="text-sm font-semibold text-color-muted-text mb-2">Categories</p>
                 <div className="flex flex-wrap gap-2">
                   {board.categories.map((category) => (
                     <span
@@ -146,7 +160,7 @@ export function BoardDetails() {
               </div>
 
               <div>
-                <p className="text-sm text-color-muted-text mb-1">Feedback URL</p>
+                <p className="text-sm font-semibold text-color-muted-text mb-2">Feedback URL</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -165,16 +179,21 @@ export function BoardDetails() {
                 </div>
               </div>
 
-              <div>
-                <p className="text-sm text-color-muted-text mb-1">Anonymous Submissions</p>
-                <p className="text-color-body-text">
-                  {board.isAnonymousAllowed ? 'Allowed' : 'Not Allowed'}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-sm text-color-muted-text mb-1">Submissions Received</p>
-                <p className="text-lg font-bold text-color-accent">{board.submissionCount}</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-color-border bg-color-bg p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">
+                    Anonymous
+                  </p>
+                  <p className="mt-1 font-bold text-color-body-text">
+                    {board.isAnonymousAllowed ? 'Allowed' : 'Not Allowed'}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-color-border bg-color-bg p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">
+                    Submissions
+                  </p>
+                  <p className="mt-1 text-xl font-bold text-color-accent">{board.submissionCount}</p>
+                </div>
               </div>
             </div>
 
@@ -197,28 +216,88 @@ export function BoardDetails() {
             </div>
           </div>
 
-          {/* QR Code Customizer */}
-          <div className="bg-color-surface rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-color-primary mb-1">QR Code</h2>
-            <p className="text-sm text-color-muted-text mb-5">
-              Customize style, colors, logo, and frame — then download.
-            </p>
-            <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />
-          </div>
-        </div>
+          <section className="overflow-hidden rounded-2xl border border-[#D3D1C7] bg-white shadow-md">
+            <div className="border-b border-[#E8ECF0] bg-gradient-to-r from-[#F1F5F8] via-white to-[#EBF5FB] p-5 sm:p-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2E86AB]">Board setup</p>
+                  <h2 className="mt-1 text-2xl font-bold text-[#1E3A5F]">Configure how feedback is collected</h2>
+                  <p className="mt-1 text-sm text-[#6B7B8D]">
+                    Jump between QR sharing, recurring cycles, and location-specific setup without hunting down the page.
+                  </p>
+                </div>
+                <span className="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-1 text-xs font-bold text-[#185FA5] shadow-sm ring-1 ring-[#D3D1C7]">
+                  Step {setupSteps.findIndex((step) => step.id === activeSetupStep) + 1} of {setupSteps.length}
+                </span>
+              </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-8">
-          <RecurringCycleSettings
-            board={board}
-            company={company}
-            onBoardChange={setBoard}
-          />
-          <LocationManager
-            board={board}
-            company={company}
-            onBoardChange={setBoard}
-          />
-          <LocationQRSection board={board} feedbackUrl={feedbackUrl} />
+              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist" aria-label="Board setup sections">
+                {setupSteps.map((step, index) => {
+                  const Icon = step.icon;
+                  const active = activeSetupStep === step.id;
+
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setActiveSetupStep(step.id)}
+                      className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
+                        active
+                          ? 'border-[#2E86AB] bg-white text-[#1E3A5F] shadow-sm ring-2 ring-[#2E86AB]/15'
+                          : 'border-[#D3D1C7] bg-white/65 text-[#6B7B8D] hover:border-[#2E86AB]/50 hover:bg-white'
+                      }`}
+                    >
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[#2E86AB] text-white' : 'bg-[#EFF3F6] text-[#6B7B8D] group-hover:text-[#2E86AB]'}`}>
+                        {active ? <Icon size={17} /> : index + 1}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-bold">{step.label}</span>
+                        <span className="block text-xs">{step.description}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="bg-[#F8FAFC] p-4 sm:p-6">
+              {activeSetupStep === 'qr' && (
+                <div className="rounded-xl border border-[#D3D1C7] bg-white p-5">
+                  <div className="mb-5 flex items-start gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]">
+                      <QrCode size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#1E3A5F]">QR Code</h3>
+                      <p className="text-sm text-[#6B7B8D]">Customize style, colors, logo, and frame — then download.</p>
+                    </div>
+                  </div>
+                  <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />
+                </div>
+              )}
+
+              {activeSetupStep === 'cycle' && (
+                <RecurringCycleSettings
+                  board={board}
+                  company={company}
+                  onBoardChange={setBoard}
+                />
+              )}
+
+              {activeSetupStep === 'locations' && (
+                <div className="space-y-5">
+                  <LocationManager
+                    board={board}
+                    company={company}
+                    onBoardChange={setBoard}
+                  />
+                  <LocationQRSection board={board} feedbackUrl={feedbackUrl} />
+                </div>
+              )}
+            </div>
+          </section>
         </div>
       </div>
     </main>
