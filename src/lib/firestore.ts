@@ -15,6 +15,7 @@ import {
   setDoc,
   arrayUnion,
   deleteField,
+  increment,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
@@ -913,6 +914,13 @@ export async function getTemplate(templateId: string): Promise<BoardTemplate | n
   const docRef = doc(db, 'board_templates', templateId);
   const snapshot = await getDoc(docRef);
   return snapshot.exists() ? ({ ...snapshot.data(), id: snapshot.id } as BoardTemplate) : null;
+}
+
+export async function incrementTemplateUsage(templateId: string): Promise<void> {
+  const docRef = doc(db, 'board_templates', templateId);
+  await updateDoc(docRef, {
+    usageCount: increment(1),
+  });
 }
 
 export async function seedTemplates(): Promise<void> {
