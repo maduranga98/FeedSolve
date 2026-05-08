@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
 import { getAuditLogs } from '../../lib/firestore';
-import { downloadAuditLogsPDF } from '../../lib/export-report';
+import { downloadAuditLogsPDF, formatAuditDetails } from '../../lib/export-report';
 import { downloadTextFile } from '../../lib/download';
 import type { AuditLog } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
@@ -72,7 +72,7 @@ function exportCSV(logs: AuditLog[]) {
     log.action,
     RESOURCE_TYPE_LABELS[log.resourceType] ?? log.resourceType,
     log.resourceName ?? log.resourceId ?? '',
-    JSON.stringify(log.details ?? {}),
+    formatAuditDetails(log.details),
   ]);
   const csv = [header, ...rows].map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   downloadTextFile(csv, `audit-logs-${new Date().toISOString().split('T')[0]}.csv`, 'text/csv;charset=utf-8;');

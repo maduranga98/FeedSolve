@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
-import { createBoard, getTemplate, addAuditLog } from '../../lib/firestore';
+import { createBoard, getTemplate, addAuditLog, incrementTemplateUsage } from '../../lib/firestore';
 import { Button, Input } from '../../components/Shared';
 import type { BoardFormInput } from '../../types';
 import type { BoardTemplate } from '../../types';
@@ -32,7 +32,8 @@ export function CreateBoard() {
 
   useEffect(() => {
     const loadTemplate = async () => {
-      const templateId = (location.state as any)?.templateId;
+      const state = location.state as { templateId?: unknown } | null;
+      const templateId = typeof state?.templateId === 'string' ? state.templateId : undefined;
       if (templateId) {
         try {
           const template = await getTemplate(templateId);
@@ -114,8 +115,18 @@ export function CreateBoard() {
         resourceType: "board",
         resourceId: newBoard.id,
         resourceName: newBoard.name,
-        details: { categories: formData.categories },
+        details: {
+          categories: formData.categories,
+          ...(selectedTemplate
+            ? { templateId: selectedTemplate.id, templateName: selectedTemplate.name }
+            : {}),
+        },
       });
+      if (selectedTemplate) {
+        void incrementTemplateUsage(selectedTemplate.id).catch((error) => {
+          console.error('Failed to update template usage count:', error);
+        });
+      }
       navigate(`/board/${newBoard.id}`);
     } catch (error) {
       setErrors({

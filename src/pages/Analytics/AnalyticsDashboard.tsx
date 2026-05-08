@@ -15,9 +15,15 @@ import { ReportBuilder, type ReportOptions } from '../../components/Analytics/Re
 import { calculateAnalytics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
 import { downloadTextFile } from '../../lib/download';
-import { getDateRangePreset, type DateRange } from '../../lib/date-ranges';
+import { getDateRangePreset, isDateInRange, type DateRange } from '../../lib/date-ranges';
 import { useBoardCycles } from '../../hooks/useBoardCycles';
 import type { Submission, Board, Company } from '../../types';
+
+function submissionCreatedAt(submission: Submission): Date | null {
+  if (!submission.createdAt) return null;
+  if (submission.createdAt instanceof Date) return submission.createdAt;
+  return submission.createdAt.toDate();
+}
 
 export function AnalyticsDashboard() {
   const { user } = useAuth();
@@ -67,6 +73,10 @@ export function AnalyticsDashboard() {
   }
 
   const metrics = calculateAnalytics(submissions, dateRange);
+  const filteredSubmissions = submissions.filter((submission) => {
+    const createdAt = submissionCreatedAt(submission);
+    return createdAt ? isDateInRange(createdAt, dateRange) : false;
+  });
   const companyTier = company?.subscription.tier;
   const boardMap = boards.reduce((acc, b) => {
     acc[b.id] = b.name;
@@ -97,7 +107,7 @@ export function AnalyticsDashboard() {
   const handleExportCSV = async () => {
     try {
       setExportLoading(true);
-      downloadCSV(submissions);
+      downloadCSV(filteredSubmissions);
     } catch (error) {
       console.error('Failed to export CSV:', error);
     } finally {
@@ -105,8 +115,21 @@ export function AnalyticsDashboard() {
     }
   };
 
-  const handleGenerateReport = (options: ReportOptions) => {
-    console.log('Generating report with options:', options);
+  const handleGenerateReport = async (options: ReportOptions) => {
+    try {
+      setExportLoading(true);
+      await downloadPDFReport(
+        metrics,
+        dateRange,
+        user.name,
+        options,
+        'custom-analytics-report'
+      );
+    } catch (error) {
+      console.error('Failed to generate custom report:', error);
+    } finally {
+      setExportLoading(false);
+    }
   };
 
   const sortedCycles = [...cycles].sort((a, b) => a.cycleNumber - b.cycleNumber);

@@ -7,6 +7,55 @@ import { formatDateRange, type DateRange } from './date-ranges';
 
 type AutoTableDocument = jsPDF & { lastAutoTable?: { finalY: number } };
 
+
+export interface ExportReportOptions {
+  includeMetrics: boolean;
+  includeStatus: boolean;
+  includePriority: boolean;
+  includeCategory: boolean;
+  includeTeamPerformance: boolean;
+  includeTrends: boolean;
+}
+
+const DEFAULT_REPORT_OPTIONS: ExportReportOptions = {
+  includeMetrics: true,
+  includeStatus: true,
+  includePriority: true,
+  includeCategory: true,
+  includeTeamPerformance: true,
+  includeTrends: true,
+};
+
+function humanizeKey(key: string): string {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatAuditDetailValue(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (Array.isArray(value)) return value.map(formatAuditDetailValue).filter(Boolean).join(', ');
+  if (value instanceof Date) return value.toLocaleString();
+  if (typeof value === 'object') {
+    if ('toDate' in value && typeof (value as { toDate?: unknown }).toDate === 'function') {
+      return ((value as { toDate: () => Date }).toDate()).toLocaleString();
+    }
+    return Object.entries(value as Record<string, unknown>)
+      .map(([key, nestedValue]) => `${humanizeKey(key)}: ${formatAuditDetailValue(nestedValue)}`)
+      .join('; ');
+  }
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
+
+export function formatAuditDetails(details: AuditLog['details']): string {
+  if (!details || Object.keys(details).length === 0) return '—';
+  return Object.entries(details)
+    .map(([key, value]) => `${humanizeKey(key)}: ${formatAuditDetailValue(value) || '—'}`)
+    .join('; ');
+}
+
 function getLastTableY(doc: jsPDF, fallback: number): number {
   return (doc as AutoTableDocument).lastAutoTable?.finalY ?? fallback;
 }
@@ -15,14 +64,23 @@ function getLastTableY(doc: jsPDF, fallback: number): number {
 export async function exportPDFReport(
   metrics: AnalyticsMetrics,
   dateRange: DateRange,
-  companyName: string
+  companyName: string,
+  reportOptions: ExportReportOptions = DEFAULT_REPORT_OPTIONS
 ): Promise<Blob> {
+  const options = { ...DEFAULT_REPORT_OPTIONS, ...reportOptions };
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   let yPosition = 20;
   const margin = 20;
   const contentWidth = pageWidth - margin * 2;
+
+  const ensureSpace = () => {
+    if (yPosition > pageHeight - 50) {
+      doc.addPage();
+      yPosition = 20;
+    }
+  };
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(20);
@@ -38,95 +96,92 @@ export async function exportPDFReport(
   doc.text(`Generated: ${new Date().toLocaleString()}`, margin, yPosition);
 
   yPosition += 12;
-  addSectionTitle(doc, 'Key Metrics', margin, yPosition);
-  yPosition += 10;
+  let sectionAdded = false;
 
-  const metricsData = [
-    ['Metric', 'Value'],
-    ['Total Submissions', metrics.totalSubmissions.toString()],
-    ['Resolved Submissions', metrics.resolvedSubmissions.toString()],
-    ['Resolution Rate', `${metrics.resolutionRate.toFixed(1)}%`],
-    ['Avg Resolution Time', `${metrics.averageResolutionTime.toFixed(1)} days`],
-  ];
+  if (options.includeMetrics) {
+    ensureSpace();
+    addSectionTitle(doc, 'Key Metrics', margin, yPosition);
+    yPosition += 10;
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: metricsData.slice(0, 1),
-    body: metricsData.slice(1),
-    margin: { left: margin, right: margin },
-    tableWidth: contentWidth,
-    theme: 'grid',
-    headStyles: { fillColor: [66, 139, 202], textColor: 255 },
-    alternateRowStyles: { fillColor: [240, 240, 240] },
-  });
+    const metricsData = [
+      ['Metric', 'Value'],
+      ['Total Submissions', metrics.totalSubmissions.toString()],
+      ['Resolved Submissions', metrics.resolvedSubmissions.toString()],
+      ['Resolution Rate', `${metrics.resolutionRate.toFixed(1)}%`],
+      ['Avg Resolution Time', `${metrics.averageResolutionTime.toFixed(1)} days`],
+    ];
 
-  yPosition = getLastTableY(doc, yPosition) + 15;
+    autoTable(doc, {
+      startY: yPosition,
+      head: metricsData.slice(0, 1),
+      body: metricsData.slice(1),
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      headStyles: { fillColor: [66, 139, 202], textColor: 255 },
+      alternateRowStyles: { fillColor: [240, 240, 240] },
+    });
 
-  // Status breakdown
-  if (yPosition > pageHeight - 50) {
-    doc.addPage();
-    yPosition = 20;
+    yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
   }
 
-  addSectionTitle(doc, 'Submissions by Status', margin, yPosition);
-  yPosition += 10;
+  if (options.includeStatus) {
+    ensureSpace();
+    addSectionTitle(doc, 'Submissions by Status', margin, yPosition);
+    yPosition += 10;
 
-  const statusData = [
-    ['Status', 'Count'],
-    ...Object.entries(metrics.submissionsByStatus).map(([status, count]) => [
-      status.replace(/_/g, ' '),
-      count.toString(),
-    ]),
-  ];
+    const statusData = [
+      ['Status', 'Count'],
+      ...Object.entries(metrics.submissionsByStatus).map(([status, count]) => [
+        status.replace(/_/g, ' '),
+        count.toString(),
+      ]),
+    ];
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: statusData.slice(0, 1),
-    body: statusData.slice(1),
-    margin: { left: margin, right: margin },
-    tableWidth: contentWidth,
-    theme: 'grid',
-    headStyles: { fillColor: [66, 139, 202], textColor: 255 },
-  });
+    autoTable(doc, {
+      startY: yPosition,
+      head: statusData.slice(0, 1),
+      body: statusData.slice(1),
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      headStyles: { fillColor: [66, 139, 202], textColor: 255 },
+    });
 
-  yPosition = getLastTableY(doc, yPosition) + 15;
-
-  // Priority breakdown
-  if (yPosition > pageHeight - 50) {
-    doc.addPage();
-    yPosition = 20;
+    yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
   }
 
-  addSectionTitle(doc, 'Submissions by Priority', margin, yPosition);
-  yPosition += 10;
+  if (options.includePriority) {
+    ensureSpace();
+    addSectionTitle(doc, 'Submissions by Priority', margin, yPosition);
+    yPosition += 10;
 
-  const priorityData = [
-    ['Priority', 'Count'],
-    ...Object.entries(metrics.submissionsByPriority).map(([priority, count]) => [
-      priority,
-      count.toString(),
-    ]),
-  ];
+    const priorityData = [
+      ['Priority', 'Count'],
+      ...Object.entries(metrics.submissionsByPriority).map(([priority, count]) => [
+        priority,
+        count.toString(),
+      ]),
+    ];
 
-  autoTable(doc, {
-    startY: yPosition,
-    head: priorityData.slice(0, 1),
-    body: priorityData.slice(1),
-    margin: { left: margin, right: margin },
-    tableWidth: contentWidth,
-    theme: 'grid',
-    headStyles: { fillColor: [66, 139, 202], textColor: 255 },
-  });
+    autoTable(doc, {
+      startY: yPosition,
+      head: priorityData.slice(0, 1),
+      body: priorityData.slice(1),
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      headStyles: { fillColor: [66, 139, 202], textColor: 255 },
+    });
 
-  yPosition = getLastTableY(doc, yPosition) + 15;
-
-  // Category breakdown
-  if (yPosition > pageHeight - 50) {
-    doc.addPage();
-    yPosition = 20;
+    yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
   }
 
-  if (Object.keys(metrics.submissionsByCategory).length > 0) {
+  if (options.includeCategory && Object.keys(metrics.submissionsByCategory).length > 0) {
+    ensureSpace();
     addSectionTitle(doc, 'Submissions by Category', margin, yPosition);
     yPosition += 10;
 
@@ -149,15 +204,39 @@ export async function exportPDFReport(
     });
 
     yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
   }
 
-  // Team performance
-  if (metrics.teamPerformance.length > 0) {
-    if (yPosition > pageHeight - 50) {
-      doc.addPage();
-      yPosition = 20;
-    }
+  if (options.includeTrends && metrics.trendData.length > 0) {
+    ensureSpace();
+    addSectionTitle(doc, 'Trend Analysis', margin, yPosition);
+    yPosition += 10;
 
+    const trendData = [
+      ['Date', 'Submissions', 'Resolved'],
+      ...metrics.trendData.map((point) => [
+        point.date,
+        point.count.toString(),
+        point.resolved.toString(),
+      ]),
+    ];
+
+    autoTable(doc, {
+      startY: yPosition,
+      head: trendData.slice(0, 1),
+      body: trendData.slice(1),
+      margin: { left: margin, right: margin },
+      tableWidth: contentWidth,
+      theme: 'grid',
+      headStyles: { fillColor: [66, 139, 202], textColor: 255 },
+    });
+
+    yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
+  }
+
+  if (options.includeTeamPerformance && metrics.teamPerformance.length > 0) {
+    ensureSpace();
     addSectionTitle(doc, 'Team Performance', margin, yPosition);
     yPosition += 10;
 
@@ -188,6 +267,13 @@ export async function exportPDFReport(
         4: { cellWidth: 40 },
       },
     });
+
+    yPosition = getLastTableY(doc, yPosition) + 15;
+    sectionAdded = true;
+  }
+
+  if (!sectionAdded) {
+    doc.text('No report sections were selected.', margin, yPosition);
   }
 
   const pdfBlob = doc.output('blob');
@@ -197,10 +283,12 @@ export async function exportPDFReport(
 export async function downloadPDFReport(
   metrics: AnalyticsMetrics,
   dateRange: DateRange,
-  companyName: string
+  companyName: string,
+  options?: ExportReportOptions,
+  filenamePrefix = 'analytics-report'
 ): Promise<void> {
-  const blob = await exportPDFReport(metrics, dateRange, companyName);
-  downloadBlob(blob, `analytics-report-${new Date().toISOString().split('T')[0]}.pdf`);
+  const blob = await exportPDFReport(metrics, dateRange, companyName, options);
+  downloadBlob(blob, `${filenamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 export function exportCSVSubmissions(submissions: Submission[]): string {
@@ -278,7 +366,7 @@ export function exportAuditLogsPDF(logs: AuditLog[], companyName: string): Blob 
       log.action,
       log.resourceType.replace(/_/g, ' '),
       log.resourceName ?? log.resourceId ?? '',
-      JSON.stringify(log.details ?? {}),
+      formatAuditDetails(log.details),
     ]),
     margin: { left: margin, right: margin },
     theme: 'grid',

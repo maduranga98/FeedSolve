@@ -39,10 +39,16 @@ import {
 } from '../../lib/analytics';
 import { analyticsLevelAtLeast } from '../../lib/tier-limits';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
-import { getDateRangePreset, type DateRange } from '../../lib/date-ranges';
+import { getDateRangePreset, isDateInRange, type DateRange } from '../../lib/date-ranges';
 import type { Submission, Board } from '../../types';
 
 type Tab = 'overview' | 'full' | 'advanced';
+
+function submissionCreatedAt(submission: Submission): Date | null {
+  if (!submission.createdAt) return null;
+  if (submission.createdAt instanceof Date) return submission.createdAt;
+  return submission.createdAt.toDate();
+}
 
 // ─── Upgrade Gate ─────────────────────────────────────────────────────────────
 
@@ -131,6 +137,14 @@ export function AnalyticsDashboard() {
     [submissions, dateRange]
   );
 
+  const filteredSubmissions = useMemo(
+    () => submissions.filter((submission) => {
+      const createdAt = submissionCreatedAt(submission);
+      return createdAt ? isDateInRange(createdAt, dateRange) : false;
+    }),
+    [submissions, dateRange]
+  );
+
   // Advanced metrics (computed over all available data for richness)
   const slaMetrics = useMemo(() => calculateSLAMetrics(submissions), [submissions]);
   const heatmapData = useMemo(() => calculateHeatmapData(submissions), [submissions]);
@@ -184,14 +198,27 @@ export function AnalyticsDashboard() {
   const handleExportCSV = () => {
     try {
       setExportLoading(true);
-      downloadCSV(submissions);
+      downloadCSV(filteredSubmissions);
     } finally {
       setExportLoading(false);
     }
   };
 
-  const handleGenerateReport = (_options: ReportOptions) => {
-    handleExportPDF();
+  const handleGenerateReport = async (options: ReportOptions) => {
+    try {
+      setExportLoading(true);
+      await downloadPDFReport(
+        metrics,
+        dateRange,
+        user?.name || '',
+        options,
+        'custom-analytics-report'
+      );
+    } catch (err) {
+      console.error('Custom report export failed:', err);
+    } finally {
+      setExportLoading(false);
+    }
   };
 
   if (!user) return null;
