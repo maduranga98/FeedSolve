@@ -140,7 +140,7 @@ export function BoardDetails() {
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#2E86AB]">
                 Feedback board
               </p>
-              <h1 className="text-3xl font-bold text-color-primary">{board.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-color-primary break-words">{board.name}</h1>
               <p className="mt-2 text-color-muted-text">{board.description}</p>
             </div>
 

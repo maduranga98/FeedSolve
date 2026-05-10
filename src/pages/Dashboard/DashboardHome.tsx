@@ -227,7 +227,7 @@ export function DashboardHome() {
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
               <p className="text-sm text-[#9AABBF] font-medium mb-0.5">
                 {greeting}
@@ -246,7 +246,7 @@ export function DashboardHome() {
               variant="primary"
               size="md"
               onClick={() => navigate("/board/create")}
-              className="flex-shrink-0"
+              className="flex-shrink-0 self-start sm:self-auto"
             >
               <Plus size={16} />
               {t("boards:dashboard.create_board")}

@@ -171,9 +171,9 @@ export function TeamManagement() {
       {/* Page header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
                 <Users size={20} className="text-[#2E86AB]" />
               </div>
               <div>
@@ -185,7 +185,7 @@ export function TeamManagement() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <span className="text-sm text-[#6B7B8D]">Your Role:</span>
               <RoleIndicator />
             </div>
@@ -265,17 +265,17 @@ export function TeamManagement() {
               {pendingInvitations.map((invitation) => (
                 <div
                   key={invitation.id}
-                  className="flex items-center justify-between p-4 border border-[#FFF3CD] rounded-xl bg-[#FFFBF0]"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-[#FFF3CD] rounded-xl bg-[#FFFBF0]"
                 >
-                  <div>
-                    <p className="font-medium text-[#1E3A5F]">
+                  <div className="min-w-0">
+                    <p className="font-medium text-[#1E3A5F] break-all">
                       {invitation.email}
                     </p>
                     <p className="text-sm text-[#6B7B8D]">
                       Invited as {invitation.role}
                     </p>
                   </div>
-                  <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide">
+                  <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide self-start sm:self-auto flex-shrink-0">
                     Pending
                   </span>
                 </div>
