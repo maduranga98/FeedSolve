@@ -27,12 +27,12 @@ export function PricingPage() {
   const features = {
     free: [
       '7-day free trial — full access',
-      'Unlimited submissions during trial',
-      'All features unlocked for 7 days',
-      'QR code generation & shareable links',
-      'Anonymous submission option',
-      'Multi-language submission forms',
-      'Zero login for submitters',
+      '2 feedback boards',
+      '1 team member',
+      'QR codes & shareable links',
+      'Anonymous submissions',
+      'Multi-language forms',
+      'Tracking codes for submitters',
       'Choose a plan when trial ends',
     ],
     starter: [
@@ -40,21 +40,26 @@ export function PricingPage() {
       '1,500 submissions/month',
       '3 team members',
       'Status tracking & assignment',
-      'Public reply to submitter',
-      'Internal notes (hidden)',
+      'Public replies to submitters',
+      'Internal notes & comments',
       'Email notifications',
+      'File attachments',
+      '3 reply templates',
       'Basic analytics dashboard',
-      'Tracking codes for submitters',
     ],
     growth: [
       '10 feedback boards',
       '5,000 submissions/month',
       '10 team members',
       'Everything in Starter',
-      'Custom branding (logo, colors, domain)',
+      'Custom branding (logo & colors)',
+      'Location-based QR codes',
+      'Recurring cycle resets',
+      'Escalation rules',
       'Advanced analytics & CSV export',
-      'Real-time dashboard updates',
       'Advanced filtering & bulk actions',
+      '10 reply & board templates',
+      'Public resolution feed',
     ],
     business: [
       '20 feedback boards',
@@ -63,8 +68,8 @@ export function PricingPage() {
       'Everything in Growth',
       'Custom roles & permissions',
       'Audit logs',
-      'Premium analytics',
-      'Priority support & SLA guarantees',
+      'Unlimited templates',
+      'Priority support',
     ],
   };
 
@@ -72,10 +77,10 @@ export function PricingPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h1>
-          <p className="text-xl text-gray-600">Choose the perfect plan for your feedback needs</p>
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h1>
+          <p className="text-base sm:text-xl text-gray-600">Choose the perfect plan for your feedback needs</p>
         </div>
 
         <BillingToggle onToggle={setBilling} />

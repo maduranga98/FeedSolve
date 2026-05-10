@@ -184,9 +184,9 @@ export function BrandingPage() {
       {/* Header */}
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
                 <Palette size={20} className="text-[#2E86AB]" />
               </div>
               <div>
@@ -203,6 +203,7 @@ export function BrandingPage() {
               onClick={handleSave}
               isLoading={saving}
               disabled={saving || uploading}
+              className="self-start sm:self-auto flex-shrink-0"
             >
               {t("save_branding")}
             </Button>

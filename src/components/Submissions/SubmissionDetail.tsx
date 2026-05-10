@@ -342,7 +342,7 @@ export default function SubmissionDetail({
           </div>
 
           {/* Submitter Info */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
                 Category

@@ -141,7 +141,7 @@ const DeveloperDashboard: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 bg-white rounded-lg border border-gray-200 p-1 w-fit">
+        <div className="flex flex-wrap gap-1 mb-6 bg-white rounded-lg border border-gray-200 p-1 w-full sm:w-fit overflow-x-auto">
           {[
             { id: 'overview', label: 'Overview', icon: Eye },
             { id: 'keys', label: 'API Keys', icon: Settings },
@@ -249,14 +249,14 @@ const DeveloperDashboard: React.FC = () => {
 
         {selectedTab === 'keys' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">API Keys</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">API Keys</h2>
                 <p className="text-gray-600 text-sm mt-1">Manage your API keys and permissions</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium self-start sm:self-auto"
               >
                 Create New Key
               </button>

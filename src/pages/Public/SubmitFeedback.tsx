@@ -382,7 +382,7 @@ export function SubmitFeedback() {
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#E3EDF4]">
 
             {/* ── Hero gradient header ── */}
-            <div className="brand-hero-gradient px-8 pt-12 pb-10 text-center" style={{ position: "relative" }}>
+            <div className="brand-hero-gradient px-5 sm:px-8 pt-8 sm:pt-12 pb-8 sm:pb-10 text-center" style={{ position: "relative" }}>
               {/* Decorative floating circles */}
               <div style={{
                 position: "absolute", top: -28, right: -28,
@@ -441,7 +441,7 @@ export function SubmitFeedback() {
             </div>
 
             {/* ── Card body ── */}
-            <div className="px-8 py-8">
+            <div className="px-5 sm:px-8 py-6 sm:py-8">
               {/* Board info */}
               <div className="mb-7 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-3"
@@ -497,7 +497,7 @@ export function SubmitFeedback() {
 
             {/* Contact footer */}
             {(branding?.address || branding?.contactNumber || branding?.contactEmail) && (
-              <div className="px-8 pb-6 border-t border-[#F0F4F8] pt-4">
+              <div className="px-5 sm:px-8 pb-5 sm:pb-6 border-t border-[#F0F4F8] pt-4">
                 <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#9AABBF] justify-center">
                   {branding.address && (
                     <span className="flex items-center gap-1.5">
@@ -590,7 +590,7 @@ export function SubmitFeedback() {
             </div>
 
             {/* ── Success content ── */}
-            <div className="px-8 py-10 text-center">
+            <div className="px-5 sm:px-8 py-8 sm:py-10 text-center">
               {/* Animated success icon */}
               <div
                 className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 brand-success-ring"
@@ -624,7 +624,7 @@ export function SubmitFeedback() {
                 </p>
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <code
-                    className="text-3xl font-mono font-black tracking-widest"
+                    className="text-2xl sm:text-3xl font-mono font-black tracking-widest break-all"
                     style={{ color: "var(--brand-secondary, #1E3A5F)" }}
                   >
                     {success.trackingCode}

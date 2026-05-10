@@ -2,14 +2,30 @@ import { Check, X } from 'lucide-react';
 
 export function PricingComparisonTable() {
   const features = [
-    { name: 'Feedback Boards', free: '1', starter: '3', growth: '10', business: 'Unlimited' },
-    { name: 'Submissions/month', free: '50', starter: '500', growth: '5,000', business: 'Unlimited' },
+    { name: 'Feedback Boards', free: '2 (trial)', starter: '3', growth: '10', business: '20' },
+    { name: 'Submissions/month', free: 'Trial only', starter: '1,500', growth: '5,000', business: '15,000' },
     { name: 'Team Members', free: '1', starter: '3', growth: '10', business: 'Unlimited' },
+    { name: 'QR Codes & Shareable Links', free: true, starter: true, growth: true, business: true },
+    { name: 'Anonymous Submissions', free: true, starter: true, growth: true, business: true },
+    { name: 'Multi-language Forms', free: true, starter: true, growth: true, business: true },
+    { name: 'Tracking Codes for Submitters', free: false, starter: true, growth: true, business: true },
+    { name: 'Status Tracking & Assignment', free: false, starter: true, growth: true, business: true },
+    { name: 'Public Reply to Submitter', free: false, starter: true, growth: true, business: true },
+    { name: 'Internal Notes & Comments', free: false, starter: true, growth: true, business: true },
+    { name: 'File Attachments', free: false, starter: true, growth: true, business: true },
     { name: 'Email Notifications', free: false, starter: true, growth: true, business: true },
-    { name: 'Custom Branding', free: false, starter: false, growth: true, business: true },
-    { name: 'Reply to Submitter', free: false, starter: false, growth: true, business: true },
+    { name: 'Reply Templates', free: false, starter: '3', growth: '10', business: 'Unlimited' },
     { name: 'Analytics', free: false, starter: 'Basic', growth: 'Advanced', business: 'Advanced' },
-    { name: 'API Access', free: false, starter: false, growth: false, business: true },
+    { name: 'CSV Export', free: false, starter: false, growth: true, business: true },
+    { name: 'Advanced Filtering & Bulk Actions', free: false, starter: false, growth: true, business: true },
+    { name: 'Custom Branding', free: false, starter: false, growth: true, business: true },
+    { name: 'Location-based QR Codes', free: false, starter: false, growth: true, business: true },
+    { name: 'Recurring Cycle Resets', free: false, starter: false, growth: true, business: true },
+    { name: 'Escalation Rules', free: false, starter: false, growth: true, business: true },
+    { name: 'Board Templates', free: false, starter: false, growth: true, business: true },
+    { name: 'Public Resolution Feed', free: false, starter: false, growth: true, business: true },
+    { name: 'Custom Roles & Permissions', free: false, starter: false, growth: false, business: true },
+    { name: 'Audit Logs', free: false, starter: false, growth: false, business: true },
   ];
 
   return (

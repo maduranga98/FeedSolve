@@ -252,17 +252,19 @@ export function SubmissionDetail() {
             </div>
           )}
 
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-color-primary mb-2">{submission.subject}</h1>
-              <p className="text-color-muted-text">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-color-primary mb-2 break-words">{submission.subject}</h1>
+              <p className="text-color-muted-text text-sm">
                 Tracking Code: <span className="font-mono font-bold">{submission.trackingCode}</span>
               </p>
             </div>
-            <Badge status={submission.status} />
+            <div className="flex-shrink-0">
+              <Badge status={submission.status} />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-color-border">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-color-border">
             <div>
               <p className="text-sm text-color-muted-text mb-1">Category</p>
               <p className="font-medium text-color-body-text">{submission.category}</p>

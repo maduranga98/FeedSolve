@@ -138,9 +138,10 @@ export function CreateBoard() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-sm p-8">
-        <h1 className="text-3xl font-bold text-[#1E3A5F] mb-2">
+    <div className="min-h-screen bg-[#E1E8EF] px-4 py-8">
+      <div className="max-w-2xl mx-auto">
+      <div className="bg-white rounded-lg shadow-sm p-5 sm:p-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A5F] mb-2">
           {selectedTemplate ? t('boards:templates.create_from_template') : t('forms:board.create_board')}
         </h1>
         <p className="text-[#6B7B8D] mb-8">
@@ -320,6 +321,7 @@ export function CreateBoard() {
             </Button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

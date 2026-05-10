@@ -267,7 +267,7 @@ export function SubmissionsPage() {
       {/* ── Fixed top header ── */}
       <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
                 <Inbox size={18} className="text-[#2E86AB]" />
@@ -278,7 +278,7 @@ export function SubmissionsPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-end sm:self-auto">
               <button
                 onClick={loadInitial}
                 disabled={loading}
@@ -294,7 +294,8 @@ export function SubmissionsPage() {
                 className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={13} />
-                Export CSV
+                <span className="hidden sm:inline">Export CSV</span>
+                <span className="sm:hidden">CSV</span>
               </button>
             </div>
           </div>
@@ -352,29 +353,29 @@ export function SubmissionsPage() {
               {/* ── My Assigned ── */}
               {mySubmissions.length > 0 && (
                 <div className="bg-white border border-[#E8ECF0] rounded-xl px-5 py-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 mb-2">
                     <UserCheck size={14} className="text-[#2E86AB] flex-shrink-0" />
                     <span className="text-sm font-semibold text-[#1E3A5F]">My Assigned</span>
-                    <div className="flex-1 h-2 bg-[#EDF2F7] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${myPct}%`,
-                          background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
-                        }}
-                      />
-                    </div>
-                    <span className="text-sm font-bold text-[#2E86AB] flex-shrink-0">{myPct}%</span>
-                    <div className="flex items-center gap-3 text-xs text-[#9AABBF] flex-shrink-0">
-                      <span className="flex items-center gap-1">
-                        <AlertCircle size={11} className="text-[#B06F00]" />
-                        {mySubmissions.length - myResolved} active
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <CheckCircle2 size={11} className="text-[#1D8A57]" />
-                        {myResolved} done
-                      </span>
-                    </div>
+                    <span className="text-sm font-bold text-[#2E86AB] ml-auto flex-shrink-0">{myPct}%</span>
+                  </div>
+                  <div className="h-2 bg-[#EDF2F7] rounded-full overflow-hidden mb-2">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${myPct}%`,
+                        background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-[#9AABBF]">
+                    <span className="flex items-center gap-1">
+                      <AlertCircle size={11} className="text-[#B06F00]" />
+                      {mySubmissions.length - myResolved} active
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <CheckCircle2 size={11} className="text-[#1D8A57]" />
+                      {myResolved} done
+                    </span>
                   </div>
                 </div>
               )}
