@@ -18,6 +18,18 @@ interface SearchResultsProps {
   onSelectAll?: (ids: string[]) => void;
 }
 
+const statusPill = (
+  label: string,
+  count: number,
+  bg: string,
+  text: string
+) =>
+  count > 0 ? (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${bg} ${text}`}>
+      {count} {label}
+    </span>
+  ) : null;
+
 export const SearchResults = memo(function SearchResults({
   results,
   loading = false,
@@ -45,12 +57,10 @@ export const SearchResults = memo(function SearchResults({
 
   const statusSummary = useMemo(() => ({
     received: results.filter((s) => s.status === 'received').length,
-    inProgress: results.filter((s) => s.status === 'in_progress').length,
-    resolved: results.filter((s) => s.status === 'resolved').length,
+    inProgress: results.filter((s) => s.status === 'in_progress' || s.status === 'in_review').length,
+    resolved: results.filter((s) => s.status === 'resolved' || s.status === 'closed').length,
   }), [results]);
 
-  // Select-all state is computed against ALL filtered results (not just this page)
-  // so that selections persist across pages per spec.
   const allResultIds = useMemo(() => results.map((s) => s.id), [results]);
   const allSelected = allResultIds.length > 0 && allResultIds.every((id) => selectedIds?.has(id));
   const someSelected = allResultIds.some((id) => selectedIds?.has(id));
@@ -69,78 +79,67 @@ export const SearchResults = memo(function SearchResults({
 
   if (results.length === 0) {
     return (
-      <div className="text-center py-16">
-        <p className="text-[#6B7B8D] text-lg mb-2">No submissions found</p>
-        <p className="text-[#9BACBA] text-sm">Try adjusting your filters or search terms</p>
+      <div className="text-center py-20">
+        <div className="w-14 h-14 bg-[#F0F4F8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Rows3 size={24} className="text-[#9AABBF]" />
+        </div>
+        <p className="text-[#6B7B8D] font-semibold mb-1">No submissions found</p>
+        <p className="text-[#9AABBF] text-sm">Try adjusting your filters or search terms</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            {/* Select-all checkbox — visible in selection mode or when a toggle handler is provided */}
-            {onToggleSelect && (isSelectionMode || someSelected) && (
-              <SelectAllCheckbox
-                isChecked={allSelected}
-                isIndeterminate={someSelected && !allSelected}
-                onChange={handleSelectAllChange}
-                title={allSelected ? 'Deselect all' : 'Select all'}
-              />
+    <div className="space-y-4">
+      {/* Results header */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
+          {onToggleSelect && (isSelectionMode || someSelected) && (
+            <SelectAllCheckbox
+              isChecked={allSelected}
+              isIndeterminate={someSelected && !allSelected}
+              onChange={handleSelectAllChange}
+              title={allSelected ? 'Deselect all' : 'Select all'}
+            />
+          )}
+          <p className="text-sm font-medium text-[#6B7B8D]">
+            {results.length} submission{results.length !== 1 ? 's' : ''}
+            {totalPages > 1 && (
+              <span className="text-[#9AABBF] ml-1.5">· page {safePage}/{totalPages}</span>
             )}
-            <div>
-              <p className="text-[#6B7B8D] text-sm">
-                Showing {start + 1}–{Math.min(end, results.length)} of {results.length} submissions
-              </p>
-              {totalPages > 1 && (
-                <p className="text-[#9AABBF] text-xs mt-1">
-                  Page {safePage} of {totalPages}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="inline-flex items-center bg-[#E1E8EF] rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors inline-flex items-center gap-1.5 ${
-                viewMode === 'grid' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#6B7B8D]'
-              }`}
-            >
-              <LayoutGrid size={14} />
-              Grid
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors inline-flex items-center gap-1.5 ${
-                viewMode === 'list' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#6B7B8D]'
-              }`}
-            >
-              <Rows3 size={14} />
-              List
-            </button>
+          </p>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {statusPill('new', statusSummary.received, 'bg-[#EBF5FB]', 'text-[#1E6A9A]')}
+            {statusPill('in progress', statusSummary.inProgress, 'bg-[#FFF8E6]', 'text-[#B06F00]')}
+            {statusPill('resolved', statusSummary.resolved, 'bg-[#EAF9F2]', 'text-[#1D8A57]')}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
-          <div className="rounded-lg bg-[#E1E8EF] px-3 py-2">
-            <p className="text-xs text-[#6B7B8D]">New</p>
-            <p className="text-lg font-semibold text-[#1E3A5F]">{statusSummary.received}</p>
-          </div>
-          <div className="rounded-lg bg-[#FFF8E6] px-3 py-2">
-            <p className="text-xs text-[#6B7B8D]">In progress</p>
-            <p className="text-lg font-semibold text-[#8A5A00]">{statusSummary.inProgress}</p>
-          </div>
-          <div className="rounded-lg bg-[#EAF9F2] px-3 py-2">
-            <p className="text-xs text-[#6B7B8D]">Resolved</p>
-            <p className="text-lg font-semibold text-[#1D6B45]">{statusSummary.resolved}</p>
-          </div>
+        {/* View toggle */}
+        <div className="inline-flex items-center bg-[#F0F4F8] rounded-lg p-1">
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 ${
+              viewMode === 'grid' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#9AABBF] hover:text-[#6B7B8D]'
+            }`}
+          >
+            <LayoutGrid size={13} />
+            Grid
+          </button>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 ${
+              viewMode === 'list' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#9AABBF] hover:text-[#6B7B8D]'
+            }`}
+          >
+            <Rows3 size={13} />
+            List
+          </button>
         </div>
       </div>
 
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-3'}>
+      {/* Cards */}
+      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4' : 'space-y-2.5'}>
         {paginatedResults.map((submission) => (
           <SubmissionCard
             key={submission.id}
@@ -155,26 +154,27 @@ export const SearchResults = memo(function SearchResults({
         ))}
       </div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 mt-6">
+        <div className="flex items-center justify-center gap-3 pt-2">
           <button
             onClick={() => onPageChange(safePage - 1)}
             disabled={safePage <= 1}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            <ChevronLeft size={15} />
-            Previous
+            <ChevronLeft size={14} />
+            Prev
           </button>
-          <span className="text-sm text-[#6B7B8D] font-medium">
+          <span className="text-sm text-[#6B7B8D] font-medium px-2">
             {safePage} / {totalPages}
           </span>
           <button
             onClick={() => onPageChange(safePage + 1)}
             disabled={safePage >= totalPages}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next
-            <ChevronRight size={15} />
+            <ChevronRight size={14} />
           </button>
         </div>
       )}

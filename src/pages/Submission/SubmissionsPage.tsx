@@ -18,13 +18,13 @@ import {
   Inbox,
   CheckCircle2,
   Clock,
-  TrendingUp,
   ListChecks,
   UserCheck,
   AlertCircle,
   ChevronDown,
   RefreshCw,
   Download,
+  TrendingUp,
 } from 'lucide-react';
 
 const PAGE_SIZE = 20;
@@ -34,25 +34,29 @@ type Tab = 'active' | 'completed';
 const ACTIVE_STATUSES: Submission['status'][] = ['received', 'in_review', 'in_progress'];
 const COMPLETED_STATUSES: Submission['status'][] = ['resolved', 'closed'];
 
-function StatBadge({
-  label,
+function MetricCard({
   value,
+  label,
   icon,
+  valueCls,
   bg,
-  textColor,
+  border,
 }: {
+  value: number;
   label: string;
-  value: number | string;
   icon: React.ReactNode;
+  valueCls: string;
   bg: string;
-  textColor: string;
+  border: string;
 }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${bg} ${textColor}`}>
-      {icon}
-      <span className="font-bold">{value}</span>
-      <span className="opacity-75">{label}</span>
-    </span>
+    <div className={`rounded-xl p-4 border ${bg} ${border}`}>
+      <div className="flex items-center gap-2 mb-2 text-[#6B7B8D]">
+        {icon}
+        <span className="text-xs font-semibold">{label}</span>
+      </div>
+      <p className={`text-2xl font-bold ${valueCls}`}>{value}</p>
+    </div>
   );
 }
 
@@ -70,16 +74,16 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
         active
-          ? 'bg-[#2E86AB] text-white shadow-sm'
-          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#E1E8EF]'
+          ? 'bg-[#1E3A5F] text-white shadow-sm'
+          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#EBF5FB] hover:text-[#2E86AB] hover:border-[#2E86AB]'
       }`}
     >
       {children}
       <span
-        className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${
-          active ? 'bg-white/25 text-white' : 'bg-[#F0F4F8] text-[#6B7B8D]'
+        className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
+          active ? 'bg-white/20 text-white' : 'bg-[#F0F4F8] text-[#6B7B8D]'
         }`}
       >
         {count}
@@ -178,7 +182,6 @@ export function SubmissionsPage() {
     [clearSelection]
   );
 
-  // Bulk action after completion: reload to reflect updated statuses
   const handleBulkUpdateStatus = useCallback(
     async (status: Submission['status']) => {
       await bulkUpdateStatus(status);
@@ -202,19 +205,17 @@ export function SubmissionsPage() {
 
   const handleSelectAll = useCallback(
     (ids: string[]) => {
-      if (ids.length === 0) {
-        clearSelection();
-      } else {
-        selectAll(ids);
-      }
+      if (ids.length === 0) clearSelection();
+      else selectAll(ids);
     },
     [selectAll, clearSelection]
   );
 
   const totalCount = submissions.length;
   const newCount = submissions.filter((s) => s.status === 'received').length;
-  const inProgressCount = submissions.filter((s) => s.status === 'in_progress').length;
-  const inReviewCount = submissions.filter((s) => s.status === 'in_review').length;
+  const inProgressCount = submissions.filter(
+    (s) => s.status === 'in_progress' || s.status === 'in_review'
+  ).length;
   const resolvedCount = submissions.filter(
     (s) => s.status === 'resolved' || s.status === 'closed'
   ).length;
@@ -233,7 +234,9 @@ export function SubmissionsPage() {
       return currentCycle?.id === submission.cycleId;
     });
   })();
-  const visibleSubmissions = showMerged ? cycleFilteredSubmissions : cycleFilteredSubmissions.filter((s) => !s.isMerged);
+  const visibleSubmissions = showMerged
+    ? cycleFilteredSubmissions
+    : cycleFilteredSubmissions.filter((s) => !s.isMerged);
   const mergedCount = cycleFilteredSubmissions.filter((s) => s.isMerged).length;
   const activeSubmissions = visibleSubmissions.filter((s) => ACTIVE_STATUSES.includes(s.status));
   const completedSubmissions = visibleSubmissions.filter((s) => COMPLETED_STATUSES.includes(s.status));
@@ -249,162 +252,163 @@ export function SubmissionsPage() {
     .filter((item) => item.total > 0)
     .sort((a, b) => b.total - a.total);
 
-  const mySubmissions = user
-    ? submissions.filter((s) => s.assignedTo === user.id)
-    : [];
+  const mySubmissions = user ? submissions.filter((s) => s.assignedTo === user.id) : [];
   const myResolved = mySubmissions.filter(
     (s) => s.status === 'resolved' || s.status === 'closed'
   ).length;
-  const myPct =
-    mySubmissions.length > 0 ? Math.round((myResolved / mySubmissions.length) * 100) : 0;
+  const myPct = mySubmissions.length > 0 ? Math.round((myResolved / mySubmissions.length) * 100) : 0;
 
   const displayedSubmissions =
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
-  const handleExportCSV = () => {
-    downloadCSV(displayedSubmissions);
-  };
-
   return (
-    <div className="h-screen flex flex-col bg-[#E1E8EF] overflow-hidden">
-      {/* Fixed header */}
-      <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
+    <div className="h-screen flex flex-col bg-[#EEF2F6] overflow-hidden">
+
+      {/* ── Fixed top header ── */}
+      <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-                <Inbox size={20} className="text-[#2E86AB]" />
+              <div className="w-9 h-9 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
+                <Inbox size={18} className="text-[#2E86AB]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">Submissions</h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">Review, assign, and track all feedback in one place.</p>
+                <h1 className="text-xl font-bold text-[#1E3A5F] leading-tight">Submissions</h1>
+                <p className="text-xs text-[#9AABBF] mt-0.5">Review, assign, and resolve feedback</p>
               </div>
             </div>
 
-            {!loading && totalCount > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  onClick={handleExportCSV}
-                  disabled={displayedSubmissions.length === 0}
-                  title="Export the current submissions view as CSV"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Download size={13} />
-                  Export CSV
-                </button>
-                <StatBadge
-                  label="new"
-                  value={newCount}
-                  icon={<Inbox size={11} />}
-                  bg="bg-[#EBF5FB]"
-                  textColor="text-[#1E6A9A]"
-                />
-                <StatBadge
-                  label="in progress"
-                  value={inReviewCount + inProgressCount}
-                  icon={<Clock size={11} />}
-                  bg="bg-[#FFF8E6]"
-                  textColor="text-[#B06F00]"
-                />
-                <StatBadge
-                  label="resolved"
-                  value={resolvedCount}
-                  icon={<CheckCircle2 size={11} />}
-                  bg="bg-[#EAF9F2]"
-                  textColor="text-[#1D8A57]"
-                />
-                {unassignedCount > 0 && (
-                  <StatBadge
-                    label="unassigned"
-                    value={unassignedCount}
-                    icon={<Users size={11} />}
-                    bg="bg-[#FFF3E0]"
-                    textColor="text-[#B06F00]"
-                  />
-                )}
-                {hasMore && (
-                  <span className="text-xs text-[#9AABBF]">
-                    Showing {totalCount}+ submissions
-                  </span>
-                )}
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={loadInitial}
+                disabled={loading}
+                title="Refresh"
+                className="p-2 rounded-lg bg-white border border-[#E8ECF0] text-[#6B7B8D] hover:bg-[#F0F4F8] transition-colors disabled:opacity-50"
+              >
+                <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+              </button>
+              <button
+                onClick={() => downloadCSV(displayedSubmissions)}
+                disabled={displayedSubmissions.length === 0}
+                title="Export current view as CSV"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download size={13} />
+                Export CSV
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Scrollable content area — pad bottom when bulk bar is visible */}
+      {/* ── Scrollable body ── */}
       <div className={`flex-1 overflow-y-auto min-h-0 ${isSelectionMode ? 'pb-24' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-4">
+
           {loading ? (
-            <div className="flex items-center justify-center py-32">
+            <div className="flex items-center justify-center py-40">
               <LoadingSpinner size="lg" />
             </div>
           ) : (
             <>
-              {/* My assigned progress (compact) */}
+              {/* ── Metric cards ── */}
+              {totalCount > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <MetricCard
+                    value={newCount}
+                    label="New"
+                    icon={<Inbox size={13} />}
+                    valueCls="text-[#1E6A9A]"
+                    bg="bg-[#EBF5FB]"
+                    border="border-[#C8E0EE]"
+                  />
+                  <MetricCard
+                    value={inProgressCount}
+                    label="In Progress"
+                    icon={<Clock size={13} />}
+                    valueCls="text-[#B06F00]"
+                    bg="bg-[#FFF8E6]"
+                    border="border-[#F5D78E]"
+                  />
+                  <MetricCard
+                    value={resolvedCount}
+                    label="Resolved"
+                    icon={<CheckCircle2 size={13} />}
+                    valueCls="text-[#1D8A57]"
+                    bg="bg-[#EAF9F2]"
+                    border="border-[#A8E6C6]"
+                  />
+                  <MetricCard
+                    value={unassignedCount}
+                    label="Unassigned"
+                    icon={<Users size={13} />}
+                    valueCls={unassignedCount > 0 ? 'text-[#B06F00]' : 'text-[#1E3A5F]'}
+                    bg={unassignedCount > 0 ? 'bg-[#FFF3E0]' : 'bg-[#F0F4F8]'}
+                    border={unassignedCount > 0 ? 'border-[#FFCC80]' : 'border-[#E8ECF0]'}
+                  />
+                </div>
+              )}
+
+              {/* ── My Assigned ── */}
               {mySubmissions.length > 0 && (
-                <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <UserCheck size={14} className="text-[#2E86AB]" />
-                    <h2 className="text-sm font-semibold text-[#1E3A5F]">My Assigned</h2>
-                    <div className="flex-1 h-1.5 bg-[#EDF2F7] rounded-full overflow-hidden mx-3">
+                <div className="bg-white border border-[#E8ECF0] rounded-xl px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <UserCheck size={14} className="text-[#2E86AB] flex-shrink-0" />
+                    <span className="text-sm font-semibold text-[#1E3A5F]">My Assigned</span>
+                    <div className="flex-1 h-2 bg-[#EDF2F7] rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
                           width: `${myPct}%`,
-                          background:
-                            myPct === 100
-                              ? '#1D8A57'
-                              : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
+                          background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
                         }}
                       />
                     </div>
-                    <span className="text-xs font-semibold text-[#2E86AB]">{myPct}%</span>
-                    <span className="text-xs text-[#9AABBF]">
-                      {myResolved}/{mySubmissions.length} resolved
-                    </span>
-                  </div>
-                  <div className="flex gap-4 text-xs text-[#9AABBF]">
-                    <span className="flex items-center gap-1">
-                      <AlertCircle size={11} className="text-[#B06F00]" />
-                      Active: {mySubmissions.length - myResolved}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <CheckCircle2 size={11} className="text-[#1D8A57]" />
-                      Done: {myResolved}
-                    </span>
+                    <span className="text-sm font-bold text-[#2E86AB] flex-shrink-0">{myPct}%</span>
+                    <div className="flex items-center gap-3 text-xs text-[#9AABBF] flex-shrink-0">
+                      <span className="flex items-center gap-1">
+                        <AlertCircle size={11} className="text-[#B06F00]" />
+                        {mySubmissions.length - myResolved} active
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 size={11} className="text-[#1D8A57]" />
+                        {myResolved} done
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* Team progress (collapsible) */}
+              {/* ── Team Progress (collapsible) ── */}
               {memberProgress.length > 0 && (
                 <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
                   <button
                     onClick={() => setShowTeamProgress(!showTeamProgress)}
-                    className="w-full px-5 py-3 flex items-center gap-2 hover:bg-[#F1F5F8] transition-colors text-left"
+                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[#F8FAFB] transition-colors text-left"
                   >
                     <TrendingUp size={14} className="text-[#2E86AB]" />
-                    <h2 className="text-sm font-semibold text-[#1E3A5F]">Team Progress</h2>
-                    <span className="text-xs text-[#9AABBF]">{assignedCount} assigned across {memberProgress.length} members</span>
+                    <span className="text-sm font-semibold text-[#1E3A5F]">Team Progress</span>
+                    <span className="text-xs text-[#9AABBF]">
+                      {assignedCount} assigned · {memberProgress.length} members
+                    </span>
                     <ChevronDown
                       size={14}
                       className={`ml-auto text-[#9AABBF] transition-transform duration-200 ${showTeamProgress ? 'rotate-180' : ''}`}
                     />
                   </button>
+
                   {showTeamProgress && (
                     <div className="divide-y divide-[#F0F4F8] border-t border-[#F0F4F8]">
                       {memberProgress.map(({ member, total, resolved, active }) => {
                         const pct = Math.round((resolved / total) * 100);
                         const isMe = member.id === user?.id;
                         return (
-                          <div key={member.id} className="px-5 py-3 flex items-center gap-3">
-                            <div className="w-7 h-7 rounded-full bg-[#EBF5FB] flex items-center justify-center text-xs font-bold text-[#2E86AB] flex-shrink-0">
+                          <div key={member.id} className="px-5 py-3.5 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-[#EBF5FB] flex items-center justify-center text-xs font-bold text-[#2E86AB] flex-shrink-0">
                               {member.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center justify-between mb-1.5">
                                 <p className="text-sm font-medium text-[#1E3A5F] truncate">
                                   {member.name}
                                   {isMe && (
@@ -428,9 +432,9 @@ export function SubmissionsPage() {
                                 />
                               </div>
                             </div>
-                            <div className="flex gap-3 text-xs text-[#9AABBF] flex-shrink-0">
-                              <span>{active} active</span>
-                            </div>
+                            <span className="text-xs text-[#9AABBF] flex-shrink-0 w-16 text-right">
+                              {active} active
+                            </span>
                           </div>
                         );
                       })}
@@ -439,13 +443,13 @@ export function SubmissionsPage() {
                 </div>
               )}
 
-              {/* Cycle selector */}
+              {/* ── Cycle selector ── */}
               {cycles.length > 0 && (
                 <>
-                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-[#E8ECF0] bg-white p-4">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[#E8ECF0] bg-white px-5 py-3.5">
                     <div>
                       <p className="text-sm font-bold text-[#1E3A5F]">Board cycles</p>
-                      <p className="text-xs text-[#6B7B8D]">Default view shows the current cycle.</p>
+                      <p className="text-xs text-[#9AABBF]">Default view shows the current cycle.</p>
                     </div>
                     <CycleSwitcher
                       cycles={cycles}
@@ -460,44 +464,50 @@ export function SubmissionsPage() {
                 </>
               )}
 
-              {/* Tabs + description inline */}
+              {/* ── Tab bar ── */}
               <div className="flex items-center gap-2 flex-wrap">
-                <TabButton
-                  active={activeTab === 'active'}
-                  onClick={() => handleTabChange('active')}
-                  count={activeSubmissions.length}
-                >
-                  <ListChecks size={14} />
-                  Active
-                </TabButton>
-                <TabButton
-                  active={activeTab === 'completed'}
-                  onClick={() => handleTabChange('completed')}
-                  count={completedSubmissions.length}
-                >
-                  <CheckCircle2 size={14} />
-                  Completed
-                </TabButton>
+                <div className="flex items-center gap-2">
+                  <TabButton
+                    active={activeTab === 'active'}
+                    onClick={() => handleTabChange('active')}
+                    count={activeSubmissions.length}
+                  >
+                    <ListChecks size={14} />
+                    Active
+                  </TabButton>
+                  <TabButton
+                    active={activeTab === 'completed'}
+                    onClick={() => handleTabChange('completed')}
+                    count={completedSubmissions.length}
+                  >
+                    <CheckCircle2 size={14} />
+                    Completed
+                  </TabButton>
+                </div>
+
                 {mergedCount > 0 && (
-                  <label className="ml-auto inline-flex items-center gap-2 rounded-xl border border-[#E8ECF0] bg-white px-3 py-2 text-xs font-semibold text-[#6B7B8D]">
+                  <label className="ml-auto inline-flex items-center gap-2 rounded-lg border border-[#E8ECF0] bg-white px-3 py-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={showMerged}
-                      onChange={(event) => setShowMerged(event.target.checked)}
+                      onChange={(e) => setShowMerged(e.target.checked)}
                       className="h-4 w-4 accent-[#2E86AB]"
                     />
-                    Show merged ({mergedCount})
+                    <span className="text-xs font-semibold text-[#6B7B8D]">
+                      Show merged ({mergedCount})
+                    </span>
                   </label>
                 )}
-                <p className="text-xs text-[#9AABBF]">
+
+                <p className="text-xs text-[#9AABBF] ml-auto">
                   {activeTab === 'active'
-                    ? 'New, in review, and in progress submissions'
-                    : 'Resolved and closed — archived for reference'}
+                    ? 'New, in review, and in progress'
+                    : 'Resolved and closed'}
                 </p>
               </div>
 
-              {/* Search & results panel */}
-              <div className="bg-white border border-[#E8ECF0] rounded-2xl p-5 pb-6">
+              {/* ── Search + Results panel ── */}
+              <div className="bg-white border border-[#E8ECF0] rounded-2xl p-5">
                 <AdvancedSearch
                   submissions={displayedSubmissions}
                   users={users}
@@ -510,13 +520,13 @@ export function SubmissionsPage() {
                 />
               </div>
 
-              {/* Load More */}
+              {/* ── Load More ── */}
               {hasMore && (
                 <div className="flex justify-center pb-4">
                   <button
                     onClick={loadMore}
                     disabled={loadingMore}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E8ECF0] rounded-xl text-sm font-medium text-[#2E86AB] hover:bg-[#EBF5FB] transition-colors disabled:opacity-60"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E8ECF0] rounded-xl text-sm font-semibold text-[#2E86AB] hover:bg-[#EBF5FB] transition-colors disabled:opacity-60"
                   >
                     {loadingMore ? (
                       <>
@@ -537,7 +547,7 @@ export function SubmissionsPage() {
         </div>
       </div>
 
-      {/* Bulk action floating bar */}
+      {/* Bulk action bar */}
       {isSelectionMode && (
         <BulkActionBar
           selectedCount={selectedCount}
