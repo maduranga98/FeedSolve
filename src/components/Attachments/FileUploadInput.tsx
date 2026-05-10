@@ -53,20 +53,14 @@ export function FileUploadInput({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-
     if (disabled) return;
-
     const files = validateFiles(e.dataTransfer.files);
-    if (files.length > 0) {
-      onFilesSelected(files);
-    }
+    if (files.length > 0) onFilesSelected(files);
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = validateFiles(e.currentTarget.files);
-    if (files.length > 0) {
-      onFilesSelected(files);
-    }
+    if (files.length > 0) onFilesSelected(files);
   }
 
   function handleClick() {
@@ -82,10 +76,20 @@ export function FileUploadInput({
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={handleClick}
-        className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${dragActive ? 'border-color-accent bg-blue-50' : 'border-color-border'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-color-accent hover:bg-blue-50'}
-        `}
+        style={{
+          border: `2px dashed ${dragActive
+            ? "var(--brand-primary, #2E86AB)"
+            : "var(--brand-primary-border, #C8DCE8)"}`,
+          borderRadius: 12,
+          padding: "28px 20px",
+          textAlign: "center",
+          cursor: disabled ? "not-allowed" : "pointer",
+          transition: "all 0.18s ease",
+          background: dragActive
+            ? "var(--brand-primary-bg, rgba(46,134,171,0.07))"
+            : "var(--brand-primary-bg, rgba(46,134,171,0.02))",
+          opacity: disabled ? 0.55 : 1,
+        }}
       >
         <input
           ref={fileInputRef}
@@ -97,15 +101,31 @@ export function FileUploadInput({
           className="hidden"
         />
 
-        <Upload size={32} className="mx-auto mb-2 text-color-accent" />
-        <p className="text-sm font-medium text-color-primary mb-1">Drag files here or click to browse</p>
-        <p className="text-xs text-color-muted-text">
-          Supported: {ATTACHMENT_CONFIG.allowedFileTypes.join(', ')} (Max {formatFileSize(maxSize)})
+        <div
+          className="mx-auto mb-3 flex items-center justify-center rounded-xl"
+          style={{
+            width: 44,
+            height: 44,
+            background: "var(--brand-primary-bg, rgba(46,134,171,0.12))",
+          }}
+        >
+          <Upload size={22} style={{ color: "var(--brand-primary, #2E86AB)" }} />
+        </div>
+        <p className="text-sm font-semibold mb-1" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+          {dragActive ? "Drop files here" : "Drag files here or click to browse"}
+        </p>
+        <p className="text-xs text-[#9AABBF]">
+          {ATTACHMENT_CONFIG.allowedFileTypes.join(', ')} · Max {formatFileSize(maxSize)}
         </p>
       </div>
 
       {error && (
-        <div className="mt-3 p-3 bg-red-50 border border-color-error rounded text-sm text-color-error whitespace-pre-wrap">
+        <div className="mt-3 p-3 rounded-xl text-sm whitespace-pre-wrap"
+          style={{
+            background: "#FFF5F5",
+            border: "1px solid #FCA5A5",
+            color: "#DC2626",
+          }}>
           {error}
         </div>
       )}
