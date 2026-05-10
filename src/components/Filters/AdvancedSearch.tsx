@@ -4,7 +4,6 @@ import { useSearch } from '../../hooks/useSearch';
 import { useSavedFilters } from '../../hooks/useSavedFilters';
 import { useURLFilters } from '../../hooks/useURLFilters';
 import { getCompanyBoards } from '../../lib/firestore';
-import { downloadUrl } from '../../lib/download';
 import type { Submission, Board, User, SavedFilter, SearchFilters } from '../../types';
 import { SearchBar } from './SearchBar';
 import { FilterChips } from './FilterChips';
@@ -13,7 +12,7 @@ import { SavedFilters } from './SavedFilters';
 import { QuickFilters } from './QuickFilters';
 import { SearchResults } from './SearchResults';
 import { LoadingSpinner } from '../Shared';
-import { Copy, Download } from 'lucide-react';
+import { Copy, Bookmark } from 'lucide-react';
 
 interface AdvancedSearchProps {
   submissions: Submission[];
@@ -39,6 +38,7 @@ export function AdvancedSearch({
   const { user } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
   const [page, setPage] = useState(1);
   const { searchText, setSearchText, filters, setFilters, results, clearAll: clearSearch } = useSearch(submissions);
   const { savedFilters, saveFilter, deleteFilter, togglePin } = useSavedFilters(user?.companyId || '');
@@ -60,7 +60,6 @@ export function AdvancedSearch({
     loadBoards();
   }, [user]);
 
-  // Reset to page 1 whenever search results change
   useEffect(() => {
     void Promise.resolve().then(() => setPage(1));
   }, [results.length, searchText]);
@@ -85,6 +84,7 @@ export function AdvancedSearch({
     setFilters(filter.filters);
     updateURLFilters(filter.filters);
     setPage(1);
+    setShowSaved(false);
   }, [setFilters, updateURLFilters]);
 
   const handleCopyShareLink = () => {
@@ -92,157 +92,123 @@ export function AdvancedSearch({
     navigator.clipboard.writeText(url);
   };
 
-  const handleExportCSV = async () => {
-    if (!user) return;
-    try {
-      downloadUrl(`/api/search/export-csv?companyId=${user.companyId}&filters=${encodeURIComponent(JSON.stringify(filters))}`);
-    } catch (error) {
-      console.error('Failed to export CSV:', error);
-    }
-  };
+  const hasActiveFilters = Object.keys(filters).length > 0;
 
   return (
-    <div className="space-y-6">
-      {/* Search Bar */}
-      <SearchBar
-        value={searchText}
-        onChange={setSearchText}
-        placeholder="Search by subject, description, category, or tracking code..."
-      />
+    <div className="space-y-4">
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Sidebar */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Quick Filters */}
-          <QuickFilters onApply={handleApplyQuickFilter} userId={user?.id} />
-
-          {/* Advanced Filters */}
-          <AdvancedFilterPanel
-            boards={boards}
-            users={users}
-            categories={categories}
-            locations={locations}
-            filters={filters}
-            onFiltersChange={(newFilters) => {
-              setFilters(newFilters);
-              updateURLFilters(newFilters);
-              setPage(1);
-            }}
-            onSaveFilter={handleSaveFilter}
+      {/* ── Toolbar: Search + Filters ── */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <SearchBar
+            value={searchText}
+            onChange={setSearchText}
+            placeholder="Search by subject, description, category, or tracking code…"
           />
-
-          {/* Saved Filters */}
-          {savedFilters.length > 0 && (
-            <div className="bg-white rounded-lg border border-[#D3D1C7] p-4">
-              <h3 className="text-sm font-semibold text-[#444441] mb-3">Saved Filters</h3>
-              <SavedFilters
-                filters={savedFilters}
-                onSelect={handleSelectSavedFilter}
-                onDelete={deleteFilter}
-                onTogglePin={togglePin}
-              />
-            </div>
-          )}
         </div>
 
-        {/* Main Content */}
-        <div className="lg:col-span-3 space-y-4">
-          {/* Filter Chips */}
-          {Object.keys(filters).length > 0 && (
-            <FilterChips
-              filters={filters}
-              boards={boards}
-              users={users}
-              onRemoveStatus={(status) =>
-                setFilters({
-                  ...filters,
-                  status: filters.status?.filter((s) => s !== status),
-                })
-              }
-              onRemovePriority={(priority) =>
-                setFilters({
-                  ...filters,
-                  priority: filters.priority?.filter((p) => p !== priority),
-                })
-              }
-              onRemoveBoard={(boardId) =>
-                setFilters({
-                  ...filters,
-                  boardId: filters.boardId?.filter((b) => b !== boardId),
-                })
-              }
-              onRemoveCategory={(category) =>
-                setFilters({
-                  ...filters,
-                  category: filters.category?.filter((c) => c !== category),
-                })
-              }
-              onRemoveLocation={(location) =>
-                setFilters({
-                  ...filters,
-                  location: filters.location?.filter((item) => item !== location),
-                })
-              }
-              onRemoveAssignee={() =>
-                setFilters({ ...filters, assignedTo: undefined })
-              }
-              onRemoveDateRange={() =>
-                setFilters({ ...filters, dateRange: undefined })
-              }
-              onClearAll={() => {
-                setFilters({});
-                updateURLFilters({});
-                clearSearch();
-                setPage(1);
-              }}
-            />
-          )}
+        <AdvancedFilterPanel
+          boards={boards}
+          users={users}
+          categories={categories}
+          locations={locations}
+          filters={filters}
+          onFiltersChange={(newFilters) => {
+            setFilters(newFilters);
+            updateURLFilters(newFilters);
+            setPage(1);
+          }}
+          onSaveFilter={handleSaveFilter}
+        />
 
-          {/* Results Header */}
-          {results.length > 0 && (
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-sm text-[#6B7B8D]">
-                Found {results.length} submission{results.length !== 1 ? 's' : ''}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleCopyShareLink}
-                  className="px-3 py-2 text-sm text-[#2E86AB] hover:bg-[#E0E8EF] rounded transition-colors flex items-center gap-2"
-                  title="Copy share link"
-                >
-                  <Copy size={16} />
-                  Share
-                </button>
-                <button
-                  onClick={handleExportCSV}
-                  className="px-3 py-2 text-sm text-[#2E86AB] hover:bg-[#E0E8EF] rounded transition-colors flex items-center gap-2"
-                >
-                  <Download size={16} />
-                  Export CSV
-                </button>
-              </div>
-            </div>
-          )}
+        <button
+          onClick={handleCopyShareLink}
+          title="Copy share link"
+          className="flex-shrink-0 p-2 rounded-lg bg-white border border-[#D3D1C7] text-[#6B7B8D] hover:text-[#2E86AB] hover:border-[#2E86AB] hover:bg-[#EBF5FB] transition-all"
+        >
+          <Copy size={15} />
+        </button>
 
-          {/* Search Results */}
-          {loading ? (
-            <LoadingSpinner size="lg" className="min-h-96" />
-          ) : (
-            <SearchResults
-              results={results}
-              onSubmissionClick={onSubmissionClick}
-              usersMap={usersMap}
-              page={page}
-              pageSize={20}
-              onPageChange={setPage}
-              selectedIds={selectedIds}
-              isSelectionMode={isSelectionMode}
-              onToggleSelect={onToggleSelect}
-              onSelectAll={onSelectAll}
-            />
-          )}
-        </div>
+        {savedFilters.length > 0 && (
+          <button
+            onClick={() => setShowSaved(!showSaved)}
+            title="Saved filters"
+            className={`flex-shrink-0 p-2 rounded-lg border transition-all ${
+              showSaved
+                ? 'bg-[#FFF8E6] border-[#FFD77A] text-[#B06F00]'
+                : 'bg-white border-[#D3D1C7] text-[#6B7B8D] hover:border-[#FFD77A] hover:text-[#B06F00]'
+            }`}
+          >
+            <Bookmark size={15} />
+          </button>
+        )}
       </div>
+
+      {/* ── Quick Filters row ── */}
+      <QuickFilters onApply={handleApplyQuickFilter} userId={user?.id} />
+
+      {/* ── Saved Filters (expandable) ── */}
+      {showSaved && savedFilters.length > 0 && (
+        <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
+          <p className="text-xs font-bold text-[#6B7B8D] uppercase tracking-wider mb-3">Saved Filters</p>
+          <SavedFilters
+            filters={savedFilters}
+            onSelect={handleSelectSavedFilter}
+            onDelete={deleteFilter}
+            onTogglePin={togglePin}
+          />
+        </div>
+      )}
+
+      {/* ── Active filter chips ── */}
+      {hasActiveFilters && (
+        <FilterChips
+          filters={filters}
+          boards={boards}
+          users={users}
+          onRemoveStatus={(status) =>
+            setFilters({ ...filters, status: filters.status?.filter((s) => s !== status) })
+          }
+          onRemovePriority={(priority) =>
+            setFilters({ ...filters, priority: filters.priority?.filter((p) => p !== priority) })
+          }
+          onRemoveBoard={(boardId) =>
+            setFilters({ ...filters, boardId: filters.boardId?.filter((b) => b !== boardId) })
+          }
+          onRemoveCategory={(category) =>
+            setFilters({ ...filters, category: filters.category?.filter((c) => c !== category) })
+          }
+          onRemoveLocation={(location) =>
+            setFilters({ ...filters, location: filters.location?.filter((item) => item !== location) })
+          }
+          onRemoveAssignee={() => setFilters({ ...filters, assignedTo: undefined })}
+          onRemoveDateRange={() => setFilters({ ...filters, dateRange: undefined })}
+          onClearAll={() => {
+            setFilters({});
+            updateURLFilters({});
+            clearSearch();
+            setPage(1);
+          }}
+        />
+      )}
+
+      {/* ── Results ── */}
+      {loading ? (
+        <LoadingSpinner size="lg" className="min-h-96" />
+      ) : (
+        <SearchResults
+          results={results}
+          onSubmissionClick={onSubmissionClick}
+          usersMap={usersMap}
+          page={page}
+          pageSize={20}
+          onPageChange={setPage}
+          selectedIds={selectedIds}
+          isSelectionMode={isSelectionMode}
+          onToggleSelect={onToggleSelect}
+          onSelectAll={onSelectAll}
+        />
+      )}
     </div>
   );
 }

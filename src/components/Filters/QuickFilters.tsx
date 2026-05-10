@@ -54,28 +54,26 @@ const quickFilterOptions = [
 
 export function QuickFilters({ onApply, userId }: QuickFiltersProps) {
   return (
-    <div>
-      <div className="flex items-center gap-1.5 mb-2.5">
-        <Zap size={12} className="text-[#2E86AB]" />
-        <p className="text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide">Quick Filters</p>
+    <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <Zap size={11} className="text-[#9AABBF]" />
+        <span className="text-[10px] font-bold text-[#9AABBF] uppercase tracking-widest">Quick</span>
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        {quickFilterOptions
-          .filter((option) => option.id !== 'assigned-to-me' || userId)
-          .map((option) => {
-            const Icon = option.icon;
-            return (
-              <button
-                key={option.id}
-                onClick={() => onApply(option.filters(userId))}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full border border-[#E8ECF0] bg-white text-[#6B7B8D] hover:bg-[#EBF5FB] hover:border-[#2E86AB] hover:text-[#2E86AB] transition-all"
-              >
-                <Icon size={11} />
-                {option.label}
-              </button>
-            );
-          })}
-      </div>
+      {quickFilterOptions
+        .filter((option) => option.id !== 'assigned-to-me' || userId)
+        .map((option) => {
+          const Icon = option.icon;
+          return (
+            <button
+              key={option.id}
+              onClick={() => onApply(option.filters(userId))}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-full border border-[#E8ECF0] bg-white text-[#6B7B8D] hover:bg-[#EBF5FB] hover:border-[#2E86AB] hover:text-[#2E86AB] transition-all"
+            >
+              <Icon size={10} />
+              {option.label}
+            </button>
+          );
+        })}
     </div>
   );
 }
