@@ -5,6 +5,7 @@ import { DowngradeModal } from './DowngradeModal';
 import { tierPricing } from '../../lib/tier-limits';
 import { getPriceId } from '../../lib/stripe';
 import { useStripe } from '../../hooks/useStripe';
+import { useSubscription } from '../../hooks/useSubscription';
 import type { Subscription } from '../../types';
 
 interface SubscriptionManagerProps {
@@ -17,6 +18,7 @@ const tierOrder = ['free', 'starter', 'growth', 'business'];
 export function SubscriptionManager({ subscription, onSubscriptionChange }: SubscriptionManagerProps) {
   const navigate = useNavigate();
   const { changeSubscription } = useStripe();
+  const { refetch } = useSubscription();
   const [upgradeModal, setUpgradeModal] = useState<{
     tier: 'starter' | 'growth' | 'business';
   } | null>(null);
@@ -58,7 +60,10 @@ export function SubscriptionManager({ subscription, onSubscriptionChange }: Subs
     const priceId = getPriceId(upgradeModal.tier, subscription.billing);
     await changeSubscription(priceId);
     setUpgradeModal(null);
-    onSubscriptionChange?.();
+    setTimeout(() => {
+      refetch();
+      onSubscriptionChange?.();
+    }, 1500);
   };
 
   const handleDowngradeConfirm = async () => {
@@ -66,7 +71,10 @@ export function SubscriptionManager({ subscription, onSubscriptionChange }: Subs
     const priceId = getPriceId(downgradeModal.tier, subscription.billing);
     await changeSubscription(priceId);
     setDowngradeModal(null);
-    onSubscriptionChange?.();
+    setTimeout(() => {
+      refetch();
+      onSubscriptionChange?.();
+    }, 1500);
   };
 
   return (
