@@ -14,6 +14,7 @@ import {
   Settings,
   ShieldAlert,
   Lock,
+  HelpCircle,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -76,6 +77,7 @@ export function Navbar() {
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
+    { path: "/help", label: "Help & Support", icon: <HelpCircle size={15} /> },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
     { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
   ];
