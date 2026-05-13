@@ -44,6 +44,9 @@ const PricingPage = lazy(() => import('./pages/Pricing/PricingPage').then(m => (
 // Billing Pages
 const BillingPage = lazy(() => import('./pages/Billing/BillingPage').then(m => ({ default: m.BillingPage })));
 
+// Help Pages
+const HelpPage = lazy(() => import('./pages/Help/HelpPage').then(m => ({ default: m.HelpPage })));
+
 // Templates Pages
 const TemplatesPage = lazy(() => import('./pages/Templates/TemplatesPage').then(m => ({ default: m.TemplatesPage })));
 
@@ -233,6 +236,15 @@ function AppContent() {
               <Navbar />
               <BillingPage />
             </PermissionRoute>
+          }
+        />
+        <Route
+          path="/help"
+          element={
+            <ProtectedRoute>
+              <Navbar />
+              <HelpPage />
+            </ProtectedRoute>
           }
         />
         <Route path="/integrations" element={<Navigate to="/dashboard" replace />} />
