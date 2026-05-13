@@ -14,7 +14,9 @@ export function initializeSentry() {
   const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 
   if (!sentryDsn) {
-    console.warn('[Monitoring] Sentry DSN not configured');
+    if (isProduction) {
+      console.warn('[Monitoring] Sentry DSN not configured');
+    }
     return;
   }
 
