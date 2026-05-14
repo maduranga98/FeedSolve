@@ -54,6 +54,85 @@ export function InstructionsAndGuidance() {
         </div>
       </div>
 
+      {/* Tips Section */}
+      <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
+        <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Tips & How-To Guides</h2>
+        <div className="space-y-5 text-[#6B7B8D] text-sm">
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to use Reply Templates</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Go to <strong>Templates</strong> from the main navigation.</li>
+              <li>Click <strong>Create Template</strong>, give it a title and the message body.</li>
+              <li>Use placeholders like <code className="bg-[#F0F4F8] px-1 rounded">{'{{customer_name}}'}</code> for personalized replies.</li>
+              <li>When replying to a submission, click <strong>Insert Template</strong> and pick your saved template.</li>
+              <li>Edit before sending if you need to tweak the message for the specific submission.</li>
+            </ol>
+            <p className="mt-2 text-xs text-[#9AABBF]">Tip: Keep templates short and ask one question at a time — it speeds up resolution.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to use Escalation Rules</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Open <strong>Settings → Escalation Rules</strong>.</li>
+              <li>Click <strong>New Rule</strong> and choose a trigger (e.g. status is <em>received</em> for more than 24 hours).</li>
+              <li>Set the action: notify a teammate, change priority, or reassign the submission.</li>
+              <li>Save and toggle the rule on. The system will check rules automatically.</li>
+            </ol>
+            <p className="mt-2 text-xs text-[#9AABBF]">Tip: Start with one rule for critical priority and tune from there to avoid alert fatigue.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to use Merge Submissions</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>In the Submissions list, open the duplicate submission you want to merge.</li>
+              <li>Click <strong>Merge</strong> and select the primary submission to merge into.</li>
+              <li>Confirm — the merged submission stays linked to the primary one and is hidden by default.</li>
+              <li>Toggle <strong>Show merged</strong> at the top of the list to review merged items later.</li>
+            </ol>
+            <p className="mt-2 text-xs text-[#9AABBF]">Tip: Merge only after you've confirmed the topic and reporter intent match — merges aren't easily reversible.</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to use Location-tagged QR Codes</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Open your board's settings and add the locations you operate (e.g. "Lobby", "Drive-through").</li>
+              <li>Go to the <strong>QR codes</strong> section and download a QR per location.</li>
+              <li>Display the QR at that physical location — incoming submissions are automatically tagged with the location.</li>
+              <li>Filter the Analytics → <em>Submissions by Location</em> chart to compare locations.</li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to read the Analytics report</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Pick a date range using the selector at the top of Analytics.</li>
+              <li>Use the <strong>Report Builder</strong> on the Full Analytics tab to choose which sections to include.</li>
+              <li>Click <strong>Generate Custom Report</strong> to download a tailored PDF with only the sections you ticked.</li>
+              <li>Use <strong>Export CSV</strong> to get the raw submission list for pivot-table analysis.</li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to invite team members</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Go to <strong>Team</strong> and click <strong>Invite Member</strong>.</li>
+              <li>Enter their email and pick a role (Owner, Admin, Manager, or Viewer).</li>
+              <li>The invitee receives an email link to join your workspace.</li>
+              <li>Change roles or remove access at any time from the Team page.</li>
+            </ol>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-[#1E3A5F] mb-2">How to track a submission as a customer</h3>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>After submitting feedback, customers receive a unique tracking code.</li>
+              <li>Direct them to the <strong>/track</strong> page or share the link with the code prefilled.</li>
+              <li>Customers can see status updates and your public reply.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
       {/* Support Section */}
       <div className="bg-[#EBF5FB] rounded-xl border border-[#2E86AB] p-6">
         <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Help & Support</h2>

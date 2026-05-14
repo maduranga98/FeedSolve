@@ -288,7 +288,10 @@ export async function downloadPDFReport(
   filenamePrefix = 'analytics-report'
 ): Promise<void> {
   const blob = await exportPDFReport(metrics, dateRange, companyName, options);
-  downloadBlob(blob, `${filenamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`);
+  const now = new Date();
+  const datePart = now.toISOString().split('T')[0];
+  const timePart = `${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+  downloadBlob(blob, `${filenamePrefix}-${datePart}-${timePart}.pdf`);
 }
 
 export function exportCSVSubmissions(submissions: Submission[]): string {

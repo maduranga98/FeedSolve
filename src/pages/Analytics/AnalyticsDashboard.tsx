@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Download, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../../components/Shared';
-import { getCompanySubmissions, getCompanyBoards, getCompany } from '../../lib/firestore';
+import { getCompanySubmissions, getCompanyBoards, getCompany, getCompanyMembers } from '../../lib/firestore';
 import { MetricCard } from '../../components/Analytics/MetricCard';
 import { TrendChart } from '../../components/Analytics/TrendChart';
 import { PerformanceTable } from '../../components/Analytics/PerformanceTable';
@@ -17,7 +17,7 @@ import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
 import { downloadTextFile } from '../../lib/download';
 import { getDateRangePreset, isDateInRange, type DateRange } from '../../lib/date-ranges';
 import { useBoardCycles } from '../../hooks/useBoardCycles';
-import type { Submission, Board, Company } from '../../types';
+import type { Submission, Board, Company, User } from '../../types';
 
 function submissionCreatedAt(submission: Submission): Date | null {
   if (!submission.createdAt) return null;
@@ -30,6 +30,7 @@ export function AnalyticsDashboard() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [boards, setBoards] = useState<Board[]>([]);
   const [company, setCompany] = useState<Company | null>(null);
+  const [members, setMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>(getDateRangePreset('30days'));
   const [exportLoading, setExportLoading] = useState(false);
@@ -44,14 +45,16 @@ export function AnalyticsDashboard() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [submissionsData, boardsData, companyData] = await Promise.all([
+        const [submissionsData, boardsData, companyData, membersData] = await Promise.all([
           getCompanySubmissions(user.companyId),
           getCompanyBoards(user.companyId),
           getCompany(user.companyId),
+          getCompanyMembers(user.companyId),
         ]);
         setSubmissions(submissionsData);
         setBoards(boardsData);
         setCompany(companyData);
+        setMembers(membersData);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -72,7 +75,7 @@ export function AnalyticsDashboard() {
     );
   }
 
-  const metrics = calculateAnalytics(submissions, dateRange);
+  const metrics = calculateAnalytics(submissions, dateRange, members);
   const filteredSubmissions = submissions.filter((submission) => {
     const createdAt = submissionCreatedAt(submission);
     return createdAt ? isDateInRange(createdAt, dateRange) : false;
@@ -93,10 +96,10 @@ export function AnalyticsDashboard() {
     .map(([location, count]) => ({ location, count }))
     .sort((a, b) => b.count - a.count);
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = async (options?: ReportOptions) => {
     try {
       setExportLoading(true);
-      await downloadPDFReport(metrics, dateRange, user.name);
+      await downloadPDFReport(metrics, dateRange, user.name, options);
     } catch (error) {
       console.error('Failed to export PDF:', error);
     } finally {

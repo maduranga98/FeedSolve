@@ -4,7 +4,7 @@ import { Download } from 'lucide-react';
 interface ReportBuilderProps {
   onGenerateReport: (options: ReportOptions) => void;
   onExportCSV: () => void;
-  onExportPDF: () => void;
+  onExportPDF: (options?: ReportOptions) => void;
   loading?: boolean;
 }
 
@@ -42,6 +42,9 @@ export function ReportBuilder({
   const handleGenerateReport = () => {
     onGenerateReport(options);
   };
+
+  const selectedCount = Object.values(options).filter(Boolean).length;
+  const noneSelected = selectedCount === 0;
 
   return (
     <div className="bg-color-surface rounded-lg shadow-md p-6">
@@ -112,15 +115,15 @@ export function ReportBuilder({
       <div className="space-y-3">
         <button
           onClick={handleGenerateReport}
-          disabled={loading}
+          disabled={loading || noneSelected}
           className="w-full px-4 py-2 bg-color-primary text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <Download size={18} />
-          Generate Custom Report
+          Generate Custom Report ({selectedCount} section{selectedCount === 1 ? '' : 's'})
         </button>
 
         <button
-          onClick={onExportPDF}
+          onClick={() => onExportPDF(options)}
           disabled={loading}
           className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
         >
