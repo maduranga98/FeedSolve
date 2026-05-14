@@ -106,9 +106,16 @@ function daysDiff(a: Date | null, b: Date | null): number {
 
 // ─── Core Analytics ───────────────────────────────────────────────────────────
 
+export interface TeamMemberInfo {
+  id: string;
+  name?: string;
+  email?: string;
+}
+
 export function calculateAnalytics(
   submissions: Submission[],
-  dateRange: DateRange
+  dateRange: DateRange,
+  teamMembers: TeamMemberInfo[] = []
 ): AnalyticsMetrics {
   const filtered = submissions.filter((sub) => {
     const d = toDate(sub.createdAt);
@@ -149,22 +156,28 @@ export function calculateAnalytics(
     submissionsByPriority,
     submissionsByCategory,
     submissionsByBoard,
-    teamPerformance: calculateTeamPerformance(filtered),
+    teamPerformance: calculateTeamPerformance(filtered, teamMembers),
     trendData: generateTrendData(filtered),
     submissionsBySource: submissionsByBoard,
   };
 }
 
-function calculateTeamPerformance(submissions: Submission[]): TeamPerformanceMetric[] {
+function calculateTeamPerformance(
+  submissions: Submission[],
+  teamMembers: TeamMemberInfo[] = []
+): TeamPerformanceMetric[] {
   const map = new Map<string, any>();
+  const memberMap = new Map<string, TeamMemberInfo>();
+  teamMembers.forEach((m) => memberMap.set(m.id, m));
 
   submissions.forEach((sub) => {
     const userId = sub.assignedTo || 'unassigned';
     if (!map.has(userId)) {
+      const member = memberMap.get(userId);
       map.set(userId, {
         userId,
-        userName: 'Unknown',
-        userEmail: '',
+        userName: member?.name || member?.email || 'Unknown',
+        userEmail: member?.email || '',
         assignedCount: 0,
         resolvedCount: 0,
         resolutionTimes: [] as number[],

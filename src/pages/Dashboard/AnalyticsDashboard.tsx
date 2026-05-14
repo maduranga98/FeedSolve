@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
 import { LoadingSpinner } from '../../components/Shared';
-import { getCompanySubmissions, getCompanyBoards } from '../../lib/firestore';
+import { getCompanySubmissions, getCompanyBoards, getCompanyMembers } from '../../lib/firestore';
 import { MetricCard } from '../../components/Analytics/MetricCard';
 import { TrendChart } from '../../components/Analytics/TrendChart';
 import { StatusChart } from '../../components/Analytics/StatusChart';
@@ -40,7 +40,7 @@ import {
 import { analyticsLevelAtLeast } from '../../lib/tier-limits';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
 import { getDateRangePreset, isDateInRange, type DateRange } from '../../lib/date-ranges';
-import type { Submission, Board } from '../../types';
+import type { Submission, Board, User } from '../../types';
 
 type Tab = 'overview' | 'full' | 'advanced';
 
@@ -93,6 +93,7 @@ export function AnalyticsDashboard() {
 
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [boards, setBoards] = useState<Board[]>([]);
+  const [members, setMembers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [dateRange, setDateRange] = useState<DateRange>(getDateRangePreset('30days'));
@@ -111,12 +112,14 @@ export function AnalyticsDashboard() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [subs, bds] = await Promise.all([
+        const [subs, bds, mems] = await Promise.all([
           getCompanySubmissions(user.companyId),
           getCompanyBoards(user.companyId),
+          getCompanyMembers(user.companyId),
         ]);
         setSubmissions(subs);
         setBoards(bds);
+        setMembers(mems);
       } catch (err) {
         console.error('Failed to fetch analytics data:', err);
       } finally {
@@ -133,8 +136,8 @@ export function AnalyticsDashboard() {
 
   // Core metrics (date-range filtered)
   const metrics = useMemo(
-    () => calculateAnalytics(submissions, dateRange),
-    [submissions, dateRange]
+    () => calculateAnalytics(submissions, dateRange, members),
+    [submissions, dateRange, members]
   );
 
   const filteredSubmissions = useMemo(
@@ -165,7 +168,7 @@ export function AnalyticsDashboard() {
     const rangeMs = dateRange.to.getTime() - dateRange.from.getTime();
     const prevTo = new Date(dateRange.from.getTime() - 1);
     const prevFrom = new Date(prevTo.getTime() - rangeMs);
-    const prevMetrics = calculateAnalytics(submissions, { from: prevFrom, to: prevTo });
+    const prevMetrics = calculateAnalytics(submissions, { from: prevFrom, to: prevTo }, members);
 
     const calcTrend = (current: number, previous: number) => {
       if (previous === 0) return { direction: 'neutral' as const, percentage: 0 };
@@ -182,12 +185,12 @@ export function AnalyticsDashboard() {
       avgTime: calcTrend(metrics.averageResolutionTime, prevMetrics.averageResolutionTime),
       resolved: calcTrend(metrics.resolvedSubmissions, prevMetrics.resolvedSubmissions),
     };
-  }, [submissions, dateRange, metrics]);
+  }, [submissions, dateRange, metrics, members]);
 
-  const handleExportPDF = async () => {
+  const handleExportPDF = async (options?: ReportOptions) => {
     try {
       setExportLoading(true);
-      await downloadPDFReport(metrics, dateRange, user?.name || '');
+      await downloadPDFReport(metrics, dateRange, user?.name || '', options);
     } catch (err) {
       console.error('PDF export failed:', err);
     } finally {
