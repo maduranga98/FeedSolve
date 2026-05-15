@@ -22,8 +22,8 @@ const Login = lazy(() => import('./pages/Auth/Login').then(m => ({ default: m.Lo
 const AcceptInvite = lazy(() => import('./pages/Auth/AcceptInvite').then(m => ({ default: m.AcceptInvite })));
 
 // Dashboard Pages
-const DashboardHome = lazy(() => import('./pages/Dashboard/DashboardHome').then(m => ({ default: m.DashboardHome })));
-const AnalyticsDashboard = lazy(() => import('./pages/Dashboard/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })));
+const DashboardHome = lazy(() => import('./pages/dashboard/DashboardHome').then(m => ({ default: m.DashboardHome })));
+const AnalyticsDashboard = lazy(() => import('./pages/dashboard/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })));
 const TeamManagement = lazy(() => import('./pages/Team/TeamManagement').then(m => ({ default: m.TeamManagement })));
 
 // Board Pages
@@ -35,8 +35,8 @@ const SubmissionDetail = lazy(() => import('./pages/Submission/SubmissionDetail'
 const SubmissionsPage = lazy(() => import('./pages/Submission/SubmissionsPage').then(m => ({ default: m.SubmissionsPage })));
 
 // Public Pages
-const SubmitFeedback = lazy(() => import('./pages/Public/SubmitFeedback').then(m => ({ default: m.SubmitFeedback })));
-const TrackingPage = lazy(() => import('./pages/Public/TrackingPage').then(m => ({ default: m.TrackingPage })));
+const SubmitFeedback = lazy(() => import('./pages/public/SubmitFeedback').then(m => ({ default: m.SubmitFeedback })));
+const TrackingPage = lazy(() => import('./pages/public/TrackingPage').then(m => ({ default: m.TrackingPage })));
 
 // Pricing Pages
 const PricingPage = lazy(() => import('./pages/Pricing/PricingPage').then(m => ({ default: m.PricingPage })));

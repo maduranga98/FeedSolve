@@ -3,7 +3,7 @@ import { collection, getDocs, limit, orderBy, query, where } from "firebase/fire
 import { db } from "../lib/firebase";
 import { getBoard, getCompany } from "../lib/firestore";
 import type { Submission } from "../types";
-import type { PublicSubmissionSummary } from "../components/Public/SubmissionListItem";
+import type { PublicSubmissionSummary } from "../components/public/SubmissionListItem";
 
 interface UseSubmissionsByEmailResult {
   submissions: PublicSubmissionSummary[];
