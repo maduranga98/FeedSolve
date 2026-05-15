@@ -257,7 +257,7 @@ export function AnalyticsDashboard() {
               <button
                 onClick={handleExportCSV}
                 disabled={exportLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-color-surface border border-color-border rounded-lg text-sm font-medium text-color-body-text hover:bg-color-bg disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[#EBF5FB] border border-[#C8DDE8] rounded-lg text-sm font-medium text-[#1E3A5F] hover:bg-[#2E86AB] hover:text-white hover:border-[#2E86AB] disabled:opacity-50 transition-colors"
               >
                 <Download size={15} />
                 CSV
@@ -282,8 +282,8 @@ export function AnalyticsDashboard() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-color-primary text-white shadow-sm'
-                  : 'text-color-body-text hover:bg-color-bg'
+                  ? 'bg-[#1E3A5F] text-white shadow-sm'
+                  : 'text-[#1E3A5F] bg-[#EBF5FB] hover:bg-[#2E86AB] hover:text-white'
               }`}
             >
               {tab.icon}
