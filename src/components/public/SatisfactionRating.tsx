@@ -69,10 +69,16 @@ interface SatisfactionRatingProps {
 export function SatisfactionRating({ value, onChange, error }: SatisfactionRatingProps) {
   const [hovered, setHovered] = useState<SatisfactionScore | null>(null);
 
+  const active = RATINGS.find((r) => r.score === (hovered ?? value)) ?? null;
+
   return (
     <div>
       <div
-        style={{ display: "flex", gap: 8 }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(5, 1fr)",
+          gap: 6,
+        }}
         role="group"
         aria-label="Satisfaction rating"
       >
@@ -91,26 +97,25 @@ export function SatisfactionRating({ value, onChange, error }: SatisfactionRatin
               onMouseEnter={() => setHovered(r.score)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                flex: 1,
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                gap: 6,
-                padding: "16px 4px 14px",
-                borderRadius: 14,
+                justifyContent: "center",
+                aspectRatio: "1 / 1",
+                padding: 0,
+                borderRadius: 12,
                 border: `2px solid ${highlight ? r.borderColor : "#E5E7EB"}`,
                 background: highlight ? r.gradientBg : "#FAFAFA",
                 cursor: "pointer",
                 transition: "all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 transform: isHovered
-                  ? "translateY(-5px) scale(1.07)"
+                  ? "translateY(-3px) scale(1.06)"
                   : isSelected
-                  ? "translateY(-3px) scale(1.04)"
+                  ? "translateY(-2px) scale(1.03)"
                   : "none",
                 boxShadow: isSelected
-                  ? `0 0 0 4px ${r.shadowColor}, 0 8px 24px ${r.shadowColor}`
+                  ? `0 0 0 3px ${r.shadowColor}, 0 6px 18px ${r.shadowColor}`
                   : isHovered
-                  ? `0 8px 20px ${r.shadowColor}`
+                  ? `0 6px 16px ${r.shadowColor}`
                   : "0 1px 3px rgba(0,0,0,0.06)",
                 outline: "none",
                 position: "relative",
@@ -120,48 +125,51 @@ export function SatisfactionRating({ value, onChange, error }: SatisfactionRatin
                 <span
                   style={{
                     position: "absolute",
-                    top: 7,
-                    right: 7,
-                    width: 8,
-                    height: 8,
+                    top: 5,
+                    right: 5,
+                    width: 7,
+                    height: 7,
                     borderRadius: "50%",
                     background: r.color,
-                    boxShadow: `0 0 0 2px white, 0 0 0 3px ${r.color}`,
+                    boxShadow: `0 0 0 2px white`,
                   }}
                 />
               )}
               <span
                 style={{
-                  fontSize: highlight ? "2.6rem" : "2.1rem",
+                  fontSize: "clamp(1.6rem, 7vw, 2.2rem)",
                   lineHeight: 1,
-                  transition: "font-size 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   display: "block",
                   filter: highlight ? "none" : "grayscale(15%) opacity(0.85)",
+                  transition: "filter 0.2s",
                 }}
               >
                 {r.emoji}
-              </span>
-              <span
-                style={{
-                  fontSize: "0.65rem",
-                  fontWeight: highlight ? 700 : 500,
-                  color: highlight ? r.color : "#9CA3AF",
-                  lineHeight: 1.25,
-                  textAlign: "center",
-                  transition: "color 0.15s, font-weight 0.15s",
-                  maxWidth: 52,
-                  wordBreak: "break-word",
-                }}
-              >
-                {r.label}
               </span>
             </button>
           );
         })}
       </div>
 
+      <div
+        style={{
+          marginTop: 10,
+          minHeight: 22,
+          textAlign: "center",
+          fontSize: "0.85rem",
+          fontWeight: 600,
+          color: active ? active.color : "#9CA3AF",
+          transition: "color 0.15s",
+        }}
+        aria-live="polite"
+      >
+        {active ? active.label : " "}
+      </div>
+
       {error && (
-        <p style={{ fontSize: "0.75rem", color: "#DC2626", marginTop: 8 }}>{error}</p>
+        <p style={{ fontSize: "0.75rem", color: "#DC2626", marginTop: 4, textAlign: "center" }}>
+          {error}
+        </p>
       )}
     </div>
   );
