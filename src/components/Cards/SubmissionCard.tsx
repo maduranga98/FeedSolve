@@ -26,6 +26,18 @@ const priorityLabel: Record<string, string> = {
   low: 'Low', medium: 'Medium', high: 'High', critical: 'Critical',
 };
 
+const satisfactionEmoji: Record<number, string> = {
+  1: '😠', 2: '😕', 3: '😐', 4: '😊', 5: '😄',
+};
+
+const satisfactionStyle: Record<number, string> = {
+  1: 'bg-[#FEE2E2] text-[#B91C1C]',
+  2: 'bg-[#FEF3C7] text-[#92400E]',
+  3: 'bg-[#F1F5F9] text-[#475569]',
+  4: 'bg-[#DBEAFE] text-[#1D4ED8]',
+  5: 'bg-[#DCFCE7] text-[#15803D]',
+};
+
 function SubmissionCardComponent({
   submission,
   onClick,
@@ -128,6 +140,16 @@ function SubmissionCardComponent({
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFF3F6] text-[#6B7B8D] text-[11px] font-medium flex-shrink-0">
               <MapPin size={10} />
               {submission.location}
+            </span>
+          )}
+
+          {submission.satisfactionScore != null && (
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0 ${satisfactionStyle[submission.satisfactionScore]}`}
+              title={submission.satisfactionLabel ?? undefined}
+            >
+              <span className="text-sm leading-none">{satisfactionEmoji[submission.satisfactionScore]}</span>
+              {submission.satisfactionLabel}
             </span>
           )}
 

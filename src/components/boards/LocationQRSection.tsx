@@ -20,16 +20,18 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
   const previewRef = useRef<HTMLCanvasElement | null>(null);
   const hiddenRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
 
+  const activeLocation = locations.includes(selectedLocation) ? selectedLocation : locations[0] || '';
+
   const selectedUrl = useMemo(
-    () => (selectedLocation ? buildLocationUrl(feedbackUrl, selectedLocation) : feedbackUrl),
-    [feedbackUrl, selectedLocation]
+    () => (activeLocation ? buildLocationUrl(feedbackUrl, activeLocation) : feedbackUrl),
+    [feedbackUrl, activeLocation]
   );
 
   const downloadSelected = async () => {
-    if (!previewRef.current || !selectedLocation) return;
+    if (!previewRef.current || !activeLocation) return;
     await downloadCanvasPng(
       previewRef.current,
-      `${filenameSafe(board.name)}-${filenameSafe(selectedLocation)}.png`
+      `${filenameSafe(board.name)}-${filenameSafe(activeLocation)}.png`
     );
   };
 
@@ -84,7 +86,7 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
           <label className="block">
             <span className="block text-sm font-medium text-[#1E3A5F] mb-1.5">Location</span>
             <select
-              value={selectedLocation}
+              value={activeLocation}
               onChange={(event) => setSelectedLocation(event.target.value)}
               className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg bg-white text-sm text-[#1E3A5F] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
             >
@@ -146,7 +148,7 @@ export function LocationQRSection({ board, feedbackUrl }: LocationQRSectionProps
           </div>
           <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFF3F6] text-[#6B7B8D] text-xs font-semibold">
             <MapPin size={12} />
-            {selectedLocation}
+            {activeLocation}
           </div>
         </div>
       </div>
