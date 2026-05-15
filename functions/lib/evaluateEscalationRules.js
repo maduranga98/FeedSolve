@@ -32,15 +32,21 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluateEscalationRules = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-const axios_1 = __importDefault(require("axios"));
+const nodemailer = __importStar(require("nodemailer"));
 const db = admin.firestore();
+const transporter = nodemailer.createTransport({
+    host: "mail.spacemail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: "hello@feedsolve.com",
+        pass: process.env.SMTP_PASS || "2_qY5u9z",
+    },
+});
 function hoursBetween(start, end) {
     if (!start)
         return 0;
@@ -96,21 +102,25 @@ function resolveComment(template, submission, hoursWaiting) {
         .replace(/{{\s*submissionId\s*}}/g, submission.trackingCode || submission.id || "submission")
         .replace(/{{\s*hoursWaiting\s*}}/g, String(Math.floor(hoursWaiting)));
 }
-async function sendBrevoEmails(recipients, rule, submission) {
+async function sendEscalationEmails(recipients, rule, submission) {
     if (!recipients?.length)
         return;
-    const apiKey = process.env.BREVO_API_KEY || functions.config().brevo?.api_key;
-    if (!apiKey) {
-        functions.logger.warn("Skipping escalation notification emails; BREVO_API_KEY is not configured.");
-        return;
+    const trackingRef = submission.trackingCode || submission.id || "submission";
+    const subject = submission.subject || "Untitled submission";
+    try {
+        await transporter.sendMail({
+            from: '"FeedSolve" <hello@feedsolve.com>',
+            to: recipients.join(", "),
+            subject: `Escalation rule triggered: ${rule.name}`,
+            text: `FeedSolve escalation rule "${rule.name}" triggered for submission ${trackingRef}.\n` +
+                `Subject: ${subject}`,
+            html: `<p>FeedSolve escalation rule <strong>${rule.name}</strong> triggered for submission ` +
+                `<strong>${trackingRef}</strong>.</p><p>Subject: ${subject}</p>`,
+        });
     }
-    await axios_1.default.post("https://api.brevo.com/v3/smtp/email", {
-        sender: { name: "FeedSolve", email: process.env.BREVO_FROM_EMAIL || "hello@feedsolve.com" },
-        to: recipients.map((email) => ({ email })),
-        subject: `Escalation rule triggered: ${rule.name}`,
-        htmlContent: `<p>FeedSolve escalation rule <strong>${rule.name}</strong> triggered for submission <strong>${submission.trackingCode || submission.id}</strong>.</p><p>Subject: ${submission.subject || "Untitled submission"}</p>`,
-        textContent: `FeedSolve escalation rule "${rule.name}" triggered for submission ${submission.trackingCode || submission.id}. Subject: ${submission.subject || "Untitled submission"}`,
-    }, { headers: { "api-key": apiKey, "content-type": "application/json" } });
+    catch (error) {
+        functions.logger.warn("Failed to send escalation notification email", { error, ruleId: rule.id });
+    }
 }
 async function applyRule(companyId, ruleRef, rule, submissionRef, submission, now) {
     const actionsTaken = [];
@@ -149,7 +159,7 @@ async function applyRule(companyId, ruleRef, rule, submissionRef, submission, no
         });
         actionsTaken.push("Internal comment added");
     }
-    await sendBrevoEmails(rule.actions.notifyEmails, rule, submission);
+    await sendEscalationEmails(rule.actions.notifyEmails, rule, submission);
     if (rule.actions.notifyEmails?.length) {
         actionsTaken.push(`Notified ${rule.actions.notifyEmails.length} teammate${rule.actions.notifyEmails.length === 1 ? "" : "s"}`);
     }
