@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as nodemailer from "nodemailer";
+import {renderBoardCycleEmail} from "./email-templates";
 
 interface BoardData {
   companyId: string;
@@ -105,12 +106,18 @@ async function notifyBoardOwner(
   if (!companyEmail) return;
 
   try {
+    const configuredUrl = process.env.APP_URL || "";
+    const appUrl = /localhost/i.test(configuredUrl)
+      ? "https://app.feedsolve.com"
+      : configuredUrl || "https://app.feedsolve.com";
+    const dashboardUrl = `${appUrl.replace(/\/$/, "")}/dashboard`;
+    const email = renderBoardCycleEmail({boardName: board.name, dashboardUrl});
     await transporter.sendMail({
       from: '"FeedSolve" <hello@feedsolve.com>',
       to: companyEmail,
-      subject: `Your board "${board.name}" started a new cycle`,
-      text: `Your board "${board.name}" started a new cycle. Previous submissions remain archived and viewable in FeedSolve.`,
-      html: `<p>Your board <strong>${board.name}</strong> started a new cycle.</p><p>Previous submissions remain archived and viewable in FeedSolve.</p>`,
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
     });
   } catch (error) {
     functions.logger.warn("Failed to send board cycle notification", {

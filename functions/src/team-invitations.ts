@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as nodemailer from "nodemailer";
+import {renderInvitationEmail} from "./email-templates";
 
 interface TeamInvitation {
   companyId: string;
@@ -47,12 +48,17 @@ export const onTeamInvitationCreated = functions.firestore
     const inviteLink = `${appUrl.replace(/\/$/, "")}/accept-invite?id=${snap.id}`;
 
     try {
+      const email = renderInvitationEmail({
+        inviterName,
+        role: invitation.role,
+        inviteUrl: inviteLink,
+      });
       await transporter.sendMail({
         from: '"FeedSolve" <hello@feedsolve.com>',
         to: invitation.email,
-        subject: "You are invited to join a team on FeedSolve",
-        text: `${inviterName} invited you to join FeedSolve as ${invitation.role}.\n\nAccept invitation: ${inviteLink}\n\nIf you weren’t expecting this invitation, you can ignore this email.`,
-        html: `<p>${inviterName} invited you to join FeedSolve as <strong>${invitation.role}</strong>.</p><p><a href="${inviteLink}">Accept invitation</a></p> <p style="color: #555; font-size: 14px;">This invitation is linked to your email. If you weren’t expecting it, you can safely ignore this message.</p><p style="margin-top: 32px;">—<br/>FeedSolve Team<br/><span style="color: #777; font-size: 13px;">Collect feedback. Resolve it fast.</span></p>`,
+        subject: email.subject,
+        text: email.text,
+        html: email.html,
       });
 
       await snap.ref.update({
