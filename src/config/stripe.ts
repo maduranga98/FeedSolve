@@ -3,24 +3,24 @@
 
 export const STRIPE_PRODUCTS = {
   FREE_TRIAL: {
-    id: "prod_UPfBtbKlc6hBuK",
+    id: "prod_USJ6nsHahCoXXT",
     prices: {
-      oneTime: "price_1TQprFQQchLsdaEfltktbPsK",
+      oneTime: "price_1TTOUYKKYKi1ENnWi9iP7nCa",
     },
   },
   STARTER: {
-    id: "prod_UPfHVaUZZpAXz5",
+    id: "prod_USJGbuK0xaqgdD",
     name: "Starter",
     monthlyPrice: "$19",
     annualPrice: "$182.4",
     features: ["3 boards", "1,500 submissions/month", "3 team members"],
     prices: {
-      monthly: "price_1TQpweQQchLsdaEfeIg5uZ2A",
-      annual: "price_1TQpweQQchLsdaEfzijJNcqm",
+      monthly: "price_1TTOeDKKYKi1ENnWB8xsFV63",
+      annual: "price_1TTOeDKKYKi1ENnWheWG3xLG",
     },
   },
   GROWTH: {
-    id: "prod_UPfJZboIYY9UKJ",
+    id: "prod_USJ9qlXreHgbe7",
     name: "Growth",
     monthlyPrice: "$49",
     annualPrice: "$470.4",
@@ -32,12 +32,12 @@ export const STRIPE_PRODUCTS = {
       "Submitter replies",
     ],
     prices: {
-      monthly: "price_1TQpyZQQchLsdaEfY5UPPMRL",
-      annual: "price_1TQpyZQQchLsdaEf6PmISi15",
+      monthly: "price_1TTOXUKKYKi1ENnW9aZVhzOX",
+      annual: "price_1TTOYGKKYKi1ENnWJknmLvUy",
     },
   },
   BUSINESS: {
-    id: "prod_UPfKZraG2EOj25",
+    id: "prod_USJKKdXE2IkAxR",
     name: "Business",
     monthlyPrice: "$79",
     annualPrice: "$758.4",
@@ -49,11 +49,13 @@ export const STRIPE_PRODUCTS = {
       "API access",
     ],
     prices: {
-      monthly: "price_1TQq0KQQchLsdaEf0RQA54Kb",
-      annual: "price_1TQq0KQQchLsdaEfEsV7xMaa",
+      monthly: "price_1TTOhdKKYKi1ENnWKVKiF4Tu",
+      annual: "price_1TTOhdKKYKi1ENnWLm5GmPOx",
     },
   },
 };
 
 // Public Stripe key (Vite env var — set VITE_STRIPE_PUBLIC_KEY in .env)
-export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY as string | undefined;
+export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY as
+  | string
+  | undefined;
