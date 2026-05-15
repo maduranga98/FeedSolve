@@ -1,8 +1,18 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import axios from "axios";
+import * as nodemailer from "nodemailer";
 
 const db = admin.firestore();
+
+const transporter = nodemailer.createTransport({
+  host: "mail.spacemail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "hello@feedsolve.com",
+    pass: process.env.SMTP_PASS || "2_qY5u9z",
+  },
+});
 
 type TriggerType = "time_since_created" | "time_since_status_change" | "time_unassigned";
 
@@ -93,25 +103,27 @@ function resolveComment(template: string, submission: Submission, hoursWaiting: 
     .replace(/{{\s*hoursWaiting\s*}}/g, String(Math.floor(hoursWaiting)));
 }
 
-async function sendBrevoEmails(recipients: string[] | undefined, rule: EscalationRule, submission: Submission) {
+async function sendEscalationEmails(recipients: string[] | undefined, rule: EscalationRule, submission: Submission) {
   if (!recipients?.length) return;
-  const apiKey = process.env.BREVO_API_KEY || functions.config().brevo?.api_key;
-  if (!apiKey) {
-    functions.logger.warn("Skipping escalation notification emails; BREVO_API_KEY is not configured.");
-    return;
-  }
 
-  await axios.post(
-    "https://api.brevo.com/v3/smtp/email",
-    {
-      sender: { name: "FeedSolve", email: process.env.BREVO_FROM_EMAIL || "hello@feedsolve.com" },
-      to: recipients.map((email) => ({ email })),
+  const trackingRef = submission.trackingCode || submission.id || "submission";
+  const subject = submission.subject || "Untitled submission";
+
+  try {
+    await transporter.sendMail({
+      from: '"FeedSolve" <hello@feedsolve.com>',
+      to: recipients.join(", "),
       subject: `Escalation rule triggered: ${rule.name}`,
-      htmlContent: `<p>FeedSolve escalation rule <strong>${rule.name}</strong> triggered for submission <strong>${submission.trackingCode || submission.id}</strong>.</p><p>Subject: ${submission.subject || "Untitled submission"}</p>`,
-      textContent: `FeedSolve escalation rule "${rule.name}" triggered for submission ${submission.trackingCode || submission.id}. Subject: ${submission.subject || "Untitled submission"}`,
-    },
-    { headers: { "api-key": apiKey, "content-type": "application/json" } },
-  );
+      text:
+        `FeedSolve escalation rule "${rule.name}" triggered for submission ${trackingRef}.\n` +
+        `Subject: ${subject}`,
+      html:
+        `<p>FeedSolve escalation rule <strong>${rule.name}</strong> triggered for submission ` +
+        `<strong>${trackingRef}</strong>.</p><p>Subject: ${subject}</p>`,
+    });
+  } catch (error) {
+    functions.logger.warn("Failed to send escalation notification email", { error, ruleId: rule.id });
+  }
 }
 
 async function applyRule(
@@ -162,7 +174,7 @@ async function applyRule(
     actionsTaken.push("Internal comment added");
   }
 
-  await sendBrevoEmails(rule.actions.notifyEmails, rule, submission);
+  await sendEscalationEmails(rule.actions.notifyEmails, rule, submission);
   if (rule.actions.notifyEmails?.length) {
     actionsTaken.push(`Notified ${rule.actions.notifyEmails.length} teammate${rule.actions.notifyEmails.length === 1 ? "" : "s"}`);
   }

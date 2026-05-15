@@ -2,9 +2,20 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import axios from "axios";
 import crypto from "crypto";
+import * as nodemailer from "nodemailer";
 
 const db = admin.firestore();
 const MAX_RETRIES = 3;
+
+const transporter = nodemailer.createTransport({
+  host: "mail.spacemail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "hello@feedsolve.com",
+    pass: process.env.SMTP_PASS || "2_qY5u9z",
+  },
+});
 
 interface Submission {
   id: string;
@@ -187,34 +198,21 @@ async function sendEmailNotification(
   const htmlContent = buildEmailHtml(submission, eventType);
   const textContent = buildEmailText(submission, eventType);
 
-  const apiKey = process.env.BREVO_API_KEY || functions.config().brevo?.api_key;
-  if (!apiKey) {
-    console.warn("BREVO_API_KEY not configured; skipping webhook email notification.");
-    return;
-  }
-
   try {
-    const response = await axios.post(
-      "https://api.brevo.com/v3/smtp/email",
-      {
-        sender: {
-          name: "FeedSolve",
-          email: process.env.BREVO_FROM_EMAIL || "hello@feedsolve.com",
-        },
-        to: recipients.map((email) => ({ email })),
-        subject,
-        htmlContent,
-        textContent,
-      },
-      { headers: { "api-key": apiKey, "content-type": "application/json" } },
-    );
+    await transporter.sendMail({
+      from: '"FeedSolve" <hello@feedsolve.com>',
+      to: recipients.join(", "),
+      subject,
+      html: htmlContent,
+      text: textContent,
+    });
 
     await logWebhookEvent(
       submission.companyId,
       "email",
       eventType,
       "success",
-      response.status,
+      250,
       undefined,
       JSON.stringify({ submission: submission.id, recipients }),
     );
