@@ -30,7 +30,9 @@ import {
   User,
   Paperclip,
   Star,
+  Download,
 } from "lucide-react";
+import { downloadSubmissionReceiptPdf } from "../../lib/submission-receipt";
 
 type Step = "intro" | "form" | "success";
 
@@ -208,6 +210,7 @@ export function SubmitFeedback() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState<{ trackingCode: string } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [downloadingReceipt, setDownloadingReceipt] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [existingTrackingCode, setExistingTrackingCode] = useState("");
   const locationTag = searchParams.get("loc")?.trim() || null;
@@ -334,6 +337,32 @@ export function SubmitFeedback() {
     i18n.changeLanguage(lang);
     localStorage.setItem("feedsolve_language", lang);
     applyTextDirection(lang);
+  };
+
+  const handleDownloadReceipt = async () => {
+    if (!success) return;
+    try {
+      setDownloadingReceipt(true);
+      const code = success.trackingCode.replace(/^#/, "");
+      const trackingUrl = `${window.location.origin}/track/${code}`;
+      await downloadSubmissionReceiptPdf({
+        trackingCode: success.trackingCode,
+        trackingUrl,
+        boardName: board?.name,
+        submittedAt: new Date(),
+        companyName: branding?.companyName || company?.name,
+        companyLogoUrl: branding?.logoUrl ?? null,
+        companyPrimaryColor: branding?.primaryColor ?? null,
+        companySecondaryColor: branding?.secondaryColor ?? null,
+        companyContactEmail: branding?.contactEmail ?? null,
+        companyContactNumber: branding?.contactNumber ?? null,
+        companyAddress: branding?.address ?? null,
+      });
+    } catch (error) {
+      console.error("Failed to download receipt:", error);
+    } finally {
+      setDownloadingReceipt(false);
+    }
   };
 
   const handleCopyCode = () => {
@@ -657,6 +686,33 @@ export function SubmitFeedback() {
               >
                 {t("forms:feedback.track_feedback")}
               </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadReceipt}
+                disabled={downloadingReceipt}
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold rounded-xl transition-all mb-3 border-2 disabled:opacity-60"
+                style={{
+                  borderColor: "var(--brand-primary, #2E86AB)",
+                  color: "var(--brand-primary, #2E86AB)",
+                  background: "white",
+                }}
+              >
+                {downloadingReceipt ? (
+                  <>
+                    <span className="brand-spinner" style={{ borderTopColor: "var(--brand-primary, #2E86AB)", borderColor: "rgba(46,134,171,0.25)" }} />
+                    <span>Preparing PDF…</span>
+                  </>
+                ) : (
+                  <>
+                    <Download size={16} />
+                    <span>Download PDF receipt</span>
+                  </>
+                )}
+              </button>
+              <p className="text-xs text-[#9AABBF] mb-1 -mt-1">
+                Includes your tracking link and passcode so you can check progress later.
+              </p>
 
               <button
                 onClick={() => {

@@ -11,6 +11,8 @@ import { PriorityChart } from '../../components/Analytics/PriorityChart';
 import { CategoryChart } from '../../components/Analytics/CategoryChart';
 import { SourceChart } from '../../components/Analytics/SourceChart';
 import { LocationChart } from '../../components/Analytics/LocationChart';
+import { LocationComparisonChart } from '../../components/Analytics/LocationComparisonChart';
+import { DateRangePicker } from '../../components/Analytics/DateRangePicker';
 import { ReportBuilder, type ReportOptions } from '../../components/Analytics/ReportBuilder';
 import { calculateAnalytics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
@@ -159,14 +161,17 @@ export function AnalyticsDashboard() {
     <main className="min-h-screen bg-[#E1E8EF]">
       <div className="bg-white border-b border-[#E8ECF0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-              <TrendingUp size={20} className="text-[#2E86AB]" />
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
+                <TrendingUp size={20} className="text-[#2E86AB]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">Analytics & Reports</h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">Track submissions, performance, and trends</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-[#1E3A5F]">Analytics & Reports</h1>
-              <p className="text-sm text-[#6B7B8D] mt-0.5">Track submissions, performance, and trends</p>
-            </div>
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
           </div>
         </div>
       </div>
@@ -223,6 +228,10 @@ export function AnalyticsDashboard() {
             loading={false}
           />
           <LocationChart data={submissionsByLocation} />
+        </div>
+
+        <div className="grid grid-cols-1 gap-8 mb-8">
+          <LocationComparisonChart submissions={filteredSubmissions} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
