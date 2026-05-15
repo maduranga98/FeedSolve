@@ -16,6 +16,8 @@ const statusOptions = [
   { value: 'in_review', label: 'In Review' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'escalated', label: 'Escalated' },
+  { value: 'resolved', label: 'Resolved' },
+  { value: 'closed', label: 'Closed' },
 ];
 
 const triggerOptions: Array<{ value: EscalationTriggerType; label: string; preview: string }> = [
@@ -160,7 +162,7 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
           {step === 3 && (
             <div className="space-y-5">
               <fieldset><legend className="mb-2 text-sm font-semibold text-[#1E3A5F]">Priority filter</legend><div className="grid gap-2 sm:grid-cols-4">{priorityOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.priority?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, priority: toggleArrayValue(rule.conditions.priority, option.value) } })} />{option.label}</label>)}</div></fieldset>
-              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1E3A5F]">Status filter</legend><div className="grid gap-2 sm:grid-cols-4">{statusOptions.slice(0, 3).map((option) => <label key={option.value} className="rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.status?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, status: toggleArrayValue(rule.conditions.status, option.value) } })} />{option.label}</label>)}</div></fieldset>
+              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1E3A5F]">Status filter</legend><div className="grid gap-2 sm:grid-cols-3">{statusOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.status?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, status: toggleArrayValue(rule.conditions.status, option.value) } })} />{option.label}</label>)}</div></fieldset>
               <label className="inline-flex items-center gap-2 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#1E3A5F]"><input type="checkbox" checked={rule.conditions.isUnassigned ?? false} onChange={(event) => setRule({ ...rule, conditions: { ...rule.conditions, isUnassigned: event.target.checked } })} /> Unassigned only</label>
             </div>
           )}

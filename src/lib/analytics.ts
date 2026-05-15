@@ -550,6 +550,42 @@ export function calculateFunnelData(submissions: Submission[]): FunnelStage[] {
   });
 }
 
+// ─── Satisfaction Metrics ─────────────────────────────────────────────────────
+
+export interface SatisfactionMetrics {
+  totalRatings: number;
+  averageScore: number;
+  scoreDistribution: Record<number, number>;
+  satisfactionRate: number;
+}
+
+export function calculateSatisfactionMetrics(submissions: Submission[]): SatisfactionMetrics {
+  const rated = submissions.filter((s) => s.satisfactionScore != null && s.satisfactionScore > 0);
+  const scoreDistribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+  rated.forEach((s) => {
+    if (s.satisfactionScore) {
+      scoreDistribution[s.satisfactionScore] = (scoreDistribution[s.satisfactionScore] || 0) + 1;
+    }
+  });
+
+  const totalRatings = rated.length;
+  const averageScore =
+    totalRatings > 0
+      ? rated.reduce((sum, s) => sum + (s.satisfactionScore || 0), 0) / totalRatings
+      : 0;
+
+  const satisfied = (scoreDistribution[4] || 0) + (scoreDistribution[5] || 0);
+  const satisfactionRate = totalRatings > 0 ? (satisfied / totalRatings) * 100 : 0;
+
+  return {
+    totalRatings,
+    averageScore: Math.round(averageScore * 10) / 10,
+    scoreDistribution,
+    satisfactionRate: Math.round(satisfactionRate * 10) / 10,
+  };
+}
+
 // ─── Color Helpers ────────────────────────────────────────────────────────────
 
 export function getStatusColor(status: string): string {

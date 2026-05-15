@@ -14,7 +14,8 @@ import { LocationChart } from '../../components/Analytics/LocationChart';
 import { LocationComparisonChart } from '../../components/Analytics/LocationComparisonChart';
 import { DateRangePicker } from '../../components/Analytics/DateRangePicker';
 import { ReportBuilder, type ReportOptions } from '../../components/Analytics/ReportBuilder';
-import { calculateAnalytics } from '../../lib/analytics';
+import { SatisfactionAnalysisCard } from '../../components/Analytics/SatisfactionAnalysisCard';
+import { calculateAnalytics, calculateSatisfactionMetrics } from '../../lib/analytics';
 import { downloadPDFReport, downloadCSV } from '../../lib/export-report';
 import { downloadTextFile } from '../../lib/download';
 import { getDateRangePreset, isDateInRange, type DateRange } from '../../lib/date-ranges';
@@ -88,7 +89,7 @@ export function AnalyticsDashboard() {
     return acc;
   }, {} as Record<string, string>);
   const submissionsByLocation = Object.entries(
-    submissions.reduce((acc, submission) => {
+    filteredSubmissions.reduce((acc, submission) => {
       if (submission.location) {
         acc[submission.location] = (acc[submission.location] || 0) + 1;
       }
@@ -97,6 +98,8 @@ export function AnalyticsDashboard() {
   )
     .map(([location, count]) => ({ location, count }))
     .sort((a, b) => b.count - a.count);
+
+  const satisfactionMetrics = calculateSatisfactionMetrics(filteredSubmissions);
 
   const handleExportPDF = async (options?: ReportOptions) => {
     try {
@@ -232,6 +235,11 @@ export function AnalyticsDashboard() {
 
         <div className="grid grid-cols-1 gap-8 mb-8">
           <LocationComparisonChart submissions={filteredSubmissions} />
+        </div>
+
+        {/* Satisfaction Analysis */}
+        <div className="mb-8">
+          <SatisfactionAnalysisCard metrics={satisfactionMetrics} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
