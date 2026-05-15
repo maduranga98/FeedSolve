@@ -95,7 +95,7 @@ async function resolveAssignee(companyId, assignTo) {
     return owners.docs[0]?.id;
 }
 function titleCase(value) {
-    return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()).replace("Medium", "Normal");
+    return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 function resolveComment(template, submission, hoursWaiting) {
     return template
