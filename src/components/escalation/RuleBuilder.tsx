@@ -7,7 +7,7 @@ import { getRuleSummary } from './RuleCard';
 const priorityOptions = [
   { value: 'critical', label: 'Critical' },
   { value: 'high', label: 'High' },
-  { value: 'medium', label: 'Normal' },
+  { value: 'medium', label: 'Medium' },
   { value: 'low', label: 'Low' },
 ];
 
@@ -78,7 +78,7 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
 
   const triggerPreview = triggerOptions.find((option) => option.value === rule.trigger.type)?.preview ?? 'matches for';
   const activeActions = [
-    rule.actions.changePriority ? `change priority to ${rule.actions.changePriority === 'medium' ? 'Normal' : rule.actions.changePriority}` : null,
+    rule.actions.changePriority ? `change priority to ${rule.actions.changePriority}` : null,
     rule.actions.changeStatus ? `move status to ${rule.actions.changeStatus.replace(/_/g, ' ')}` : null,
     rule.actions.assignTo ? `assign it to ${rule.actions.assignTo === 'board_owner' ? 'the Board Owner' : teamMembers.find((member) => member.userId === rule.actions.assignTo)?.name ?? 'a teammate'}` : null,
     rule.actions.notifyEmails?.length ? `notify ${rule.actions.notifyEmails.join(', ')}` : null,

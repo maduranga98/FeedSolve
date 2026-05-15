@@ -94,7 +94,7 @@ async function resolveAssignee(companyId: string, assignTo: string | undefined) 
 }
 
 function titleCase(value: string) {
-  return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()).replace("Medium", "Normal");
+  return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 function resolveComment(template: string, submission: Submission, hoursWaiting: number) {

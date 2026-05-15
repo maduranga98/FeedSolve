@@ -9,7 +9,7 @@ const triggerCopy: Record<EscalationRule['trigger']['type'], string> = {
 };
 
 function labelize(value: string) {
-  return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()).replace('Medium', 'Normal');
+  return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export function getRuleSummary(rule: EscalationRule) {
