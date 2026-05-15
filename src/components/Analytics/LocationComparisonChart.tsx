@@ -133,7 +133,7 @@ export function LocationComparisonChart({ submissions, maxLocations = 8 }: Locat
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 metric === opt.key
                   ? 'bg-[#2E86AB] text-white'
-                  : 'text-[#6B7B8D] hover:text-[#1E3A5F]'
+                  : 'bg-[#F1F5F8] text-[#1E3A5F] hover:bg-[#2E86AB] hover:text-white'
               }`}
             >
               {opt.label}

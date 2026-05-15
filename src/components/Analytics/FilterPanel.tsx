@@ -189,7 +189,7 @@ export function FilterPanel({
           {onClose && (
             <button
               onClick={onClose}
-              className="w-full mt-4 px-4 py-2 text-sm font-medium text-color-body-text border border-color-border rounded hover:bg-color-bg"
+              className="w-full mt-4 px-4 py-2 text-sm font-medium text-[#1E3A5F] bg-[#EBF5FB] border border-[#C8DDE8] rounded hover:bg-[#1E3A5F] hover:text-white hover:border-[#1E3A5F] transition-colors"
             >
               Done
             </button>

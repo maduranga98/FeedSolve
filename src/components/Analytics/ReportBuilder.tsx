@@ -116,7 +116,7 @@ export function ReportBuilder({
         <button
           onClick={handleGenerateReport}
           disabled={loading || noneSelected}
-          className="w-full px-4 py-2 bg-color-primary text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full px-4 py-2 bg-[#1E3A5F] text-white rounded-lg font-medium hover:bg-[#2E86AB] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           Generate Custom Report ({selectedCount} section{selectedCount === 1 ? '' : 's'})
@@ -125,7 +125,7 @@ export function ReportBuilder({
         <button
           onClick={() => onExportPDF(options)}
           disabled={loading}
-          className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full px-4 py-2 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E3A5F] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           Export as PDF
@@ -134,7 +134,7 @@ export function ReportBuilder({
         <button
           onClick={onExportCSV}
           disabled={loading}
-          className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full px-4 py-2 bg-[#EBF5FB] text-[#1E3A5F] border border-[#C8DDE8] rounded-lg font-medium hover:bg-[#2E86AB] hover:text-white hover:border-[#2E86AB] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           Export Submissions as CSV
