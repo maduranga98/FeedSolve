@@ -9,8 +9,8 @@ import {
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
-import { SatisfactionRating } from "../../components/Public/SatisfactionRating";
-import type { SatisfactionScore } from "../../components/Public/SatisfactionRating";
+import { SatisfactionRating } from "../../components/public/SatisfactionRating";
+import type { SatisfactionScore } from "../../components/public/SatisfactionRating";
 import {
   FileUploadInput,
   FilePreview,

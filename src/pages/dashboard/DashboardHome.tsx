@@ -4,7 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { getCompanyBoards, deleteBoard, updateBoard, addAuditLog } from "../../lib/firestore";
 import type { Board } from "../../types";
 import { LoadingSpinner, Button } from "../../components/Shared";
-import { UsageOverview } from "../../components/Dashboard/UsageOverview";
+import { UsageOverview } from "../../components/dashboard/UsageOverview";
 import {
   Plus,
   QrCode,

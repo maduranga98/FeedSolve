@@ -7,8 +7,8 @@ import { AttachmentGallery } from "../../components/Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
 import type { Submission, Board, Company } from "../../types";
 import { Badge, LoadingSpinner, Button, Input } from "../../components/Shared";
-import { TrackByCode } from "../../components/Public/TrackByCode";
-import { FindByEmail } from "../../components/Public/FindByEmail";
+import { TrackByCode } from "../../components/public/TrackByCode";
+import { FindByEmail } from "../../components/public/FindByEmail";
 import { formatDate, getStatusLabel } from "../../lib/utils";
 import {
   Lock,
