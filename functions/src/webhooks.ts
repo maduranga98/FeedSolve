@@ -182,27 +182,41 @@ async function sendEmailNotification(
   eventType: string,
   emailConfig: Record<string, unknown>,
 ): Promise<void> {
-  try {
-    const subject = buildEmailSubject(submission, eventType);
+  const recipients = emailConfig.recipients as string[];
+  const subject = buildEmailSubject(submission, eventType);
+  const htmlContent = buildEmailHtml(submission, eventType);
+  const textContent = buildEmailText(submission, eventType);
 
-    // TODO: Implement email sending via Brevo, SendGrid, or Firebase Extensions
-    // For MVP, log the intention to send
-    console.log(
-      `Email would be sent to: ${(emailConfig.recipients as string[]).join(", ")}`,
+  const apiKey = process.env.BREVO_API_KEY || functions.config().brevo?.api_key;
+  if (!apiKey) {
+    console.warn("BREVO_API_KEY not configured; skipping webhook email notification.");
+    return;
+  }
+
+  try {
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "FeedSolve",
+          email: process.env.BREVO_FROM_EMAIL || "hello@feedsolve.com",
+        },
+        to: recipients.map((email) => ({ email })),
+        subject,
+        htmlContent,
+        textContent,
+      },
+      { headers: { "api-key": apiKey, "content-type": "application/json" } },
     );
-    console.log(`Subject: ${subject}`);
 
     await logWebhookEvent(
       submission.companyId,
       "email",
       eventType,
       "success",
-      200,
+      response.status,
       undefined,
-      JSON.stringify({
-        submission: submission.id,
-        recipients: emailConfig.recipients,
-      }),
+      JSON.stringify({ submission: submission.id, recipients }),
     );
   } catch (error) {
     const errorMessage =
@@ -428,6 +442,84 @@ function buildEmailSubject(submission: Submission, eventType: string): string {
   };
 
   return `[FeedSolve] ${eventMap[eventType] || "Feedback Update"} - ${submission.subject}`;
+}
+
+function buildEmailHtml(submission: Submission, eventType: string): string {
+  const title = getEventTitle(eventType);
+  const statusLabel = submission.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const priorityLabel = submission.priority.charAt(0).toUpperCase() + submission.priority.slice(1);
+
+  return `<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#F1F5F8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#3B4A5A;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F1F5F8;padding:32px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(30,58,95,0.08);border:1px solid #E3EDF4;">
+        <tr>
+          <td style="background:linear-gradient(135deg,#2E86AB 0%,#1E3A5F 100%);padding:20px 28px;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="font-size:20px;font-weight:800;color:#fff;">FeedSolve</td>
+                <td align="right" style="font-size:10px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Collect. Resolve. Grow.</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 32px 20px;">
+            <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#1E3A5F;">${title}</h1>
+            <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3B4A5A;">A submission on your FeedSolve board requires your attention.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F8FAFB;border-radius:10px;padding:16px 18px;margin-bottom:20px;">
+              <tr><td style="padding-bottom:8px;">
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#2E86AB;margin-bottom:4px;">Submission</div>
+                <div style="font-size:15px;font-weight:600;color:#1E3A5F;">${submission.subject}</div>
+                <div style="font-size:12px;color:#7A8896;margin-top:2px;">#${submission.trackingCode}</div>
+              </td></tr>
+              <tr><td>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td width="33%" style="padding-top:10px;">
+                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Status</div>
+                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${statusLabel}</div>
+                    </td>
+                    <td width="33%" style="padding-top:10px;">
+                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Priority</div>
+                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${priorityLabel}</div>
+                    </td>
+                    <td width="33%" style="padding-top:10px;">
+                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Category</div>
+                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${submission.category}</div>
+                    </td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px 24px;border-top:1px solid #EEF3F7;text-align:center;">
+            <div style="font-size:12px;font-weight:700;color:#1E3A5F;margin-bottom:4px;">FeedSolve</div>
+            <div style="font-size:11px;color:#7A8896;">Collect feedback. Resolve it fast. · <a href="https://feedsolve.com" style="color:#2E86AB;text-decoration:none;">feedsolve.com</a></div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildEmailText(submission: Submission, eventType: string): string {
+  const title = getEventTitle(eventType);
+  return (
+    `FeedSolve — ${title}\n\n` +
+    `Submission: ${submission.subject} (#${submission.trackingCode})\n` +
+    `Status: ${submission.status}\n` +
+    `Priority: ${submission.priority}\n` +
+    `Category: ${submission.category}\n\n` +
+    `— FeedSolve · Collect feedback. Resolve it fast. · feedsolve.com`
+  );
 }
 
 function createHmacSignature(
