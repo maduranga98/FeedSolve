@@ -38,7 +38,7 @@ export const STRIPE_PRODUCTS = {
   },
   BUSINESS: {
     id: "prod_USJKKdXE2IkAxR",
-    name: "Business",
+    name: "Pro",
     monthlyPrice: "$79",
     annualPrice: "$758.4",
     features: [

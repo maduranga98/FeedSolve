@@ -47,7 +47,7 @@ export function InstructionsAndGuidance() {
           <div>
             <h3 className="font-semibold text-[#1E3A5F] mb-2">Custom Branding</h3>
             <p>
-              Available in Growth and Business plans, customize your feedback forms with your brand
+              Available in Growth and Pro plans, customize your feedback forms with your brand
               colors and logo to maintain consistency with your website and branding guidelines.
             </p>
           </div>
@@ -195,7 +195,7 @@ export function InstructionsAndGuidance() {
                   Can I export my data?
                 </p>
                 <p className="text-sm text-[#6B7B8D]">
-                  Growth and Business plans offer CSV export for advanced analytics. Contact us for
+                  Growth and Pro plans offer CSV export for advanced analytics. Contact us for
                   enterprise data export solutions.
                 </p>
               </div>

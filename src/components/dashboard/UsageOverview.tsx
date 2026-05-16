@@ -8,7 +8,7 @@ const TIER_LABELS: Record<string, { label: string; color: string }> = {
   free:     { label: 'Trial',    color: 'bg-[#F0F4F8] text-[#4A6274]' },
   starter:  { label: 'Starter',  color: 'bg-[#EBF5FB] text-[#2E86AB]' },
   growth:   { label: 'Growth',   color: 'bg-[#E8F8F0] text-[#1E8449]' },
-  business: { label: 'Business', color: 'bg-[#F4ECF7] text-[#7D3C98]' },
+  business: { label: 'Pro',      color: 'bg-[#F4ECF7] text-[#7D3C98]' },
 };
 
 export function UsageOverview() {

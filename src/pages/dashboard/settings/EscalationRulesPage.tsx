@@ -96,7 +96,7 @@ export function EscalationRulesPage() {
               <Lock className="mt-0.5 flex-shrink-0" size={20} />
               <div>
                 <h2 className="font-bold">Escalation rules are available on Growth plan</h2>
-                <p className="mt-1 text-sm">Your current {tier} plan can preview this page, but rules can only be created or activated on Growth and Business tiers.</p>
+                <p className="mt-1 text-sm">Your current {tier} plan can preview this page, but rules can only be created or activated on Growth and Pro tiers.</p>
               </div>
             </div>
           </div>

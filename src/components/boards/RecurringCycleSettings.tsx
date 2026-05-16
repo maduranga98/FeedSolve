@@ -81,7 +81,7 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
 
       {!allowed ? (
         <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-[#F1F5F8] p-4 text-sm text-[#6B7B8D]">
-          Recurring cycles are available on Growth and Business plans.
+          Recurring cycles are available on Growth and Pro plans.
         </div>
       ) : (
         <div className="space-y-4">
