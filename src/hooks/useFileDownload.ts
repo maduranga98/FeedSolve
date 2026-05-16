@@ -25,13 +25,21 @@ export function useFileDownload(): UseFileDownloadReturn {
           throw new Error(result.error || 'Failed to download file');
         }
 
-        // Create a temporary link and trigger download
+        // Fetch as blob so the browser honors the desired filename
+        // (cross-origin URLs ignore the `download` attribute otherwise).
+        const response = await fetch(result.url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch file (${response.status})`);
+        }
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = result.url;
+        link.href = objectUrl;
         link.download = attachment.filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        URL.revokeObjectURL(objectUrl);
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : 'Download failed';
         setError(errorMsg);

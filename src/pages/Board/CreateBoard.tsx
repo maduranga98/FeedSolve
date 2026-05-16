@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
+import { useUsage } from '../../hooks/useUsage';
 import { createBoard, getTemplate, addAuditLog, incrementTemplateUsage } from '../../lib/firestore';
 import { Button, Input } from '../../components/Shared';
 import type { BoardFormInput } from '../../types';
@@ -12,6 +13,7 @@ export function CreateBoard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { boards: boardsUsage } = useUsage();
   const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<BoardTemplate | null>(null);
   const [formData, setFormData] = useState<BoardFormInput>({
@@ -104,6 +106,13 @@ export function CreateBoard() {
 
     if (!validateForm() || !user) return;
 
+    if (boardsUsage.atLimit) {
+      setErrors({
+        submit: `You've reached the limit of ${boardsUsage.limit} boards on your current plan. Upgrade to create more.`,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const newBoard = await createBoard(user.companyId, formData);
@@ -166,7 +175,7 @@ export function CreateBoard() {
           <div>
             <Input
               label={t('forms:board.name')}
-              placeholder="Product Feedback"
+              placeholder={selectedTemplate ? selectedTemplate.name : 'Product Feedback'}
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value.slice(0, BOARD_NAME_MAX) })

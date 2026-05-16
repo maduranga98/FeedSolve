@@ -41,17 +41,14 @@ export function AttachmentGallery({
                   <span>{formatFileSize(attachment.fileSize)}</span>
                   <span>{formatDate(new Date(attachment.uploadedAt.toMillis()))}</span>
 
-                  {attachment.scanStatus && (
+                  {attachment.scanStatus && attachment.scanStatus !== 'pending' && (
                     <div
                       className={`flex items-center gap-1 px-2 py-1 rounded ${
                         attachment.scanStatus === 'clean'
                           ? 'bg-green-100 text-green-700'
-                          : attachment.scanStatus === 'infected'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                          : 'bg-red-100 text-red-700'
                       }`}
                     >
-                      {attachment.scanStatus === 'pending' && <Loader2 size={12} className="animate-spin" />}
                       {attachment.scanStatus === 'clean' && <span>✓ Safe</span>}
                       {attachment.scanStatus === 'infected' && <AlertCircle size={12} />}
                     </div>

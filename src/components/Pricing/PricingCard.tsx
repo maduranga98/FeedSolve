@@ -12,7 +12,7 @@ interface PricingCardProps {
 }
 
 const tierNames = {
-  free: 'Free',
+  free: 'Trial',
   starter: 'Starter',
   growth: 'Growth',
   business: 'Business',
@@ -50,7 +50,7 @@ export function PricingCard({
 
         {tier === 'free' ? (
           <div className="mb-6">
-            <span className="text-4xl font-bold">Free</span>
+            <span className="text-4xl font-bold">Trial</span>
             <div className="mt-2">
               <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
                 7-day trial

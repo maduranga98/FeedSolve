@@ -5,7 +5,7 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
-  free:     { label: 'Free',     color: 'bg-[#F0F4F8] text-[#4A6274]' },
+  free:     { label: 'Trial',    color: 'bg-[#F0F4F8] text-[#4A6274]' },
   starter:  { label: 'Starter',  color: 'bg-[#EBF5FB] text-[#2E86AB]' },
   growth:   { label: 'Growth',   color: 'bg-[#E8F8F0] text-[#1E8449]' },
   business: { label: 'Business', color: 'bg-[#F4ECF7] text-[#7D3C98]' },
