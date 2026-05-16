@@ -12,7 +12,7 @@ const tierNames: Record<string, string> = {
   free: 'Trial',
   starter: 'Starter',
   growth: 'Growth',
-  business: 'Business',
+  business: 'Pro',
 };
 
 export function CancelSubscriptionModal({

@@ -16,7 +16,7 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
     free: 'Trial',
     starter: 'Starter',
     growth: 'Growth',
-    business: 'Business',
+    business: 'Pro',
   };
 
   const formatDate = (timestamp: any) => {

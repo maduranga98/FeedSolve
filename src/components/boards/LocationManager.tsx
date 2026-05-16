@@ -20,7 +20,7 @@ function upgradeCopy(tier: Tier, limit: number | null): string {
   if (limit === null) return '';
   if (tier === 'free') return "Free boards include 1 location. Upgrade to Starter for up to 20 locations.";
   if (tier === 'starter') return "You've reached the 20 location limit. Upgrade to Growth for up to 50 locations.";
-  if (tier === 'growth') return "You've reached the 50 location limit. Upgrade to Business for unlimited locations.";
+  if (tier === 'growth') return "You've reached the 50 location limit. Upgrade to Pro for unlimited locations.";
   return '';
 }
 

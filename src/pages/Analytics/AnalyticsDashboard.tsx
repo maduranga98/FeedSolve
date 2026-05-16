@@ -264,7 +264,7 @@ export function AnalyticsDashboard() {
                 onClick={handleExportCycleCSV}
                 disabled={!canExportCycleCsv}
                 className="inline-flex items-center gap-2 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#EBF5FB] disabled:cursor-not-allowed disabled:opacity-50"
-                title={canExportCycleCsv ? 'Export cycle data' : 'Business plan required'}
+                title={canExportCycleCsv ? 'Export cycle data' : 'Pro plan required'}
               >
                 <Download size={14} />
                 Export CSV

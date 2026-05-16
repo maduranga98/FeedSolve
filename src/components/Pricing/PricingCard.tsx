@@ -15,7 +15,7 @@ const tierNames = {
   free: 'Trial',
   starter: 'Starter',
   growth: 'Growth',
-  business: 'Business',
+  business: 'Pro',
 };
 
 export function PricingCard({
