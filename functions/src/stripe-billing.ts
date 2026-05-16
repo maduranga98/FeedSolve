@@ -5,21 +5,21 @@ import { Request } from "express";
 
 // Maps Stripe price IDs (from src/config/stripe.ts) to app tier names
 const PRICE_TO_TIER: Record<string, string> = {
-  price_1TQpweQQchLsdaEfeIg5uZ2A: "starter",
-  price_1TQpweQQchLsdaEfzijJNcqm: "starter",
-  price_1TQpyZQQchLsdaEfY5UPPMRL: "growth",
-  price_1TQpyZQQchLsdaEf6PmISi15: "growth",
-  price_1TQq0KQQchLsdaEf0RQA54Kb: "business",
-  price_1TQq0KQQchLsdaEfEsV7xMaa: "business",
+  price_1TTOeDKKYKi1ENnWB8xsFV63: "starter",
+  price_1TTOeDKKYKi1ENnWheWG3xLG: "starter",
+  price_1TTOXUKKYKi1ENnW9aZVhzOX: "growth",
+  price_1TTOYGKKYKi1ENnWJknmLvUy: "growth",
+  price_1TTOhdKKYKi1ENnWKVKiF4Tu: "business",
+  price_1TTOhdKKYKi1ENnWLm5GmPOx: "business",
 };
 
 const PRICE_TO_BILLING: Record<string, "monthly" | "annual"> = {
-  price_1TQpweQQchLsdaEfeIg5uZ2A: "monthly",
-  price_1TQpweQQchLsdaEfzijJNcqm: "annual",
-  price_1TQpyZQQchLsdaEfY5UPPMRL: "monthly",
-  price_1TQpyZQQchLsdaEf6PmISi15: "annual",
-  price_1TQq0KQQchLsdaEf0RQA54Kb: "monthly",
-  price_1TQq0KQQchLsdaEfEsV7xMaa: "annual",
+  price_1TTOeDKKYKi1ENnWB8xsFV63: "monthly",
+  price_1TTOeDKKYKi1ENnWheWG3xLG: "annual",
+  price_1TTOXUKKYKi1ENnW9aZVhzOX: "monthly",
+  price_1TTOYGKKYKi1ENnWJknmLvUy: "annual",
+  price_1TTOhdKKYKi1ENnWKVKiF4Tu: "monthly",
+  price_1TTOhdKKYKi1ENnWLm5GmPOx: "annual",
 };
 
 function getStripe(): Stripe {
