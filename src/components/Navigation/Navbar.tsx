@@ -77,10 +77,15 @@ export function Navbar() {
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
-    { path: "/help", label: "Help & Support", icon: <HelpCircle size={15} /> },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
     { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
   ];
+
+  const helpNavItem: NavItem = {
+    path: "/help",
+    label: "Help & Support",
+    icon: <HelpCircle size={15} />,
+  };
 
   const navItems = allNavItems.filter((item) => {
     if (!user) return false;
@@ -154,6 +159,25 @@ export function Navbar() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {user && (
+        <div className="pt-3 mt-2 border-t border-[#E8ECF0]">
+          <button
+            onClick={() => navigate(helpNavItem.path)}
+            className={`relative w-full inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors duration-150 focus:outline-none text-left
+              ${
+                isActive(helpNavItem.path)
+                  ? "text-[#2E86AB] bg-[#EBF5FB]"
+                  : "text-[#6B7B8D] hover:text-[#1E3A5F] hover:bg-[#E1E8EF]"
+              }`}
+          >
+            <span className={isActive(helpNavItem.path) ? "text-[#2E86AB]" : "text-[#9AABBF]"}>
+              {helpNavItem.icon}
+            </span>
+            <span className="truncate">{helpNavItem.label}</span>
+          </button>
         </div>
       )}
 

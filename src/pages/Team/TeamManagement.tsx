@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Users } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { usePermissions } from "../../hooks/usePermissions";
+import { useUsage } from "../../hooks/useUsage";
 import { Button, Input, LoadingSpinner } from "../../components/Shared";
 import { TeamMembersTable } from "../../components/RBAC/TeamMembersTable";
 import { RoleSelector } from "../../components/RBAC/RoleSelector";
@@ -24,6 +25,7 @@ import type { TeamMember, TeamInvitation, User, UserRole } from "../../types";
 export function TeamManagement() {
   const { user } = useAuth();
   const { hasPermissionTo } = usePermissions();
+  const { teamMembers: teamMembersUsage } = useUsage();
   const { t } = useTranslation();
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [pendingInvitations, setPendingInvitations] = useState<
@@ -72,6 +74,19 @@ export function TeamManagement() {
 
     if (!hasPermissionTo("team:invite")) {
       setError("You do not have permission to invite team members");
+      return;
+    }
+
+    const pendingCount = pendingInvitations.length;
+    const projectedCount = teamMembers.length + pendingCount + 1;
+    if (
+      teamMembersUsage.limit > 0 &&
+      Number.isFinite(teamMembersUsage.limit) &&
+      projectedCount > teamMembersUsage.limit
+    ) {
+      setError(
+        `You've reached the limit of ${teamMembersUsage.limit} team members on your current plan. Upgrade to invite more.`,
+      );
       return;
     }
 

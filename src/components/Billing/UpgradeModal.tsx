@@ -12,7 +12,7 @@ interface UpgradeModalProps {
 }
 
 const tierNames: Record<string, string> = {
-  free: 'Free',
+  free: 'Trial',
   starter: 'Starter',
   growth: 'Growth',
   business: 'Business',

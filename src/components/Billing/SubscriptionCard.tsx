@@ -13,7 +13,7 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const tierNames: Record<string, string> = {
-    free: 'Free',
+    free: 'Trial',
     starter: 'Starter',
     growth: 'Growth',
     business: 'Business',

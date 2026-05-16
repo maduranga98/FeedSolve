@@ -966,8 +966,10 @@ export function SubmitFeedback() {
                           flexShrink: 0,
                           position: "relative",
                         }}
-                        onClick={e => e.stopPropagation()}
-                        onChange={() => setFormData({ ...formData, isAnonymous: !formData.isAnonymous })}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setFormData({ ...formData, isAnonymous: !formData.isAnonymous });
+                        }}
                       >
                         <div
                           style={{

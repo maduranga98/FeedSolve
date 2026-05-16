@@ -2,19 +2,17 @@ import { useTranslation } from 'react-i18next';
 import { useState, useRef, useEffect } from 'react';
 import { applyTextDirection } from '../../lib/rtl';
 
-type Language = 'en' | 'si' | 'ta' | 'ar' | 'hi';
+type Language = 'en' | 'si' | 'hi';
 
 const LANGUAGES: { code: Language; name: string; flag: string }[] = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
-  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
 ];
 
 function normalizeLanguageCode(lang: string): Language {
   const base = lang.split('-')[0].toLowerCase();
-  const supported: Language[] = ['en', 'si', 'ta', 'ar', 'hi'];
+  const supported: Language[] = ['en', 'si', 'hi'];
   return supported.includes(base as Language) ? (base as Language) : 'en';
 }
 

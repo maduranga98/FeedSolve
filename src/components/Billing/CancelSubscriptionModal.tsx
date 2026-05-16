@@ -9,7 +9,7 @@ interface CancelSubscriptionModalProps {
 }
 
 const tierNames: Record<string, string> = {
-  free: 'Free',
+  free: 'Trial',
   starter: 'Starter',
   growth: 'Growth',
   business: 'Business',
@@ -57,7 +57,7 @@ export function CancelSubscriptionModal({
               <p className="text-red-800 text-sm">
                 Your {tierNames[tier]} plan will be canceled at the end of your current billing period.
                 All paid features will be immediately unavailable, and your account will revert to the
-                Free plan.
+                Trial plan.
               </p>
             </div>
           </div>

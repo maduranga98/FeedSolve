@@ -3,6 +3,7 @@ import {
   Timestamp,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -58,6 +59,74 @@ function cycleFromSnapshot(snapshot: { id: string; data: () => unknown }) {
   return { ...(snapshot.data() as BoardCycle), id: snapshot.id } as BoardCycle;
 }
 
+async function rolloverDueCycles(companyId: string) {
+  const boardsSnap = await getDocs(
+    query(
+      collection(db, 'boards'),
+      where('companyId', '==', companyId),
+      where('recurringEnabled', '==', true)
+    )
+  );
+
+  const now = new Date();
+  for (const boardDoc of boardsSnap.docs) {
+    const board = { ...(boardDoc.data() as Board), id: boardDoc.id };
+    const next = board.nextCycleDate?.toDate?.();
+    if (!next || next > now) continue;
+    if (!board.recurringFrequency) continue;
+
+    const cyclesSnap = await getDocs(
+      query(
+        collection(db, 'boardCycles'),
+        where('companyId', '==', companyId),
+        where('boardId', '==', board.id),
+        orderBy('cycleNumber', 'desc')
+      )
+    );
+    const lastCycle = cyclesSnap.docs[0]
+      ? ({ ...(cyclesSnap.docs[0].data() as BoardCycle), id: cyclesSnap.docs[0].id } as BoardCycle)
+      : null;
+
+    // Close the existing current cycle.
+    if (board.currentCycleId) {
+      const currentRef = doc(db, 'boardCycles', board.currentCycleId);
+      const currentSnap = await getDoc(currentRef);
+      if (currentSnap.exists()) {
+        await updateDoc(currentRef, {
+          isCurrent: false,
+          endDate: Timestamp.fromDate(next),
+        });
+      }
+    }
+
+    const newCycleRef = doc(collection(db, 'boardCycles'));
+    const nextStart = next;
+    const newCycle: BoardCycle = {
+      id: newCycleRef.id,
+      boardId: board.id,
+      companyId,
+      cycleNumber: (lastCycle?.cycleNumber ?? 0) + 1,
+      label: getCycleLabel(nextStart, board.recurringFrequency),
+      startDate: Timestamp.fromDate(nextStart),
+      endDate: null,
+      isCurrent: true,
+      stats: emptyStats,
+    };
+    await setDoc(newCycleRef, newCycle);
+
+    const followingNextDate = calculateNextCycleDate(
+      nextStart,
+      board.recurringFrequency,
+      board.recurringCustomDays ?? null
+    );
+
+    await updateBoard(board.id, {
+      currentCycleId: newCycleRef.id,
+      nextCycleDate: Timestamp.fromDate(followingNextDate),
+    });
+  }
+}
+
 async function assignExistingSubmissionsToCycle(companyId: string, boardId: string, cycleId: string) {
   const submissionsSnapshot = await getDocs(
     query(
@@ -92,6 +161,11 @@ export function useBoardCycles(companyId?: string, boardId?: string | null) {
     setLoading(true);
     setError(null);
     try {
+      try {
+        await rolloverDueCycles(companyId);
+      } catch (rolloverErr) {
+        console.error('Failed to roll over due cycles:', rolloverErr);
+      }
       const constraints = boardId
         ? [where('companyId', '==', companyId), where('boardId', '==', boardId), orderBy('cycleNumber', 'desc')]
         : [where('companyId', '==', companyId), orderBy('startDate', 'desc')];

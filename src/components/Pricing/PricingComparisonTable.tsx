@@ -34,7 +34,7 @@ export function PricingComparisonTable() {
         <thead>
           <tr className="border-b-2 border-gray-300">
             <th className="text-left py-4 px-4 font-bold">Feature</th>
-            <th className="text-center py-4 px-4 font-bold">Free</th>
+            <th className="text-center py-4 px-4 font-bold">Trial</th>
             <th className="text-center py-4 px-4 font-bold">Starter</th>
             <th className="text-center py-4 px-4 font-bold">Growth</th>
             <th className="text-center py-4 px-4 font-bold">Business</th>
