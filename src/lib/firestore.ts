@@ -332,8 +332,7 @@ export async function createSubmission(
     const docRef = await addDoc(submissionsRef, newSubmission);
 
     if (boardData.exists()) {
-      const currentCount = board?.submissionCount || 0;
-      await updateDoc(boardRef, { submissionCount: currentCount + 1 });
+      await updateDoc(boardRef, { submissionCount: increment(1) });
     }
 
     return { trackingCode, submissionId: docRef.id };
