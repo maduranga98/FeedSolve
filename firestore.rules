@@ -288,7 +288,7 @@ service cloud.firestore {
       // Location lists and all other board settings are writable by company admins only.
       allow update: if canManageCompany(resource.data.companyId) ||
         (only(['submissionCount']) &&
-         request.resource.data.submissionCount == resource.data.submissionCount + 1);
+         request.resource.data.submissionCount == resource.data.get('submissionCount', 0) + 1);
       allow delete: if isOwner(resource.data.companyId);
     }
 
