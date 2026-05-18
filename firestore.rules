@@ -307,8 +307,9 @@ service cloud.firestore {
         (request.query.limit <= 1000 && isPublicFeedCompany(resource.data.companyId));
       // Authenticated company member create
       allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
-      // Public (unauthenticated) create from the feedback form
-      allow create: if !isAuthenticated() && isValidSubmissionCreate();
+      // Public create from the feedback form (works for both unauthenticated visitors
+      // and signed-in users submitting on a board outside their own company).
+      allow create: if isValidSubmissionCreate();
       allow update: if isSubmissionMergeUpdate() ||
         canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
