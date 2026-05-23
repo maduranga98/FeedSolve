@@ -289,7 +289,7 @@ service cloud.firestore {
       allow update: if canManageCompany(resource.data.companyId) ||
         (only(['submissionCount']) &&
          request.resource.data.submissionCount == resource.data.get('submissionCount', 0) + 1);
-      allow delete: if isOwner(resource.data.companyId);
+      allow delete: if canManageCompany(resource.data.companyId);
     }
 
     // Submissions collection - Role-based access
