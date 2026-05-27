@@ -219,6 +219,10 @@ export async function createBoard(
       isAnonymousAllowed: input.isAnonymousAllowed,
       showSatisfactionRating: input.showSatisfactionRating ?? false,
       satisfactionRequired: input.satisfactionRequired ?? false,
+      supportedLanguages:
+        input.supportedLanguages && input.supportedLanguages.length > 0
+          ? input.supportedLanguages
+          : ['en'],
       qrCodeUrl: `${import.meta.env.VITE_APP_URL}/submit/${slug}`,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),

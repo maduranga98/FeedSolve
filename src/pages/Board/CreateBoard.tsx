@@ -7,6 +7,7 @@ import { createBoard, getTemplate, addAuditLog, incrementTemplateUsage } from '.
 import { Button, Input } from '../../components/Shared';
 import type { BoardFormInput } from '../../types';
 import type { BoardTemplate } from '../../types';
+import { SUPPORTED_LANGUAGES } from '../../config/languages';
 import { Plus, Trash2 } from 'lucide-react';
 
 export function CreateBoard() {
@@ -23,6 +24,7 @@ export function CreateBoard() {
     isAnonymousAllowed: false,
     showSatisfactionRating: false,
     satisfactionRequired: false,
+    supportedLanguages: ['en'],
   });
   const [newCategory, setNewCategory] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -75,6 +77,10 @@ export function CreateBoard() {
       newErrors.categories = 'At least one category is required';
     }
 
+    if (!formData.supportedLanguages || formData.supportedLanguages.length === 0) {
+      newErrors.languages = 'Select at least one language';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -92,6 +98,17 @@ export function CreateBoard() {
       categories: [...formData.categories, trimmed],
     });
     setNewCategory('');
+  };
+
+  const handleToggleLanguage = (code: string) => {
+    setErrors(prev => { const e = { ...prev }; delete e.languages; return e; });
+    setFormData(prev => {
+      const current = prev.supportedLanguages ?? [];
+      const next = current.includes(code)
+        ? current.filter(c => c !== code)
+        : [...current, code];
+      return { ...prev, supportedLanguages: next };
+    });
   };
 
   const handleRemoveCategory = (index: number) => {
@@ -249,6 +266,39 @@ export function CreateBoard() {
             </div>
             {errors.newCategory && (
               <p className="text-xs text-[#E74C3C] mt-1">{errors.newCategory}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#1E3A5F] mb-1">
+              {t('forms:feedback.language')}
+            </label>
+            <p className="text-[#6B7B8D] text-xs mb-3">
+              Choose which languages submitters can use on this form.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {SUPPORTED_LANGUAGES.map(lang => {
+                const selected = (formData.supportedLanguages ?? []).includes(lang.code);
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => handleToggleLanguage(lang.code)}
+                    aria-pressed={selected}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      selected
+                        ? 'bg-[#EBF5FB] border-[#2E86AB] text-[#1E3A5F] font-medium'
+                        : 'bg-white border-[#D3D1C7] text-[#6B7B8D] hover:bg-[#F1F5F8]'
+                    }`}
+                  >
+                    <span className="text-base">{lang.flag}</span>
+                    <span>{lang.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {errors.languages && (
+              <p className="text-sm text-[#E74C3C] mt-2">{errors.languages}</p>
             )}
           </div>
 

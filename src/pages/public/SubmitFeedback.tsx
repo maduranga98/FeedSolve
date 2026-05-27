@@ -8,6 +8,7 @@ import {
 } from "../../lib/firestore";
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../config/languages";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
 import { SatisfactionRating } from "../../components/public/SatisfactionRating";
 import type { SatisfactionScore } from "../../components/public/SatisfactionRating";
@@ -188,13 +189,10 @@ const BRANDED_STYLES = `
   }
 `;
 
-const LANGUAGES = [
-  { value: "en", label: "🇬🇧 English" },
-  { value: "si", label: "🇱🇰 සිංහල" },
-  { value: "ta", label: "🇮🇳 தமிழ்" },
-  { value: "ar", label: "🇸🇦 العربية" },
-  { value: "hi", label: "🇮🇳 हिन्दी" },
-];
+const LANGUAGES = SUPPORTED_LANGUAGES.map(l => ({
+  value: l.code,
+  label: `${l.flag} ${l.name}`,
+}));
 
 export function SubmitFeedback() {
   const { slug } = useParams<{ slug: string }>();
@@ -232,6 +230,12 @@ export function SubmitFeedback() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const boardLanguageCodes =
+    board?.supportedLanguages && board.supportedLanguages.length > 0
+      ? board.supportedLanguages
+      : SUPPORTED_LANGUAGES.map(l => l.code);
+  const availableLanguages = LANGUAGES.filter(l => boardLanguageCodes.includes(l.value));
+
   useEffect(() => {
     const fetchBoard = async () => {
       if (!slug) { setLoading(false); return; }
@@ -240,6 +244,17 @@ export function SubmitFeedback() {
         if (boardData) {
           setBoard(boardData);
           document.title = `${boardData.name} | FeedSolve`;
+          const allowed =
+            boardData.supportedLanguages && boardData.supportedLanguages.length > 0
+              ? boardData.supportedLanguages
+              : null;
+          if (allowed && !allowed.includes(i18n.language)) {
+            const fallback = allowed[0] || DEFAULT_LANGUAGE;
+            setFormData(prev => ({ ...prev, submissionLanguage: fallback }));
+            i18n.changeLanguage(fallback);
+            localStorage.setItem("feedsolve_language", fallback);
+            applyTextDirection(fallback);
+          }
           if (boardData.categories.length > 0) {
             setFormData(prev => ({ ...prev, category: boardData.categories[0], location: locationTag }));
           } else {
@@ -864,12 +879,14 @@ export function SubmitFeedback() {
                 </div>
 
                 <div className="space-y-4">
-                  <Select
-                    label={t("forms:feedback.language") || "Language"}
-                    value={formData.submissionLanguage || i18n.language || "en"}
-                    onChange={e => handleLanguageChange(e.target.value)}
-                    options={LANGUAGES}
-                  />
+                  {availableLanguages.length > 1 && (
+                    <Select
+                      label={t("forms:feedback.language") || "Language"}
+                      value={formData.submissionLanguage || i18n.language || DEFAULT_LANGUAGE}
+                      onChange={e => handleLanguageChange(e.target.value)}
+                      options={availableLanguages}
+                    />
+                  )}
 
                   <Select
                     label={t("forms:feedback.category")}

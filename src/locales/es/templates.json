@@ -1,0 +1,91 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "Comentarios de clientes",
+      "description": "Recopila comentarios de los clientes sobre tus productos y servicios"
+    },
+    "supplier_issues": {
+      "name": "Problemas con proveedores",
+      "description": "Haz seguimiento a problemas de calidad, entrega y precios de los proveedores"
+    },
+    "distributor_feedback": {
+      "name": "Comentarios de distribuidores",
+      "description": "Gestiona quejas e inquietudes de tus distribuidores"
+    },
+    "restaurant_feedback": {
+      "name": "Comentarios de restaurante",
+      "description": "Recopila comentarios sobre la calidad de la comida, el servicio y la limpieza"
+    },
+    "delivery_feedback": {
+      "name": "Comentarios de entrega",
+      "description": "Haz seguimiento a problemas de entregas tardías, daños y comportamiento del conductor"
+    },
+    "tenant_requests": {
+      "name": "Solicitudes de inquilinos",
+      "description": "Gestiona solicitudes de mantenimiento y quejas de los inquilinos"
+    },
+    "patient_feedback": {
+      "name": "Comentarios de pacientes",
+      "description": "Recopila comentarios sobre médicos, personal, instalaciones y facturación"
+    },
+    "employee_feedback": {
+      "name": "Comentarios de empleados",
+      "description": "Recoge comentarios sobre carrera, salario, cultura y beneficios"
+    },
+    "support_tickets": {
+      "name": "Tickets de soporte",
+      "description": "Gestiona solicitudes de soporte técnico y de funciones"
+    },
+    "event_feedback": {
+      "name": "Comentarios de eventos",
+      "description": "Recopila comentarios sobre lugares, organización, contenido y ponentes"
+    }
+  },
+  "industries": {
+    "retail": "Comercio minorista",
+    "manufacturing": "Manufactura",
+    "distribution": "Distribución",
+    "food_beverage": "Alimentos y bebidas",
+    "logistics": "Logística",
+    "real_estate": "Bienes raíces",
+    "healthcare": "Salud",
+    "human_resources": "Recursos humanos",
+    "technology": "Tecnología",
+    "events": "Eventos y entretenimiento"
+  },
+  "select_template": "Seleccionar plantilla",
+  "categories": {
+    "bug_report": "Reporte de error",
+    "feature_request": "Solicitud de función",
+    "complaint": "Queja",
+    "compliment": "Felicitación",
+    "quality_issue": "Problema de calidad",
+    "delivery_problem": "Problema de entrega",
+    "pricing": "Precios",
+    "stock_issue": "Problema de inventario",
+    "price_concern": "Inquietud de precio",
+    "support": "Soporte",
+    "food_quality": "Calidad de la comida",
+    "service": "Servicio",
+    "cleanliness": "Limpieza",
+    "late_delivery": "Entrega tardía",
+    "damage": "Daño",
+    "driver_behavior": "Comportamiento del conductor",
+    "maintenance": "Mantenimiento",
+    "amenities": "Comodidades",
+    "doctor": "Médico",
+    "staff": "Personal",
+    "facilities": "Instalaciones",
+    "billing": "Facturación",
+    "career": "Carrera",
+    "salary": "Salario",
+    "culture": "Cultura",
+    "benefits": "Beneficios",
+    "how_to": "Cómo hacer",
+    "account": "Cuenta",
+    "venue": "Lugar",
+    "organization": "Organización",
+    "content": "Contenido",
+    "speakers": "Ponentes"
+  }
+}

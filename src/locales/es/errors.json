@@ -1,0 +1,22 @@
+{
+  "network_error": "Error de red. Por favor, inténtalo de nuevo.",
+  "server_error": "Error del servidor. Por favor, inténtalo más tarde.",
+  "unauthorized": "No estás autorizado para realizar esta acción.",
+  "not_found": "No se encontró el recurso solicitado.",
+  "invalid_input": "Entrada inválida. Por favor, revisa tus datos.",
+  "password_mismatch": "Las contraseñas no coinciden.",
+  "email_exists": "Este correo ya está registrado.",
+  "invalid_email": "Por favor ingresa una dirección de correo válida.",
+  "weak_password": "La contraseña debe tener al menos 8 caracteres.",
+  "session_expired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
+  "access_denied": "Acceso denegado.",
+  "something_went_wrong": "Algo salió mal. Por favor, inténtalo de nuevo.",
+  "file_too_large": "El archivo es demasiado grande. El tamaño máximo es {{size}}.",
+  "invalid_file_type": "Tipo de archivo inválido.",
+  "request_failed": "La solicitud falló. Por favor, inténtalo de nuevo.",
+  "timeout": "Se agotó el tiempo de la solicitud. Por favor, inténtalo de nuevo.",
+  "rate_limit": "Demasiadas solicitudes. Por favor, espera un momento e inténtalo de nuevo.",
+  "validation_error": "Por favor, revisa tu entrada e inténtalo de nuevo.",
+  "duplicate_entry": "Esta entrada ya existe.",
+  "cannot_delete": "No se puede eliminar este elemento porque tiene elementos dependientes."
+}
