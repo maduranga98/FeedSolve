@@ -1,19 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useRef, useEffect } from 'react';
 import { applyTextDirection } from '../../lib/rtl';
+import { SUPPORTED_LANGUAGES, SUPPORTED_LANGUAGE_CODES, DEFAULT_LANGUAGE } from '../../config/languages';
 
-type Language = 'en' | 'si' | 'hi';
+const LANGUAGES = SUPPORTED_LANGUAGES;
 
-const LANGUAGES: { code: Language; name: string; flag: string }[] = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'si', name: 'සිංහල', flag: '🇱🇰' },
-  { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-];
-
-function normalizeLanguageCode(lang: string): Language {
+function normalizeLanguageCode(lang: string): string {
   const base = lang.split('-')[0].toLowerCase();
-  const supported: Language[] = ['en', 'si', 'hi'];
-  return supported.includes(base as Language) ? (base as Language) : 'en';
+  return SUPPORTED_LANGUAGE_CODES.includes(base) ? base : DEFAULT_LANGUAGE;
 }
 
 export function LanguageSwitcher() {
@@ -34,7 +28,7 @@ export function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLanguageChange = (langCode: Language) => {
+  const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
     localStorage.setItem('feedsolve_language', langCode);
     applyTextDirection(langCode);

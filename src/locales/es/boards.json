@@ -1,0 +1,70 @@
+{
+  "dashboard": {
+    "title": "Panel de comentarios",
+    "welcome": "Bienvenido de nuevo",
+    "total_submissions": "Total de envíos",
+    "pending": "Pendiente",
+    "resolved": "Resuelto",
+    "recent_feedback": "Comentarios recientes",
+    "no_data": "No hay datos disponibles",
+    "view_all": "Ver todo",
+    "create_board": "Crear tablero",
+    "create_first": "Crea tu primer tablero para empezar a recopilar comentarios",
+    "submission_one": "envío",
+    "submission_other": "envíos"
+  },
+  "submissions": {
+    "title": "Envíos",
+    "new": "Nuevo",
+    "in_progress": "En progreso",
+    "resolved": "Resuelto",
+    "closed": "Cerrado",
+    "filter_by_status": "Filtrar por estado",
+    "filter_by_board": "Filtrar por tablero",
+    "sort_by_date": "Ordenar por fecha",
+    "sort_by_priority": "Ordenar por prioridad",
+    "add_note": "Agregar nota",
+    "internal_notes": "Notas internas",
+    "public_reply": "Respuesta pública",
+    "priority": "Prioridad",
+    "priority_low": "Baja",
+    "priority_medium": "Media",
+    "priority_high": "Alta",
+    "assigned_to": "Asignado a",
+    "resolution_status": "Estado de resolución",
+    "unresolved": "Sin resolver",
+    "partially_resolved": "Parcialmente resuelto"
+  },
+  "templates": {
+    "title": "Plantillas de tablero",
+    "browse": "Explorar plantillas",
+    "select_template": "Seleccionar plantilla",
+    "create_from_template": "Crear tablero desde plantilla",
+    "template_details": "Detalles de la plantilla",
+    "industry": "Industria",
+    "categories": "Categorías",
+    "featured": "Destacado",
+    "usage_count": "Veces usado"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "archived": "Archivado",
+    "draft": "Borrador",
+    "published": "Publicado"
+  },
+  "errors": {
+    "not_found": "Tablero no encontrado",
+    "access_denied": "Acceso denegado",
+    "creation_failed": "Error al crear el tablero",
+    "update_failed": "Error al actualizar el tablero",
+    "deletion_failed": "Error al eliminar el tablero"
+  },
+  "success": {
+    "board_created": "Tablero creado correctamente",
+    "board_updated": "Tablero actualizado correctamente",
+    "board_deleted": "Tablero eliminado correctamente",
+    "submission_created": "Envío creado correctamente",
+    "note_added": "Nota agregada correctamente"
+  }
+}

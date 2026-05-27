@@ -176,6 +176,7 @@ export interface Board {
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
   satisfactionRequired: boolean;
+  supportedLanguages?: string[];
   qrCodeUrl: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -266,6 +267,7 @@ export interface BoardFormInput {
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
   satisfactionRequired: boolean;
+  supportedLanguages?: string[];
 }
 
 export interface TeamInvitation {
@@ -332,6 +334,7 @@ export interface TierLimits {
   canRemoveBranding: boolean;
   canAccessAPI: boolean;
   canUseTemplates: boolean;
+  maxTemplates: number;
   analyticsLevel: 'none' | 'basic' | 'full' | 'advanced';
 }
 
@@ -384,7 +387,7 @@ export interface BoardTemplate {
 }
 
 export interface LocalizationSettings {
-  defaultLanguage: "en" | "si" | "ta" | "ar" | "hi";
+  defaultLanguage: "en" | "es" | "si" | "ta" | "ar" | "hi";
   supportedLanguages: string[];
   rtlEnabled: boolean;
 }

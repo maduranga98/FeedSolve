@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { SUPPORTED_LANGUAGE_CODES, DEFAULT_LANGUAGE } from '../config/languages';
 
 // English
 import en_common from '../locales/en/common.json';
@@ -8,6 +9,13 @@ import en_forms from '../locales/en/forms.json';
 import en_boards from '../locales/en/boards.json';
 import en_errors from '../locales/en/errors.json';
 import en_templates from '../locales/en/templates.json';
+
+// Spanish
+import es_common from '../locales/es/common.json';
+import es_forms from '../locales/es/forms.json';
+import es_boards from '../locales/es/boards.json';
+import es_errors from '../locales/es/errors.json';
+import es_templates from '../locales/es/templates.json';
 
 // Sinhala
 import si_common from '../locales/si/common.json';
@@ -45,6 +53,13 @@ const resources = {
     errors: en_errors,
     templates: en_templates,
   },
+  es: {
+    common: es_common,
+    forms: es_forms,
+    boards: es_boards,
+    errors: es_errors,
+    templates: es_templates,
+  },
   si: {
     common: si_common,
     forms: si_forms,
@@ -77,16 +92,16 @@ const resources = {
 
 const detectLanguage = (): string => {
   const saved = localStorage.getItem('feedsolve_language');
-  if (saved && ['en', 'si', 'ta', 'ar', 'hi'].includes(saved)) {
+  if (saved && SUPPORTED_LANGUAGE_CODES.includes(saved)) {
     return saved;
   }
 
   const browserLang = navigator.language.split('-')[0];
-  if (['en', 'si', 'ta', 'ar', 'hi'].includes(browserLang)) {
+  if (SUPPORTED_LANGUAGE_CODES.includes(browserLang)) {
     return browserLang;
   }
 
-  return 'en';
+  return DEFAULT_LANGUAGE;
 };
 
 i18n

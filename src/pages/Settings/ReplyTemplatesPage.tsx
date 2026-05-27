@@ -14,7 +14,7 @@ import type { ReplyTemplate } from '../../types';
 
 export function ReplyTemplatesPage() {
   const { user } = useAuth();
-  const { checkFeature } = useHasFeature();
+  const { checkFeature, getTemplateCap } = useHasFeature();
   const navigate = useNavigate();
   const { templates, loading, createTemplate, updateTemplate, deleteTemplate } = useTemplates();
 
@@ -25,6 +25,8 @@ export function ReplyTemplatesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const canUseTemplates = checkFeature('canUseTemplates');
+  const templateCap = getTemplateCap();
+  const atTemplateLimit = templates.length >= templateCap;
 
   useEffect(() => {
     document.title = 'Reply Templates | FeedSolve';
@@ -42,6 +44,7 @@ export function ReplyTemplatesPage() {
     if (editingTemplate) {
       await updateTemplate(editingTemplate.id, data);
     } else {
+      if (atTemplateLimit) return;
       await createTemplate(data);
     }
     setEditingTemplate(undefined);
@@ -79,6 +82,7 @@ export function ReplyTemplatesPage() {
                 <Button
                   variant="primary"
                   size="sm"
+                  disabled={atTemplateLimit}
                   onClick={() => setEditingTemplate(null)}
                 >
                   <Plus size={14} className="mr-1" />
@@ -96,7 +100,7 @@ export function ReplyTemplatesPage() {
               <Lock size={18} className="text-[#9AABBF] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-[#1E3A5F]">
-                  Reply templates are available on the Growth plan and above.
+                  Reply templates are available on the Starter plan and above.
                 </p>
                 <p className="text-sm text-[#6B7B8D] mt-1">
                   Upgrade to create and reuse reply templates across your team.
@@ -107,6 +111,28 @@ export function ReplyTemplatesPage() {
                 >
                   View plans →
                 </button>
+              </div>
+            </div>
+          )}
+
+          {canUseTemplates && Number.isFinite(templateCap) && (
+            <div className="mb-6 flex items-start gap-3 p-4 bg-white border border-[#E8ECF0] rounded-xl">
+              <FileText size={18} className="text-[#9AABBF] mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-sm font-semibold text-[#1E3A5F]">
+                  {templates.length} of {templateCap} reply templates used on your plan.
+                </p>
+                {atTemplateLimit && (
+                  <p className="text-sm text-[#6B7B8D] mt-1">
+                    You've reached your template limit.{' '}
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      className="font-medium text-[#2E86AB] hover:underline"
+                    >
+                      Upgrade for more →
+                    </button>
+                  </p>
+                )}
               </div>
             </div>
           )}

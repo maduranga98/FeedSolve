@@ -1,4 +1,9 @@
-export const isRTL = (lang: string): boolean => lang === 'ar';
+import { getLanguage } from '../config/languages';
+
+export const isRTL = (lang: string): boolean => {
+  const base = lang.split('-')[0].toLowerCase();
+  return getLanguage(base)?.dir === 'rtl';
+};
 
 export const getTextDirection = (lang: string): 'ltr' | 'rtl' =>
   isRTL(lang) ? 'rtl' : 'ltr';

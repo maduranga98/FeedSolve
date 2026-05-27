@@ -1,5 +1,5 @@
 import { useSubscription } from './useSubscription';
-import { hasFeature, getLimit } from '../lib/tier-limits';
+import { hasFeature, getLimit, getTemplateLimit } from '../lib/tier-limits';
 
 export function useHasFeature() {
   const { subscription } = useSubscription();
@@ -16,9 +16,15 @@ export function useHasFeature() {
 
   const getCurrentTier = () => subscription?.tier || 'free';
 
+  const getTemplateCap = (): number => {
+    if (!subscription) return 0;
+    return getTemplateLimit(subscription.tier);
+  };
+
   return {
     checkFeature,
     getFeatureLimit,
+    getTemplateCap,
     getCurrentTier,
     tier: subscription?.tier,
   };

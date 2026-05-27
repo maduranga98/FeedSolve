@@ -10,6 +10,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canRemoveBranding: false,
     canAccessAPI: false,
     canUseTemplates: false,
+    maxTemplates: 0,
     analyticsLevel: 'basic',
   },
   starter: {
@@ -20,7 +21,8 @@ export const tierLimits: Record<string, TierLimits> = {
     canViewAnalytics: true,
     canRemoveBranding: false,
     canAccessAPI: false,
-    canUseTemplates: false,
+    canUseTemplates: true,
+    maxTemplates: 3,
     analyticsLevel: 'basic',
   },
   growth: {
@@ -32,6 +34,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canRemoveBranding: true,
     canAccessAPI: false,
     canUseTemplates: true,
+    maxTemplates: 10,
     analyticsLevel: 'full',
   },
   business: {
@@ -43,6 +46,7 @@ export const tierLimits: Record<string, TierLimits> = {
     canRemoveBranding: true,
     canAccessAPI: true,
     canUseTemplates: true,
+    maxTemplates: Infinity,
     analyticsLevel: 'advanced',
   },
 };
@@ -81,6 +85,10 @@ export function hasFeature(tier: string, feature: keyof TierLimits): boolean {
 export function getLimit(tier: string, feature: 'boards' | 'submissions' | 'teamMembers'): number {
   const limits = getTierLimits(tier);
   return limits[feature];
+}
+
+export function getTemplateLimit(tier: string): number {
+  return getTierLimits(tier).maxTemplates;
 }
 
 export function getAnalyticsLevel(tier: string): 'none' | 'basic' | 'full' | 'advanced' {
