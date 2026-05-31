@@ -73,5 +73,14 @@
   "logo_requirements": "PNG, JPEG, WebP அல்லது SVG. அதிகபட்சம் 2MB.",
   "company_info": "நிறுவன தகவல்",
   "preview": "முன்னோட்டம்",
-  "optional": "விருப்பம்"
+  "optional": "விருப்பம்",
+  "try_again": "மீண்டும் முயற்சிக்கவும்",
+  "saving": "சேமிக்கிறது…",
+  "deleting": "நீக்குகிறது…",
+  "save_changes": "மாற்றங்களைச் சேமிக்கவும்",
+  "greetings": {
+    "morning": "காலை வணக்கம்",
+    "afternoon": "மதிய வணக்கம்",
+    "evening": "மாலை வணக்கம்"
+  }
 }

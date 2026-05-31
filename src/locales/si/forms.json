@@ -27,14 +27,37 @@
     "view_updates": "යාවත්කාලීන බලන්න",
     "start_button": "ප්‍රතිපෝෂණයක් යවන්න",
     "intro_description": "ඔබගේ අදහස් අපට වැදගත්. ප්‍රතිපෝෂණ, ගැටළු හෝ යෝජනා අප සමඟ බෙදා ගන්න.",
-    "form_description": "පහත තොරතුරු ඇතුළත් කර ඔබගේ ප්‍රතිපෝෂණය යවන්න."
+    "form_description": "පහත තොරතුරු ඇතුළත් කර ඔබගේ ප්‍රතිපෝෂණය යවන්න.",
+    "your_message_section": "ඔබේ පණිවිඩය",
+    "about_you_section": "ඔබ පිළිබඳව",
+    "satisfaction_section": "ඔබ කෙතරම් සතුටුද?",
+    "anonymous_help": "ඔබේ අනන්‍යතාව බෙදා නොගෙන යවන්න",
+    "anonymous_confirmed": "ඔබේ ඉදිරිපත් කිරීම සම්පූර්ණයෙන්ම නිරනාමික ලෙස තබා ගනු ලැබේ.",
+    "save_code_helper": "ඔබේ ඉදිරිපත් කිරීම නිරීක්ෂණය කිරීමට මෙම කේතය සුරකින්න",
+    "copy_code": "කේතය පිටපත් කරන්න",
+    "preparing_pdf": "PDF සකස් කරමින්…",
+    "download_pdf": "PDF රිසිට්පත බාගන්න",
+    "pdf_help": "පසුව ප්‍රගතිය පරීක්ෂා කිරීමට හැකි පරිදි ඔබේ ට්‍රැකින් සබැඳිය සහ මුරපදය ඇතුළත් වේ.",
+    "submit_another": "තවත් ප්‍රතිචාරයක් යවන්න",
+    "back": "ආපසු"
   },
   "validation": {
     "required": "මෙම ක්ෂේත්‍රය අනිවාර්යයි",
     "email": "වලංගු ඊමේල් ලිපිනයක් ඇතුළු කරන්න",
     "min_length": "අවම වශයෙන් {{count}} අක්ෂර අවශ්‍යයි",
     "max_length": "උපරිම {{count}} අක්ෂර පමණක් ඉඩ ඇත",
-    "invalid_format": "වලංගු නොවන ආකෘතිය"
+    "invalid_format": "වලංගු නොවන ආකෘතිය",
+    "board_name_required": "පුවරු නම අවශ්‍යයි",
+    "board_name_max": "පුවරු නම අක්ෂර {{max}}කට සීමා වේ",
+    "description_required": "විස්තරය අවශ්‍යයි",
+    "categories_required": "අවම වශයෙන් එක් ප්‍රවර්ගයක්වත් අවශ්‍යයි",
+    "languages_required": "අවම වශයෙන් එක් භාෂාවක්වත් තෝරන්න",
+    "category_name_max": "ප්‍රවර්ග නම අක්ෂර {{max}}කට සීමා වේ",
+    "boards_limit_reached": "ඔබගේ වර්තමාන සැලැස්මේ පුවරු {{limit}}ක සීමාවට ළඟාවී ඇත. තවත් සෑදීමට උත්ශ්‍රේණි කරන්න.",
+    "subject_max": "විෂය අක්ෂර {{max}}කට සීමා වේ",
+    "description_max": "විස්තරය අක්ෂර {{max}}කට සීමා වේ",
+    "satisfaction_required": "කරුණාකර ඔබේ සතුටු මට්ටම තෝරන්න",
+    "invalid_category": "තෝරාගත් ප්‍රවර්ගය වලංගු නොවේ"
   },
   "board": {
     "name": "පුවරු නම",
@@ -50,7 +73,14 @@
     "anonymous_allowed": "නිරනාමික ඉදිරිපත් කිරීම්ට ඉඩ දෙන්න",
     "create_board": "පුවරුව සාදන්න",
     "edit_board": "පුවරුව සංස්කරණය කරන්න",
-    "delete_board": "පුවරුව මකන්න"
+    "delete_board": "පුවරුව මකන්න",
+    "creating_from_template": "{{name}} සැකිලියෙන් පුවරුව සාදමින්",
+    "template_label": "සැකිල්ල",
+    "choose_languages_help": "මෙම පෝරමයේ ඉදිරිපත් කරන්නන්ට භාවිතා කළ හැකි භාෂා තෝරන්න.",
+    "collect_satisfaction": "සතුටු ශ්‍රේණිගත කිරීම එකතු කරන්න",
+    "collect_satisfaction_help": "ඔබේ ඉදිරිපත් කිරීමේ පෝරමයට ඉමෝජි මනෝභාව තේරීමක් එක් කරන්න",
+    "rating_required_label": "ශ්‍රේණිගත කිරීම අනිවාර්යයි",
+    "rating_required_help": "ඉදිරිපත් කරන්නන් යැවීමට පෙර ශ්‍රේණියක් තෝරා ගත යුතුය"
   },
   "login": {
     "email": "ඊමේල් ලිපිනය",
