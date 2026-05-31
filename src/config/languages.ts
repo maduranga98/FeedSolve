@@ -11,7 +11,6 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   { code: 'si', name: 'සිංහල', flag: '🇱🇰', dir: 'ltr' },
   { code: 'ta', name: 'தமிழ்', flag: '🇮🇳', dir: 'ltr' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳', dir: 'ltr' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦', dir: 'rtl' },
 ];
 
 export const SUPPORTED_LANGUAGE_CODES = SUPPORTED_LANGUAGES.map((l) => l.code);
