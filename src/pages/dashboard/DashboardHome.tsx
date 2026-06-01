@@ -29,6 +29,7 @@ function EditBoardModal({
   onSave: (data: { name: string; description: string }) => Promise<void>;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [name, setName] = useState(board.name);
   const [description, setDescription] = useState(board.description);
   const [saving, setSaving] = useState(false);
@@ -49,7 +50,7 @@ function EditBoardModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-md w-full shadow-lg">
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8ECF0]">
-          <h2 className="text-lg font-semibold text-[#1E3A5F]">Edit Board</h2>
+          <h2 className="text-lg font-semibold text-[#1E3A5F]">{t("forms:board.edit_board")}</h2>
           <button onClick={onClose} className="text-[#9AABBF] hover:text-[#1E3A5F]">
             <X size={20} />
           </button>
@@ -57,7 +58,7 @@ function EditBoardModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#444441] mb-1">
-              Board Name
+              {t("forms:board.name")}
             </label>
             <input
               value={name}
@@ -68,7 +69,7 @@ function EditBoardModal({
           </div>
           <div>
             <label className="block text-sm font-medium text-[#444441] mb-1">
-              Description
+              {t("description")}
             </label>
             <textarea
               value={description}
@@ -79,10 +80,10 @@ function EditBoardModal({
           </div>
           <div className="flex gap-3 pt-2">
             <Button variant="secondary" size="sm" type="button" onClick={onClose} className="flex-1 justify-center">
-              Cancel
+              {t("cancel")}
             </Button>
             <Button variant="primary" size="sm" type="submit" disabled={saving} className="flex-1 justify-center">
-              {saving ? "Saving…" : "Save Changes"}
+              {saving ? t("saving") : t("save_changes")}
             </Button>
           </div>
         </form>
@@ -100,6 +101,7 @@ function DeleteConfirmModal({
   onConfirm: () => Promise<void>;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -119,22 +121,21 @@ function DeleteConfirmModal({
           <Trash2 size={22} className="text-[#E74C3C]" />
         </div>
         <h2 className="text-lg font-semibold text-[#1E3A5F] text-center mb-2">
-          Delete Board?
+          {t("boards:dashboard.delete_confirm_title")}
         </h2>
         <p className="text-sm text-[#6B7B8D] text-center mb-6">
-          <span className="font-medium text-[#1E3A5F]">{board.name}</span> will
-          be permanently deleted. This cannot be undone.
+          {t("boards:dashboard.delete_confirm_body", { name: board.name })}
         </p>
         <div className="flex gap-3">
           <Button variant="secondary" size="sm" onClick={onClose} className="flex-1 justify-center">
-            Cancel
+            {t("cancel")}
           </Button>
           <button
             onClick={handleDelete}
             disabled={deleting}
             className="flex-1 py-2 text-sm font-medium text-white bg-[#E74C3C] hover:bg-[#C0392B] rounded-lg transition-colors disabled:opacity-60"
           >
-            {deleting ? "Deleting…" : "Delete"}
+            {deleting ? t("deleting") : t("delete")}
           </button>
         </div>
       </div>
@@ -167,7 +168,7 @@ export function DashboardHome() {
       );
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load boards. Please try again."
+        err instanceof Error ? err.message : t("boards:dashboard.failed_to_load")
       );
     } finally {
       setLoading(false);
@@ -220,7 +221,11 @@ export function DashboardHome() {
 
   const hour = new Date().getHours();
   const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    hour < 12
+      ? t("greetings.morning")
+      : hour < 18
+      ? t("greetings.afternoon")
+      : t("greetings.evening");
 
   return (
     <div className="min-h-screen bg-[#E1E8EF]">
@@ -238,7 +243,7 @@ export function DashboardHome() {
               </h1>
               {!loading && (
                 <p className="text-sm text-[#6B7B8D] mt-1">
-                  {boards.length} {boards.length === 1 ? "board" : "boards"} created
+                  {t("boards:dashboard.boards_count", { count: boards.length })}
                 </p>
               )}
             </div>
@@ -269,7 +274,7 @@ export function DashboardHome() {
               onClick={loadData}
               className="mt-2 text-sm text-[#E74C3C] hover:text-[#C0392B] font-medium underline"
             >
-              Try again
+              {t("try_again")}
             </button>
           </div>
         )}
@@ -284,7 +289,7 @@ export function DashboardHome() {
             <div className="w-16 h-16 bg-[#EBF5FB] rounded-2xl flex items-center justify-center mx-auto mb-5">
               <LayoutTemplate size={32} className="text-[#2E86AB]" />
             </div>
-            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-2">No boards yet</h2>
+            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-2">{t("boards:dashboard.no_boards_yet")}</h2>
             <p className="text-sm text-[#6B7B8D] mb-6 max-w-sm mx-auto">
               {t("boards:dashboard.create_first")}
             </p>
@@ -298,10 +303,10 @@ export function DashboardHome() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-[#1E3A5F]">
-                  Your Feedback Boards
+                  {t("boards:dashboard.your_boards")}
                 </h2>
                 <p className="text-sm text-[#6B7B8D] mt-0.5">
-                  Click a board to configure it, copy its public link, or download its QR code.
+                  {t("boards:dashboard.your_boards_subtitle")}
                 </p>
               </div>
             </div>
@@ -325,14 +330,14 @@ export function DashboardHome() {
                       <button
                         onClick={() => setEditingBoard(board)}
                         className="p-1.5 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
-                        title="Edit board"
+                        title={t("boards:dashboard.edit_tooltip")}
                       >
                         <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => setDeletingBoard(board)}
                         className="p-1.5 text-[#9AABBF] hover:text-[#E74C3C] hover:bg-[#FFE5E5] rounded-lg transition-colors"
-                        title="Delete board"
+                        title={t("boards:dashboard.delete_tooltip")}
                       >
                         <Trash2 size={15} />
                       </button>
@@ -347,7 +352,7 @@ export function DashboardHome() {
                     </span>
                     <span className="flex items-center gap-1">
                       <MessageSquare size={12} />
-                      {board.submissionCount} submission{board.submissionCount !== 1 ? "s" : ""}
+                      {t("boards:dashboard.submissions_count", { count: board.submissionCount })}
                     </span>
                   </div>
 
@@ -365,7 +370,7 @@ export function DashboardHome() {
                       ))}
                       {board.categories.length > 3 && (
                         <span className="text-xs text-[#9AABBF] px-1">
-                          +{board.categories.length - 3} more
+                          {t("boards:dashboard.more_count", { count: board.categories.length - 3 })}
                         </span>
                       )}
                     </div>
@@ -379,7 +384,7 @@ export function DashboardHome() {
                       className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] py-2 rounded-lg transition-colors"
                     >
                       <QrCode size={13} />
-                      QR Code & Settings
+                      {t("boards:dashboard.qr_code_and_settings")}
                     </button>
                     <button
                       type="button"
@@ -392,7 +397,7 @@ export function DashboardHome() {
                       className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] py-2 rounded-lg transition-colors"
                     >
                       <ExternalLink size={13} />
-                      Open Form
+                      {t("boards:dashboard.open_form")}
                     </button>
                   </div>
 
@@ -402,7 +407,7 @@ export function DashboardHome() {
                     onClick={() => navigate(`/submissions`)}
                     className="text-xs text-[#9AABBF] hover:text-[#2E86AB] transition-colors text-center"
                   >
-                    View submissions →
+                    {t("boards:dashboard.view_submissions")}
                   </button>
                 </div>
               ))}

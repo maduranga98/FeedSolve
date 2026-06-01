@@ -27,14 +27,37 @@
     "view_updates": "View Updates",
     "start_button": "Submit Feedback",
     "intro_description": "We value your input. Share your feedback, report issues, or suggest improvements.",
-    "form_description": "Fill in the details below to submit your feedback."
+    "form_description": "Fill in the details below to submit your feedback.",
+    "your_message_section": "Your Message",
+    "about_you_section": "About You",
+    "satisfaction_section": "How satisfied are you?",
+    "anonymous_help": "Submit without sharing your identity",
+    "anonymous_confirmed": "Your submission will be kept completely anonymous.",
+    "save_code_helper": "Save this code to track your submission",
+    "copy_code": "Copy code",
+    "preparing_pdf": "Preparing PDF…",
+    "download_pdf": "Download PDF receipt",
+    "pdf_help": "Includes your tracking link and passcode so you can check progress later.",
+    "submit_another": "Submit another response",
+    "back": "Back"
   },
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email",
     "min_length": "Minimum {{count}} characters required",
     "max_length": "Maximum {{count}} characters allowed",
-    "invalid_format": "Invalid format"
+    "invalid_format": "Invalid format",
+    "board_name_required": "Board name is required",
+    "board_name_max": "Board name must be at most {{max}} characters",
+    "description_required": "Description is required",
+    "categories_required": "At least one category is required",
+    "languages_required": "Select at least one language",
+    "category_name_max": "Category name must be at most {{max}} characters",
+    "boards_limit_reached": "You've reached the limit of {{limit}} boards on your current plan. Upgrade to create more.",
+    "subject_max": "Subject must be at most {{max}} characters",
+    "description_max": "Description must be at most {{max}} characters",
+    "satisfaction_required": "Please select your satisfaction level",
+    "invalid_category": "Invalid category selected"
   },
   "board": {
     "name": "Board Name",
@@ -50,7 +73,14 @@
     "anonymous_allowed": "Allow Anonymous Submissions",
     "create_board": "Create Board",
     "edit_board": "Edit Board",
-    "delete_board": "Delete Board"
+    "delete_board": "Delete Board",
+    "creating_from_template": "Creating board from {{name}} template",
+    "template_label": "Template",
+    "choose_languages_help": "Choose which languages submitters can use on this form.",
+    "collect_satisfaction": "Collect satisfaction rating",
+    "collect_satisfaction_help": "Add an emoji mood selector to your submission form",
+    "rating_required_label": "Rating required",
+    "rating_required_help": "Submitters must select a rating before submitting"
   },
   "login": {
     "subtitle": "Sign in to your account",

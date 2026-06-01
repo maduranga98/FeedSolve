@@ -73,5 +73,14 @@
   "logo_requirements": "PNG, JPEG, WebP හෝ SVG. උපරිම 2MB.",
   "company_info": "සමාගම් තොරතුරු",
   "preview": "පෙරදසුන",
-  "optional": "විකල්ප"
+  "optional": "විකල්ප",
+  "try_again": "නැවත උත්සාහ කරන්න",
+  "saving": "සුරකිමින්…",
+  "deleting": "මකමින්…",
+  "save_changes": "වෙනස්කම් සුරකින්න",
+  "greetings": {
+    "morning": "සුභ උදෑසනක්",
+    "afternoon": "සුභ දහවලක්",
+    "evening": "සුභ සැන්දෑවක්"
+  }
 }

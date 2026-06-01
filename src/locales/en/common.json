@@ -73,5 +73,14 @@
   "logo_requirements": "PNG, JPEG, WebP or SVG. Max 2MB.",
   "company_info": "Company Information",
   "preview": "Preview",
-  "optional": "Optional"
+  "optional": "Optional",
+  "try_again": "Try again",
+  "saving": "Saving…",
+  "deleting": "Deleting…",
+  "save_changes": "Save Changes",
+  "greetings": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  }
 }

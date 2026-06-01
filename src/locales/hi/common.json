@@ -6,7 +6,7 @@
   "save": "सहेजें",
   "delete": "हटाएं",
   "edit": "संपादित करें",
-  "dashboard": "Dashboard",
+  "dashboard": "डैशबोर्ड",
   "settings": "सेटिंग्स",
   "logout": "लॉग आउट",
   "loading": "लोड हो रहा है...",
@@ -73,5 +73,14 @@
   "logo_requirements": "PNG, JPEG, WebP या SVG। अधिकतम 2MB।",
   "company_info": "कंपनी जानकारी",
   "preview": "पूर्वावलोकन",
-  "optional": "वैकल्पिक"
+  "optional": "वैकल्पिक",
+  "try_again": "पुनः प्रयास करें",
+  "saving": "सहेजा जा रहा है…",
+  "deleting": "हटाया जा रहा है…",
+  "save_changes": "परिवर्तन सहेजें",
+  "greetings": {
+    "morning": "सुप्रभात",
+    "afternoon": "नमस्कार",
+    "evening": "शुभ संध्या"
+  }
 }

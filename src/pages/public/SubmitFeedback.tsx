@@ -304,13 +304,13 @@ export function SubmitFeedback() {
     if (!subject)
       newErrors.subject = t("forms:feedback.subject") + " " + t("forms:validation.required");
     else if (subject.length > SUBJECT_MAX)
-      newErrors.subject = `Subject must be at most ${SUBJECT_MAX} characters`;
+      newErrors.subject = t("forms:validation.subject_max", { max: SUBJECT_MAX });
 
     const description = formData.description.trim();
     if (!description)
       newErrors.description = t("forms:feedback.description") + " " + t("forms:validation.required");
     else if (description.length > DESCRIPTION_MAX)
-      newErrors.description = `Description must be at most ${DESCRIPTION_MAX} characters`;
+      newErrors.description = t("forms:validation.description_max", { max: DESCRIPTION_MAX });
 
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
@@ -320,7 +320,7 @@ export function SubmitFeedback() {
     }
 
     if (board?.satisfactionRequired && !formData.satisfactionScore) {
-      newErrors.satisfactionScore = "Please select your satisfaction level";
+      newErrors.satisfactionScore = t("forms:validation.satisfaction_required");
     }
 
     setErrors(newErrors);
@@ -681,7 +681,7 @@ export function SubmitFeedback() {
                         ? "rgba(34,197,94,0.12)"
                         : "var(--brand-primary-bg, rgba(46,134,171,0.10))",
                     }}
-                    title="Copy code"
+                    title={t("forms:feedback.copy_code")}
                   >
                     {copiedCode ? (
                       <Check size={16} color="#16A34A" />
@@ -691,7 +691,7 @@ export function SubmitFeedback() {
                   </button>
                 </div>
                 <p className="text-xs text-[#9AABBF]">
-                  Save this code to track your submission
+                  {t("forms:feedback.save_code_helper")}
                 </p>
               </div>
 
@@ -716,17 +716,17 @@ export function SubmitFeedback() {
                 {downloadingReceipt ? (
                   <>
                     <span className="brand-spinner" style={{ borderTopColor: "var(--brand-primary, #2E86AB)", borderColor: "rgba(46,134,171,0.25)" }} />
-                    <span>Preparing PDF…</span>
+                    <span>{t("forms:feedback.preparing_pdf")}</span>
                   </>
                 ) : (
                   <>
                     <Download size={16} />
-                    <span>Download PDF receipt</span>
+                    <span>{t("forms:feedback.download_pdf")}</span>
                   </>
                 )}
               </button>
               <p className="text-xs text-[#9AABBF] mb-1 -mt-1">
-                Includes your tracking link and passcode so you can check progress later.
+                {t("forms:feedback.pdf_help")}
               </p>
 
               <button
@@ -749,7 +749,7 @@ export function SubmitFeedback() {
                 }}
                 className="w-full px-5 py-2.5 text-sm text-[#9AABBF] hover:text-[#6B7B8D] transition-colors font-medium"
               >
-                Submit another response
+                {t("forms:feedback.submit_another")}
               </button>
             </div>
           </div>
@@ -791,7 +791,7 @@ export function SubmitFeedback() {
                   background: "rgba(255,255,255,0.14)",
                   border: "1px solid rgba(255,255,255,0.22)",
                 }}
-                aria-label="Back"
+                aria-label={t("forms:feedback.back")}
               >
                 <ArrowLeft size={16} color="white" />
               </button>
@@ -874,7 +874,7 @@ export function SubmitFeedback() {
                     <MessageSquare size={15} style={{ color: "var(--brand-primary, #2E86AB)" }} />
                   </div>
                   <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
-                    Your Message
+                    {t("forms:feedback.your_message_section")}
                   </h3>
                 </div>
 
@@ -945,7 +945,7 @@ export function SubmitFeedback() {
                     <User size={15} style={{ color: "var(--brand-primary, #2E86AB)" }} />
                   </div>
                   <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
-                    About You
+                    {t("forms:feedback.about_you_section")}
                   </h3>
                 </div>
 
@@ -1005,7 +1005,7 @@ export function SubmitFeedback() {
                           {t("forms:feedback.anonymous")}
                         </div>
                         <div className="text-xs text-[#9AABBF] mt-0.5">
-                          Submit without sharing your identity
+                          {t("forms:feedback.anonymous_help")}
                         </div>
                       </div>
                     </div>
@@ -1014,7 +1014,7 @@ export function SubmitFeedback() {
                   {!formData.isAnonymous && (
                     <>
                       <Input
-                        label={board.isAnonymousAllowed ? t("forms:feedback.email") : "Email"}
+                        label={board.isAnonymousAllowed ? t("forms:feedback.email") : t("email")}
                         type="email"
                         placeholder="your@email.com"
                         value={formData.email || ""}
@@ -1025,15 +1025,15 @@ export function SubmitFeedback() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Input
-                          label={board.isAnonymousAllowed ? (t("forms:feedback.name") || "Name (optional)") : "Name"}
-                          placeholder={t("forms:feedback.name_placeholder") || "Your name"}
+                          label={board.isAnonymousAllowed ? t("forms:feedback.name") : t("name")}
+                          placeholder={t("forms:feedback.name_placeholder")}
                           value={formData.submitterName || ""}
                           onChange={e => setFormData({ ...formData, submitterName: e.target.value })}
                         />
                         <Input
-                          label={t("forms:feedback.mobile") || "Mobile (optional)"}
+                          label={t("forms:feedback.mobile")}
                           type="tel"
-                          placeholder={t("forms:feedback.mobile_placeholder") || "Your mobile number"}
+                          placeholder={t("forms:feedback.mobile_placeholder")}
                           value={formData.submitterMobile || ""}
                           onChange={e => setFormData({ ...formData, submitterMobile: e.target.value })}
                         />
@@ -1043,7 +1043,7 @@ export function SubmitFeedback() {
 
                   {formData.isAnonymous && (
                     <p className="text-xs text-[#9AABBF] text-center py-1">
-                      Your submission will be kept completely anonymous.
+                      {t("forms:feedback.anonymous_confirmed")}
                     </p>
                   )}
                 </div>
@@ -1102,7 +1102,7 @@ export function SubmitFeedback() {
                       <Star size={15} style={{ color: "var(--brand-primary, #2E86AB)" }} />
                     </div>
                     <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
-                      How satisfied are you?
+                      {t("forms:feedback.satisfaction_section")}
                       {board.satisfactionRequired && (
                         <span className="text-[#DC2626] ml-1">*</span>
                       )}

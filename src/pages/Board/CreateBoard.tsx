@@ -64,21 +64,21 @@ export function CreateBoard() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Board name is required';
+      newErrors.name = t('forms:validation.board_name_required');
     } else if (formData.name.trim().length > BOARD_NAME_MAX) {
-      newErrors.name = `Board name must be at most ${BOARD_NAME_MAX} characters`;
+      newErrors.name = t('forms:validation.board_name_max', { max: BOARD_NAME_MAX });
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
+      newErrors.description = t('forms:validation.description_required');
     }
 
     if (formData.categories.length === 0) {
-      newErrors.categories = 'At least one category is required';
+      newErrors.categories = t('forms:validation.categories_required');
     }
 
     if (!formData.supportedLanguages || formData.supportedLanguages.length === 0) {
-      newErrors.languages = 'Select at least one language';
+      newErrors.languages = t('forms:validation.languages_required');
     }
 
     setErrors(newErrors);
@@ -89,7 +89,7 @@ export function CreateBoard() {
     const trimmed = newCategory.trim();
     if (!trimmed) return;
     if (trimmed.length > CATEGORY_NAME_MAX) {
-      setErrors(prev => ({ ...prev, newCategory: `Category name must be at most ${CATEGORY_NAME_MAX} characters` }));
+      setErrors(prev => ({ ...prev, newCategory: t('forms:validation.category_name_max', { max: CATEGORY_NAME_MAX }) }));
       return;
     }
     setErrors(prev => { const e = { ...prev }; delete e.newCategory; return e; });
@@ -125,7 +125,7 @@ export function CreateBoard() {
 
     if (boardsUsage.atLimit) {
       setErrors({
-        submit: `You've reached the limit of ${boardsUsage.limit} boards on your current plan. Upgrade to create more.`,
+        submit: t('forms:validation.boards_limit_reached', { limit: boardsUsage.limit }),
       });
       return;
     }
@@ -156,7 +156,7 @@ export function CreateBoard() {
       navigate(`/board/${newBoard.id}`);
     } catch (error) {
       setErrors({
-        submit: error instanceof Error ? error.message : 'Failed to create board',
+        submit: error instanceof Error ? error.message : t('boards:errors.creation_failed'),
       });
     } finally {
       setIsLoading(false);
@@ -171,13 +171,15 @@ export function CreateBoard() {
           {selectedTemplate ? t('boards:templates.create_from_template') : t('forms:board.create_board')}
         </h1>
         <p className="text-[#6B7B8D] mb-8">
-          {selectedTemplate ? `Creating board from ${selectedTemplate.name} template` : t('forms:board.description_placeholder')}
+          {selectedTemplate
+            ? t('forms:board.creating_from_template', { name: selectedTemplate.name })
+            : t('forms:board.description_placeholder')}
         </p>
 
         {selectedTemplate && (
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              <strong>Template:</strong> {selectedTemplate.name}
+              <strong>{t('forms:board.template_label')}:</strong> {selectedTemplate.name}
             </p>
           </div>
         )}
@@ -274,7 +276,7 @@ export function CreateBoard() {
               {t('forms:feedback.language')}
             </label>
             <p className="text-[#6B7B8D] text-xs mb-3">
-              Choose which languages submitters can use on this form.
+              {t('forms:board.choose_languages_help')}
             </p>
             <div className="flex flex-wrap gap-2">
               {SUPPORTED_LANGUAGES.map(lang => {
@@ -334,8 +336,8 @@ export function CreateBoard() {
                 className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
               />
               <div>
-                <span className="text-[#1E3A5F] font-medium block">Collect satisfaction rating</span>
-                <span className="text-[#6B7B8D] text-xs">Add an emoji mood selector to your submission form</span>
+                <span className="text-[#1E3A5F] font-medium block">{t('forms:board.collect_satisfaction')}</span>
+                <span className="text-[#6B7B8D] text-xs">{t('forms:board.collect_satisfaction_help')}</span>
               </div>
             </label>
 
@@ -353,8 +355,8 @@ export function CreateBoard() {
                   className="w-4 h-4 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
                 />
                 <div>
-                  <span className="text-[#1E3A5F] font-medium text-sm block">Rating required</span>
-                  <span className="text-[#6B7B8D] text-xs">Submitters must select a rating before submitting</span>
+                  <span className="text-[#1E3A5F] font-medium text-sm block">{t('forms:board.rating_required_label')}</span>
+                  <span className="text-[#6B7B8D] text-xs">{t('forms:board.rating_required_help')}</span>
                 </div>
               </label>
             )}

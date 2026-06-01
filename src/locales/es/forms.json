@@ -27,14 +27,37 @@
     "view_updates": "Ver actualizaciones",
     "start_button": "Enviar comentarios",
     "intro_description": "Valoramos tu opinión. Comparte tus comentarios, reporta problemas o sugiere mejoras.",
-    "form_description": "Completa los detalles a continuación para enviar tus comentarios."
+    "form_description": "Completa los detalles a continuación para enviar tus comentarios.",
+    "your_message_section": "Tu mensaje",
+    "about_you_section": "Sobre ti",
+    "satisfaction_section": "¿Qué tan satisfecho estás?",
+    "anonymous_help": "Envía sin compartir tu identidad",
+    "anonymous_confirmed": "Tu envío se mantendrá totalmente anónimo.",
+    "save_code_helper": "Guarda este código para seguir tu envío",
+    "copy_code": "Copiar código",
+    "preparing_pdf": "Preparando PDF…",
+    "download_pdf": "Descargar recibo PDF",
+    "pdf_help": "Incluye tu enlace de seguimiento y contraseña para revisar el progreso más tarde.",
+    "submit_another": "Enviar otra respuesta",
+    "back": "Atrás"
   },
   "validation": {
     "required": "Este campo es obligatorio",
     "email": "Por favor ingresa un correo válido",
     "min_length": "Se requieren mínimo {{count}} caracteres",
     "max_length": "Se permiten máximo {{count}} caracteres",
-    "invalid_format": "Formato inválido"
+    "invalid_format": "Formato inválido",
+    "board_name_required": "El nombre del tablero es obligatorio",
+    "board_name_max": "El nombre del tablero debe tener como máximo {{max}} caracteres",
+    "description_required": "La descripción es obligatoria",
+    "categories_required": "Se requiere al menos una categoría",
+    "languages_required": "Selecciona al menos un idioma",
+    "category_name_max": "El nombre de la categoría debe tener como máximo {{max}} caracteres",
+    "boards_limit_reached": "Has alcanzado el límite de {{limit}} tableros en tu plan actual. Actualiza para crear más.",
+    "subject_max": "El asunto debe tener como máximo {{max}} caracteres",
+    "description_max": "La descripción debe tener como máximo {{max}} caracteres",
+    "satisfaction_required": "Por favor selecciona tu nivel de satisfacción",
+    "invalid_category": "Categoría seleccionada inválida"
   },
   "board": {
     "name": "Nombre del tablero",
@@ -50,7 +73,14 @@
     "anonymous_allowed": "Permitir envíos anónimos",
     "create_board": "Crear tablero",
     "edit_board": "Editar tablero",
-    "delete_board": "Eliminar tablero"
+    "delete_board": "Eliminar tablero",
+    "creating_from_template": "Creando tablero desde la plantilla {{name}}",
+    "template_label": "Plantilla",
+    "choose_languages_help": "Elige qué idiomas pueden usar los participantes en este formulario.",
+    "collect_satisfaction": "Recopilar calificación de satisfacción",
+    "collect_satisfaction_help": "Agrega un selector de emoji a tu formulario",
+    "rating_required_label": "Calificación obligatoria",
+    "rating_required_help": "Los participantes deben seleccionar una calificación antes de enviar"
   },
   "login": {
     "subtitle": "Inicia sesión en tu cuenta",
