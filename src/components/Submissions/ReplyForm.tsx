@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Lock, LayoutTemplate } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../Shared';
@@ -26,6 +27,7 @@ export default function ReplyForm({
   submission,
   boardName = '',
 }: ReplyFormProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { checkFeature } = useHasFeature();
@@ -81,17 +83,17 @@ export default function ReplyForm({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] rounded-lg transition-colors"
             >
               <LayoutTemplate size={13} />
-              Use Template
+              {t('reply_form.use_template')}
             </button>
           ) : (
             <button
               type="button"
               onClick={() => navigate('/pricing')}
-              title="Reply templates available on Growth plan"
+              title={t('reply_form.template_locked')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#E1E8EF] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
             >
               <Lock size={12} />
-              Use Template
+              {t('reply_form.use_template')}
             </button>
           )}
         </div>
@@ -113,7 +115,7 @@ export default function ReplyForm({
         value={text}
         onChange={(e) => setText(e.target.value)}
         disabled={loading}
-        placeholder="Write a public reply that will be visible to the submitter..."
+        placeholder={t('reply_form.placeholder')}
         className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none"
         rows={5}
       />
@@ -125,7 +127,7 @@ export default function ReplyForm({
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          {t('reply_form.cancel')}
         </Button>
         <Button
           variant="primary"
@@ -133,7 +135,7 @@ export default function ReplyForm({
           type="submit"
           disabled={loading || !text.trim()}
         >
-          {loading ? 'Sending...' : 'Send Reply'}
+          {loading ? t('reply_form.sending') : t('reply_form.send')}
         </Button>
       </div>
     </form>

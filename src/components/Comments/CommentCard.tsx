@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Edit2, SmilePlus } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Timestamp } from 'firebase/firestore';
@@ -28,6 +29,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
   replies,
   isReply,
 }) => {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
@@ -61,7 +63,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
                 {formatDistanceToNow(new Date((comment.createdAt as Timestamp).toDate()), {
                   addSuffix: true,
                 })}
-                {comment.isEdited && <span className="ml-1">(edited)</span>}
+                {comment.isEdited && <span className="ml-1">{t('comment_card.edited')}</span>}
               </div>
             </div>
           </div>
@@ -72,14 +74,14 @@ export const CommentCard: React.FC<CommentCardProps> = ({
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="p-1.5 text-gray-500 hover:bg-gray-100 rounded transition"
-                title="Edit"
+                title={t('comment_card.edit')}
               >
                 <Edit2 size={16} />
               </button>
               <button
                 onClick={() => onDelete(comment.id)}
                 className="p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded transition"
-                title="Delete"
+                title={t('comment_card.delete')}
               >
                 <Trash2 size={16} />
               </button>
@@ -101,7 +103,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
                 onClick={handleSaveEdit}
                 className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
               >
-                Save
+                {t('comment_card.save')}
               </button>
               <button
                 onClick={() => {
@@ -110,7 +112,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
                 }}
                 className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition"
               >
-                Cancel
+                {t('comment_card.cancel')}
               </button>
             </div>
           </div>
@@ -152,14 +154,14 @@ export const CommentCard: React.FC<CommentCardProps> = ({
             className="flex items-center gap-1 hover:text-gray-900 transition"
           >
             <SmilePlus size={14} />
-            React
+            {t('comment_card.react')}
           </button>
           {!isReply && (
             <button
               onClick={() => onReply(comment.id)}
               className="flex items-center gap-1 hover:text-gray-900 transition"
             >
-              Reply
+              {t('comment_card.reply')}
             </button>
           )}
 

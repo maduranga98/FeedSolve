@@ -46,7 +46,7 @@ export function SignUp() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    document.title = "Sign Up | FeedSolve";
+    document.title = t("auth.sign_up_title");
   }, []);
 
   const [formData, setFormData] = useState({
@@ -188,21 +188,20 @@ export function SignUp() {
 
         <div className="relative z-10">
           <h2 className="text-3xl font-bold leading-snug mb-4">
-            Start collecting
-            <br />
-            feedback today.
+            {t("auth.signup_hero_title").split('\n').map((line, i) => (
+              <span key={i}>{i > 0 && <br />}{line}</span>
+            ))}
           </h2>
           <p className="text-white/70 text-base leading-relaxed">
-            Set up your first feedback board in minutes. No credit card required
-            to get started.
+            {t("auth.signup_hero_desc")}
           </p>
 
           <ul className="mt-8 space-y-3">
             {[
-              "Unlimited submissions on the free plan",
-              "Real-time analytics & reporting",
-              "Team collaboration built-in",
-              "Multi-language support",
+              t("auth.signup_feature_1"),
+              t("auth.signup_feature_2"),
+              t("auth.signup_feature_3"),
+              t("auth.signup_feature_4"),
             ].map((item) => (
               <li
                 key={item}
@@ -230,7 +229,7 @@ export function SignUp() {
         </div>
 
         <p className="text-white/40 text-xs relative z-10">
-          © {new Date().getFullYear()} FeedSolve. All rights reserved.
+          © {new Date().getFullYear()} FeedSolve. {t("auth.all_rights_reserved")}
         </p>
       </div>
 
@@ -305,7 +304,7 @@ export function SignUp() {
             </div>
             <div className="relative flex justify-center text-xs">
               <span className="px-3 bg-[#E1E8EF] text-[#9AABBF] font-medium">
-                or create an account with email
+                {t("auth.or_create_with_email")}
               </span>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2, Edit2 } from 'lucide-react';
 import { Badge, LoadingSpinner } from '../Shared';
 import { RoleModal } from './RoleModal';
@@ -22,20 +23,21 @@ export function TeamMembersTable({
   onRoleChange,
   onRemoveMember,
 }: TeamMembersTableProps) {
+  const { t } = useTranslation();
   const { isHigherOrEqual } = usePermissions();
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
   const handleRemove = async (userId: string) => {
-    if (!confirm('Are you sure you want to remove this team member?')) return;
+    if (!confirm(t('team_page.confirm_remove'))) return;
 
     try {
       setRemovingMemberId(userId);
       setError('');
       await onRemoveMember(userId);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to remove member');
+      setError(err instanceof Error ? err.message : t('team_page.failed_remove'));
     } finally {
       setRemovingMemberId(null);
     }
@@ -56,7 +58,7 @@ export function TeamMembersTable({
 
   if (members.length === 0) {
     return (
-      <p className="text-center text-color-muted-text py-8">No team members yet.</p>
+      <p className="text-center text-color-muted-text py-8">{t('team_page.no_members')}</p>
     );
   }
 
@@ -73,19 +75,19 @@ export function TeamMembersTable({
           <thead>
             <tr className="border-b border-color-border">
               <th className="text-left py-3 px-4 text-sm font-semibold text-color-body-text">
-                Name
+                {t('team_page.col_name')}
               </th>
               <th className="text-left py-3 px-4 text-sm font-semibold text-color-body-text">
-                Email
+                {t('team_page.col_email')}
               </th>
               <th className="text-left py-3 px-4 text-sm font-semibold text-color-body-text">
-                Role
+                {t('team_page.col_role')}
               </th>
               <th className="text-left py-3 px-4 text-sm font-semibold text-color-body-text">
-                Joined
+                {t('team_page.col_joined')}
               </th>
               <th className="text-right py-3 px-4 text-sm font-semibold text-color-body-text">
-                Actions
+                {t('team_page.col_actions')}
               </th>
             </tr>
           </thead>
@@ -104,7 +106,7 @@ export function TeamMembersTable({
                   <td className="py-3 px-4">
                     <p className="font-medium text-color-body-text">{member.name}</p>
                     {isCurrentUser && (
-                      <p className="text-xs text-color-muted-text">You</p>
+                      <p className="text-xs text-color-muted-text">{t('team_page.you')}</p>
                     )}
                   </td>
                   <td className="py-3 px-4 text-color-muted-text">{member.email}</td>
@@ -128,7 +130,7 @@ export function TeamMembersTable({
                             <button
                               onClick={() => setEditingMemberId(member.userId)}
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                              title="Edit role"
+                              title={t('team_page.edit_role')}
                               disabled={removingMemberId === member.userId}
                             >
                               <Edit2 size={16} />
@@ -136,7 +138,7 @@ export function TeamMembersTable({
                             <button
                               onClick={() => handleRemove(member.userId)}
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
-                              title="Remove member"
+                              title={t('team_page.remove_member')}
                               disabled={removingMemberId === member.userId}
                             >
                               <Trash2 size={16} />
@@ -144,7 +146,7 @@ export function TeamMembersTable({
                           </>
                         )}
                         {!canManage && !isCurrentUser && (
-                          <p className="text-xs text-color-muted-text">No actions</p>
+                          <p className="text-xs text-color-muted-text">{t('team_page.no_actions')}</p>
                         )}
                       </div>
                     </PermissionGuard>

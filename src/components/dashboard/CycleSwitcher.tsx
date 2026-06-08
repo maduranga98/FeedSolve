@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 import type { BoardCycle } from '../../types';
 
@@ -10,11 +11,12 @@ interface CycleSwitcherProps {
 }
 
 export function CycleSwitcher({ cycles, selectedCycle, onChange }: CycleSwitcherProps) {
+  const { t } = useTranslation();
   if (cycles.length === 0) return null;
 
   const currentCycles = cycles.filter((cycle) => cycle.isCurrent);
   const pastCycles = cycles.filter((cycle) => !cycle.isCurrent);
-  const currentLabel = currentCycles.length === 1 ? `Current Cycle (${currentCycles[0].label})` : 'Current Cycle';
+  const currentLabel = currentCycles.length === 1 ? `${t('cycle_switcher.current_cycle')} (${currentCycles[0].label})` : t('cycle_switcher.current_cycle');
 
   return (
     <div className="relative inline-flex items-center">
@@ -22,10 +24,10 @@ export function CycleSwitcher({ cycles, selectedCycle, onChange }: CycleSwitcher
         value={selectedCycle}
         onChange={(event) => onChange(event.target.value)}
         className="appearance-none rounded-xl border border-[#D3D1C7] bg-white py-2 pl-3 pr-9 text-sm font-semibold text-[#1E3A5F] shadow-sm outline-none transition focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
-        aria-label="Choose board cycle"
+        aria-label={t('cycle_switcher.aria_label')}
       >
         <option value="current">{currentLabel}</option>
-        <option value="all">All Time</option>
+        <option value="all">{t('cycle_switcher.all_time')}</option>
         {pastCycles.map((cycle) => (
           <option key={cycle.id} value={cycle.id}>
             {cycle.label}
