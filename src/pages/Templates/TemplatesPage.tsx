@@ -24,7 +24,7 @@ export function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    document.title = 'Templates | FeedSolve';
+    document.title = `${t('boards:templates.title')} | FeedSolve`;
   }, []);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export function TemplatesPage() {
                 onChange={(e) => setSelectedIndustry(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">All Industries</option>
+                <option value="">{t('all_industries')}</option>
                 {industries.map(industry => (
                   <option key={industry} value={industry}>
                     {formatIndustryLabel(industry)}

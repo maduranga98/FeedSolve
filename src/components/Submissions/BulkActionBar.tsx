@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, X } from 'lucide-react';
 import { BulkActionModal } from './BulkActionModal';
 import type { Submission, User } from '../../types';
 
-const STATUS_OPTIONS: { value: Submission['status']; label: string }[] = [
-  { value: 'received', label: 'Received' },
-  { value: 'in_review', label: 'In Review' },
-  { value: 'in_progress', label: 'In Progress' },
-  { value: 'resolved', label: 'Resolved' },
-  { value: 'closed', label: 'Closed' },
+const STATUS_OPTIONS_KEYS: { value: Submission['status']; labelKey: string }[] = [
+  { value: 'received', labelKey: 'bulk.status_received' },
+  { value: 'in_review', labelKey: 'bulk.status_in_review' },
+  { value: 'in_progress', labelKey: 'bulk.status_in_progress' },
+  { value: 'resolved', labelKey: 'bulk.status_resolved' },
+  { value: 'closed', labelKey: 'bulk.status_closed' },
 ];
 
 interface BulkActionBarProps {
@@ -28,6 +29,7 @@ export function BulkActionBar({
   onBulkClose,
   onClear,
 }: BulkActionBarProps) {
+  const { t } = useTranslation('common');
   const [statusOpen, setStatusOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<Submission['status'] | null>(null);
@@ -86,7 +88,12 @@ export function BulkActionBar({
     }
   };
 
-  const pendingStatusLabel = STATUS_OPTIONS.find((s) => s.value === pendingStatus)?.label ?? '';
+  const statusOptions = STATUS_OPTIONS_KEYS.map(({ value, labelKey }) => ({
+    value,
+    label: t(labelKey),
+  }));
+
+  const pendingStatusLabel = statusOptions.find((s) => s.value === pendingStatus)?.label ?? '';
 
   return (
     <>
@@ -94,7 +101,7 @@ export function BulkActionBar({
         <div className="pointer-events-auto bg-[#1E3A5F] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 max-w-[calc(100vw-2rem)]">
           {/* Count */}
           <span className="text-white text-sm font-semibold whitespace-nowrap flex-shrink-0">
-            {selectedCount} selected
+            {t('bulk.selected', { count: selectedCount })}
           </span>
 
           <div className="w-px h-5 bg-white/30 flex-shrink-0" />
@@ -109,12 +116,12 @@ export function BulkActionBar({
               disabled={isLoading}
               className="flex items-center gap-1.5 text-white text-sm font-medium hover:text-white/80 transition-colors disabled:opacity-50 whitespace-nowrap"
             >
-              Change Status
+              {t('bulk.change_status')}
               <ChevronDown size={14} />
             </button>
             {statusOpen && (
               <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-xl border border-[#E8ECF0] py-1 min-w-[160px] z-50">
-                {STATUS_OPTIONS.map(({ value, label }) => (
+                {statusOptions.map(({ value, label }) => (
                   <button
                     key={value}
                     onClick={() => handleStatusSelect(value)}
@@ -137,13 +144,13 @@ export function BulkActionBar({
               disabled={isLoading}
               className="flex items-center gap-1.5 text-white text-sm font-medium hover:text-white/80 transition-colors disabled:opacity-50 whitespace-nowrap"
             >
-              Assign To
+              {t('bulk.assign_to')}
               <ChevronDown size={14} />
             </button>
             {assignOpen && (
               <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-xl border border-[#E8ECF0] py-1 min-w-[180px] z-50">
                 {users.length === 0 ? (
-                  <p className="px-4 py-2.5 text-sm text-[#9AABBF]">No team members</p>
+                  <p className="px-4 py-2.5 text-sm text-[#9AABBF]">{t('bulk.no_team_members')}</p>
                 ) : (
                   users.map((u) => (
                     <button
@@ -168,7 +175,7 @@ export function BulkActionBar({
             disabled={isLoading}
             className="text-white text-sm font-medium hover:text-white/80 transition-colors disabled:opacity-50 whitespace-nowrap flex-shrink-0"
           >
-            Close All
+            {t('bulk.close_all')}
           </button>
 
           <div className="w-px h-5 bg-white/30 flex-shrink-0" />
@@ -180,7 +187,7 @@ export function BulkActionBar({
             className="flex items-center gap-1 text-white/70 text-sm hover:text-white transition-colors disabled:opacity-50 whitespace-nowrap flex-shrink-0"
           >
             <X size={14} />
-            Clear
+            {t('clear')}
           </button>
         </div>
       </div>
@@ -189,10 +196,10 @@ export function BulkActionBar({
       {pendingStatus && (
         <BulkActionModal
           isOpen
-          title={`Change status to ${pendingStatusLabel}?`}
-          message={`Change ${selectedCount} submission${selectedCount !== 1 ? 's' : ''} to "${pendingStatusLabel}"?`}
+          title={t('bulk.status_confirm_title', { status: pendingStatusLabel })}
+          message={t('bulk.status_confirm_msg', { count: selectedCount, status: pendingStatusLabel })}
           selectedCount={selectedCount}
-          actionLabel={`Change to ${pendingStatusLabel}`}
+          actionLabel={t('bulk.status_confirm_action', { status: pendingStatusLabel })}
           isLoading={isLoading}
           onConfirm={handleStatusConfirm}
           onCancel={() => setPendingStatus(null)}
@@ -202,10 +209,10 @@ export function BulkActionBar({
       {/* Close All confirmation */}
       <BulkActionModal
         isOpen={showCloseConfirm}
-        title={`Close ${selectedCount} submission${selectedCount !== 1 ? 's' : ''}?`}
-        message="This marks them as resolved and closed."
+        title={t('bulk.close_confirm_title', { count: selectedCount })}
+        message={t('bulk.close_confirm_msg')}
         selectedCount={selectedCount}
-        actionLabel="Close All"
+        actionLabel={t('bulk.close_all')}
         isLoading={isLoading}
         onConfirm={handleCloseConfirm}
         onCancel={() => setShowCloseConfirm(false)}

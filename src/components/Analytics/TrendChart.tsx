@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Calendar } from 'lucide-react';
 import type { DateRange } from '../../lib/date-ranges';
@@ -20,6 +21,7 @@ export function TrendChart({
   onDateRangeChange,
   loading = false,
 }: TrendChartProps) {
+  const { t } = useTranslation();
   const [isCustom, setIsCustom] = useState(dateRange.preset === 'custom');
   const [customFrom, setCustomFrom] = useState(
     dateRange.from.toISOString().split('T')[0]
@@ -48,7 +50,7 @@ export function TrendChart({
   return (
     <div className="bg-color-surface rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-color-primary">Submissions Trend</h2>
+        <h2 className="text-xl font-semibold text-color-primary">{t('analytics.submissions_trend')}</h2>
 
         <div className="flex items-center gap-2">
           {presets.map((preset) => (
@@ -74,7 +76,7 @@ export function TrendChart({
             }`}
           >
             <Calendar size={16} />
-            Custom
+            {t('analytics.custom')}
           </button>
         </div>
       </div>
@@ -83,7 +85,7 @@ export function TrendChart({
         <div className="mb-6 p-4 bg-color-bg rounded border border-color-border flex items-end gap-3">
           <div>
             <label className="block text-sm font-medium text-color-body-text mb-1">
-              From
+              {t('analytics.from')}
             </label>
             <input
               type="date"
@@ -94,7 +96,7 @@ export function TrendChart({
           </div>
           <div>
             <label className="block text-sm font-medium text-color-body-text mb-1">
-              To
+              {t('analytics.to')}
             </label>
             <input
               type="date"
@@ -107,18 +109,18 @@ export function TrendChart({
             onClick={handleCustomApply}
             className="px-4 py-2 bg-[#1E3A5F] text-white rounded font-medium hover:bg-[#2E86AB] transition-colors"
           >
-            Apply
+            {t('analytics.apply')}
           </button>
         </div>
       )}
 
       {loading ? (
         <div className="h-80 flex items-center justify-center text-color-muted-text">
-          Loading chart data...
+          {t('analytics.loading_chart')}
         </div>
       ) : data.length === 0 ? (
         <div className="h-80 flex items-center justify-center text-color-muted-text">
-          No data available for this date range
+          {t('analytics.no_data_range')}
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={380}>
@@ -143,7 +145,7 @@ export function TrendChart({
               type="monotone"
               dataKey="count"
               stroke="#3b82f6"
-              name="Total Submissions"
+              name={t('analytics.total_submissions_line')}
               strokeWidth={2}
               dot={{ fill: '#3b82f6' }}
               activeDot={{ r: 5 }}
@@ -152,7 +154,7 @@ export function TrendChart({
               type="monotone"
               dataKey="resolved"
               stroke="#10b981"
-              name="Resolved"
+              name={t('analytics.resolved_line')}
               strokeWidth={2}
               dot={{ fill: '#10b981' }}
               activeDot={{ r: 5 }}

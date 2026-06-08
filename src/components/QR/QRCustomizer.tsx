@@ -1,5 +1,6 @@
 import { downloadDataUrl } from '../../lib/download';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import QRCodeStyling from 'qr-code-styling';
 import type { DotType, CornerSquareType, CornerDotType } from 'qr-code-styling';
 import { Download, Upload, X, RotateCcw } from 'lucide-react';
@@ -41,32 +42,36 @@ const DEFAULT_CONFIG: QRConfig = {
   labelPosition: 'bottom',
 };
 
-const DOT_STYLES: { value: DotType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'dots', label: 'Dots' },
-  { value: 'rounded', label: 'Rounded' },
-  { value: 'extra-rounded', label: 'Extra Rounded' },
-  { value: 'classy', label: 'Classy' },
-  { value: 'classy-rounded', label: 'Classy Rounded' },
+type DotStyleOption = { value: DotType; key: string };
+const DOT_STYLES: DotStyleOption[] = [
+  { value: 'square', key: 'style_square' },
+  { value: 'dots', key: 'style_dots' },
+  { value: 'rounded', key: 'style_rounded' },
+  { value: 'extra-rounded', key: 'style_extra_rounded' },
+  { value: 'classy', key: 'style_classy' },
+  { value: 'classy-rounded', key: 'style_classy_rounded' },
 ];
 
-const CORNER_SQUARE_STYLES: { value: CornerSquareType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'extra-rounded', label: 'Rounded' },
-  { value: 'dot', label: 'Dot' },
+type CornerSquareOption = { value: CornerSquareType; key: string };
+const CORNER_SQUARE_STYLES: CornerSquareOption[] = [
+  { value: 'square', key: 'style_square' },
+  { value: 'extra-rounded', key: 'style_rounded' },
+  { value: 'dot', key: 'style_dot' },
 ];
 
-const CORNER_DOT_STYLES: { value: CornerDotType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'dot', label: 'Dot' },
+type CornerDotOption = { value: CornerDotType; key: string };
+const CORNER_DOT_STYLES: CornerDotOption[] = [
+  { value: 'square', key: 'style_square' },
+  { value: 'dot', key: 'style_dot' },
 ];
 
-const FRAME_STYLES: { value: FrameStyle; label: string; desc: string }[] = [
-  { value: 'none', label: 'None', desc: 'Plain QR' },
-  { value: 'simple', label: 'Simple', desc: 'Border + label' },
-  { value: 'banner', label: 'Banner', desc: 'Header label' },
-  { value: 'dark', label: 'Dark Card', desc: 'Colored card' },
-  { value: 'rounded', label: 'Rounded', desc: 'Soft edges' },
+type FrameOption = { value: FrameStyle; labelKey: string; descKey: string };
+const FRAME_STYLES: FrameOption[] = [
+  { value: 'none', labelKey: 'frame_none', descKey: 'frame_desc_plain' },
+  { value: 'simple', labelKey: 'frame_simple', descKey: 'frame_desc_border' },
+  { value: 'banner', labelKey: 'frame_banner', descKey: 'frame_desc_header' },
+  { value: 'dark', labelKey: 'frame_dark_card', descKey: 'frame_desc_colored' },
+  { value: 'rounded', labelKey: 'frame_rounded', descKey: 'frame_desc_soft' },
 ];
 
 const PRESET_COLORS = [
@@ -80,12 +85,18 @@ const FRAME_PADDING = 14;
 const LABEL_HEIGHT = 42;
 
 export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
+  const { t } = useTranslation();
   const [config, setConfig] = useState<QRConfig>(DEFAULT_CONFIG);
   const [activeTab, setActiveTab] = useState<'dots' | 'logo' | 'frame'>('dots');
   const qrRef = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
 
-  // Initialize QR code instance
+  const tabKeys: Record<string, string> = {
+    dots: t('qr.dots_tab'),
+    logo: t('qr.logo_tab'),
+    frame: t('qr.frame_tab'),
+  };
+
   useEffect(() => {
     if (!qrRef.current) return;
 
@@ -106,9 +117,6 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update QR code when config changes.
-  // Also re-appends the canvas when FrameWrapper remounts qrRef's DOM node
-  // (switching frame styles changes the wrapper structure, which unmounts/remounts children).
   useEffect(() => {
     if (!qrCode.current || !qrRef.current) return;
     if (!qrRef.current.hasChildNodes()) {
@@ -173,7 +181,6 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
     const ctx = out.getContext('2d')!;
     ctx.scale(scale, scale);
 
-    // Outer shape
     ctx.fillStyle = isDark ? config.frameColor : '#ffffff';
     if (config.frameStyle === 'simple' || config.frameStyle === 'banner') {
       drawRoundedRect(ctx, 0, 0, totalWidth, totalHeight, r);
@@ -186,10 +193,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       ctx.fill();
     }
 
-    // QR area position
     const qrY = config.labelPosition === 'top' ? LABEL_HEIGHT : FRAME_PADDING;
 
-    // White background for QR area (dark frame only needs inner white box)
     if (isDark) {
       ctx.fillStyle = '#ffffff';
       const insetR = 6;
@@ -197,14 +202,11 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       ctx.fill();
     }
 
-    // Draw QR code image
     ctx.drawImage(qrCanvas, FRAME_PADDING, qrY, QR_SIZE, QR_SIZE);
 
-    // Label band
     const labelY = config.labelPosition === 'top' ? 0 : qrY + QR_SIZE;
     ctx.fillStyle = config.frameColor;
     if (config.frameStyle === 'simple' || config.frameStyle === 'banner') {
-      // Solid label rectangle (clip to rounded outer shape)
       ctx.save();
       drawRoundedRect(ctx, 0, 0, totalWidth, totalHeight, r);
       ctx.clip();
@@ -214,7 +216,6 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       ctx.fillRect(0, labelY, totalWidth, LABEL_HEIGHT);
     }
 
-    // Label text
     ctx.fillStyle = '#ffffff';
     ctx.font = `bold 16px system-ui, -apple-system, sans-serif`;
     ctx.textAlign = 'center';
@@ -237,7 +238,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
 
       {/* Live Preview */}
       <div className="flex flex-col items-center gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#7A8B9A]">Preview</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[#7A8B9A]">{t('qr.preview')}</p>
         <div className="flex items-center justify-center min-h-[260px]">
           <FrameWrapper config={config}>
             <div ref={qrRef} />
@@ -257,7 +258,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                 : 'text-[#7A8B9A] hover:text-[#1E3A5F]'
             }`}
           >
-            {tab}
+            {tabKeys[tab]}
           </button>
         ))}
       </div>
@@ -265,11 +266,10 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {/* Dots Tab */}
       {activeTab === 'dots' && (
         <div className="space-y-5">
-          {/* Dot Style */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Dot Style</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.dot_style')}</label>
             <div className="grid grid-cols-3 gap-2">
-              {DOT_STYLES.map(({ value, label }) => (
+              {DOT_STYLES.map(({ value, key }) => (
                 <button
                   key={value}
                   onClick={() => set('dotStyle', value)}
@@ -279,17 +279,16 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                       : 'border-[#D3D1C7] text-[#7A8B9A] hover:border-[#2E86AB]'
                   }`}
                 >
-                  {label}
+                  {t(`qr.${key}`)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Corner Square Style */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Corner Square</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.corner_square')}</label>
             <div className="flex gap-2">
-              {CORNER_SQUARE_STYLES.map(({ value, label }) => (
+              {CORNER_SQUARE_STYLES.map(({ value, key }) => (
                 <button
                   key={value}
                   onClick={() => set('cornerSquareStyle', value)}
@@ -299,17 +298,16 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                       : 'border-[#D3D1C7] text-[#7A8B9A] hover:border-[#2E86AB]'
                   }`}
                 >
-                  {label}
+                  {t(`qr.${key}`)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Corner Dot Style */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Corner Dot</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.corner_dot')}</label>
             <div className="flex gap-2">
-              {CORNER_DOT_STYLES.map(({ value, label }) => (
+              {CORNER_DOT_STYLES.map(({ value, key }) => (
                 <button
                   key={value}
                   onClick={() => set('cornerDotStyle', value)}
@@ -319,15 +317,14 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                       : 'border-[#D3D1C7] text-[#7A8B9A] hover:border-[#2E86AB]'
                   }`}
                 >
-                  {label}
+                  {t(`qr.${key}`)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* QR Color */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">QR Color</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.qr_color')}</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {PRESET_COLORS.map(color => (
                 <button
@@ -352,9 +349,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
             </div>
           </div>
 
-          {/* Background Color */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Background</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.background')}</label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -372,9 +368,9 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {activeTab === 'logo' && (
         <div className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Center Logo</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.center_logo')}</label>
             <p className="text-xs text-[#7A8B9A] mb-3">
-              Add your brand logo to the center. Use high-error-correction (H) for best results.
+              {t('qr.logo_help')}
             </p>
             {config.logo ? (
               <div className="flex items-center gap-3 p-3 bg-[#F0F4F8] rounded-lg">
@@ -384,8 +380,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   className="w-12 h-12 rounded object-contain border border-[#D3D1C7] bg-white"
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#1E3A5F]">Logo uploaded</p>
-                  <p className="text-xs text-[#7A8B9A]">Shown in QR center</p>
+                  <p className="text-sm font-medium text-[#1E3A5F]">{t('qr.logo_uploaded')}</p>
+                  <p className="text-xs text-[#7A8B9A]">{t('qr.shown_in_center')}</p>
                 </div>
                 <button
                   onClick={() => set('logo', null)}
@@ -397,8 +393,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
             ) : (
               <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-[#D3D1C7] rounded-lg cursor-pointer hover:border-[#2E86AB] hover:bg-[#EBF5FB] transition-all">
                 <Upload size={24} className="text-[#7A8B9A]" />
-                <span className="text-sm font-medium text-[#1E3A5F]">Upload logo image</span>
-                <span className="text-xs text-[#7A8B9A]">PNG, JPG, SVG — recommended square</span>
+                <span className="text-sm font-medium text-[#1E3A5F]">{t('qr.upload_logo_image')}</span>
+                <span className="text-xs text-[#7A8B9A]">{t('qr.logo_formats')}</span>
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
               </label>
             )}
@@ -407,7 +403,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           {config.logo && (
             <div>
               <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">
-                Logo Size — {Math.round(config.logoSize * 100)}%
+                {t('qr.logo_size', { percent: Math.round(config.logoSize * 100) })}
               </label>
               <input
                 type="range"
@@ -418,8 +414,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                 className="w-full accent-[#2E86AB]"
               />
               <div className="flex justify-between text-xs text-[#7A8B9A] mt-1">
-                <span>Small</span>
-                <span>Large</span>
+                <span>{t('qr.small')}</span>
+                <span>{t('qr.large')}</span>
               </div>
             </div>
           )}
@@ -429,11 +425,10 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {/* Frame Tab */}
       {activeTab === 'frame' && (
         <div className="space-y-5">
-          {/* Frame Style */}
           <div>
-            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Frame Style</label>
+            <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.frame_style')}</label>
             <div className="grid grid-cols-3 gap-2">
-              {FRAME_STYLES.map(({ value, label, desc }) => (
+              {FRAME_STYLES.map(({ value, labelKey, descKey }) => (
                 <button
                   key={value}
                   onClick={() => set('frameStyle', value)}
@@ -444,9 +439,9 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   }`}
                 >
                   <p className={`text-xs font-semibold ${config.frameStyle === value ? 'text-[#2E86AB]' : 'text-[#1E3A5F]'}`}>
-                    {label}
+                    {t(`qr.${labelKey}`)}
                   </p>
-                  <p className="text-[10px] text-[#7A8B9A]">{desc}</p>
+                  <p className="text-[10px] text-[#7A8B9A]">{t(`qr.${descKey}`)}</p>
                 </button>
               ))}
             </div>
@@ -454,9 +449,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
 
           {config.frameStyle !== 'none' && (
             <>
-              {/* Frame Color */}
               <div>
-                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Frame Color</label>
+                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.frame_color')}</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {PRESET_COLORS.slice(0, 8).map(color => (
                     <button
@@ -481,22 +475,20 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                 </div>
               </div>
 
-              {/* Label Text */}
               <div>
-                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Label Text</label>
+                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.label_text')}</label>
                 <input
                   type="text"
                   value={config.labelText}
                   onChange={e => set('labelText', e.target.value)}
                   maxLength={24}
-                  placeholder="e.g. Scan me!"
+                  placeholder={t('qr.label_placeholder')}
                   className="w-full px-3 py-2 border border-[#D3D1C7] rounded-md text-sm text-[#1E3A5F] bg-white focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
                 />
               </div>
 
-              {/* Label Position */}
               <div>
-                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">Label Position</label>
+                <label className="text-sm font-medium text-[#1E3A5F] mb-2 block">{t('qr.label_position')}</label>
                 <div className="flex gap-2">
                   {(['top', 'bottom'] as const).map(pos => (
                     <button
@@ -508,7 +500,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                           : 'border-[#D3D1C7] text-[#7A8B9A] hover:border-[#2E86AB]'
                       }`}
                     >
-                      {pos}
+                      {t(`qr.${pos}`)}
                     </button>
                   ))}
                 </div>
@@ -527,7 +519,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
             className="flex-1 flex items-center justify-center gap-2"
           >
             <Download size={16} />
-            Download PNG
+            {t('qr.download_png')}
           </Button>
           {config.frameStyle === 'none' && (
             <Button
@@ -535,7 +527,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
               variant="secondary"
               className="flex items-center justify-center gap-2 px-4"
             >
-              SVG
+              {t('qr.svg')}
             </Button>
           )}
         </div>
@@ -544,7 +536,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs text-[#7A8B9A] hover:text-[#1E3A5F] transition-colors"
         >
           <RotateCcw size={12} />
-          Reset to default
+          {t('qr.reset_default')}
         </button>
       </div>
     </div>

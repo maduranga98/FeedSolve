@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HelpCircle } from 'lucide-react';
 import { InstructionsAndGuidance } from '../../components/Help/InstructionsAndGuidance';
 
 export function HelpPage() {
+  const { t } = useTranslation();
+
   useEffect(() => {
-    document.title = 'Help & Support | FeedSolve';
-  }, []);
+    document.title = `${t('help.title')} | FeedSolve`;
+  }, [t]);
 
   return (
     <div className="min-h-screen bg-[#E1E8EF]">
@@ -17,9 +20,9 @@ export function HelpPage() {
               <HelpCircle size={20} className="text-[#2E86AB]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#1E3A5F]">Help & Support</h1>
+              <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('help.title')}</h1>
               <p className="text-sm text-[#6B7B8D] mt-0.5">
-                Get started with FeedSolve and find answers to common questions
+                {t('help.subtitle')}
               </p>
             </div>
           </div>

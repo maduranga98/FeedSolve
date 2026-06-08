@@ -59,7 +59,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
             ))}
             {translation.categories.length > 3 && (
               <span className="text-xs text-gray-500 px-2 py-1">
-                +{translation.categories.length - 3} more
+                {t('boards:dashboard.more_count', { count: translation.categories.length - 3 })}
               </span>
             )}
           </div>
@@ -67,7 +67,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
 
         {/* Usage Count */}
         <div className="mb-6 text-xs text-gray-500">
-          Used {template.usageCount.toLocaleString()} times
+          {t('reply_templates.used_other', { count: template.usageCount })}
         </div>
 
         {/* Select Button */}
