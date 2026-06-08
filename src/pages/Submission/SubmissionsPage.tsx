@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useSubmissionSelection } from '../../hooks/useSubmissionSelection';
 import { getCompanySubmissionsPage, getCompanyMembers } from '../../lib/firestore';
@@ -93,6 +94,7 @@ function TabButton({
 }
 
 export function SubmissionsPage() {
+  const { t } = useTranslation('common');
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -167,7 +169,7 @@ export function SubmissionsPage() {
   }, [user, loadingMore]);
 
   useEffect(() => {
-    document.title = 'Submissions | FeedSolve';
+    document.title = `${t('submissions_page.title')} | FeedSolve`;
   }, []);
 
   useEffect(() => {
@@ -273,8 +275,8 @@ export function SubmissionsPage() {
                 <Inbox size={18} className="text-[#2E86AB]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-[#1E3A5F] leading-tight">Submissions</h1>
-                <p className="text-xs text-[#9AABBF] mt-0.5">Review, assign, and resolve feedback</p>
+                <h1 className="text-xl font-bold text-[#1E3A5F] leading-tight">{t('submissions_page.title')}</h1>
+                <p className="text-xs text-[#9AABBF] mt-0.5">{t('submissions_page.subtitle')}</p>
               </div>
             </div>
 
@@ -282,7 +284,7 @@ export function SubmissionsPage() {
               <button
                 onClick={loadInitial}
                 disabled={loading}
-                title="Refresh"
+                title={t('refresh')}
                 className="p-2 rounded-lg bg-white border border-[#E8ECF0] text-[#6B7B8D] hover:bg-[#F0F4F8] transition-colors disabled:opacity-50"
               >
                 <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
@@ -290,12 +292,12 @@ export function SubmissionsPage() {
               <button
                 onClick={() => downloadCSV(displayedSubmissions)}
                 disabled={displayedSubmissions.length === 0}
-                title="Export current view as CSV"
+                title={t('submissions_page.export_tooltip')}
                 className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={13} />
-                <span className="hidden sm:inline">Export CSV</span>
-                <span className="sm:hidden">CSV</span>
+                <span className="hidden sm:inline">{t('submissions_page.export_csv')}</span>
+                <span className="sm:hidden">{t('submissions_page.csv')}</span>
               </button>
             </div>
           </div>
@@ -317,7 +319,7 @@ export function SubmissionsPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <MetricCard
                     value={newCount}
-                    label="New"
+                    label={t('submissions_page.new')}
                     icon={<Inbox size={13} />}
                     valueCls="text-[#1E6A9A]"
                     bg="bg-[#EBF5FB]"
@@ -325,7 +327,7 @@ export function SubmissionsPage() {
                   />
                   <MetricCard
                     value={inProgressCount}
-                    label="In Progress"
+                    label={t('submissions_page.in_progress')}
                     icon={<Clock size={13} />}
                     valueCls="text-[#B06F00]"
                     bg="bg-[#FFF8E6]"
@@ -333,7 +335,7 @@ export function SubmissionsPage() {
                   />
                   <MetricCard
                     value={resolvedCount}
-                    label="Resolved"
+                    label={t('submissions_page.resolved')}
                     icon={<CheckCircle2 size={13} />}
                     valueCls="text-[#1D8A57]"
                     bg="bg-[#EAF9F2]"
@@ -341,7 +343,7 @@ export function SubmissionsPage() {
                   />
                   <MetricCard
                     value={unassignedCount}
-                    label="Unassigned"
+                    label={t('submissions_page.unassigned')}
                     icon={<Users size={13} />}
                     valueCls={unassignedCount > 0 ? 'text-[#B06F00]' : 'text-[#1E3A5F]'}
                     bg={unassignedCount > 0 ? 'bg-[#FFF3E0]' : 'bg-[#F0F4F8]'}
@@ -355,7 +357,7 @@ export function SubmissionsPage() {
                 <div className="bg-white border border-[#E8ECF0] rounded-xl px-5 py-4">
                   <div className="flex items-center gap-2 mb-2">
                     <UserCheck size={14} className="text-[#2E86AB] flex-shrink-0" />
-                    <span className="text-sm font-semibold text-[#1E3A5F]">My Assigned</span>
+                    <span className="text-sm font-semibold text-[#1E3A5F]">{t('submissions_page.my_assigned')}</span>
                     <span className="text-sm font-bold text-[#2E86AB] ml-auto flex-shrink-0">{myPct}%</span>
                   </div>
                   <div className="h-2 bg-[#EDF2F7] rounded-full overflow-hidden mb-2">
@@ -370,11 +372,11 @@ export function SubmissionsPage() {
                   <div className="flex items-center gap-3 text-xs text-[#9AABBF]">
                     <span className="flex items-center gap-1">
                       <AlertCircle size={11} className="text-[#B06F00]" />
-                      {mySubmissions.length - myResolved} active
+                      {mySubmissions.length - myResolved} {t('submissions_page.active')}
                     </span>
                     <span className="flex items-center gap-1">
                       <CheckCircle2 size={11} className="text-[#1D8A57]" />
-                      {myResolved} done
+                      {myResolved} {t('submissions_page.done')}
                     </span>
                   </div>
                 </div>
@@ -388,9 +390,9 @@ export function SubmissionsPage() {
                     className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[#F8FAFB] transition-colors text-left"
                   >
                     <TrendingUp size={14} className="text-[#2E86AB]" />
-                    <span className="text-sm font-semibold text-[#1E3A5F]">Team Progress</span>
+                    <span className="text-sm font-semibold text-[#1E3A5F]">{t('submissions_page.team_progress')}</span>
                     <span className="text-xs text-[#9AABBF]">
-                      {assignedCount} assigned · {memberProgress.length} members
+                      {assignedCount} {t('submissions_page.assigned')} · {memberProgress.length} {t('submissions_page.members')}
                     </span>
                     <ChevronDown
                       size={14}
@@ -413,7 +415,7 @@ export function SubmissionsPage() {
                                 <p className="text-sm font-medium text-[#1E3A5F] truncate">
                                   {member.name}
                                   {isMe && (
-                                    <span className="ml-1.5 text-xs text-[#2E86AB] font-normal">(you)</span>
+                                    <span className="ml-1.5 text-xs text-[#2E86AB] font-normal">{t('submissions_page.you')}</span>
                                   )}
                                 </p>
                                 <span className="text-xs text-[#6B7B8D] ml-2 flex-shrink-0">
@@ -434,7 +436,7 @@ export function SubmissionsPage() {
                               </div>
                             </div>
                             <span className="text-xs text-[#9AABBF] flex-shrink-0 w-16 text-right">
-                              {active} active
+                              {active} {t('submissions_page.active')}
                             </span>
                           </div>
                         );
@@ -449,8 +451,8 @@ export function SubmissionsPage() {
                 <>
                   <div className="flex items-center justify-between gap-3 rounded-xl border border-[#E8ECF0] bg-white px-5 py-3.5">
                     <div>
-                      <p className="text-sm font-bold text-[#1E3A5F]">Board cycles</p>
-                      <p className="text-xs text-[#9AABBF]">Default view shows the current cycle.</p>
+                      <p className="text-sm font-bold text-[#1E3A5F]">{t('submissions_page.board_cycles')}</p>
+                      <p className="text-xs text-[#9AABBF]">{t('submissions_page.board_cycles_help')}</p>
                     </div>
                     <CycleSwitcher
                       cycles={cycles}
@@ -474,7 +476,7 @@ export function SubmissionsPage() {
                     count={activeSubmissions.length}
                   >
                     <ListChecks size={14} />
-                    Active
+                    {t('submissions_page.tab_active')}
                   </TabButton>
                   <TabButton
                     active={activeTab === 'completed'}
@@ -482,7 +484,7 @@ export function SubmissionsPage() {
                     count={completedSubmissions.length}
                   >
                     <CheckCircle2 size={14} />
-                    Completed
+                    {t('submissions_page.tab_completed')}
                   </TabButton>
                 </div>
 
@@ -495,15 +497,15 @@ export function SubmissionsPage() {
                       className="h-4 w-4 accent-[#2E86AB]"
                     />
                     <span className="text-xs font-semibold text-[#6B7B8D]">
-                      Show merged ({mergedCount})
+                      {t('submissions_page.show_merged', { count: mergedCount })}
                     </span>
                   </label>
                 )}
 
                 <p className="text-xs text-[#9AABBF] ml-auto">
                   {activeTab === 'active'
-                    ? 'New, in review, and in progress'
-                    : 'Resolved and closed'}
+                    ? t('submissions_page.active_description')
+                    : t('submissions_page.completed_description')}
                 </p>
               </div>
 
@@ -532,12 +534,12 @@ export function SubmissionsPage() {
                     {loadingMore ? (
                       <>
                         <RefreshCw size={14} className="animate-spin" />
-                        Loading…
+                        {t('submissions_page.loading_more')}
                       </>
                     ) : (
                       <>
                         <ChevronDown size={14} />
-                        Load more submissions
+                        {t('submissions_page.load_more')}
                       </>
                     )}
                   </button>

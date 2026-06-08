@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Lock, Plus, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../../../hooks/useAuth';
@@ -11,6 +12,7 @@ import { RuleCard } from '../../../components/escalation/RuleCard';
 import { LoadingSpinner } from '../../../components/Shared';
 
 export function EscalationRulesPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const {
     rules,
@@ -47,19 +49,19 @@ export function EscalationRulesPage() {
   async function handleSave(input: EscalationRuleInput) {
     if (editingRule) {
       await updateRule(editingRule.id, input);
-      toast.success('Escalation rule updated');
+      toast.success(t('escalation.rule_updated'));
     } else {
       await createRule(input);
-      toast.success('Escalation rule created');
+      toast.success(t('escalation.rule_created'));
     }
     setBuilderOpen(false);
     setEditingRule(null);
   }
 
   async function handleDelete(rule: EscalationRule) {
-    if (!window.confirm(`Delete “${rule.name}”? This will not remove past escalation history.`)) return;
+    if (!window.confirm(t('escalation.delete_confirm', { name: rule.name }))) return;
     await deleteRule(rule.id);
-    toast.success('Escalation rule deleted');
+    toast.success(t('escalation.rule_deleted'));
   }
 
   const locked = !canUseEscalations;
@@ -70,11 +72,11 @@ export function EscalationRulesPage() {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#EBF5FB] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#2E86AB]">
-              <Zap size={14} /> Automated escalation
+              <Zap size={14} /> {t('escalation.badge')}
             </div>
-            <h1 className="text-3xl font-bold text-[#1E3A5F]">Escalation Rules</h1>
+            <h1 className="text-3xl font-bold text-[#1E3A5F]">{t('escalation.title')}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6B7B8D]">
-              Create plain-English rules that automatically prioritize, assign, notify, and document submissions that need attention.
+              {t('escalation.description')}
             </p>
           </div>
           <button
@@ -86,7 +88,7 @@ export function EscalationRulesPage() {
             }}
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2E86AB] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#1E3A5F] disabled:cursor-not-allowed disabled:bg-[#9AABBF]"
           >
-            <Plus size={17} /> New Rule
+            <Plus size={17} /> {t('escalation.new_rule')}
           </button>
         </div>
 
@@ -95,8 +97,8 @@ export function EscalationRulesPage() {
             <div className="flex gap-3">
               <Lock className="mt-0.5 flex-shrink-0" size={20} />
               <div>
-                <h2 className="font-bold">Escalation rules are available on Growth plan</h2>
-                <p className="mt-1 text-sm">Your current {tier} plan can preview this page, but rules can only be created or activated on Growth and Pro tiers.</p>
+                <h2 className="font-bold">{t('escalation.tier_gate')}</h2>
+                <p className="mt-1 text-sm">{t('escalation.tier_gate_desc', { tier })}</p>
               </div>
             </div>
           </div>
@@ -104,7 +106,7 @@ export function EscalationRulesPage() {
 
         {canUseEscalations && tier === 'growth' && (
           <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-white p-4 text-sm text-[#1E3A5F]">
-            Growth plan usage: <span className="font-bold">{activeRuleCount} of {activeRuleLimit}</span> active escalation rules.
+            {t('escalation.growth_usage')} <span className="font-bold">{t('escalation.active_rules', { count: activeRuleCount, limit: activeRuleLimit })}</span>
           </div>
         )}
 
@@ -121,8 +123,8 @@ export function EscalationRulesPage() {
         ) : rules.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-white p-10 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]"><Zap size={22} /></div>
-            <h2 className="text-lg font-bold text-[#1E3A5F]">No escalation rules.</h2>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#6B7B8D]">Create rules to automatically escalate submissions that need attention.</p>
+            <h2 className="text-lg font-bold text-[#1E3A5F]">{t('escalation.no_rules')}</h2>
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#6B7B8D]">{t('escalation.no_rules_desc')}</p>
           </div>
         ) : (
           <div className="space-y-4">

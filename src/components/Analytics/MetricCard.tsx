@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface MetricCardProps {
@@ -53,6 +54,7 @@ export function MetricCard({
   color = 'primary',
   icon,
 }: MetricCardProps) {
+  const { t } = useTranslation();
   const colors = colorMap[color];
 
   return (
@@ -83,8 +85,7 @@ export function MetricCard({
                   : 'text-gray-600'
             }`}
           >
-            {trend.direction !== 'neutral' && (trend.percentage > 0 ? '+' : '')}
-            {trend.percentage.toFixed(1)}% vs previous period
+            {t('analytics.vs_previous', { value: `${trend.direction !== 'neutral' && trend.percentage > 0 ? '+' : ''}${trend.percentage.toFixed(1)}` })}
           </span>
         </div>
       )}

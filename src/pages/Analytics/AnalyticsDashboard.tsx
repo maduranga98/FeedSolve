@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Download, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../../components/Shared';
@@ -29,6 +30,7 @@ function submissionCreatedAt(submission: Submission): Date | null {
 }
 
 export function AnalyticsDashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [boards, setBoards] = useState<Board[]>([]);
@@ -170,8 +172,8 @@ export function AnalyticsDashboard() {
                 <TrendingUp size={20} className="text-[#2E86AB]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">Analytics & Reports</h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">Track submissions, performance, and trends</p>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('analytics.title')}</h1>
+                <p className="text-sm text-[#6B7B8D] mt-0.5">{t('analytics.subtitle')}</p>
               </div>
             </div>
             <DateRangePicker value={dateRange} onChange={setDateRange} />
@@ -183,24 +185,24 @@ export function AnalyticsDashboard() {
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <MetricCard
-            label="Total Submissions"
+            label={t('analytics.total_submissions')}
             value={metrics.totalSubmissions}
             color="primary"
           />
           <MetricCard
-            label="Resolution Rate"
+            label={t('analytics.resolution_rate')}
             value={metrics.resolutionRate.toFixed(1)}
             unit="%"
             color="success"
           />
           <MetricCard
-            label="Avg Resolution Time"
+            label={t('analytics.avg_resolution_time')}
             value={metrics.averageResolutionTime.toFixed(1)}
-            unit="days"
+            unit={t('analytics.days')}
             color="accent"
           />
           <MetricCard
-            label="Resolved Submissions"
+            label={t('analytics.resolved_submissions')}
             value={metrics.resolvedSubmissions}
             color="success"
           />
@@ -256,18 +258,18 @@ export function AnalyticsDashboard() {
           <div className="mb-8 rounded-xl border border-[#E8ECF0] bg-white p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-bold text-[#1E3A5F]">Cycle Comparison</h2>
-                <p className="text-sm text-[#6B7B8D]">Resolution rate by board cycle.</p>
+                <h2 className="text-lg font-bold text-[#1E3A5F]">{t('analytics.cycle_comparison')}</h2>
+                <p className="text-sm text-[#6B7B8D]">{t('analytics.cycle_comparison_desc')}</p>
               </div>
               <button
                 type="button"
                 onClick={handleExportCycleCSV}
                 disabled={!canExportCycleCsv}
                 className="inline-flex items-center gap-2 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#EBF5FB] disabled:cursor-not-allowed disabled:opacity-50"
-                title={canExportCycleCsv ? 'Export cycle data' : 'Pro plan required'}
+                title={canExportCycleCsv ? 'Export cycle data' : t('analytics.pro_plan_required')}
               >
                 <Download size={14} />
-                Export CSV
+                {t('analytics.export_csv')}
               </button>
             </div>
 
@@ -290,12 +292,12 @@ export function AnalyticsDashboard() {
               <table className="w-full text-left text-sm">
                 <thead className="text-xs uppercase tracking-wide text-[#6B7B8D]">
                   <tr className="border-b border-[#E8ECF0]">
-                    <th className="py-2 pr-4">Cycle</th>
-                    <th className="py-2 pr-4">Board</th>
-                    <th className="py-2 pr-4">Submissions</th>
-                    <th className="py-2 pr-4">Resolved</th>
-                    <th className="py-2 pr-4">Resolution rate</th>
-                    <th className="py-2 pr-4">Avg hours</th>
+                    <th className="py-2 pr-4">{t('analytics.col_cycle')}</th>
+                    <th className="py-2 pr-4">{t('analytics.col_board')}</th>
+                    <th className="py-2 pr-4">{t('analytics.col_submissions')}</th>
+                    <th className="py-2 pr-4">{t('analytics.col_resolved')}</th>
+                    <th className="py-2 pr-4">{t('analytics.col_resolution_rate')}</th>
+                    <th className="py-2 pr-4">{t('analytics.col_avg_hours')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0F4F8] text-[#444441]">
@@ -325,11 +327,9 @@ export function AnalyticsDashboard() {
           <div className="flex items-start gap-3">
             <TrendingUp className="text-[#2E86AB] flex-shrink-0 mt-1" size={20} />
             <div>
-              <h3 className="font-semibold text-[#1E3A5F] mb-1">About These Analytics</h3>
+              <h3 className="font-semibold text-[#1E3A5F] mb-1">{t('analytics.about_title')}</h3>
               <p className="text-[#6B7B8D] text-sm">
-                This dashboard shows submission analytics and team performance metrics. Use the
-                date range selector above to filter data by time period. Export reports in PDF
-                format or download submission data as CSV for further analysis.
+                {t('analytics.about_desc')}
               </p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { ReplyTemplate } from '../../types';
 
@@ -8,6 +9,8 @@ interface ReplyTemplateCardProps {
 }
 
 export function ReplyTemplateCard({ template, onEdit, onDelete }: ReplyTemplateCardProps) {
+  const { t } = useTranslation();
+
   const preview = template.body.length > 100
     ? template.body.slice(0, 100) + '…'
     : template.body;
@@ -20,14 +23,14 @@ export function ReplyTemplateCard({ template, onEdit, onDelete }: ReplyTemplateC
           <button
             onClick={() => onEdit(template)}
             className="p-1.5 rounded-lg text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] transition-colors"
-            title="Edit template"
+            title={t('reply_templates.edit_template')}
           >
             <Pencil size={15} />
           </button>
           <button
             onClick={() => onDelete(template)}
             className="p-1.5 rounded-lg text-[#9AABBF] hover:text-[#E74C3C] hover:bg-[#FFF0EE] transition-colors"
-            title="Delete template"
+            title={t('reply_templates.delete_template')}
           >
             <Trash2 size={15} />
           </button>
@@ -43,7 +46,7 @@ export function ReplyTemplateCard({ template, onEdit, onDelete }: ReplyTemplateC
           </span>
         )}
         <span className="text-xs text-[#B0BEC9] ml-auto">
-          Used {template.usageCount} {template.usageCount === 1 ? 'time' : 'times'}
+          {t(template.usageCount === 1 ? 'reply_templates.used_one' : 'reply_templates.used_other', { count: template.usageCount })}
         </span>
       </div>
     </div>

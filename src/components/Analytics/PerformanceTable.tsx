@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { TeamPerformanceMetric } from '../../lib/analytics';
 
@@ -7,12 +8,14 @@ interface PerformanceTableProps {
 }
 
 export function PerformanceTable({ data, loading = false }: PerformanceTableProps) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="bg-color-surface rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-color-primary mb-4">Team Performance</h2>
+        <h2 className="text-xl font-semibold text-color-primary mb-4">{t('performance.title')}</h2>
         <div className="flex items-center justify-center h-80 text-color-muted-text">
-          Loading performance data...
+          {t('performance.loading')}
         </div>
       </div>
     );
@@ -21,9 +24,9 @@ export function PerformanceTable({ data, loading = false }: PerformanceTableProp
   if (data.length === 0) {
     return (
       <div className="bg-color-surface rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-color-primary mb-4">Team Performance</h2>
+        <h2 className="text-xl font-semibold text-color-primary mb-4">{t('performance.title')}</h2>
         <div className="flex items-center justify-center h-80 text-color-muted-text">
-          No team members with assigned submissions yet
+          {t('performance.no_data')}
         </div>
       </div>
     );
@@ -38,7 +41,7 @@ export function PerformanceTable({ data, loading = false }: PerformanceTableProp
   return (
     <div className="bg-color-surface rounded-lg shadow-md p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-color-primary mb-4">Team Performance</h2>
+        <h2 className="text-xl font-semibold text-color-primary mb-4">{t('performance.title')}</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -52,8 +55,8 @@ export function PerformanceTable({ data, loading = false }: PerformanceTableProp
               }}
             />
             <Legend />
-            <Bar dataKey="assigned" fill="#3b82f6" name="Assigned" />
-            <Bar dataKey="resolved" fill="#10b981" name="Resolved" />
+            <Bar dataKey="assigned" fill="#3b82f6" name={t('performance.assigned')} />
+            <Bar dataKey="resolved" fill="#10b981" name={t('performance.resolved')} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -63,22 +66,22 @@ export function PerformanceTable({ data, loading = false }: PerformanceTableProp
           <thead>
             <tr className="border-b border-color-border">
               <th className="text-left py-3 px-4 font-semibold text-color-body-text">
-                Team Member
+                {t('performance.team_member')}
               </th>
               <th className="text-right py-3 px-4 font-semibold text-color-body-text">
-                Assigned
+                {t('performance.assigned')}
               </th>
               <th className="text-right py-3 px-4 font-semibold text-color-body-text">
-                Resolved
+                {t('performance.resolved')}
               </th>
               <th className="text-right py-3 px-4 font-semibold text-color-body-text">
-                Resolution Rate
+                {t('performance.resolution_rate')}
               </th>
               <th className="text-right py-3 px-4 font-semibold text-color-body-text">
-                Avg Time (days)
+                {t('performance.avg_time_days')}
               </th>
               <th className="text-left py-3 px-4 font-semibold text-color-body-text">
-                Avg Priority
+                {t('performance.avg_priority')}
               </th>
             </tr>
           </thead>

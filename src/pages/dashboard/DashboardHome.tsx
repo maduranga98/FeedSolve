@@ -176,7 +176,7 @@ export function DashboardHome() {
   }, [user]);
 
   useEffect(() => {
-    document.title = 'Dashboard | FeedSolve';
+    document.title = `${t('dashboard')} | FeedSolve`;
   }, []);
 
   useEffect(() => {

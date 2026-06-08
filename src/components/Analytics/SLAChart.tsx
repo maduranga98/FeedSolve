@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   BarChart,
   Bar,
@@ -15,18 +16,20 @@ interface SLAChartProps {
   data: SLAMetric[];
 }
 
-const priorityLabels: Record<string, string> = {
-  critical: 'Critical (≤1d)',
-  high: 'High (≤3d)',
-  medium: 'Medium (≤7d)',
-  low: 'Low (≤14d)',
-};
-
 export function SLAChart({ data }: SLAChartProps) {
+  const { t } = useTranslation();
+
+  const priorityLabels: Record<string, string> = {
+    critical: t('sla.critical_label'),
+    high: t('sla.high_label'),
+    medium: t('sla.medium_label'),
+    low: t('sla.low_label'),
+  };
+
   const chartData = data.map((m) => ({
     name: priorityLabels[m.priority] || m.priority,
-    Met: m.met,
-    Breached: m.breached,
+    [t('sla.met')]: m.met,
+    [t('sla.breached')]: m.breached,
     compliance: m.complianceRate,
     targetDays: m.targetDays,
     avgDays: m.avgResolutionDays,
@@ -39,7 +42,7 @@ export function SLAChart({ data }: SLAChartProps) {
   return (
     <div className="bg-color-surface rounded-lg shadow-md p-6">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-semibold text-color-primary">SLA Compliance</h2>
+        <h2 className="text-xl font-semibold text-color-primary">{t('sla.title')}</h2>
         <div className="flex items-center gap-2">
           {overallCompliance >= 80 ? (
             <CheckCircle size={18} className="text-green-500" />
@@ -51,12 +54,12 @@ export function SLAChart({ data }: SLAChartProps) {
               overallCompliance >= 80 ? 'text-green-600' : 'text-amber-600'
             }`}
           >
-            {isNaN(overallCompliance) ? '—' : `${overallCompliance.toFixed(1)}% overall`}
+            {isNaN(overallCompliance) ? '—' : t('sla.overall', { value: overallCompliance.toFixed(1) })}
           </span>
         </div>
       </div>
       <p className="text-xs text-color-muted-text mb-6">
-        Tracks whether resolved submissions met their priority-based time targets.
+        {t('sla.description')}
       </p>
 
       <ResponsiveContainer width="100%" height={260}>
@@ -69,8 +72,8 @@ export function SLAChart({ data }: SLAChartProps) {
             formatter={(value: any, name: any) => [value, name]}
           />
           <Legend />
-          <Bar dataKey="Met" fill="#10b981" stackId="a" radius={[0, 0, 0, 0]} />
-          <Bar dataKey="Breached" fill="#ef4444" stackId="a" radius={[4, 4, 0, 0]} />
+          <Bar dataKey={t('sla.met')} fill="#10b981" stackId="a" radius={[0, 0, 0, 0]} />
+          <Bar dataKey={t('sla.breached')} fill="#ef4444" stackId="a" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
 
@@ -79,11 +82,11 @@ export function SLAChart({ data }: SLAChartProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-color-border">
-              <th className="text-left py-2 px-3 font-semibold text-color-body-text">Priority</th>
-              <th className="text-right py-2 px-3 font-semibold text-color-body-text">Target</th>
-              <th className="text-right py-2 px-3 font-semibold text-color-body-text">Resolved</th>
-              <th className="text-right py-2 px-3 font-semibold text-color-body-text">Avg Days</th>
-              <th className="text-right py-2 px-3 font-semibold text-color-body-text">Compliance</th>
+              <th className="text-left py-2 px-3 font-semibold text-color-body-text">{t('sla.priority')}</th>
+              <th className="text-right py-2 px-3 font-semibold text-color-body-text">{t('sla.target')}</th>
+              <th className="text-right py-2 px-3 font-semibold text-color-body-text">{t('sla.resolved')}</th>
+              <th className="text-right py-2 px-3 font-semibold text-color-body-text">{t('sla.avg_days')}</th>
+              <th className="text-right py-2 px-3 font-semibold text-color-body-text">{t('sla.compliance')}</th>
             </tr>
           </thead>
           <tbody>

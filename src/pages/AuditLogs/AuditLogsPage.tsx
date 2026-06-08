@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useHasFeature } from '../../hooks/useHasFeature';
 import { getAuditLogs } from '../../lib/firestore';
@@ -21,15 +22,15 @@ import {
 } from 'lucide-react';
 import { Timestamp } from 'firebase/firestore';
 
-const RESOURCE_TYPE_LABELS: Record<AuditLog['resourceType'], string> = {
-  submission: 'Submission',
-  board: 'Board',
-  team: 'Team',
-  webhook: 'Webhook',
-  billing: 'Billing',
-  settings: 'Settings',
-  escalation: 'Escalation',
-  template: 'Template',
+const RESOURCE_TYPE_KEYS: Record<AuditLog['resourceType'], string> = {
+  submission: 'type_submission',
+  board: 'type_board',
+  team: 'type_team',
+  webhook: 'type_webhook',
+  billing: 'type_billing',
+  settings: 'type_settings',
+  escalation: 'type_escalation',
+  template: 'type_template',
 };
 
 const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
@@ -55,7 +56,7 @@ function formatDate(ts: Timestamp | Date | undefined): string {
   });
 }
 
-function exportCSV(logs: AuditLog[]) {
+function exportCSV(logs: AuditLog[], getResourceLabel: (type: AuditLog['resourceType']) => string) {
   const header = [
     'Timestamp',
     'User',
@@ -70,7 +71,7 @@ function exportCSV(logs: AuditLog[]) {
     log.userName,
     log.userEmail,
     log.action,
-    RESOURCE_TYPE_LABELS[log.resourceType] ?? log.resourceType,
+    getResourceLabel(log.resourceType),
     log.resourceName ?? log.resourceId ?? '',
     formatAuditDetails(log.details),
   ]);
@@ -91,6 +92,7 @@ function exportJSON(logs: AuditLog[]) {
 }
 
 export function AuditLogsPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { getCurrentTier } = useHasFeature();
   const navigate = useNavigate();
@@ -99,6 +101,9 @@ export function AuditLogsPage() {
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<AuditLog['resourceType'] | 'all'>('all');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+
+  const getResourceLabel = (type: AuditLog['resourceType']) =>
+    t(`audit.${RESOURCE_TYPE_KEYS[type]}`) ?? type;
 
   const loadLogs = useCallback(async () => {
     if (!user) return;
@@ -114,8 +119,8 @@ export function AuditLogsPage() {
   }, [user]);
 
   useEffect(() => {
-    document.title = 'Audit Logs | FeedSolve';
-  }, []);
+    document.title = `${t('audit.title')} | FeedSolve`;
+  }, [t]);
 
   useEffect(() => {
     void Promise.resolve().then(() => loadLogs());
@@ -129,9 +134,9 @@ export function AuditLogsPage() {
             <Lock size={28} className="text-[#2E86AB]" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">Audit Logs</h2>
+            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">{t('audit.title')}</h2>
             <p className="text-[#6B7B8D] text-sm leading-relaxed">
-              Audit logs are available on the <strong>Pro</strong> plan. Upgrade to track every action taken in your workspace.
+              {t('audit.tier_gate')}
             </p>
           </div>
           <button
@@ -139,7 +144,7 @@ export function AuditLogsPage() {
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
           >
             <Zap size={16} />
-            Upgrade to Pro
+            {t('audit.upgrade_pro')}
           </button>
         </div>
       </div>
@@ -169,9 +174,9 @@ export function AuditLogsPage() {
                 <ClipboardList size={20} className="text-[#2E86AB]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">Audit Logs</h1>
+                <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('audit.title')}</h1>
                 <p className="text-sm text-[#6B7B8D] mt-0.5">
-                  Full history of actions taken in your workspace.
+                  {t('audit.subtitle')}
                 </p>
               </div>
             </div>
@@ -179,7 +184,7 @@ export function AuditLogsPage() {
               <button
                 onClick={loadLogs}
                 className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
-                title="Refresh"
+                title={t('refresh')}
               >
                 <RefreshCw size={18} />
               </button>
@@ -189,18 +194,18 @@ export function AuditLogsPage() {
                   className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors"
                 >
                   <Download size={15} />
-                  Export
+                  {t('export')}
                 </button>
                 {exportMenuOpen && (
                   <div className="absolute right-0 mt-2 w-44 bg-white border border-[#E8ECF0] rounded-xl shadow-lg z-10 overflow-hidden">
                     <button
                       onClick={() => {
-                        exportCSV(filtered);
+                        exportCSV(filtered, getResourceLabel);
                         setExportMenuOpen(false);
                       }}
                       className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left"
                     >
-                      Export as CSV
+                      {t('audit.export_csv')}
                     </button>
                     <button
                       onClick={() => {
@@ -209,7 +214,7 @@ export function AuditLogsPage() {
                       }}
                       className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
                     >
-                      Export as PDF
+                      {t('audit.export_pdf')}
                     </button>
                     <button
                       onClick={() => {
@@ -218,7 +223,7 @@ export function AuditLogsPage() {
                       }}
                       className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
                     >
-                      Export as JSON
+                      {t('audit.export_json')}
                     </button>
                   </div>
                 )}
@@ -236,7 +241,7 @@ export function AuditLogsPage() {
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9AABBF]" />
             <input
               type="text"
-              placeholder="Search by user, action, or resource…"
+              placeholder={t('audit.search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-3 py-2 text-sm border border-[#E8ECF0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-[#FAFAFA]"
@@ -251,17 +256,17 @@ export function AuditLogsPage() {
               onChange={(e) => setFilterType(e.target.value as AuditLog['resourceType'] | 'all')}
               className="text-sm border border-[#E8ECF0] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-[#FAFAFA] text-[#444441]"
             >
-              <option value="all">All Types</option>
-              {(Object.keys(RESOURCE_TYPE_LABELS) as AuditLog['resourceType'][]).map((t) => (
-                <option key={t} value={t}>
-                  {RESOURCE_TYPE_LABELS[t]}
+              <option value="all">{t('all_types')}</option>
+              {(Object.keys(RESOURCE_TYPE_KEYS) as AuditLog['resourceType'][]).map((rt) => (
+                <option key={rt} value={rt}>
+                  {getResourceLabel(rt)}
                 </option>
               ))}
             </select>
           </div>
 
           <span className="text-xs text-[#9AABBF] ml-auto">
-            {filtered.length} of {logs.length} entries
+            {t('entries_count', { filtered: filtered.length, total: logs.length })}
           </span>
         </div>
 
@@ -276,12 +281,12 @@ export function AuditLogsPage() {
               <ClipboardList size={28} className="text-[#9AABBF]" />
             </div>
             <h3 className="text-base font-semibold text-[#1E3A5F] mb-1">
-              {logs.length === 0 ? 'No audit logs yet' : 'No matching logs'}
+              {logs.length === 0 ? t('audit.no_logs') : t('audit.no_matching')}
             </h3>
             <p className="text-sm text-[#9AABBF]">
               {logs.length === 0
-                ? 'Actions taken in your workspace will appear here.'
-                : 'Try adjusting your search or filter.'}
+                ? t('audit.no_logs_desc')
+                : t('audit.no_matching_desc')}
             </p>
           </div>
         ) : (
@@ -290,18 +295,18 @@ export function AuditLogsPage() {
             <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-[#F1F5F8] border-b border-[#E8ECF0]">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
                 <Clock size={12} />
-                Timestamp
+                {t('timestamp')}
               </div>
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
                 <User size={12} />
-                User
+                {t('user')}
               </div>
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
-                Action / Resource
+                {t('audit.action_resource')}
               </div>
               <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
                 <Layers size={12} />
-                Type
+                {t('type')}
               </div>
             </div>
 
@@ -348,7 +353,7 @@ export function AuditLogsPage() {
                         RESOURCE_TYPE_COLORS[log.resourceType] ?? 'bg-[#F0F4F8] text-[#6B7B8D]'
                       }`}
                     >
-                      {RESOURCE_TYPE_LABELS[log.resourceType] ?? log.resourceType}
+                      {getResourceLabel(log.resourceType)}
                     </span>
                   </div>
                 </div>

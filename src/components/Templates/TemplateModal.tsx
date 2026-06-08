@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Button } from '../Shared';
 import type { ReplyTemplate } from '../../types';
-
-const VARIABLES = [
-  { label: '{{submitterName}}', title: 'Submitter name' },
-  { label: '{{trackingCode}}', title: 'Tracking code' },
-  { label: '{{boardName}}', title: 'Board name' },
-] as const;
 
 const MAX_TITLE = 80;
 const MAX_BODY = 1000;
@@ -20,6 +15,14 @@ interface TemplateModalProps {
 }
 
 export function TemplateModal({ initial, categories, onSave, onClose }: TemplateModalProps) {
+  const { t } = useTranslation();
+
+  const VARIABLES = [
+    { label: '{{submitterName}}', title: t('reply_templates.var_submitter_name') },
+    { label: '{{trackingCode}}', title: t('reply_templates.var_tracking_code') },
+    { label: '{{boardName}}', title: t('reply_templates.var_board_name') },
+  ];
+
   const [title, setTitle] = useState(initial?.title ?? '');
   const [body, setBody] = useState(initial?.body ?? '');
   const [category, setCategory] = useState<string>(initial?.category ?? '');
@@ -63,8 +66,8 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
 
   const validate = () => {
     const errs: typeof errors = {};
-    if (!title.trim()) errs.title = 'Title is required';
-    if (!body.trim()) errs.body = 'Body is required';
+    if (!title.trim()) errs.title = t('reply_templates.title_required');
+    if (!body.trim()) errs.body = t('reply_templates.body_required');
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -92,7 +95,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8ECF0] flex-shrink-0">
           <h2 className="text-base font-bold text-[#1E3A5F]">
-            {initial ? 'Edit Template' : 'New Reply Template'}
+            {initial ? t('reply_templates.edit_title') : t('reply_templates.new_title')}
           </h2>
           <button
             onClick={onClose}
@@ -107,13 +110,13 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
           {/* Title */}
           <div>
             <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              Title <span className="text-[#E74C3C]">*</span>
+              {t('reply_templates.field_title')} <span className="text-[#E74C3C]">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, MAX_TITLE))}
-              placeholder="e.g. Delivery Delay Apology"
+              placeholder={t('reply_templates.title_placeholder')}
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] ${
                 errors.title ? 'border-[#E74C3C]' : 'border-[#D3D1C7]'
               }`}
@@ -129,14 +132,14 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
           {/* Category */}
           <div>
             <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              Category <span className="text-[#9AABBF] font-normal normal-case">(optional)</span>
+              {t('reply_templates.field_category')} <span className="text-[#9AABBF] font-normal normal-case">{t('optional')}</span>
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-white"
             >
-              <option value="">No category</option>
+              <option value="">{t('reply_templates.no_category')}</option>
               {categories.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -146,7 +149,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
           {/* Body */}
           <div>
             <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              Body <span className="text-[#E74C3C]">*</span>
+              {t('reply_templates.field_body')} <span className="text-[#E74C3C]">*</span>
             </label>
             <textarea
               ref={bodyRef}
@@ -156,7 +159,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
                 trackCursor();
               }}
               onClick={trackCursor}
-              placeholder="Write your reply template here..."
+              placeholder={t('reply_templates.body_placeholder')}
               rows={6}
               className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none ${
                 errors.body ? 'border-[#E74C3C]' : 'border-[#D3D1C7]'
@@ -171,7 +174,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
 
             {/* Variable chips */}
             <div className="mt-2">
-              <p className="text-xs text-[#9AABBF] mb-2">Insert variable at cursor:</p>
+              <p className="text-xs text-[#9AABBF] mb-2">{t('reply_templates.insert_variable')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {VARIABLES.map(({ label, title: varTitle }) => (
                   <button
@@ -192,7 +195,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
         {/* Footer */}
         <div className="flex gap-3 px-6 py-4 border-t border-[#E8ECF0] flex-shrink-0">
           <Button variant="secondary" size="sm" onClick={onClose} disabled={saving}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             variant="primary"
@@ -201,7 +204,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
             disabled={saving || !title.trim() || !body.trim()}
             className="flex-1"
           >
-            {saving ? 'Saving…' : initial ? 'Save Changes' : 'Create Template'}
+            {saving ? t('reply_templates.saving') : initial ? t('save_changes') : t('reply_templates.create_template')}
           </Button>
         </div>
       </div>

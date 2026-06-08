@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FileText, Lock, Plus } from 'lucide-react';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { LoadingSpinner } from '../../components/Shared';
@@ -13,6 +14,7 @@ import { getCompanyBoards } from '../../lib/firestore';
 import type { ReplyTemplate } from '../../types';
 
 export function ReplyTemplatesPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { checkFeature, getTemplateCap } = useHasFeature();
   const navigate = useNavigate();
@@ -29,8 +31,8 @@ export function ReplyTemplatesPage() {
   const atTemplateLimit = templates.length >= templateCap;
 
   useEffect(() => {
-    document.title = 'Reply Templates | FeedSolve';
-  }, []);
+    document.title = `${t('reply_templates.title')} | FeedSolve`;
+  }, [t]);
 
   useEffect(() => {
     if (!user?.companyId) return;
@@ -72,9 +74,9 @@ export function ReplyTemplatesPage() {
                   <FileText size={20} className="text-[#2E86AB]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-[#1E3A5F]">Reply Templates</h1>
+                  <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('reply_templates.title')}</h1>
                   <p className="text-sm text-[#6B7B8D] mt-0.5">
-                    Save common responses to reply faster.
+                    {t('reply_templates.subtitle')}
                   </p>
                 </div>
               </div>
@@ -86,7 +88,7 @@ export function ReplyTemplatesPage() {
                   onClick={() => setEditingTemplate(null)}
                 >
                   <Plus size={14} className="mr-1" />
-                  New Template
+                  {t('reply_templates.new_template')}
                 </Button>
               )}
             </div>
@@ -100,16 +102,16 @@ export function ReplyTemplatesPage() {
               <Lock size={18} className="text-[#9AABBF] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-[#1E3A5F]">
-                  Reply templates are available on the Starter plan and above.
+                  {t('reply_templates.tier_gate')}
                 </p>
                 <p className="text-sm text-[#6B7B8D] mt-1">
-                  Upgrade to create and reuse reply templates across your team.
+                  {t('reply_templates.tier_gate_desc')}
                 </p>
                 <button
                   onClick={() => navigate('/pricing')}
                   className="mt-3 text-sm font-medium text-[#2E86AB] hover:underline"
                 >
-                  View plans →
+                  {t('reply_templates.view_plans')}
                 </button>
               </div>
             </div>
@@ -120,16 +122,16 @@ export function ReplyTemplatesPage() {
               <FileText size={18} className="text-[#9AABBF] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-[#1E3A5F]">
-                  {templates.length} of {templateCap} reply templates used on your plan.
+                  {t('reply_templates.usage', { used: templates.length, cap: templateCap })}
                 </p>
                 {atTemplateLimit && (
                   <p className="text-sm text-[#6B7B8D] mt-1">
-                    You've reached your template limit.{' '}
+                    {t('reply_templates.limit_reached')}{' '}
                     <button
                       onClick={() => navigate('/pricing')}
                       className="font-medium text-[#2E86AB] hover:underline"
                     >
-                      Upgrade for more →
+                      {t('reply_templates.upgrade_more')}
                     </button>
                   </p>
                 )}
@@ -144,9 +146,9 @@ export function ReplyTemplatesPage() {
           ) : !canUseTemplates ? null : templates.length === 0 ? (
             <div className="text-center py-20 bg-white border border-[#E8ECF0] rounded-xl">
               <FileText size={36} className="mx-auto text-[#D3D1C7] mb-4" />
-              <p className="text-[#444441] font-medium mb-1">No templates yet</p>
+              <p className="text-[#444441] font-medium mb-1">{t('reply_templates.no_templates')}</p>
               <p className="text-sm text-[#6B7B8D] max-w-xs mx-auto">
-                Create your first reply template to save time on common responses.
+                {t('reply_templates.no_templates_desc')}
               </p>
               <Button
                 variant="primary"
@@ -155,18 +157,18 @@ export function ReplyTemplatesPage() {
                 onClick={() => setEditingTemplate(null)}
               >
                 <Plus size={14} className="mr-1" />
-                Create first template
+                {t('reply_templates.create_first')}
               </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {templates.map((t) => (
+              {templates.map((tmpl) => (
                 <ReplyTemplateCard
-                  key={t.id}
-                  template={t}
+                  key={tmpl.id}
+                  template={tmpl}
                   onEdit={setEditingTemplate}
                   onDelete={(template) => {
-                    if (window.confirm(`Delete "${template.title}"?`)) {
+                    if (window.confirm(t('reply_templates.delete_confirm', { name: template.title }))) {
                       handleDeleteConfirm(template.id);
                     }
                   }}

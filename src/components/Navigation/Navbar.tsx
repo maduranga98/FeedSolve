@@ -64,26 +64,26 @@ export function Navbar() {
       label: t("boards:templates.title"),
       icon: <LayoutTemplate size={15} />,
     },
-    { path: "/reply-templates", label: "Reply Templates", icon: <FileText size={15} /> },
+    { path: "/reply-templates", label: t("nav.reply_templates"), icon: <FileText size={15} /> },
     {
       path: "/dashboard/settings/escalation-rules",
-      label: "Escalation Rules",
+      label: t("nav.escalation_rules"),
       icon: <ShieldAlert size={15} />,
       permission: "company:update",
       locked: escalationLocked,
-      lockedMessage: "Escalation rules are available on Growth plan",
+      lockedMessage: t("nav.escalation_locked"),
     },
     { path: "/analytics", label: t("analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },
     { path: "/team", label: t("team"), icon: <Users size={15} />, permission: "team:read" },
     { path: "/billing", label: t("billing"), icon: <CreditCard size={15} />, permission: "billing:read" },
     { path: "/audit-logs", label: t("audit_logs"), icon: <ClipboardList size={15} />, permission: "audit:read" },
-    { path: "/settings", label: "Settings", icon: <Settings size={15} />, permission: "company:update" },
+    { path: "/settings", label: t("nav.settings"), icon: <Settings size={15} />, permission: "company:update" },
   ];
 
   const helpNavItem: NavItem = {
     path: "/help",
-    label: "Help & Support",
+    label: t("nav.help_support"),
     icon: <HelpCircle size={15} />,
   };
 
