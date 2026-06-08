@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Lock, User } from 'lucide-react';
 import { auth } from '../../lib/firebase';
@@ -12,6 +13,7 @@ import type { TeamInvitation } from '../../types';
 export function AcceptInvite() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const invitationId = searchParams.get('id') ?? '';
   const legacyCode = searchParams.get('code') ?? '';
 
@@ -26,12 +28,12 @@ export function AcceptInvite() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    document.title = 'Accept Invitation | FeedSolve';
+    document.title = t('auth.accept_invite_title');
   }, []);
 
   useEffect(() => {
     if (!invitationId && !legacyCode) {
-      setInviteError('Invalid or missing invitation link.');
+      setInviteError(t('auth.invalid_invite'));
       setLoadingInvite(false);
       return;
     }
@@ -41,30 +43,30 @@ export function AcceptInvite() {
     lookup
       .then((inv) => {
         if (!inv) {
-          setInviteError('This invitation link is invalid or has already been used.');
+          setInviteError(t('auth.invite_used'));
         } else if (inv.status !== 'pending') {
-          setInviteError('This invitation has already been accepted or has expired.');
+          setInviteError(t('auth.invite_expired'));
         } else {
           setInvitation(inv);
         }
       })
-      .catch(() => setInviteError('Failed to load invitation. Please try again.'))
+      .catch(() => setInviteError(t('auth.invite_load_failed')))
       .finally(() => setLoadingInvite(false));
   }, [invitationId, legacyCode]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!name.trim() || name.trim().length < 2) {
-      newErrors.name = 'Name must be at least 2 characters.';
+      newErrors.name = t('auth.name_min');
     }
     const pwdCheck = validatePassword(password);
     if (!password) {
-      newErrors.password = 'Password is required.';
+      newErrors.password = t('auth.password_required');
     } else if (!pwdCheck.valid) {
-      newErrors.password = pwdCheck.feedback[0] || 'Password is too weak.';
+      newErrors.password = pwdCheck.feedback[0] || t('auth.password_weak');
     }
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match.';
+      newErrors.confirmPassword = t('auth.passwords_no_match');
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -98,14 +100,16 @@ export function AcceptInvite() {
         </div>
         <div className="relative z-10">
           <h2 className="text-3xl font-bold leading-snug mb-4">
-            You've been invited<br />to collaborate.
+            {t('auth.invite_hero_title').split('\n').map((line, i) => (
+              <span key={i}>{i > 0 && <br />}{line}</span>
+            ))}
           </h2>
           <p className="text-white/70 text-base leading-relaxed">
-            Create your account to join your team on FeedSolve and start collaborating on feedback.
+            {t('auth.invite_hero_desc')}
           </p>
         </div>
         <p className="text-white/40 text-xs relative z-10">
-          © {new Date().getFullYear()} FeedSolve. All rights reserved.
+          © {new Date().getFullYear()} FeedSolve. {t('auth.all_rights_reserved')}
         </p>
       </div>
 
@@ -127,15 +131,14 @@ export function AcceptInvite() {
                 <p className="text-sm text-[#C0392B]">{inviteError}</p>
               </div>
               <Link to="/login" className="text-sm text-[#2E86AB] font-medium hover:underline">
-                Go to login
+                {t('auth.go_to_login')}
               </Link>
             </div>
           ) : (
             <>
               <div className="mb-7">
-                <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">Accept your invitation</h1>
-                <p className="text-sm text-[#6B7B8D]">
-                  You were invited as <strong>{invitation!.role}</strong>. Create a password to get started.
+                <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">{t('auth.accept_invitation')}</h1>
+                <p className="text-sm text-[#6B7B8D]" dangerouslySetInnerHTML={{ __html: t('auth.invited_as', { role: invitation!.role }) }}>
                 </p>
               </div>
 
@@ -147,7 +150,7 @@ export function AcceptInvite() {
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#1E3A5F] mb-1">Email</label>
+                  <label className="block text-sm font-medium text-[#1E3A5F] mb-1">{t('auth.email_label')}</label>
                   <input
                     type="email"
                     value={invitation!.email}
@@ -156,7 +159,7 @@ export function AcceptInvite() {
                   />
                 </div>
                 <Input
-                  label="Full name"
+                  label={t('auth.full_name')}
                   type="text"
                   placeholder="John Doe"
                   autoComplete="name"
@@ -166,7 +169,7 @@ export function AcceptInvite() {
                   error={errors.name}
                 />
                 <Input
-                  label="Password"
+                  label={t('auth.password_label')}
                   type="password"
                   placeholder="••••••••"
                   autoComplete="new-password"
@@ -176,7 +179,7 @@ export function AcceptInvite() {
                   error={errors.password}
                 />
                 <Input
-                  label="Confirm password"
+                  label={t('auth.confirm_password')}
                   type="password"
                   placeholder="••••••••"
                   autoComplete="new-password"
@@ -193,14 +196,14 @@ export function AcceptInvite() {
                   className="w-full mt-2"
                   size="lg"
                 >
-                  Create account & join team
+                  {t('auth.create_join')}
                 </Button>
               </form>
 
               <p className="text-center text-sm text-[#6B7B8D] mt-6">
-                Already have an account?{' '}
+                {t('auth.already_have_account')}{' '}
                 <Link to="/login" className="text-[#2E86AB] font-medium hover:underline">
-                  Log in
+                  {t('auth.log_in')}
                 </Link>
               </p>
             </>

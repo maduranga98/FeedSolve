@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import { useSearch } from '../../hooks/useSearch';
 import { useSavedFilters } from '../../hooks/useSavedFilters';
@@ -35,6 +36,7 @@ export function AdvancedSearch({
   onToggleSelect,
   onSelectAll,
 }: AdvancedSearchProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(false);
@@ -103,7 +105,7 @@ export function AdvancedSearch({
           <SearchBar
             value={searchText}
             onChange={setSearchText}
-            placeholder="Search by subject, description, category, or tracking code…"
+            placeholder={t('advanced_search.placeholder')}
           />
         </div>
 
@@ -123,7 +125,7 @@ export function AdvancedSearch({
 
         <button
           onClick={handleCopyShareLink}
-          title="Copy share link"
+          title={t('advanced_search.copy_link')}
           className="flex-shrink-0 p-2 rounded-lg bg-white border border-[#D3D1C7] text-[#6B7B8D] hover:text-[#2E86AB] hover:border-[#2E86AB] hover:bg-[#EBF5FB] transition-all"
         >
           <Copy size={15} />
@@ -132,7 +134,7 @@ export function AdvancedSearch({
         {savedFilters.length > 0 && (
           <button
             onClick={() => setShowSaved(!showSaved)}
-            title="Saved filters"
+            title={t('advanced_search.saved_filters')}
             className={`flex-shrink-0 p-2 rounded-lg border transition-all ${
               showSaved
                 ? 'bg-[#FFF8E6] border-[#FFD77A] text-[#B06F00]'
@@ -150,7 +152,7 @@ export function AdvancedSearch({
       {/* ── Saved Filters (expandable) ── */}
       {showSaved && savedFilters.length > 0 && (
         <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
-          <p className="text-xs font-bold text-[#6B7B8D] uppercase tracking-wider mb-3">Saved Filters</p>
+          <p className="text-xs font-bold text-[#6B7B8D] uppercase tracking-wider mb-3">{t('advanced_search.saved_filters')}</p>
           <SavedFilters
             filters={savedFilters}
             onSelect={handleSelectSavedFilter}

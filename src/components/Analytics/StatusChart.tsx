@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { getStatusColor } from '../../lib/analytics';
 
@@ -7,12 +8,14 @@ interface StatusChartProps {
 }
 
 export function StatusChart({ data, loading = false }: StatusChartProps) {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="bg-color-surface rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-color-primary mb-4">Submissions by Status</h2>
+        <h2 className="text-xl font-semibold text-color-primary mb-4">{t('status_chart.title')}</h2>
         <div className="flex items-center justify-center h-80 text-color-muted-text">
-          Loading chart...
+          {t('status_chart.loading')}
         </div>
       </div>
     );
@@ -28,9 +31,9 @@ export function StatusChart({ data, loading = false }: StatusChartProps) {
   if (chartData.length === 0) {
     return (
       <div className="bg-color-surface rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-color-primary mb-4">Submissions by Status</h2>
+        <h2 className="text-xl font-semibold text-color-primary mb-4">{t('status_chart.title')}</h2>
         <div className="flex items-center justify-center h-80 text-color-muted-text">
-          No data available
+          {t('status_chart.no_data')}
         </div>
       </div>
     );
@@ -38,7 +41,7 @@ export function StatusChart({ data, loading = false }: StatusChartProps) {
 
   return (
     <div className="bg-color-surface rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-color-primary mb-4">Submissions by Status</h2>
+      <h2 className="text-xl font-semibold text-color-primary mb-4">{t('status_chart.title')}</h2>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie

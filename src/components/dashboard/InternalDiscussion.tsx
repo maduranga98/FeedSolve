@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Lock, RefreshCw } from "lucide-react";
 import type { Submission, User } from "../../types";
 import { useInternalComments } from "../../hooks/useInternalComments";
@@ -13,6 +14,7 @@ interface InternalDiscussionProps {
 }
 
 export function InternalDiscussion({ submission, currentUser, onMigrated }: InternalDiscussionProps) {
+  const { t } = useTranslation();
   const {
     comments,
     topLevelComments,
@@ -65,12 +67,12 @@ export function InternalDiscussion({ submission, currentUser, onMigrated }: Inte
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-bold text-[#1E3A5F]">Internal Discussion</h3>
+              <h3 className="text-base font-bold text-[#1E3A5F]">{t('internal_discussion.title')}</h3>
               <span className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-[#1E3A5F] ring-1 ring-[#D3D1C7]">
                 {comments.length}
               </span>
             </div>
-            <p className="mt-0.5 text-sm text-[#6B7B8D]">Only visible to your team</p>
+            <p className="mt-0.5 text-sm text-[#6B7B8D]">{t('internal_discussion.team_only')}</p>
           </div>
         </div>
         <button
@@ -78,8 +80,8 @@ export function InternalDiscussion({ submission, currentUser, onMigrated }: Inte
           onClick={handleRefresh}
           disabled={loading}
           className="rounded-lg border border-[#D3D1C7] bg-white p-2 text-[#6B7B8D] transition hover:text-[#2E86AB] disabled:opacity-50"
-          title="Refresh comments"
-          aria-label="Refresh comments"
+          title={t('internal_discussion.refresh')}
+          aria-label={t('internal_discussion.refresh')}
         >
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
         </button>
@@ -99,17 +101,17 @@ export function InternalDiscussion({ submission, currentUser, onMigrated }: Inte
             disabled={loading}
             className="w-full rounded-lg border border-[#D3D1C7] bg-white px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#F1F5F8] disabled:opacity-50"
           >
-            Load earlier comments
+            {t('internal_discussion.load_earlier')}
           </button>
         )}
 
         {loading && comments.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-white/70 py-8 text-center text-sm text-[#6B7B8D]">
-            Loading internal discussion...
+            {t('internal_discussion.loading')}
           </div>
         ) : topLevelComments.length === 0 ? (
           <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-white/70 py-8 text-center text-sm text-[#6B7B8D]">
-            No internal discussion yet. Add the first team-only note below.
+            {t('internal_discussion.empty')}
           </div>
         ) : (
           [...topLevelComments]

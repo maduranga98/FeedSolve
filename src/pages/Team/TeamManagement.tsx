@@ -41,7 +41,7 @@ export function TeamManagement() {
   const currentUser = user as User;
 
   useEffect(() => {
-    document.title = "Team | FeedSolve";
+    document.title = `${t("team")} | FeedSolve`;
   }, []);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export function TeamManagement() {
       setTeamMembers(members);
       setPendingInvitations(invitations);
     } catch (err) {
-      setError("Failed to load team data");
+      setError(t("team_page.failed_load"));
       console.error(err);
     } finally {
       setLoading(false);
@@ -68,12 +68,12 @@ export function TeamManagement() {
 
   async function handleInvite() {
     if (!inviteEmail.trim()) {
-      setError("Please enter an email");
+      setError(t("team_page.enter_email"));
       return;
     }
 
     if (!hasPermissionTo("team:invite")) {
-      setError("You do not have permission to invite team members");
+      setError(t("team_page.no_invite_permission"));
       return;
     }
 
@@ -84,9 +84,7 @@ export function TeamManagement() {
       Number.isFinite(teamMembersUsage.limit) &&
       projectedCount > teamMembersUsage.limit
     ) {
-      setError(
-        `You've reached the limit of ${teamMembersUsage.limit} team members on your current plan. Upgrade to invite more.`,
-      );
+      setError(t("team_page.limit_reached", { limit: teamMembersUsage.limit }));
       return;
     }
 
@@ -108,14 +106,14 @@ export function TeamManagement() {
         resourceName: inviteEmail,
         details: { invitedEmail: inviteEmail, role: inviteRole },
       });
-      setSuccess(`Invitation sent to ${inviteEmail}`);
+      setSuccess(t("team_page.invitation_sent", { email: inviteEmail }));
       setInviteEmail("");
       setInviteRole("viewer");
       await loadTeamData();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to send invitation",
+        err instanceof Error ? err.message : t("team_page.failed_invite"),
       );
       console.error(err);
     } finally {
@@ -137,11 +135,11 @@ export function TeamManagement() {
         resourceName: target?.name ?? userId,
         details: { oldRole: target?.role, newRole },
       });
-      setSuccess("Role updated");
+      setSuccess(t("team_page.role_updated"));
       await loadTeamData();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update role");
+      setError(err instanceof Error ? err.message : t("team_page.failed_role"));
       console.error(err);
     }
   }
@@ -160,12 +158,12 @@ export function TeamManagement() {
         resourceName: target?.name ?? userId,
         details: { removedEmail: target?.email },
       });
-      setSuccess("Team member removed");
+      setSuccess(t("team_page.member_removed"));
       await loadTeamData();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to remove team member",
+        err instanceof Error ? err.message : t("team_page.failed_remove"),
       );
       console.error(err);
     }
@@ -193,15 +191,15 @@ export function TeamManagement() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-[#1E3A5F]">
-                  {t("team")} Management
+                  {t("team_page.title")}
                 </h1>
                 <p className="text-sm text-[#6B7B8D] mt-0.5">
-                  Manage team members and their roles
+                  {t("team_page.subtitle")}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-sm text-[#6B7B8D]">Your Role:</span>
+              <span className="text-sm text-[#6B7B8D]">{t("team_page.your_role")}</span>
               <RoleIndicator />
             </div>
           </div>
@@ -231,7 +229,7 @@ export function TeamManagement() {
         >
           <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
             <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
-              Invite {t("team")} Member
+              {t("team_page.invite_member")}
             </h2>
             <div className="space-y-4">
               <Input
@@ -260,7 +258,7 @@ export function TeamManagement() {
 
         <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
           <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
-            {t("team")} Members ({teamMembers.length})
+            {t("team_page.members_count", { count: teamMembers.length })}
           </h2>
           <TeamMembersTable
             members={teamMembers}
@@ -274,7 +272,7 @@ export function TeamManagement() {
         {pendingInvitations.length > 0 && (
           <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
             <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
-              Pending Invitations ({pendingInvitations.length})
+              {t("team_page.pending_title", { count: pendingInvitations.length })}
             </h2>
             <div className="space-y-3">
               {pendingInvitations.map((invitation) => (
@@ -287,11 +285,11 @@ export function TeamManagement() {
                       {invitation.email}
                     </p>
                     <p className="text-sm text-[#6B7B8D]">
-                      Invited as {invitation.role}
+                      {t("team_page.invited_as", { role: invitation.role })}
                     </p>
                   </div>
                   <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide self-start sm:self-auto flex-shrink-0">
-                    Pending
+                    {t("team_page.pending")}
                   </span>
                 </div>
               ))}

@@ -160,17 +160,15 @@ export function BrandingPage() {
             <Lock size={28} className="text-[#2E86AB]" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">Custom Branding</h2>
-            <p className="text-[#6B7B8D] text-sm leading-relaxed">
-              Custom branding — logo, brand colors, custom domain and email sender — is available on the <strong>Growth</strong> plan and above.
-            </p>
+            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">{t("branding_page.custom_branding")}</h2>
+            <p className="text-[#6B7B8D] text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("branding_page.custom_branding_desc") }} />
           </div>
           <button
             onClick={() => navigate('/pricing')}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
           >
             <Zap size={16} />
-            Upgrade to Growth
+            {t("branding_page.upgrade_growth")}
           </button>
         </div>
       </div>
@@ -194,7 +192,7 @@ export function BrandingPage() {
                   {t("branding")}
                 </h1>
                 <p className="text-sm text-[#6B7B8D] mt-0.5">
-                  Customize how your submission forms appear to customers
+                  {t("branding_page.subtitle")}
                 </p>
               </div>
             </div>
@@ -268,7 +266,7 @@ export function BrandingPage() {
               >
                 <Upload size={24} className="text-[#6B7B8D] mb-2" />
                 <span className="text-sm text-[#6B7B8D]">
-                  {uploading ? "Uploading..." : t("upload_logo")}
+                  {uploading ? t("branding_page.uploading") : t("upload_logo")}
                 </span>
                 <span className="text-xs text-[#9AABBF] mt-1">
                   {t("logo_requirements")}
@@ -433,7 +431,7 @@ export function BrandingPage() {
             {/* Color Swatches */}
             <div className="space-y-2">
               <p className="text-xs text-[#6B7B8D] font-medium uppercase tracking-wide">
-                Auto-generated variants
+                {t("branding_page.auto_variants")}
               </p>
               <div className="grid grid-cols-5 gap-2">
                 {[

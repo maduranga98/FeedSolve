@@ -42,7 +42,7 @@ export function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   useEffect(() => {
-    document.title = "Login | FeedSolve";
+    document.title = t("auth.login_title");
   }, []);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -138,22 +138,21 @@ export function Login() {
 
         <div className="relative z-10">
           <h2 className="text-3xl font-bold leading-snug mb-4">
-            Turn feedback into
-            <br />
-            actionable insights.
+            {t("auth.login_hero_title").split('\n').map((line, i) => (
+              <span key={i}>{i > 0 && <br />}{line}</span>
+            ))}
           </h2>
 
           <p className="text-white/70 text-base leading-relaxed">
-            Collect, manage, and resolve customer feedback in one place. Built
-            for teams that want accountability, not just forms.
+            {t("auth.login_hero_desc")}
           </p>
 
           <div className="mt-10 grid grid-cols-2 gap-4">
             {[
-              { icon: Zap, label: "5-min setup" },
-              { icon: Workflow, label: "End-to-end workflow" },
-              { icon: ShieldCheck, label: "Secure & reliable" },
-              { icon: Target, label: "Built for SMBs" },
+              { icon: Zap, label: t("auth.login_feature_setup") },
+              { icon: Workflow, label: t("auth.login_feature_workflow") },
+              { icon: ShieldCheck, label: t("auth.login_feature_secure") },
+              { icon: Target, label: t("auth.login_feature_smb") },
             ].map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -172,7 +171,7 @@ export function Login() {
         </div>
 
         <p className="text-white/40 text-xs relative z-10">
-          © {new Date().getFullYear()} FeedSolve. All rights reserved.
+          © {new Date().getFullYear()} FeedSolve. {t("auth.all_rights_reserved")}
         </p>
       </div>
 
@@ -248,7 +247,7 @@ export function Login() {
             </div>
             <div className="relative flex justify-center text-xs">
               <span className="px-3 bg-[#E1E8EF] text-[#9AABBF] font-medium">
-                or sign in with email
+                {t("auth.or_sign_in_with_email")}
               </span>
             </div>
           </div>
