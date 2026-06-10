@@ -172,15 +172,15 @@ export function CompanySettings() {
                 {t('company_settings.public_feed_desc', { hostname: appHostname })}
               </p>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+            <label className="relative inline-flex cursor-pointer items-center flex-shrink-0">
               <input
                 type="checkbox"
                 className="peer sr-only"
                 checked={form.showPublicFeed}
                 onChange={(event) => setForm((prev) => ({ ...prev, showPublicFeed: event.target.checked }))}
               />
-              <span className="h-7 w-12 rounded-full bg-[#D3D1C7] transition peer-checked:bg-[#27AE60] after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" />
-              <span className="ml-3 text-sm font-semibold text-[#1E3A5F]">{t('company_settings.show_public_feed')}</span>
+              <span className="h-7 w-12 flex-shrink-0 rounded-full bg-[#D3D1C7] transition peer-checked:bg-[#27AE60] after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" />
+              <span className="ml-3 text-sm font-semibold text-[#1E3A5F] whitespace-nowrap">{t('company_settings.show_public_feed')}</span>
             </label>
           </div>
 
