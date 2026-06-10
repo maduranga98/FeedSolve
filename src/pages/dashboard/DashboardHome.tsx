@@ -17,8 +17,19 @@ import {
   Calendar,
   MessageSquare,
 } from "lucide-react";
+import { SUPPORTED_LANGUAGES } from "../../config/languages";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../lib/utils";
+
+type EditBoardData = {
+  name: string;
+  description: string;
+  categories: string[];
+  isAnonymousAllowed: boolean;
+  showSatisfactionRating: boolean;
+  satisfactionRequired: boolean;
+  supportedLanguages: string[];
+};
 
 function EditBoardModal({
   board,
@@ -26,20 +37,50 @@ function EditBoardModal({
   onClose,
 }: {
   board: Board;
-  onSave: (data: { name: string; description: string }) => Promise<void>;
+  onSave: (data: EditBoardData) => Promise<void>;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState(board.name);
   const [description, setDescription] = useState(board.description);
+  const [categories, setCategories] = useState<string[]>(board.categories);
+  const [newCategory, setNewCategory] = useState("");
+  const [isAnonymousAllowed, setIsAnonymousAllowed] = useState(board.isAnonymousAllowed);
+  const [showSatisfactionRating, setShowSatisfactionRating] = useState(board.showSatisfactionRating);
+  const [satisfactionRequired, setSatisfactionRequired] = useState(board.satisfactionRequired);
+  const [supportedLanguages, setSupportedLanguages] = useState<string[]>(board.supportedLanguages ?? ["en"]);
   const [saving, setSaving] = useState(false);
+
+  const BOARD_NAME_MAX = 100;
+  const CATEGORY_NAME_MAX = 100;
+
+  const handleAddCategory = () => {
+    const trimmed = newCategory.trim();
+    if (!trimmed || trimmed.length > CATEGORY_NAME_MAX) return;
+    setCategories((prev) => [...prev, trimmed]);
+    setNewCategory("");
+  };
+
+  const handleToggleLanguage = (code: string) => {
+    setSupportedLanguages((prev) =>
+      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || categories.length === 0 || supportedLanguages.length === 0) return;
     setSaving(true);
     try {
-      await onSave({ name: name.trim(), description: description.trim() });
+      await onSave({
+        name: name.trim(),
+        description: description.trim(),
+        categories,
+        isAnonymousAllowed,
+        showSatisfactionRating,
+        satisfactionRequired,
+        supportedLanguages,
+      });
       onClose();
     } finally {
       setSaving(false);
@@ -48,25 +89,31 @@ function EditBoardModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-md w-full shadow-lg">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8ECF0]">
+      <div className="bg-white rounded-xl max-w-lg w-full shadow-lg max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8ECF0] flex-shrink-0">
           <h2 className="text-lg font-semibold text-[#1E3A5F]">{t("forms:board.edit_board")}</h2>
           <button onClick={onClose} className="text-[#9AABBF] hover:text-[#1E3A5F]">
             <X size={20} />
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
+          {/* Name */}
           <div>
             <label className="block text-sm font-medium text-[#444441] mb-1">
               {t("forms:board.name")}
             </label>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value.slice(0, BOARD_NAME_MAX))}
               className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
               required
             />
+            <p className={`text-xs mt-1 text-right ${name.length >= BOARD_NAME_MAX ? "text-[#E74C3C]" : "text-[#9AABBF]"}`}>
+              {name.length}/{BOARD_NAME_MAX}
+            </p>
           </div>
+
+          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-[#444441] mb-1">
               {t("description")}
@@ -78,6 +125,125 @@ function EditBoardModal({
               className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none"
             />
           </div>
+
+          {/* Categories */}
+          <div>
+            <label className="block text-sm font-medium text-[#444441] mb-2">
+              {t("forms:board.categories")}
+            </label>
+            <div className="space-y-1.5 mb-3">
+              {categories.map((cat, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between bg-[#F1F5F8] px-3 py-2 rounded-lg border border-[#D3D1C7]"
+                >
+                  <span className="text-sm text-[#1E3A5F]">{cat}</span>
+                  <button
+                    type="button"
+                    onClick={() => setCategories((prev) => prev.filter((_, i) => i !== index))}
+                    className="text-[#E74C3C] hover:text-[#C0392B]"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder={t("forms:board.category_placeholder")}
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value.slice(0, CATEGORY_NAME_MAX))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddCategory();
+                  }
+                }}
+                className="flex-1 px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
+              />
+              <Button type="button" variant="secondary" size="sm" onClick={handleAddCategory}>
+                <Plus size={16} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div>
+            <label className="block text-sm font-medium text-[#444441] mb-1">
+              {t("forms:feedback.language")}
+            </label>
+            <p className="text-[#6B7B8D] text-xs mb-2">{t("forms:board.choose_languages_help")}</p>
+            <div className="flex flex-wrap gap-2">
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const selected = supportedLanguages.includes(lang.code);
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => handleToggleLanguage(lang.code)}
+                    aria-pressed={selected}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition-colors ${
+                      selected
+                        ? "bg-[#EBF5FB] border-[#2E86AB] text-[#1E3A5F] font-medium"
+                        : "bg-white border-[#D3D1C7] text-[#6B7B8D] hover:bg-[#F1F5F8]"
+                    }`}
+                  >
+                    <span>{lang.flag}</span>
+                    <span>{lang.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Anonymous toggle */}
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isAnonymousAllowed}
+              onChange={(e) => setIsAnonymousAllowed(e.target.checked)}
+              className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+            />
+            <span className="text-sm text-[#1E3A5F] font-medium">
+              {t("forms:board.anonymous_allowed")}
+            </span>
+          </label>
+
+          {/* Satisfaction rating */}
+          <div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showSatisfactionRating}
+                onChange={(e) => {
+                  setShowSatisfactionRating(e.target.checked);
+                  if (!e.target.checked) setSatisfactionRequired(false);
+                }}
+                className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+              />
+              <div>
+                <span className="text-sm text-[#1E3A5F] font-medium block">{t("forms:board.collect_satisfaction")}</span>
+                <span className="text-[#6B7B8D] text-xs">{t("forms:board.collect_satisfaction_help")}</span>
+              </div>
+            </label>
+            {showSatisfactionRating && (
+              <label className="flex items-center gap-3 cursor-pointer mt-2 ml-8">
+                <input
+                  type="checkbox"
+                  checked={satisfactionRequired}
+                  onChange={(e) => setSatisfactionRequired(e.target.checked)}
+                  className="w-4 h-4 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+                />
+                <div>
+                  <span className="text-sm text-[#1E3A5F] font-medium block">{t("forms:board.rating_required_label")}</span>
+                  <span className="text-[#6B7B8D] text-xs">{t("forms:board.rating_required_help")}</span>
+                </div>
+              </label>
+            )}
+          </div>
+
+          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <Button variant="secondary" size="sm" type="button" onClick={onClose} className="flex-1 justify-center">
               {t("cancel")}
@@ -183,7 +349,7 @@ export function DashboardHome() {
     loadData();
   }, [loadData]);
 
-  const handleEditSave = async (board: Board, data: { name: string; description: string }) => {
+  const handleEditSave = async (board: Board, data: EditBoardData) => {
     await updateBoard(board.id, data);
     if (user) {
       void addAuditLog(user.companyId, {
@@ -377,14 +543,14 @@ export function DashboardHome() {
                   )}
 
                   {/* Actions */}
-                  <div className="flex gap-2 pt-1 border-t border-[#F0F4F8]">
+                  <div className="flex flex-wrap gap-2 pt-1 border-t border-[#F0F4F8]">
                     <button
                       type="button"
                       onClick={() => navigate(`/board/${board.id}`)}
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] py-2 rounded-lg transition-colors"
+                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] py-2 px-2 rounded-lg transition-colors"
                     >
-                      <QrCode size={13} />
-                      {t("boards:dashboard.qr_code_and_settings")}
+                      <QrCode size={13} className="flex-shrink-0" />
+                      <span className="truncate">{t("boards:dashboard.qr_code_and_settings")}</span>
                     </button>
                     <button
                       type="button"
@@ -394,10 +560,10 @@ export function DashboardHome() {
                           "_blank"
                         )
                       }
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] py-2 rounded-lg transition-colors"
+                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] py-2 px-2 rounded-lg transition-colors"
                     >
-                      <ExternalLink size={13} />
-                      {t("boards:dashboard.open_form")}
+                      <ExternalLink size={13} className="flex-shrink-0" />
+                      <span className="truncate">{t("boards:dashboard.open_form")}</span>
                     </button>
                   </div>
 
