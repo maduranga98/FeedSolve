@@ -22,7 +22,6 @@
   "confirm": "உறுதிப்படுத்தவும்",
   "board": "பலகை",
   "boards": "பலகைகள்",
-  "analytics": "பகுப்பாய்வு",
   "team": "குழு",
   "billing": "பில்லிங்",
   "pricing": "விலை திட்டங்கள்",
@@ -458,6 +457,7 @@
     "csv_attachments": "இணைப்புகள்"
   },
   "nav": {
+    "analytics": "பகுப்பாய்வு",
     "reply_templates": "பதில் வார்ப்புருக்கள்",
     "escalation_rules": "அதிகரிப்பு விதிகள்",
     "escalation_locked": "அதிகரிப்பு விதிகள் Growth திட்டத்தில் கிடைக்கும்",

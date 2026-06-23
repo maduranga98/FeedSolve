@@ -22,7 +22,6 @@
   "confirm": "تأكيد",
   "board": "لوحة",
   "boards": "لوحات",
-  "analytics": "التحليلات",
   "team": "فريق",
   "billing": "الفواتير",
   "pricing": "التسعير",
@@ -458,6 +457,7 @@
     "csv_attachments": "المرفقات"
   },
   "nav": {
+    "analytics": "التحليلات",
     "reply_templates": "قوالب الرد",
     "escalation_rules": "قواعد التصعيد",
     "escalation_locked": "قواعد التصعيد متاحة في خطة Growth",

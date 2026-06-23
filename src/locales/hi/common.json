@@ -22,7 +22,6 @@
   "confirm": "पुष्टि करें",
   "board": "बोर्ड",
   "boards": "बोर्ड",
-  "analytics": "विश्लेषण",
   "team": "दल",
   "billing": "बिलिंग",
   "pricing": "मूल्य निर्धारण",
@@ -458,6 +457,7 @@
     "csv_attachments": "अनुलग्नक"
   },
   "nav": {
+    "analytics": "विश्लेषण",
     "reply_templates": "उत्तर टेम्पलेट",
     "escalation_rules": "एस्केलेशन नियम",
     "escalation_locked": "एस्केलेशन नियम Growth प्लान पर उपलब्ध हैं",

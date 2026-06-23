@@ -22,7 +22,6 @@
   "confirm": "තහවුරු කරන්න",
   "board": "පුවරුව",
   "boards": "පුවරු",
-  "analytics": "විශ්ලේෂණ",
   "team": "කණ්ඩායම",
   "billing": "බිල්පත්",
   "pricing": "මිල සැලසුම්",
@@ -458,6 +457,7 @@
     "csv_attachments": "ඇමුණුම්"
   },
   "nav": {
+    "analytics": "විශ්ලේෂණ",
     "reply_templates": "පිළිතුරු සැකිලි",
     "escalation_rules": "උත්සන්න නීති",
     "escalation_locked": "උත්සන්න නීති Growth සැලැස්මෙන් ලබා ගත හැක",

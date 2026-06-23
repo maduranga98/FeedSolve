@@ -22,7 +22,6 @@
   "confirm": "Confirmar",
   "board": "Tablero",
   "boards": "Tableros",
-  "analytics": "Analíticas",
   "team": "Equipo",
   "billing": "Facturación",
   "pricing": "Precios",
@@ -458,6 +457,7 @@
     "csv_attachments": "Adjuntos"
   },
   "nav": {
+    "analytics": "Analíticas",
     "reply_templates": "Plantillas de Respuesta",
     "escalation_rules": "Reglas de Escalación",
     "escalation_locked": "Las reglas de escalación están disponibles en el plan Growth",
