@@ -22,7 +22,6 @@
   "confirm": "Confirm",
   "board": "Board",
   "boards": "Boards",
-  "analytics": "Analytics",
   "team": "Team",
   "billing": "Billing",
   "pricing": "Pricing",
@@ -458,6 +457,7 @@
     "csv_attachments": "Attachments"
   },
   "nav": {
+    "analytics": "Analytics",
     "reply_templates": "Reply Templates",
     "escalation_rules": "Escalation Rules",
     "escalation_locked": "Escalation rules are available on Growth plan",

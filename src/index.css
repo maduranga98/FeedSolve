@@ -3,17 +3,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1e3a5f;
-  --color-accent: #2e86ab;
-  --color-accent-light: #d6eef5;
-  --color-success: #27ae60;
-  --color-warning: #f39c12;
-  --color-error: #e74c3c;
-  --color-bg: #e1e8ef;
+  --color-primary: #1c1917;
+  --color-accent: #c0694a;
+  --color-accent-light: #f5e6df;
+  --color-success: #3a9b6f;
+  --color-warning: #d4860f;
+  --color-error: #c0392b;
+  --color-bg: #f5f0ec;
   --color-surface: #ffffff;
-  --color-muted-text: #6b7b8d;
-  --color-body-text: #444441;
-  --color-border: #d3d1c7;
+  --color-muted-text: #78716c;
+  --color-body-text: #3c3632;
+  --color-border: #e0d6cf;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
@@ -62,25 +62,25 @@
 @layer utilities {
   .card {
     background: #ffffff;
-    border: 1px solid #e8ecf0;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px 0 rgba(30, 58, 95, 0.05), 0 1px 2px -1px rgba(30, 58, 95, 0.04);
+    border: 1px solid #e0d6cf;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px 0 rgba(28, 25, 23, 0.05), 0 1px 2px -1px rgba(28, 25, 23, 0.04);
   }
 
   .card-hover {
     transition: box-shadow 150ms ease, transform 150ms ease;
   }
   .card-hover:hover {
-    box-shadow: 0 4px 12px 0 rgba(30, 58, 95, 0.1), 0 2px 6px -1px rgba(30, 58, 95, 0.06);
+    box-shadow: 0 4px 16px 0 rgba(192, 105, 74, 0.12), 0 2px 6px -1px rgba(28, 25, 23, 0.06);
     transform: translateY(-1px);
   }
 
   .page-header {
-    background: linear-gradient(135deg, #1e3a5f 0%, #2e6e9a 100%);
+    background: linear-gradient(135deg, #1c1917 0%, #3c2e28 100%);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #1e3a5f, #2e86ab);
+    background: linear-gradient(135deg, #1c1917, #c0694a);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
