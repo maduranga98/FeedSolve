@@ -21,10 +21,10 @@ import { InternalDiscussion } from '../../components/dashboard/InternalDiscussio
 import type { EscalationLog, Submission, TeamMember } from '../../types';
 
 const SATISFACTION_CONFIG: Record<number, { emoji: string; color: string; bg: string }> = {
-  1: { emoji: "😠", color: "#E74C3C", bg: "#FDEDEC" },
+  1: { emoji: "😠", color: "#c0392b", bg: "#FDEDEC" },
   2: { emoji: "😕", color: "#E67E22", bg: "#FEF5E7" },
-  3: { emoji: "😐", color: "#6B7B8D", bg: "#EFF3F6" },
-  4: { emoji: "😊", color: "#2E86AB", bg: "#EBF5FB" },
+  3: { emoji: "😐", color: "#78716c", bg: "#f1ebe5" },
+  4: { emoji: "😊", color: "#c0694a", bg: "#f5e6df" },
   5: { emoji: "😄", color: "#27AE60", bg: "#EBF9F1" },
 };
 
@@ -370,18 +370,18 @@ export function SubmissionDetail() {
             )}
           </div>
 
-          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4">
-            <div className="mb-3 flex items-center gap-2 text-[#1E3A5F]">
+          <div className="mb-6 rounded-xl border border-[#d6cabf] bg-[#f5f0ec] p-4">
+            <div className="mb-3 flex items-center gap-2 text-[#1c1917]">
               <History size={17} />
               <h2 className="text-base font-semibold">Escalation History</h2>
             </div>
             {escalationLog.length === 0 ? (
-              <p className="text-sm text-[#6B7B8D]">No automated escalations have triggered for this submission.</p>
+              <p className="text-sm text-[#78716c]">No automated escalations have triggered for this submission.</p>
             ) : (
               <ul className="space-y-2">
                 {escalationLog.map((entry) => (
-                  <li key={entry.id} className="rounded-lg bg-white px-3 py-2 text-sm text-[#444441] ring-1 ring-[#D3D1C7]/70">
-                    Rule <span className="font-semibold text-[#1E3A5F]">“{entry.ruleName}”</span> triggered {entry.triggeredAt ? formatDistanceToNow(entry.triggeredAt.toDate(), { addSuffix: true }) : 'recently'} → {entry.actionsTaken.join(', ')}
+                  <li key={entry.id} className="rounded-lg bg-white px-3 py-2 text-sm text-[#3c3632] ring-1 ring-[#d6cabf]/70">
+                    Rule <span className="font-semibold text-[#1c1917]">“{entry.ruleName}”</span> triggered {entry.triggeredAt ? formatDistanceToNow(entry.triggeredAt.toDate(), { addSuffix: true }) : 'recently'} → {entry.actionsTaken.join(', ')}
                   </li>
                 ))}
               </ul>

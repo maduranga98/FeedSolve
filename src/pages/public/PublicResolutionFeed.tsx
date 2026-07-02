@@ -44,7 +44,7 @@ function resolutionTone(rate: number): 'success' | 'amber' | 'danger' {
 
 function LoadingSkeleton() {
   return (
-    <div className="min-h-screen bg-[#F1F5F8] px-4 py-10">
+    <div className="min-h-screen bg-[#f5f0ec] px-4 py-10">
       <div className="mx-auto max-w-5xl animate-pulse space-y-6">
         <div className="h-48 rounded-2xl bg-white" />
         <div className="grid gap-4 md:grid-cols-4">
@@ -164,11 +164,11 @@ export function PublicResolutionFeed() {
 
   if (notFound) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F1F5F8] px-4">
-        <div className="max-w-md rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
-          <h1 className="text-3xl font-bold text-[#1E3A5F]">{t('public_feed.not_found_title')}</h1>
-          <p className="mt-3 text-[#6B7B8D]">{t('public_feed.not_found_desc')}</p>
-          <a className="mt-6 inline-flex rounded-lg bg-[#2E86AB] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f0ec] px-4">
+        <div className="max-w-md rounded-2xl border border-[#d6cabf] bg-white p-8 text-center shadow-sm">
+          <h1 className="text-3xl font-bold text-[#1c1917]">{t('public_feed.not_found_title')}</h1>
+          <p className="mt-3 text-[#78716c]">{t('public_feed.not_found_desc')}</p>
+          <a className="mt-6 inline-flex rounded-lg bg-[#c0694a] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
             {t('public_feed.visit_feedsolve')}
           </a>
         </div>
@@ -178,14 +178,14 @@ export function PublicResolutionFeed() {
 
   if (!company?.showPublicFeed) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F1F5F8] px-4">
-        <div className="max-w-lg rounded-2xl border border-[#D3D1C7] bg-white p-8 text-center shadow-sm">
-          <ShieldCheck className="mx-auto h-12 w-12 text-[#2E86AB]" />
-          <h1 className="mt-4 text-2xl font-bold text-[#1E3A5F]">
+      <div className="flex min-h-screen items-center justify-center bg-[#f5f0ec] px-4">
+        <div className="max-w-lg rounded-2xl border border-[#d6cabf] bg-white p-8 text-center shadow-sm">
+          <ShieldCheck className="mx-auto h-12 w-12 text-[#c0694a]" />
+          <h1 className="mt-4 text-2xl font-bold text-[#1c1917]">
             {t('public_feed.feed_disabled', { name: company?.name || 'This company' })}
           </h1>
-          <p className="mt-3 text-[#6B7B8D]">{t('public_feed.feed_disabled_desc')}</p>
-          <a className="mt-6 inline-flex rounded-lg bg-[#2E86AB] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
+          <p className="mt-3 text-[#78716c]">{t('public_feed.feed_disabled_desc')}</p>
+          <a className="mt-6 inline-flex rounded-lg bg-[#c0694a] px-5 py-2.5 font-medium text-white" href="https://feedsolve.com">
             {t('powered_by_feedsolve')}
           </a>
         </div>
@@ -199,10 +199,10 @@ export function PublicResolutionFeed() {
   const submitLink = firstBoard ? `${appOrigin}/submit/${firstBoard.slug}` : null;
 
   return (
-    <div className="min-h-screen bg-[#F1F5F8] text-[#1E3A5F]">
+    <div className="min-h-screen bg-[#f5f0ec] text-[#1c1917]">
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
-        <header className="overflow-hidden rounded-2xl border border-[#D3D1C7] bg-white shadow-sm">
-          <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2E86AB] px-6 py-8 text-white sm:px-8">
+        <header className="overflow-hidden rounded-2xl border border-[#d6cabf] bg-white shadow-sm">
+          <div className="bg-gradient-to-br from-[#1c1917] to-[#c0694a] px-6 py-8 text-white sm:px-8">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
                 {company.branding?.logoUrl ? (
@@ -223,7 +223,7 @@ export function PublicResolutionFeed() {
             </div>
             {company.publicFeedMessage && <p className="mt-6 max-w-2xl text-lg leading-8 text-white/90">{company.publicFeedMessage}</p>}
           </div>
-          <div className="flex flex-col gap-3 px-6 py-4 text-sm text-[#6B7B8D] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="flex flex-col gap-3 px-6 py-4 text-sm text-[#78716c] sm:flex-row sm:items-center sm:justify-between sm:px-8">
             <span className="inline-flex items-center gap-2"><CheckCircle2 size={16} className="text-[#27AE60]" /> {t('public_feed.public_metrics')}</span>
             <span>{t('powered_by_feedsolve')}</span>
           </div>
@@ -238,7 +238,7 @@ export function PublicResolutionFeed() {
           <ResolutionMetricCard label={t('public_feed.active_boards')} value={stats.activeBoards} tone="neutral" />
         </section>
 
-        <section className="mt-6 rounded-xl border border-[#D3D1C7] bg-white p-6 shadow-sm">
+        <section className="mt-6 rounded-xl border border-[#d6cabf] bg-white p-6 shadow-sm">
           <h2 className="text-xl font-bold">{t('public_feed.this_month')}</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             <ResolutionMetricCard label={t('public_feed.submissions_received')} value={stats.submissionsThisMonth} tone="neutral" />
@@ -250,7 +250,7 @@ export function PublicResolutionFeed() {
         <section className="mt-6">
           <div className="mb-4">
             <h2 className="text-xl font-bold">{t('public_feed.recent_resolved')}</h2>
-            <p className="mt-1 text-sm text-[#6B7B8D]">{t('public_feed.recent_resolved_desc')}</p>
+            <p className="mt-1 text-sm text-[#78716c]">{t('public_feed.recent_resolved_desc')}</p>
           </div>
           <RecentActivityFeed submissions={recentResolved} formatResolutionTime={(submission) => {
             const createdAt = toDate(submission.createdAt);
@@ -261,13 +261,13 @@ export function PublicResolutionFeed() {
         </section>
       </main>
 
-      <footer className="border-t border-[#D3D1C7] bg-white px-4 py-6">
-        <div className="mx-auto flex max-w-5xl flex-col gap-4 text-sm text-[#6B7B8D] sm:flex-row sm:items-center sm:justify-between">
-          <a href="https://feedsolve.com" className="inline-flex w-fit items-center gap-2 rounded-full border border-[#D3D1C7] px-4 py-2 font-semibold text-[#1E3A5F]">
+      <footer className="border-t border-[#d6cabf] bg-white px-4 py-6">
+        <div className="mx-auto flex max-w-5xl flex-col gap-4 text-sm text-[#78716c] sm:flex-row sm:items-center sm:justify-between">
+          <a href="https://feedsolve.com" className="inline-flex w-fit items-center gap-2 rounded-full border border-[#d6cabf] px-4 py-2 font-semibold text-[#1c1917]">
             {t('powered_by_feedsolve')} <ExternalLink size={14} />
           </a>
           {company.showPublicFeedbackLink && submitLink && (
-            <a href={submitLink} className="font-semibold text-[#2E86AB]">
+            <a href={submitLink} className="font-semibold text-[#c0694a]">
               {t('public_feed.submit_feedback_to', { name: displayName })}
             </a>
           )}

@@ -16,8 +16,8 @@ export interface SubmissionReceiptInput {
   companyAddress?: string | null;
 }
 
-const FEEDSOLVE_PRIMARY = '#2E86AB';
-const FEEDSOLVE_SECONDARY = '#1E3A5F';
+const FEEDSOLVE_PRIMARY = '#c0694a';
+const FEEDSOLVE_SECONDARY = '#1c1917';
 
 async function generateQRDataUrl(url: string, color: string): Promise<string> {
   const qr = new QRCodeStyling({

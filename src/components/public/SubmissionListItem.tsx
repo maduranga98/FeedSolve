@@ -27,27 +27,27 @@ export function SubmissionListItem({ item, onClick }: SubmissionListItemProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-xl border border-[#D3D1C7] bg-white p-4 text-left shadow-sm transition hover:border-[#2E86AB] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/30"
+      className="w-full rounded-xl border border-[#d6cabf] bg-white p-4 text-left shadow-sm transition hover:border-[#c0694a] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#c0694a]/30"
     >
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-sm font-bold text-[#1E3A5F]">
+            <span className="font-mono text-sm font-bold text-[#1c1917]">
               {submission.trackingCode}
             </span>
             <Badge status={submission.status} className="px-2 py-0.5 text-xs" />
           </div>
-          <div className="grid gap-1 text-sm text-[#6B7B8D] sm:grid-cols-2">
+          <div className="grid gap-1 text-sm text-[#78716c] sm:grid-cols-2">
             <p className="truncate">
-              <span className="font-medium text-[#1E3A5F]">Board:</span> {boardName}
+              <span className="font-medium text-[#1c1917]">Board:</span> {boardName}
             </p>
             <p className="truncate">
-              <span className="font-medium text-[#1E3A5F]">Category:</span> {submission.category}
+              <span className="font-medium text-[#1c1917]">Category:</span> {submission.category}
             </p>
           </div>
-          <p className="text-xs text-[#6B7B8D]">Submitted {formatSubmissionDate(submission.createdAt)}</p>
+          <p className="text-xs text-[#78716c]">Submitted {formatSubmissionDate(submission.createdAt)}</p>
         </div>
-        <ChevronRight size={18} className="mt-1 flex-shrink-0 text-[#6B7B8D]" />
+        <ChevronRight size={18} className="mt-1 flex-shrink-0 text-[#78716c]" />
       </div>
     </button>
   );

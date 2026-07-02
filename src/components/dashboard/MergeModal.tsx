@@ -15,23 +15,23 @@ interface MergeModalProps {
 
 function PreviewCard({ title, submission, t }: { title: string; submission: Submission; t: (key: string) => string }) {
   return (
-    <div className="rounded-xl border border-[#D3D1C7] bg-white p-4">
-      <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">{title}</p>
+    <div className="rounded-xl border border-[#d6cabf] bg-white p-4">
+      <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#78716c]">{title}</p>
       <div className="space-y-3">
         <div>
-          <p className="text-xs text-[#9AABBF]">{t('merge_modal.tracking_code')}</p>
-          <p className="font-mono text-sm font-semibold text-[#1E3A5F]">{submission.trackingCode}</p>
+          <p className="text-xs text-[#8f8680]">{t('merge_modal.tracking_code')}</p>
+          <p className="font-mono text-sm font-semibold text-[#1c1917]">{submission.trackingCode}</p>
         </div>
         <div>
-          <p className="text-xs text-[#9AABBF]">{t('merge_modal.category')}</p>
-          <p className="text-sm font-semibold text-[#444441]">{submission.category}</p>
+          <p className="text-xs text-[#8f8680]">{t('merge_modal.category')}</p>
+          <p className="text-sm font-semibold text-[#3c3632]">{submission.category}</p>
         </div>
         <div>
-          <p className="text-xs text-[#9AABBF]">{t('merge_modal.subject')}</p>
-          <p className="text-sm font-semibold text-[#1E3A5F]">{submission.subject}</p>
+          <p className="text-xs text-[#8f8680]">{t('merge_modal.subject')}</p>
+          <p className="text-sm font-semibold text-[#1c1917]">{submission.subject}</p>
         </div>
         <div>
-          <p className="text-xs text-[#9AABBF]">{t('merge_modal.status')}</p>
+          <p className="text-xs text-[#8f8680]">{t('merge_modal.status')}</p>
           <Badge status={submission.status} />
         </div>
       </div>
@@ -76,17 +76,17 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-3xl overflow-hidden rounded-xl bg-white shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-[#E8ECF0] px-6 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-[#e9e0d9] px-6 py-4">
           <div>
-            <h2 className="text-lg font-bold text-[#1E3A5F]">{t('merge_modal.title')}</h2>
-            <p className="mt-1 text-sm text-[#6B7B8D]">
+            <h2 className="text-lg font-bold text-[#1c1917]">{t('merge_modal.title')}</h2>
+            <p className="mt-1 text-sm text-[#78716c]">
               {t('merge_modal.description')}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-[#9AABBF] transition hover:bg-[#E1E8EF] hover:text-[#444441]"
+            className="rounded-lg p-2 text-[#8f8680] transition hover:bg-[#ece5de] hover:text-[#3c3632]"
             aria-label={t('merge_modal.close')}
           >
             <X size={18} />
@@ -103,58 +103,58 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
           {step === "search" ? (
             <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-[#78716c]">
                   {t('merge_modal.search_label')}
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9AABBF]" size={16} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8f8680]" size={16} />
                   <input
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     placeholder={t('merge_modal.search_placeholder')}
-                    className="w-full rounded-lg border border-[#D3D1C7] bg-white py-2.5 pl-10 pr-3 text-sm text-[#1E3A5F] outline-none transition focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
+                    className="w-full rounded-lg border border-[#d6cabf] bg-white py-2.5 pl-10 pr-3 text-sm text-[#1c1917] outline-none transition focus:border-[#c0694a] focus:ring-2 focus:ring-[#c0694a]/20"
                     autoFocus
                   />
                 </div>
-                <label className="mt-3 inline-flex items-center gap-2 text-sm text-[#6B7B8D]">
+                <label className="mt-3 inline-flex items-center gap-2 text-sm text-[#78716c]">
                   <input
                     type="checkbox"
                     checked={includeAllBoards}
                     onChange={(event) => setIncludeAllBoards(event.target.checked)}
-                    className="h-4 w-4 accent-[#2E86AB]"
+                    className="h-4 w-4 accent-[#c0694a]"
                   />
                   {t('merge_modal.include_all_boards')}
                 </label>
               </div>
 
-              <div className="rounded-xl border border-[#E8ECF0]">
-                <div className="border-b border-[#E8ECF0] bg-[#F1F5F8] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">
+              <div className="rounded-xl border border-[#e9e0d9]">
+                <div className="border-b border-[#e9e0d9] bg-[#f5f0ec] px-4 py-3 text-xs font-bold uppercase tracking-wide text-[#78716c]">
                   {t('merge_modal.matching')}
                 </div>
                 {searching ? (
-                  <div className="p-6 text-center text-sm text-[#6B7B8D]">{t('merge_modal.searching')}</div>
+                  <div className="p-6 text-center text-sm text-[#78716c]">{t('merge_modal.searching')}</div>
                 ) : query.trim().length < 2 ? (
-                  <div className="p-6 text-center text-sm text-[#6B7B8D]">{t('merge_modal.min_chars')}</div>
+                  <div className="p-6 text-center text-sm text-[#78716c]">{t('merge_modal.min_chars')}</div>
                 ) : results.length === 0 ? (
-                  <div className="p-6 text-center text-sm text-[#6B7B8D]">{t('merge_modal.no_results')}</div>
+                  <div className="p-6 text-center text-sm text-[#78716c]">{t('merge_modal.no_results')}</div>
                 ) : (
-                  <div className="divide-y divide-[#E8ECF0]">
+                  <div className="divide-y divide-[#e9e0d9]">
                     {results.map((submission) => (
                       <button
                         key={submission.id}
                         type="button"
                         onClick={() => handleSelectMaster(submission)}
-                        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#F1F5F8]"
+                        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#f5f0ec]"
                       >
                         <div className="min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs font-semibold text-[#2E86AB]">{submission.trackingCode}</span>
+                            <span className="font-mono text-xs font-semibold text-[#c0694a]">{submission.trackingCode}</span>
                             <Badge status={submission.status} />
                           </div>
-                          <p className="mt-1 truncate text-sm font-semibold text-[#1E3A5F]">{submission.subject}</p>
-                          <p className="text-xs text-[#6B7B8D]">{submission.category}</p>
+                          <p className="mt-1 truncate text-sm font-semibold text-[#1c1917]">{submission.subject}</p>
+                          <p className="text-xs text-[#78716c]">{submission.category}</p>
                         </div>
-                        <ArrowRight className="flex-shrink-0 text-[#9AABBF]" size={16} />
+                        <ArrowRight className="flex-shrink-0 text-[#8f8680]" size={16} />
                       </button>
                     ))}
                   </div>
@@ -165,7 +165,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto_1fr] md:items-stretch">
                 <PreviewCard title={t('merge_modal.this_submission')} submission={sourceSubmission} t={t} />
-                <div className="flex items-center justify-center text-[#9AABBF]">
+                <div className="flex items-center justify-center text-[#8f8680]">
                   <ArrowRight size={22} />
                 </div>
                 <PreviewCard title={t('merge_modal.master_submission')} submission={masterSubmission} t={t} />
@@ -183,12 +183,12 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
           ) : null}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-[#E8ECF0] bg-[#F1F5F8] px-6 py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-[#e9e0d9] bg-[#f5f0ec] px-6 py-4">
           {step === "confirm" ? (
             <button
               type="button"
               onClick={() => setStep("search")}
-              className="rounded-lg border border-[#D3D1C7] bg-white px-4 py-2 text-sm font-semibold text-[#6B7B8D] transition hover:text-[#1E3A5F]"
+              className="rounded-lg border border-[#d6cabf] bg-white px-4 py-2 text-sm font-semibold text-[#78716c] transition hover:text-[#1c1917]"
             >
               {t('merge_modal.back')}
             </button>
@@ -197,7 +197,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg border border-[#D3D1C7] bg-white px-4 py-2 text-sm font-semibold text-[#6B7B8D] transition hover:text-[#1E3A5F]"
+              className="rounded-lg border border-[#d6cabf] bg-white px-4 py-2 text-sm font-semibold text-[#78716c] transition hover:text-[#1c1917]"
             >
               {t('merge_modal.cancel')}
             </button>
@@ -206,7 +206,7 @@ export function MergeModal({ sourceSubmission, currentUser, onClose, onMerged }:
                 type="button"
                 onClick={handleMerge}
                 disabled={loading}
-                className="rounded-lg bg-[#E74C3C] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#C0392B] disabled:cursor-not-allowed disabled:opacity-60"
+                className="rounded-lg bg-[#c0392b] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#C0392B] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? t('merge_modal.merging') : t('merge_modal.merge')}
               </button>

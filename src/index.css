@@ -16,6 +16,24 @@
   --color-border: #e0d6cf;
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /*
+   * Aliases so utilities written as `text-color-primary`, `bg-color-surface`,
+   * `border-color-border`, etc. (used throughout the app) compile in
+   * Tailwind v4. Without these, those classes generate no CSS at all.
+   */
+  --color-color-primary: #1c1917;
+  --color-color-accent: #c0694a;
+  --color-color-accent-light: #f5e6df;
+  --color-color-success: #3a9b6f;
+  --color-color-warning: #d4860f;
+  --color-color-error: #c0392b;
+  --color-color-bg: #f5f0ec;
+  --color-color-surface: #ffffff;
+  --color-color-surface-light: #faf8f5;
+  --color-color-muted-text: #78716c;
+  --color-color-body-text: #3c3632;
+  --color-color-border: #e0d6cf;
 }
 
 @layer base {
@@ -51,11 +69,11 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #c8d0d8;
+    background: #d6cabf;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #9aabbf;
+    background: #b3a89f;
   }
 }
 

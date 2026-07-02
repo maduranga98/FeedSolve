@@ -15,12 +15,12 @@ export function TrackByCode() {
 
   return (
     <div className="space-y-5 text-left">
-      <div className="rounded-xl border border-[#E3EDF4] bg-[#F1F5F8] p-4 text-center">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EBF5FB]">
-          <Search size={22} className="text-[#2E86AB]" />
+      <div className="rounded-xl border border-[#efe5dd] bg-[#f5f0ec] p-4 text-center">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f5e6df]">
+          <Search size={22} className="text-[#c0694a]" />
         </div>
-        <h2 className="text-lg font-bold text-[#1E3A5F]">Track by Code</h2>
-        <p className="mt-1 text-sm text-[#6B7B8D]">
+        <h2 className="text-lg font-bold text-[#1c1917]">Track by Code</h2>
+        <p className="mt-1 text-sm text-[#78716c]">
           Enter the tracking code you received after submitting feedback.
         </p>
       </div>

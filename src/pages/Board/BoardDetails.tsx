@@ -136,8 +136,8 @@ export function BoardDetails() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)] lg:items-start">
           {/* Board Info */}
           <div className="rounded-2xl border border-color-border bg-color-surface p-6 shadow-md lg:sticky lg:top-6">
-            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#EBF5FB] to-white p-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#2E86AB]">
+            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#f5e6df] to-white p-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">
                 Feedback board
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold text-color-primary break-words">{board.name}</h1>
@@ -207,7 +207,7 @@ export function BoardDetails() {
                 Share Feedback Form
               </Button>
               <Button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/submissions')}
                 variant="secondary"
                 className="w-full"
               >
@@ -216,17 +216,17 @@ export function BoardDetails() {
             </div>
           </div>
 
-          <section className="overflow-hidden rounded-2xl border border-[#D3D1C7] bg-white shadow-md">
-            <div className="border-b border-[#E8ECF0] bg-gradient-to-r from-[#F1F5F8] via-white to-[#EBF5FB] p-5 sm:p-6">
+          <section className="overflow-hidden rounded-2xl border border-[#d6cabf] bg-white shadow-md">
+            <div className="border-b border-[#e9e0d9] bg-gradient-to-r from-[#f5f0ec] via-white to-[#f5e6df] p-5 sm:p-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#2E86AB]">Board setup</p>
-                  <h2 className="mt-1 text-2xl font-bold text-[#1E3A5F]">Configure how feedback is collected</h2>
-                  <p className="mt-1 text-sm text-[#6B7B8D]">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">Board setup</p>
+                  <h2 className="mt-1 text-2xl font-bold text-[#1c1917]">Configure how feedback is collected</h2>
+                  <p className="mt-1 text-sm text-[#78716c]">
                     Jump between QR sharing, recurring cycles, and location-specific setup without hunting down the page.
                   </p>
                 </div>
-                <span className="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-1 text-xs font-bold text-[#185FA5] shadow-sm ring-1 ring-[#D3D1C7]">
+                <span className="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-1 text-xs font-bold text-[#9c4a2f] shadow-sm ring-1 ring-[#d6cabf]">
                   Step {setupSteps.findIndex((step) => step.id === activeSetupStep) + 1} of {setupSteps.length}
                 </span>
               </div>
@@ -245,11 +245,11 @@ export function BoardDetails() {
                       onClick={() => setActiveSetupStep(step.id)}
                       className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
                         active
-                          ? 'border-[#2E86AB] bg-white text-[#1E3A5F] shadow-sm ring-2 ring-[#2E86AB]/15'
-                          : 'border-[#D3D1C7] bg-white/65 text-[#6B7B8D] hover:border-[#2E86AB]/50 hover:bg-white'
+                          ? 'border-[#c0694a] bg-white text-[#1c1917] shadow-sm ring-2 ring-[#c0694a]/15'
+                          : 'border-[#d6cabf] bg-white/65 text-[#78716c] hover:border-[#c0694a]/50 hover:bg-white'
                       }`}
                     >
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[#2E86AB] text-white' : 'bg-[#EFF3F6] text-[#6B7B8D] group-hover:text-[#2E86AB]'}`}>
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[#c0694a] text-white' : 'bg-[#f1ebe5] text-[#78716c] group-hover:text-[#c0694a]'}`}>
                         {active ? <Icon size={17} /> : index + 1}
                       </span>
                       <span className="min-w-0">
@@ -262,16 +262,16 @@ export function BoardDetails() {
               </div>
             </div>
 
-            <div className="bg-[#F8FAFC] p-4 sm:p-6">
+            <div className="bg-[#faf8f5] p-4 sm:p-6">
               {activeSetupStep === 'qr' && (
-                <div className="rounded-xl border border-[#D3D1C7] bg-white p-5">
+                <div className="rounded-xl border border-[#d6cabf] bg-white p-5">
                   <div className="mb-5 flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
                       <QrCode size={18} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-[#1E3A5F]">QR Code</h3>
-                      <p className="text-sm text-[#6B7B8D]">Customize style, colors, logo, and frame — then download.</p>
+                      <h3 className="text-lg font-bold text-[#1c1917]">QR Code</h3>
+                      <p className="text-sm text-[#78716c]">Customize style, colors, logo, and frame — then download.</p>
                     </div>
                   </div>
                   <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />

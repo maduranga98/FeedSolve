@@ -23,7 +23,7 @@ export function CycleSwitcher({ cycles, selectedCycle, onChange }: CycleSwitcher
       <select
         value={selectedCycle}
         onChange={(event) => onChange(event.target.value)}
-        className="appearance-none rounded-xl border border-[#D3D1C7] bg-white py-2 pl-3 pr-9 text-sm font-semibold text-[#1E3A5F] shadow-sm outline-none transition focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/20"
+        className="appearance-none rounded-xl border border-[#d6cabf] bg-white py-2 pl-3 pr-9 text-sm font-semibold text-[#1c1917] shadow-sm outline-none transition focus:border-[#c0694a] focus:ring-2 focus:ring-[#c0694a]/20"
         aria-label={t('cycle_switcher.aria_label')}
       >
         <option value="current">{currentLabel}</option>
@@ -34,7 +34,7 @@ export function CycleSwitcher({ cycles, selectedCycle, onChange }: CycleSwitcher
           </option>
         ))}
       </select>
-      <ChevronDown className="pointer-events-none absolute right-3 text-[#6B7B8D]" size={14} />
+      <ChevronDown className="pointer-events-none absolute right-3 text-[#78716c]" size={14} />
     </div>
   );
 }

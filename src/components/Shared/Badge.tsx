@@ -8,7 +8,7 @@ interface BadgeProps {
 }
 
 const variantColors: Record<string, { bg: string; text: string }> = {
-  primary: { bg: "bg-[#D6EEF5]", text: "text-[#1E3A5F]" },
+  primary: { bg: "bg-[#D6EEF5]", text: "text-[#1c1917]" },
   success: { bg: "bg-[#D1F2EB]", text: "text-[#0F6E56]" },
   warning: { bg: "bg-[#FEF5E7]", text: "text-[#854F0B]" },
   error: { bg: "bg-[#FADBD8]", text: "text-[#922B21]" },
@@ -31,8 +31,8 @@ export function Badge({
     label = children || "";
   } else if (status) {
     const colors = getStatusColor(status) || {
-      bg: "bg-[#EFF3F6]",
-      text: "text-[#6B7B8D]",
+      bg: "bg-[#f1ebe5]",
+      text: "text-[#78716c]",
     };
     bg = colors.bg;
     text = colors.text;

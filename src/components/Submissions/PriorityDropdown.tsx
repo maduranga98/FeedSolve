@@ -57,7 +57,7 @@ export default function PriorityDropdown({
         handleChange(e.target.value as 'low' | 'medium' | 'high' | 'critical')
       }
       disabled={loading}
-      className={`w-full px-3 py-2 rounded text-sm font-medium border-2 focus:outline-none focus:ring-2 focus:ring-[#2E86AB] disabled:opacity-50 ${style.bg} ${style.text}`}
+      className={`w-full px-3 py-2 rounded text-sm font-medium border-2 focus:outline-none focus:ring-2 focus:ring-[#c0694a] disabled:opacity-50 ${style.bg} ${style.text}`}
     >
       <option value="low">Low</option>
       <option value="medium">Medium</option>
