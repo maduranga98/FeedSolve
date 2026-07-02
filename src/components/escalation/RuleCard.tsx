@@ -35,33 +35,33 @@ export function RuleCard({ rule, onToggle, onEdit, onDelete, disabled }: RuleCar
     : 'Never';
 
   return (
-    <article className="rounded-xl border border-[#D3D1C7] bg-white p-5 shadow-sm">
+    <article className="rounded-xl border border-[#d6cabf] bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-lg font-bold text-[#1E3A5F]">{rule.name}</h3>
-            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${rule.isActive ? 'bg-[#EAF9F2] text-[#1D8A57]' : 'bg-[#EFF3F6] text-[#6B7B8D]'}`}>
+            <h3 className="text-lg font-bold text-[#1c1917]">{rule.name}</h3>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${rule.isActive ? 'bg-[#EAF9F2] text-[#1D8A57]' : 'bg-[#f1ebe5] text-[#78716c]'}`}>
               {rule.isActive ? 'Active' : 'Paused'}
             </span>
           </div>
-          <p className="mt-2 text-sm leading-6 text-[#444441]">{getRuleSummary(rule)}</p>
-          <p className="mt-3 text-xs font-medium text-[#6B7B8D]">
+          <p className="mt-2 text-sm leading-6 text-[#3c3632]">{getRuleSummary(rule)}</p>
+          <p className="mt-3 text-xs font-medium text-[#78716c]">
             Last triggered: {lastTriggered} · Triggered {rule.triggerCount} time{rule.triggerCount === 1 ? '' : 's'}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] px-3 py-2 text-sm font-semibold text-[#1E3A5F]">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#d6cabf] bg-[#f5f0ec] px-3 py-2 text-sm font-semibold text-[#1c1917]">
             <input
               type="checkbox"
               checked={rule.isActive}
               disabled={disabled}
               onChange={(event) => onToggle(event.target.checked)}
-              className="h-4 w-4 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+              className="h-4 w-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
             />
             Active
           </label>
-          <button type="button" onClick={onEdit} className="inline-flex items-center gap-1.5 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#2E86AB] hover:bg-[#EBF5FB]">
+          <button type="button" onClick={onEdit} className="inline-flex items-center gap-1.5 rounded-lg border border-[#d6cabf] px-3 py-2 text-sm font-semibold text-[#c0694a] hover:bg-[#f5e6df]">
             <Edit3 size={15} /> Edit
           </button>
           <button type="button" onClick={onDelete} className="inline-flex items-center gap-1.5 rounded-lg border border-[#F1C0B8] px-3 py-2 text-sm font-semibold text-[#C0392B] hover:bg-[#FDECEA]">

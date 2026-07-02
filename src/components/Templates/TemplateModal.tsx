@@ -93,13 +93,13 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8ECF0] flex-shrink-0">
-          <h2 className="text-base font-bold text-[#1E3A5F]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e9e0d9] flex-shrink-0">
+          <h2 className="text-base font-bold text-[#1c1917]">
             {initial ? t('reply_templates.edit_title') : t('reply_templates.new_title')}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#9AABBF] hover:text-[#444441] hover:bg-[#E1E8EF] rounded-lg transition-colors"
+            className="p-1.5 text-[#8f8680] hover:text-[#3c3632] hover:bg-[#ece5de] rounded-lg transition-colors"
           >
             <X size={18} />
           </button>
@@ -109,21 +109,21 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* Title */}
           <div>
-            <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              {t('reply_templates.field_title')} <span className="text-[#E74C3C]">*</span>
+            <label className="block text-xs font-semibold text-[#78716c] uppercase tracking-wide mb-1.5">
+              {t('reply_templates.field_title')} <span className="text-[#c0392b]">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, MAX_TITLE))}
               placeholder={t('reply_templates.title_placeholder')}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] ${
-                errors.title ? 'border-[#E74C3C]' : 'border-[#D3D1C7]'
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a] ${
+                errors.title ? 'border-[#c0392b]' : 'border-[#d6cabf]'
               }`}
             />
             <div className="flex items-center justify-between mt-1">
-              {errors.title && <p className="text-xs text-[#E74C3C]">{errors.title}</p>}
-              <span className="text-xs text-[#B0BEC9] ml-auto">
+              {errors.title && <p className="text-xs text-[#c0392b]">{errors.title}</p>}
+              <span className="text-xs text-[#b3a89f] ml-auto">
                 {title.length}/{MAX_TITLE}
               </span>
             </div>
@@ -131,13 +131,13 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
 
           {/* Category */}
           <div>
-            <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              {t('reply_templates.field_category')} <span className="text-[#9AABBF] font-normal normal-case">{t('optional')}</span>
+            <label className="block text-xs font-semibold text-[#78716c] uppercase tracking-wide mb-1.5">
+              {t('reply_templates.field_category')} <span className="text-[#8f8680] font-normal normal-case">{t('optional')}</span>
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-white"
+              className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a] bg-white"
             >
               <option value="">{t('reply_templates.no_category')}</option>
               {categories.map((c) => (
@@ -148,8 +148,8 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
 
           {/* Body */}
           <div>
-            <label className="block text-xs font-semibold text-[#6B7B8D] uppercase tracking-wide mb-1.5">
-              {t('reply_templates.field_body')} <span className="text-[#E74C3C]">*</span>
+            <label className="block text-xs font-semibold text-[#78716c] uppercase tracking-wide mb-1.5">
+              {t('reply_templates.field_body')} <span className="text-[#c0392b]">*</span>
             </label>
             <textarea
               ref={bodyRef}
@@ -161,20 +161,20 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
               onClick={trackCursor}
               placeholder={t('reply_templates.body_placeholder')}
               rows={6}
-              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none ${
-                errors.body ? 'border-[#E74C3C]' : 'border-[#D3D1C7]'
+              className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a] resize-none ${
+                errors.body ? 'border-[#c0392b]' : 'border-[#d6cabf]'
               }`}
             />
             <div className="flex items-center justify-between mt-1">
-              {errors.body && <p className="text-xs text-[#E74C3C]">{errors.body}</p>}
-              <span className="text-xs text-[#B0BEC9] ml-auto">
+              {errors.body && <p className="text-xs text-[#c0392b]">{errors.body}</p>}
+              <span className="text-xs text-[#b3a89f] ml-auto">
                 {body.length}/{MAX_BODY}
               </span>
             </div>
 
             {/* Variable chips */}
             <div className="mt-2">
-              <p className="text-xs text-[#9AABBF] mb-2">{t('reply_templates.insert_variable')}</p>
+              <p className="text-xs text-[#8f8680] mb-2">{t('reply_templates.insert_variable')}</p>
               <div className="flex flex-wrap gap-1.5">
                 {VARIABLES.map(({ label, title: varTitle }) => (
                   <button
@@ -182,7 +182,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
                     type="button"
                     onClick={() => insertVariable(label)}
                     title={varTitle}
-                    className="px-2.5 py-1 rounded-full bg-[#EBF5FB] text-[#185FA5] text-xs font-medium hover:bg-[#D6EEFA] transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-full bg-[#f5e6df] text-[#185FA5] text-xs font-medium hover:bg-[#D6EEFA] transition-colors cursor-pointer"
                   >
                     {label}
                   </button>
@@ -193,7 +193,7 @@ export function TemplateModal({ initial, categories, onSave, onClose }: Template
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 px-6 py-4 border-t border-[#E8ECF0] flex-shrink-0">
+        <div className="flex gap-3 px-6 py-4 border-t border-[#e9e0d9] flex-shrink-0">
           <Button variant="secondary" size="sm" onClick={onClose} disabled={saving}>
             {t('cancel')}
           </Button>

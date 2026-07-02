@@ -92,8 +92,13 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
       setStep(1);
       return;
     }
-    if (!rule.trigger.hours || rule.trigger.hours < 1) {
-      setError('Choose at least 1 hour before a rule can trigger.');
+    if (rule.name.trim().length > 120) {
+      setError('Rule names are limited to 120 characters.');
+      setStep(1);
+      return;
+    }
+    if (!rule.trigger.hours || rule.trigger.hours < 1 || rule.trigger.hours > 720) {
+      setError('Choose between 1 and 720 hours (30 days) before a rule can trigger.');
       setStep(2);
       return;
     }
@@ -113,17 +118,17 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
     });
   }
 
-  const fieldClass = 'mt-1 w-full rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm focus:border-[#2E86AB] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/20';
+  const fieldClass = 'mt-1 w-full rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/20';
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#1E3A5F]/40 p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#1c1917]/40 p-4">
       <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-xl bg-white shadow-2xl">
-        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-[#D3D1C7] bg-white px-6 py-4">
+        <div className="sticky top-0 z-10 flex items-start justify-between border-b border-[#d6cabf] bg-white px-6 py-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-[#2E86AB]">Step {step} of 5</p>
-            <h2 className="text-xl font-bold text-[#1E3A5F]">{initialRule ? 'Edit escalation rule' : 'Create escalation rule'}</h2>
+            <p className="text-xs font-bold uppercase tracking-wide text-[#c0694a]">Step {step} of 5</p>
+            <h2 className="text-xl font-bold text-[#1c1917]">{initialRule ? 'Edit escalation rule' : 'Create escalation rule'}</h2>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#6B7B8D] hover:bg-[#F1F5F8]">
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#78716c] hover:bg-[#f5f0ec]">
             <X size={18} />
           </button>
         </div>
@@ -133,10 +138,10 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
 
           {step === 1 && (
             <div className="space-y-4">
-              <label className="block text-sm font-semibold text-[#1E3A5F]">Rule name
+              <label className="block text-sm font-semibold text-[#1c1917]">Rule name
                 <input className={fieldClass} value={rule.name} onChange={(event) => setRule({ ...rule, name: event.target.value })} placeholder="Escalate unassigned criticals" />
               </label>
-              <label className="block text-sm font-semibold text-[#1E3A5F]">Apply to
+              <label className="block text-sm font-semibold text-[#1c1917]">Apply to
                 <select className={fieldClass} value={rule.conditions.boardId ?? 'all'} onChange={(event) => setRule({ ...rule, conditions: { ...rule.conditions, boardId: event.target.value === 'all' ? null : event.target.value } })}>
                   <option value="all">All boards</option>
                   {boards.map((board) => <option key={board.id} value={board.id}>{board.name}</option>)}
@@ -147,50 +152,50 @@ export function RuleBuilder({ boards, teamMembers, initialRule, saving, onClose,
 
           {step === 2 && (
             <div className="space-y-4">
-              <p className="font-semibold text-[#1E3A5F]">Trigger when a submission has been...</p>
+              <p className="font-semibold text-[#1c1917]">Trigger when a submission has been...</p>
               <div className="grid gap-3 sm:grid-cols-[1fr_120px_auto] sm:items-end">
                 <select className={fieldClass} value={rule.trigger.type} onChange={(event) => setRule({ ...rule, trigger: { ...rule.trigger, type: event.target.value as EscalationTriggerType }, conditions: { ...rule.conditions, isUnassigned: event.target.value === 'time_unassigned' ? true : rule.conditions.isUnassigned } })}>
                   {triggerOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </select>
                 <input type="number" min={1} className={fieldClass} value={rule.trigger.hours} onChange={(event) => setRule({ ...rule, trigger: { ...rule.trigger, hours: Number(event.target.value) } })} />
-                <span className="pb-2 text-sm font-semibold text-[#6B7B8D]">hours</span>
+                <span className="pb-2 text-sm font-semibold text-[#78716c]">hours</span>
               </div>
-              <div className="rounded-xl bg-[#EBF5FB] p-4 text-sm font-medium text-[#1E3A5F]">Triggers when a submission {triggerPreview} {rule.trigger.hours || 0} hour{rule.trigger.hours === 1 ? '' : 's'}.</div>
+              <div className="rounded-xl bg-[#f5e6df] p-4 text-sm font-medium text-[#1c1917]">Triggers when a submission {triggerPreview} {rule.trigger.hours || 0} hour{rule.trigger.hours === 1 ? '' : 's'}.</div>
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-5">
-              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1E3A5F]">Priority filter</legend><div className="grid gap-2 sm:grid-cols-4">{priorityOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.priority?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, priority: toggleArrayValue(rule.conditions.priority, option.value) } })} />{option.label}</label>)}</div></fieldset>
-              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1E3A5F]">Status filter</legend><div className="grid gap-2 sm:grid-cols-3">{statusOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.status?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, status: toggleArrayValue(rule.conditions.status, option.value) } })} />{option.label}</label>)}</div></fieldset>
-              <label className="inline-flex items-center gap-2 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#1E3A5F]"><input type="checkbox" checked={rule.conditions.isUnassigned ?? false} onChange={(event) => setRule({ ...rule, conditions: { ...rule.conditions, isUnassigned: event.target.checked } })} /> Unassigned only</label>
+              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1c1917]">Priority filter</legend><div className="grid gap-2 sm:grid-cols-4">{priorityOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#d6cabf] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.priority?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, priority: toggleArrayValue(rule.conditions.priority, option.value) } })} />{option.label}</label>)}</div></fieldset>
+              <fieldset><legend className="mb-2 text-sm font-semibold text-[#1c1917]">Status filter</legend><div className="grid gap-2 sm:grid-cols-3">{statusOptions.map((option) => <label key={option.value} className="rounded-lg border border-[#d6cabf] px-3 py-2 text-sm"><input type="checkbox" className="mr-2" checked={rule.conditions.status?.includes(option.value) ?? false} onChange={() => setRule({ ...rule, conditions: { ...rule.conditions, status: toggleArrayValue(rule.conditions.status, option.value) } })} />{option.label}</label>)}</div></fieldset>
+              <label className="inline-flex items-center gap-2 rounded-lg border border-[#d6cabf] px-3 py-2 text-sm font-semibold text-[#1c1917]"><input type="checkbox" checked={rule.conditions.isUnassigned ?? false} onChange={(event) => setRule({ ...rule, conditions: { ...rule.conditions, isUnassigned: event.target.checked } })} /> Unassigned only</label>
             </div>
           )}
 
           {step === 4 && (
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block text-sm font-semibold text-[#1E3A5F]">Change priority to<select className={fieldClass} value={rule.actions.changePriority ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, changePriority: event.target.value || undefined } })}><option value="">Do not change</option>{priorityOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-              <label className="block text-sm font-semibold text-[#1E3A5F]">Change status to<select className={fieldClass} value={rule.actions.changeStatus ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, changeStatus: event.target.value || undefined } })}><option value="">Do not change</option>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
-              <label className="block text-sm font-semibold text-[#1E3A5F]">Assign to<select className={fieldClass} value={rule.actions.assignTo ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, assignTo: event.target.value || undefined } })}><option value="">Do not assign</option><option value="board_owner">Board Owner</option>{teamMembers.map((member) => <option key={member.userId} value={member.userId}>{member.name}</option>)}</select></label>
-              <fieldset className="block text-sm font-semibold text-[#1E3A5F]">Send notification to<div className="mt-1 max-h-36 space-y-1 overflow-y-auto rounded-lg border border-[#D3D1C7] p-2">{teamMembers.map((member) => <label key={member.email} className="flex items-center gap-2 text-sm font-normal text-[#444441]"><input type="checkbox" checked={rule.actions.notifyEmails?.includes(member.email) ?? false} onChange={() => setRule({ ...rule, actions: { ...rule.actions, notifyEmails: toggleArrayValue(rule.actions.notifyEmails, member.email) } })} />{member.email}</label>)}</div></fieldset>
-              <label className="block text-sm font-semibold text-[#1E3A5F] sm:col-span-2">Add internal comment<textarea className={`${fieldClass} min-h-28`} value={rule.actions.addInternalComment ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, addInternalComment: event.target.value } })} placeholder="Escalated automatically after {{hoursWaiting}} hours waiting on {{submissionId}}." /><span className="mt-1 block text-xs font-normal text-[#6B7B8D]">Supports {'{{submissionId}}'} and {'{{hoursWaiting}}'} variables.</span></label>
+              <label className="block text-sm font-semibold text-[#1c1917]">Change priority to<select className={fieldClass} value={rule.actions.changePriority ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, changePriority: event.target.value || undefined } })}><option value="">Do not change</option>{priorityOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+              <label className="block text-sm font-semibold text-[#1c1917]">Change status to<select className={fieldClass} value={rule.actions.changeStatus ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, changeStatus: event.target.value || undefined } })}><option value="">Do not change</option>{statusOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+              <label className="block text-sm font-semibold text-[#1c1917]">Assign to<select className={fieldClass} value={rule.actions.assignTo ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, assignTo: event.target.value || undefined } })}><option value="">Do not assign</option><option value="board_owner">Board Owner</option>{teamMembers.map((member) => <option key={member.userId} value={member.userId}>{member.name}</option>)}</select></label>
+              <fieldset className="block text-sm font-semibold text-[#1c1917]">Send notification to<div className="mt-1 max-h-36 space-y-1 overflow-y-auto rounded-lg border border-[#d6cabf] p-2">{teamMembers.map((member) => <label key={member.email} className="flex items-center gap-2 text-sm font-normal text-[#3c3632]"><input type="checkbox" checked={rule.actions.notifyEmails?.includes(member.email) ?? false} onChange={() => setRule({ ...rule, actions: { ...rule.actions, notifyEmails: toggleArrayValue(rule.actions.notifyEmails, member.email) } })} />{member.email}</label>)}</div></fieldset>
+              <label className="block text-sm font-semibold text-[#1c1917] sm:col-span-2">Add internal comment<textarea className={`${fieldClass} min-h-28`} value={rule.actions.addInternalComment ?? ''} onChange={(event) => setRule({ ...rule, actions: { ...rule.actions, addInternalComment: event.target.value } })} placeholder="Escalated automatically after {{hoursWaiting}} hours waiting on {{submissionId}}." /><span className="mt-1 block text-xs font-normal text-[#78716c]">Supports {'{{submissionId}}'} and {'{{hoursWaiting}}'} variables.</span></label>
             </div>
           )}
 
           {step === 5 && (
             <div className="space-y-4">
-              <div className="rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-5">
-                <h3 className="font-bold text-[#1E3A5F]">Review this rule</h3>
-                <p className="mt-2 text-sm leading-6 text-[#444441]">{getRuleSummary(previewRule)}</p>
-                <p className="mt-3 text-sm text-[#6B7B8D]">It will {activeActions.join(', ') || 'take no actions yet'}.</p>
+              <div className="rounded-xl border border-[#d6cabf] bg-[#f5f0ec] p-5">
+                <h3 className="font-bold text-[#1c1917]">Review this rule</h3>
+                <p className="mt-2 text-sm leading-6 text-[#3c3632]">{getRuleSummary(previewRule)}</p>
+                <p className="mt-3 text-sm text-[#78716c]">It will {activeActions.join(', ') || 'take no actions yet'}.</p>
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#D3D1C7] bg-[#F1F5F8] px-6 py-4">
-          <button type="button" onClick={() => setStep((current) => Math.max(1, current - 1))} disabled={step === 1} className="rounded-lg px-4 py-2 text-sm font-semibold text-[#6B7B8D] disabled:opacity-40">Back</button>
-          {step < 5 ? <button type="button" onClick={() => setStep((current) => Math.min(5, current + 1))} className="rounded-lg bg-[#2E86AB] px-4 py-2 text-sm font-semibold text-white">Next</button> : <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-lg bg-[#1E3A5F] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{saving ? 'Saving...' : 'Save Rule'}</button>}
+        <div className="flex items-center justify-between border-t border-[#d6cabf] bg-[#f5f0ec] px-6 py-4">
+          <button type="button" onClick={() => setStep((current) => Math.max(1, current - 1))} disabled={step === 1} className="rounded-lg px-4 py-2 text-sm font-semibold text-[#78716c] disabled:opacity-40">Back</button>
+          {step < 5 ? <button type="button" onClick={() => setStep((current) => Math.min(5, current + 1))} className="rounded-lg bg-[#c0694a] px-4 py-2 text-sm font-semibold text-white">Next</button> : <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-lg bg-[#1c1917] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{saving ? 'Saving...' : 'Save Rule'}</button>}
         </div>
       </div>
     </div>

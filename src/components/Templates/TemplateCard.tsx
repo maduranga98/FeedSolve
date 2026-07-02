@@ -1,4 +1,19 @@
 import { useTranslation } from 'react-i18next';
+import {
+  Building2,
+  CalendarDays,
+  Factory,
+  HeartPulse,
+  LayoutTemplate,
+  Package,
+  ShoppingBag,
+  Target,
+  Truck,
+  Users,
+  UtensilsCrossed,
+  Wrench,
+  type LucideIcon,
+} from 'lucide-react';
 import type { BoardTemplate } from '../../types';
 import { Button } from '../Shared';
 
@@ -6,6 +21,20 @@ interface TemplateCardProps {
   template: BoardTemplate;
   onSelect: () => void;
 }
+
+const INDUSTRY_ICONS: Record<string, LucideIcon> = {
+  retail: ShoppingBag,
+  manufacturing: Factory,
+  distribution: Package,
+  food_beverage: UtensilsCrossed,
+  logistics: Truck,
+  real_estate: Building2,
+  healthcare: HeartPulse,
+  human_resources: Users,
+  technology: Wrench,
+  events: CalendarDays,
+  general: Target,
+};
 
 function formatIndustryLabel(industry: string): string {
   return industry
@@ -18,47 +47,45 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
   const { i18n, t } = useTranslation();
   const currentLang = i18n.language as 'en' | 'si' | 'ta' | 'ar' | 'hi';
   const translation = template.translations[currentLang] || template.translations['en'];
+  const Icon = INDUSTRY_ICONS[template.industry] ?? LayoutTemplate;
 
   return (
-    <div
-      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
-      style={{ borderTopColor: template.color, borderTopWidth: '4px' }}
-    >
-      <div className="p-6">
-        {/* Icon */}
-        <div className="text-4xl mb-4">{template.icon}</div>
-
-        {/* Title and Description */}
-        <h3 className="text-lg font-bold text-[#1E3A5F] mb-2">
-          {translation.name}
-        </h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-          {translation.description}
-        </p>
-
-        {/* Industry Badge */}
-        <div className="mb-4">
-          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+    <div className="card card-hover flex flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col p-6">
+        {/* Icon + industry */}
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-color-accent-light text-color-accent">
+            <Icon size={21} strokeWidth={1.9} />
+          </div>
+          <span className="inline-block rounded-full bg-color-bg px-3 py-1 text-xs font-medium text-color-muted-text">
             {formatIndustryLabel(template.industry)}
           </span>
         </div>
 
+        {/* Title and Description */}
+        <h3 className="mb-1.5 text-lg font-bold text-color-primary">
+          {translation.name}
+        </h3>
+        <p className="mb-4 text-sm leading-relaxed text-color-muted-text line-clamp-2">
+          {translation.description}
+        </p>
+
         {/* Categories Preview */}
-        <div className="mb-6">
-          <p className="text-xs font-medium text-gray-500 mb-2">
+        <div className="mb-5">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-color-muted-text">
             {t('boards:templates.categories')}
           </p>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {translation.categories.slice(0, 3).map((category, idx) => (
               <span
                 key={idx}
-                className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
+                className="rounded-md bg-color-bg px-2 py-1 text-xs text-color-body-text"
               >
                 {category}
               </span>
             ))}
             {translation.categories.length > 3 && (
-              <span className="text-xs text-gray-500 px-2 py-1">
+              <span className="px-2 py-1 text-xs text-color-muted-text">
                 {t('boards:dashboard.more_count', { count: translation.categories.length - 3 })}
               </span>
             )}
@@ -66,7 +93,7 @@ export function TemplateCard({ template, onSelect }: TemplateCardProps) {
         </div>
 
         {/* Usage Count */}
-        <div className="mb-6 text-xs text-gray-500">
+        <div className="mb-4 mt-auto text-xs text-color-muted-text">
           {t('reply_templates.used_other', { count: template.usageCount })}
         </div>
 

@@ -67,15 +67,15 @@ export function EscalationRulesPage() {
   const locked = !canUseEscalations;
 
   return (
-    <main className="min-h-screen bg-[#F1F5F8] px-4 py-8">
+    <main className="min-h-screen bg-[#f5f0ec] px-4 py-8">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#EBF5FB] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#2E86AB]">
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#f5e6df] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#c0694a]">
               <Zap size={14} /> {t('escalation.badge')}
             </div>
-            <h1 className="text-3xl font-bold text-[#1E3A5F]">{t('escalation.title')}</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#6B7B8D]">
+            <h1 className="text-3xl font-bold text-[#1c1917]">{t('escalation.title')}</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#78716c]">
               {t('escalation.description')}
             </p>
           </div>
@@ -86,7 +86,7 @@ export function EscalationRulesPage() {
               setEditingRule(null);
               setBuilderOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#2E86AB] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#1E3A5F] disabled:cursor-not-allowed disabled:bg-[#9AABBF]"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#c0694a] px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-[#1c1917] disabled:cursor-not-allowed disabled:bg-[#8f8680]"
           >
             <Plus size={17} /> {t('escalation.new_rule')}
           </button>
@@ -105,7 +105,7 @@ export function EscalationRulesPage() {
         )}
 
         {canUseEscalations && tier === 'growth' && (
-          <div className="mb-6 rounded-xl border border-[#D3D1C7] bg-white p-4 text-sm text-[#1E3A5F]">
+          <div className="mb-6 rounded-xl border border-[#d6cabf] bg-white p-4 text-sm text-[#1c1917]">
             {t('escalation.growth_usage')} <span className="font-bold">{t('escalation.active_rules', { count: activeRuleCount, limit: activeRuleLimit })}</span>
           </div>
         )}
@@ -121,10 +121,10 @@ export function EscalationRulesPage() {
             <LoadingSpinner size="lg" />
           </div>
         ) : rules.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-white p-10 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]"><Zap size={22} /></div>
-            <h2 className="text-lg font-bold text-[#1E3A5F]">{t('escalation.no_rules')}</h2>
-            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#6B7B8D]">{t('escalation.no_rules_desc')}</p>
+          <div className="rounded-xl border border-dashed border-[#d6cabf] bg-white p-10 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]"><Zap size={22} /></div>
+            <h2 className="text-lg font-bold text-[#1c1917]">{t('escalation.no_rules')}</h2>
+            <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[#78716c]">{t('escalation.no_rules_desc')}</p>
           </div>
         ) : (
           <div className="space-y-4">

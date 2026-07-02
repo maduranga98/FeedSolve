@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode } from 'lucide-react';
+import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
@@ -172,9 +172,10 @@ export function BoardDetails() {
                     variant="secondary"
                     size="sm"
                     onClick={handleCopyLink}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1.5"
                   >
-                    {copied ? '✓' : 'Copy'}
+                    {copied ? <Check size={14} className="text-color-success" /> : <Copy size={14} />}
+                    {copied ? 'Copied' : 'Copy'}
                   </Button>
                 </div>
               </div>
@@ -218,21 +219,16 @@ export function BoardDetails() {
 
           <section className="overflow-hidden rounded-2xl border border-[#d6cabf] bg-white shadow-md">
             <div className="border-b border-[#e9e0d9] bg-gradient-to-r from-[#f5f0ec] via-white to-[#f5e6df] p-5 sm:p-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">Board setup</p>
-                  <h2 className="mt-1 text-2xl font-bold text-[#1c1917]">Configure how feedback is collected</h2>
-                  <p className="mt-1 text-sm text-[#78716c]">
-                    Jump between QR sharing, recurring cycles, and location-specific setup without hunting down the page.
-                  </p>
-                </div>
-                <span className="inline-flex shrink-0 items-center rounded-full bg-white px-3 py-1 text-xs font-bold text-[#9c4a2f] shadow-sm ring-1 ring-[#d6cabf]">
-                  Step {setupSteps.findIndex((step) => step.id === activeSetupStep) + 1} of {setupSteps.length}
-                </span>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">Board setup</p>
+                <h2 className="mt-1 text-xl font-bold text-[#1c1917] sm:text-2xl">Configure how feedback is collected</h2>
+                <p className="mt-1 text-sm text-[#78716c]">
+                  Manage QR sharing, recurring cycles, and locations for this board.
+                </p>
               </div>
 
               <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist" aria-label="Board setup sections">
-                {setupSteps.map((step, index) => {
+                {setupSteps.map((step) => {
                   const Icon = step.icon;
                   const active = activeSetupStep === step.id;
 
@@ -250,7 +246,7 @@ export function BoardDetails() {
                       }`}
                     >
                       <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[#c0694a] text-white' : 'bg-[#f1ebe5] text-[#78716c] group-hover:text-[#c0694a]'}`}>
-                        {active ? <Icon size={17} /> : index + 1}
+                        <Icon size={17} />
                       </span>
                       <span className="min-w-0">
                         <span className="block text-sm font-bold">{step.label}</span>
