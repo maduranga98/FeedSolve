@@ -164,13 +164,13 @@ export function CreateBoard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF] px-4 py-8">
+    <div className="min-h-screen bg-[#ece5de] px-4 py-8">
       <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-lg shadow-sm p-5 sm:p-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#1E3A5F] mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#1c1917] mb-2">
           {selectedTemplate ? t('boards:templates.create_from_template') : t('forms:board.create_board')}
         </h1>
-        <p className="text-[#6B7B8D] mb-8">
+        <p className="text-[#78716c] mb-8">
           {selectedTemplate
             ? t('forms:board.creating_from_template', { name: selectedTemplate.name })
             : t('forms:board.description_placeholder')}
@@ -185,8 +185,8 @@ export function CreateBoard() {
         )}
 
         {errors.submit && (
-          <div className="mb-4 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
-            <p className="text-sm text-[#E74C3C]">{errors.submit}</p>
+          <div className="mb-4 p-4 bg-[#FFE5E5] border border-[#c0392b] rounded-lg">
+            <p className="text-sm text-[#c0392b]">{errors.submit}</p>
           </div>
         )}
 
@@ -201,7 +201,7 @@ export function CreateBoard() {
               }
               error={errors.name}
             />
-            <p className={`text-xs mt-1 text-right ${formData.name.length >= BOARD_NAME_MAX ? 'text-[#E74C3C]' : 'text-[#9AABBF]'}`}>
+            <p className={`text-xs mt-1 text-right ${formData.name.length >= BOARD_NAME_MAX ? 'text-[#c0392b]' : 'text-[#8f8680]'}`}>
               {formData.name.length}/{BOARD_NAME_MAX}
             </p>
           </div>
@@ -217,7 +217,7 @@ export function CreateBoard() {
           />
 
           <div>
-            <label className="block text-sm font-medium text-[#1E3A5F] mb-3">
+            <label className="block text-sm font-medium text-[#1c1917] mb-3">
               {t('forms:board.categories')}
             </label>
 
@@ -225,13 +225,13 @@ export function CreateBoard() {
               {formData.categories.map((category, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-[#F1F5F8] p-3 rounded-lg border border-[#D3D1C7]"
+                  className="flex items-center justify-between bg-[#f5f0ec] p-3 rounded-lg border border-[#d6cabf]"
                 >
-                  <span className="text-[#1E3A5F]">{category}</span>
+                  <span className="text-[#1c1917]">{category}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveCategory(index)}
-                    className="text-[#E74C3C] hover:text-[#C0392B]"
+                    className="text-[#c0392b] hover:text-[#C0392B]"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -240,7 +240,7 @@ export function CreateBoard() {
             </div>
 
             {errors.categories && (
-              <p className="text-sm text-[#E74C3C] mb-3">{errors.categories}</p>
+              <p className="text-sm text-[#c0392b] mb-3">{errors.categories}</p>
             )}
 
             <div className="flex gap-2">
@@ -255,7 +255,7 @@ export function CreateBoard() {
                     handleAddCategory();
                   }
                 }}
-                className="flex-1 px-4 py-2 border border-[#D3D1C7] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
+                className="flex-1 px-4 py-2 border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
               />
               <Button
                 type="button"
@@ -267,15 +267,15 @@ export function CreateBoard() {
               </Button>
             </div>
             {errors.newCategory && (
-              <p className="text-xs text-[#E74C3C] mt-1">{errors.newCategory}</p>
+              <p className="text-xs text-[#c0392b] mt-1">{errors.newCategory}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#1E3A5F] mb-1">
+            <label className="block text-sm font-medium text-[#1c1917] mb-1">
               {t('forms:feedback.language')}
             </label>
-            <p className="text-[#6B7B8D] text-xs mb-3">
+            <p className="text-[#78716c] text-xs mb-3">
               {t('forms:board.choose_languages_help')}
             </p>
             <div className="flex flex-wrap gap-2">
@@ -289,8 +289,8 @@ export function CreateBoard() {
                     aria-pressed={selected}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-colors ${
                       selected
-                        ? 'bg-[#EBF5FB] border-[#2E86AB] text-[#1E3A5F] font-medium'
-                        : 'bg-white border-[#D3D1C7] text-[#6B7B8D] hover:bg-[#F1F5F8]'
+                        ? 'bg-[#f5e6df] border-[#c0694a] text-[#1c1917] font-medium'
+                        : 'bg-white border-[#d6cabf] text-[#78716c] hover:bg-[#f5f0ec]'
                     }`}
                   >
                     <span className="text-base">{lang.flag}</span>
@@ -300,7 +300,7 @@ export function CreateBoard() {
               })}
             </div>
             {errors.languages && (
-              <p className="text-sm text-[#E74C3C] mt-2">{errors.languages}</p>
+              <p className="text-sm text-[#c0392b] mt-2">{errors.languages}</p>
             )}
           </div>
 
@@ -314,9 +314,9 @@ export function CreateBoard() {
                   isAnonymousAllowed: e.target.checked,
                 })
               }
-              className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+              className="w-5 h-5 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
             />
-            <span className="text-[#1E3A5F] font-medium">
+            <span className="text-[#1c1917] font-medium">
               {t('forms:board.anonymous_allowed')}
             </span>
           </label>
@@ -333,11 +333,11 @@ export function CreateBoard() {
                     satisfactionRequired: e.target.checked ? formData.satisfactionRequired : false,
                   })
                 }
-                className="w-5 h-5 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+                className="w-5 h-5 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
               />
               <div>
-                <span className="text-[#1E3A5F] font-medium block">{t('forms:board.collect_satisfaction')}</span>
-                <span className="text-[#6B7B8D] text-xs">{t('forms:board.collect_satisfaction_help')}</span>
+                <span className="text-[#1c1917] font-medium block">{t('forms:board.collect_satisfaction')}</span>
+                <span className="text-[#78716c] text-xs">{t('forms:board.collect_satisfaction_help')}</span>
               </div>
             </label>
 
@@ -352,11 +352,11 @@ export function CreateBoard() {
                       satisfactionRequired: e.target.checked,
                     })
                   }
-                  className="w-4 h-4 rounded border-[#D3D1C7] text-[#2E86AB] focus:ring-[#2E86AB]"
+                  className="w-4 h-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
                 />
                 <div>
-                  <span className="text-[#1E3A5F] font-medium text-sm block">{t('forms:board.rating_required_label')}</span>
-                  <span className="text-[#6B7B8D] text-xs">{t('forms:board.rating_required_help')}</span>
+                  <span className="text-[#1c1917] font-medium text-sm block">{t('forms:board.rating_required_label')}</span>
+                  <span className="text-[#78716c] text-xs">{t('forms:board.rating_required_help')}</span>
                 </div>
               </label>
             )}

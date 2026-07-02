@@ -78,16 +78,16 @@ export function FileUploadInput({
         onClick={handleClick}
         style={{
           border: `2px dashed ${dragActive
-            ? "var(--brand-primary, #2E86AB)"
-            : "var(--brand-primary-border, #C8DCE8)"}`,
+            ? "var(--brand-primary, #c0694a)"
+            : "var(--brand-primary-border, #e8d5c9)"}`,
           borderRadius: 12,
           padding: "28px 20px",
           textAlign: "center",
           cursor: disabled ? "not-allowed" : "pointer",
           transition: "all 0.18s ease",
           background: dragActive
-            ? "var(--brand-primary-bg, rgba(46,134,171,0.07))"
-            : "var(--brand-primary-bg, rgba(46,134,171,0.02))",
+            ? "var(--brand-primary-bg, rgba(192,105,74,0.07))"
+            : "var(--brand-primary-bg, rgba(192,105,74,0.02))",
           opacity: disabled ? 0.55 : 1,
         }}
       >
@@ -106,15 +106,15 @@ export function FileUploadInput({
           style={{
             width: 44,
             height: 44,
-            background: "var(--brand-primary-bg, rgba(46,134,171,0.12))",
+            background: "var(--brand-primary-bg, rgba(192,105,74,0.12))",
           }}
         >
-          <Upload size={22} style={{ color: "var(--brand-primary, #2E86AB)" }} />
+          <Upload size={22} style={{ color: "var(--brand-primary, #c0694a)" }} />
         </div>
-        <p className="text-sm font-semibold mb-1" style={{ color: "var(--brand-secondary, #1E3A5F)" }}>
+        <p className="text-sm font-semibold mb-1" style={{ color: "var(--brand-secondary, #1c1917)" }}>
           {dragActive ? "Drop files here" : "Drag files here or click to browse"}
         </p>
-        <p className="text-xs text-[#9AABBF]">
+        <p className="text-xs text-[#8f8680]">
           {ATTACHMENT_CONFIG.allowedFileTypes.join(', ')} · Max {formatFileSize(maxSize)}
         </p>
       </div>
@@ -124,7 +124,7 @@ export function FileUploadInput({
           style={{
             background: "#FFF5F5",
             border: "1px solid #FCA5A5",
-            color: "#DC2626",
+            color: "#c0392b",
           }}>
           {error}
         </div>

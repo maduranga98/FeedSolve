@@ -52,7 +52,7 @@ function MetricCard({
 }) {
   return (
     <div className={`rounded-xl p-4 border ${bg} ${border}`}>
-      <div className="flex items-center gap-2 mb-2 text-[#6B7B8D]">
+      <div className="flex items-center gap-2 mb-2 text-[#78716c]">
         {icon}
         <span className="text-xs font-semibold">{label}</span>
       </div>
@@ -77,14 +77,14 @@ function TabButton({
       onClick={onClick}
       className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
         active
-          ? 'bg-[#1E3A5F] text-white shadow-sm'
-          : 'bg-white text-[#6B7B8D] border border-[#E8ECF0] hover:bg-[#EBF5FB] hover:text-[#2E86AB] hover:border-[#2E86AB]'
+          ? 'bg-[#1c1917] text-white shadow-sm'
+          : 'bg-white text-[#78716c] border border-[#e9e0d9] hover:bg-[#f5e6df] hover:text-[#c0694a] hover:border-[#c0694a]'
       }`}
     >
       {children}
       <span
         className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
-          active ? 'bg-white/20 text-white' : 'bg-[#F0F4F8] text-[#6B7B8D]'
+          active ? 'bg-white/20 text-white' : 'bg-[#f2ece6] text-[#78716c]'
         }`}
       >
         {count}
@@ -264,19 +264,19 @@ export function SubmissionsPage() {
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
   return (
-    <div className="h-screen flex flex-col bg-[#EEF2F6] overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#f2ede7] overflow-hidden">
 
       {/* ── Fixed top header ── */}
-      <div className="bg-white border-b border-[#E8ECF0] flex-shrink-0 shadow-sm">
+      <div className="bg-white border-b border-[#e9e0d9] flex-shrink-0 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
-                <Inbox size={18} className="text-[#2E86AB]" />
+              <div className="w-9 h-9 bg-[#f5e6df] rounded-xl flex items-center justify-center flex-shrink-0">
+                <Inbox size={18} className="text-[#c0694a]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-[#1E3A5F] leading-tight">{t('submissions_page.title')}</h1>
-                <p className="text-xs text-[#9AABBF] mt-0.5">{t('submissions_page.subtitle')}</p>
+                <h1 className="text-xl font-bold text-[#1c1917] leading-tight">{t('submissions_page.title')}</h1>
+                <p className="text-xs text-[#8f8680] mt-0.5">{t('submissions_page.subtitle')}</p>
               </div>
             </div>
 
@@ -285,7 +285,7 @@ export function SubmissionsPage() {
                 onClick={loadInitial}
                 disabled={loading}
                 title={t('refresh')}
-                className="p-2 rounded-lg bg-white border border-[#E8ECF0] text-[#6B7B8D] hover:bg-[#F0F4F8] transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-white border border-[#e9e0d9] text-[#78716c] hover:bg-[#f2ece6] transition-colors disabled:opacity-50"
               >
                 <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -293,7 +293,7 @@ export function SubmissionsPage() {
                 onClick={() => downloadCSV(displayedSubmissions)}
                 disabled={displayedSubmissions.length === 0}
                 title={t('submissions_page.export_tooltip')}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#c0694a] hover:bg-[#9c4a2f] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={13} />
                 <span className="hidden sm:inline">{t('submissions_page.export_csv')}</span>
@@ -321,9 +321,9 @@ export function SubmissionsPage() {
                     value={newCount}
                     label={t('submissions_page.new')}
                     icon={<Inbox size={13} />}
-                    valueCls="text-[#1E6A9A]"
-                    bg="bg-[#EBF5FB]"
-                    border="border-[#C8E0EE]"
+                    valueCls="text-[#9c4a2f]"
+                    bg="bg-[#f5e6df]"
+                    border="border-[#ecd3c6]"
                   />
                   <MetricCard
                     value={inProgressCount}
@@ -345,31 +345,31 @@ export function SubmissionsPage() {
                     value={unassignedCount}
                     label={t('submissions_page.unassigned')}
                     icon={<Users size={13} />}
-                    valueCls={unassignedCount > 0 ? 'text-[#B06F00]' : 'text-[#1E3A5F]'}
-                    bg={unassignedCount > 0 ? 'bg-[#FFF3E0]' : 'bg-[#F0F4F8]'}
-                    border={unassignedCount > 0 ? 'border-[#FFCC80]' : 'border-[#E8ECF0]'}
+                    valueCls={unassignedCount > 0 ? 'text-[#B06F00]' : 'text-[#1c1917]'}
+                    bg={unassignedCount > 0 ? 'bg-[#FFF3E0]' : 'bg-[#f2ece6]'}
+                    border={unassignedCount > 0 ? 'border-[#FFCC80]' : 'border-[#e9e0d9]'}
                   />
                 </div>
               )}
 
               {/* ── My Assigned ── */}
               {mySubmissions.length > 0 && (
-                <div className="bg-white border border-[#E8ECF0] rounded-xl px-5 py-4">
+                <div className="bg-white border border-[#e9e0d9] rounded-xl px-5 py-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <UserCheck size={14} className="text-[#2E86AB] flex-shrink-0" />
-                    <span className="text-sm font-semibold text-[#1E3A5F]">{t('submissions_page.my_assigned')}</span>
-                    <span className="text-sm font-bold text-[#2E86AB] ml-auto flex-shrink-0">{myPct}%</span>
+                    <UserCheck size={14} className="text-[#c0694a] flex-shrink-0" />
+                    <span className="text-sm font-semibold text-[#1c1917]">{t('submissions_page.my_assigned')}</span>
+                    <span className="text-sm font-bold text-[#c0694a] ml-auto flex-shrink-0">{myPct}%</span>
                   </div>
-                  <div className="h-2 bg-[#EDF2F7] rounded-full overflow-hidden mb-2">
+                  <div className="h-2 bg-[#f0e9e3] rounded-full overflow-hidden mb-2">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
                         width: `${myPct}%`,
-                        background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
+                        background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #c0694a, #d98a68)',
                       }}
                     />
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-[#9AABBF]">
+                  <div className="flex items-center gap-3 text-xs text-[#8f8680]">
                     <span className="flex items-center gap-1">
                       <AlertCircle size={11} className="text-[#B06F00]" />
                       {mySubmissions.length - myResolved} {t('submissions_page.active')}
@@ -384,45 +384,45 @@ export function SubmissionsPage() {
 
               {/* ── Team Progress (collapsible) ── */}
               {memberProgress.length > 0 && (
-                <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
+                <div className="bg-white border border-[#e9e0d9] rounded-xl overflow-hidden">
                   <button
                     onClick={() => setShowTeamProgress(!showTeamProgress)}
-                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[#F8FAFB] transition-colors text-left"
+                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[#faf8f5] transition-colors text-left"
                   >
-                    <TrendingUp size={14} className="text-[#2E86AB]" />
-                    <span className="text-sm font-semibold text-[#1E3A5F]">{t('submissions_page.team_progress')}</span>
-                    <span className="text-xs text-[#9AABBF]">
+                    <TrendingUp size={14} className="text-[#c0694a]" />
+                    <span className="text-sm font-semibold text-[#1c1917]">{t('submissions_page.team_progress')}</span>
+                    <span className="text-xs text-[#8f8680]">
                       {assignedCount} {t('submissions_page.assigned')} · {memberProgress.length} {t('submissions_page.members')}
                     </span>
                     <ChevronDown
                       size={14}
-                      className={`ml-auto text-[#9AABBF] transition-transform duration-200 ${showTeamProgress ? 'rotate-180' : ''}`}
+                      className={`ml-auto text-[#8f8680] transition-transform duration-200 ${showTeamProgress ? 'rotate-180' : ''}`}
                     />
                   </button>
 
                   {showTeamProgress && (
-                    <div className="divide-y divide-[#F0F4F8] border-t border-[#F0F4F8]">
+                    <div className="divide-y divide-[#f2ece6] border-t border-[#f2ece6]">
                       {memberProgress.map(({ member, total, resolved, active }) => {
                         const pct = Math.round((resolved / total) * 100);
                         const isMe = member.id === user?.id;
                         return (
                           <div key={member.id} className="px-5 py-3.5 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#EBF5FB] flex items-center justify-center text-xs font-bold text-[#2E86AB] flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#f5e6df] flex items-center justify-center text-xs font-bold text-[#c0694a] flex-shrink-0">
                               {member.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1.5">
-                                <p className="text-sm font-medium text-[#1E3A5F] truncate">
+                                <p className="text-sm font-medium text-[#1c1917] truncate">
                                   {member.name}
                                   {isMe && (
-                                    <span className="ml-1.5 text-xs text-[#2E86AB] font-normal">{t('submissions_page.you')}</span>
+                                    <span className="ml-1.5 text-xs text-[#c0694a] font-normal">{t('submissions_page.you')}</span>
                                   )}
                                 </p>
-                                <span className="text-xs text-[#6B7B8D] ml-2 flex-shrink-0">
+                                <span className="text-xs text-[#78716c] ml-2 flex-shrink-0">
                                   {resolved}/{total} · {pct}%
                                 </span>
                               </div>
-                              <div className="h-1.5 bg-[#EDF2F7] rounded-full overflow-hidden">
+                              <div className="h-1.5 bg-[#f0e9e3] rounded-full overflow-hidden">
                                 <div
                                   className="h-full rounded-full transition-all"
                                   style={{
@@ -430,12 +430,12 @@ export function SubmissionsPage() {
                                     background:
                                       pct === 100
                                         ? '#1D8A57'
-                                        : 'linear-gradient(90deg, #2E86AB, #3AABCE)',
+                                        : 'linear-gradient(90deg, #c0694a, #d98a68)',
                                   }}
                                 />
                               </div>
                             </div>
-                            <span className="text-xs text-[#9AABBF] flex-shrink-0 w-16 text-right">
+                            <span className="text-xs text-[#8f8680] flex-shrink-0 w-16 text-right">
                               {active} {t('submissions_page.active')}
                             </span>
                           </div>
@@ -449,10 +449,10 @@ export function SubmissionsPage() {
               {/* ── Cycle selector ── */}
               {cycles.length > 0 && (
                 <>
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[#E8ECF0] bg-white px-5 py-3.5">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[#e9e0d9] bg-white px-5 py-3.5">
                     <div>
-                      <p className="text-sm font-bold text-[#1E3A5F]">{t('submissions_page.board_cycles')}</p>
-                      <p className="text-xs text-[#9AABBF]">{t('submissions_page.board_cycles_help')}</p>
+                      <p className="text-sm font-bold text-[#1c1917]">{t('submissions_page.board_cycles')}</p>
+                      <p className="text-xs text-[#8f8680]">{t('submissions_page.board_cycles_help')}</p>
                     </div>
                     <CycleSwitcher
                       cycles={cycles}
@@ -488,29 +488,31 @@ export function SubmissionsPage() {
                   </TabButton>
                 </div>
 
-                {mergedCount > 0 && (
-                  <label className="ml-auto inline-flex items-center gap-2 rounded-lg border border-[#E8ECF0] bg-white px-3 py-2 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={showMerged}
-                      onChange={(e) => setShowMerged(e.target.checked)}
-                      className="h-4 w-4 accent-[#2E86AB]"
-                    />
-                    <span className="text-xs font-semibold text-[#6B7B8D]">
-                      {t('submissions_page.show_merged', { count: mergedCount })}
-                    </span>
-                  </label>
-                )}
+                <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
+                  {mergedCount > 0 && (
+                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#e9e0d9] bg-white px-3 py-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={showMerged}
+                        onChange={(e) => setShowMerged(e.target.checked)}
+                        className="h-4 w-4 accent-[#c0694a]"
+                      />
+                      <span className="text-xs font-semibold text-[#78716c]">
+                        {t('submissions_page.show_merged', { count: mergedCount })}
+                      </span>
+                    </label>
+                  )}
 
-                <p className="text-xs text-[#9AABBF] ml-auto">
-                  {activeTab === 'active'
-                    ? t('submissions_page.active_description')
-                    : t('submissions_page.completed_description')}
-                </p>
+                  <p className="text-xs text-[#8f8680]">
+                    {activeTab === 'active'
+                      ? t('submissions_page.active_description')
+                      : t('submissions_page.completed_description')}
+                  </p>
+                </div>
               </div>
 
               {/* ── Search + Results panel ── */}
-              <div className="bg-white border border-[#E8ECF0] rounded-2xl p-5">
+              <div className="bg-white border border-[#e9e0d9] rounded-2xl p-5">
                 <AdvancedSearch
                   submissions={displayedSubmissions}
                   users={users}
@@ -529,7 +531,7 @@ export function SubmissionsPage() {
                   <button
                     onClick={loadMore}
                     disabled={loadingMore}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#E8ECF0] rounded-xl text-sm font-semibold text-[#2E86AB] hover:bg-[#EBF5FB] transition-colors disabled:opacity-60"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e9e0d9] rounded-xl text-sm font-semibold text-[#c0694a] hover:bg-[#f5e6df] transition-colors disabled:opacity-60"
                   >
                     {loadingMore ? (
                       <>

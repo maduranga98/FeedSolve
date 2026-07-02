@@ -17,9 +17,9 @@ const RATINGS: RatingOption[] = [
     score: 1,
     emoji: "😠",
     label: "Very Unhappy",
-    color: "#DC2626",
+    color: "#c0392b",
     gradientBg: "linear-gradient(145deg, #FFF5F5, #FED7D7)",
-    borderColor: "#DC2626",
+    borderColor: "#c0392b",
     shadowColor: "rgba(220,38,38,0.28)",
   },
   {
@@ -167,7 +167,7 @@ export function SatisfactionRating({ value, onChange, error }: SatisfactionRatin
       </div>
 
       {error && (
-        <p style={{ fontSize: "0.75rem", color: "#DC2626", marginTop: 4, textAlign: "center" }}>
+        <p style={{ fontSize: "0.75rem", color: "#c0392b", marginTop: 4, textAlign: "center" }}>
           {error}
         </p>
       )}

@@ -9,7 +9,7 @@ export function OfflineIndicator() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-auto bg-[#E74C3C] text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-auto bg-[#c0392b] text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
       <WifiOff size={20} />
       <span className="text-sm font-medium">You are offline. Changes may not sync.</span>
     </div>
@@ -24,9 +24,9 @@ export function OfflineStatusBanner() {
   }
 
   return (
-    <div className="bg-[#FDE8E8] border-b border-[#E74C3C] px-4 py-3">
+    <div className="bg-[#FDE8E8] border-b border-[#c0392b] px-4 py-3">
       <div className="flex items-center gap-2 max-w-7xl mx-auto">
-        <WifiOff size={16} className="text-[#E74C3C]" />
+        <WifiOff size={16} className="text-[#c0392b]" />
         <span className="text-sm text-[#A32D2D]">
           You are offline. Some features may be limited.{' '}
           <a href="/" className="underline font-medium">
@@ -50,8 +50,8 @@ export function OnlineStatusIndicator() {
         </>
       ) : (
         <>
-          <div className="w-2 h-2 bg-[#E74C3C] rounded-full" />
-          <span className="text-[#E74C3C]">Offline</span>
+          <div className="w-2 h-2 bg-[#c0392b] rounded-full" />
+          <span className="text-[#c0392b]">Offline</span>
         </>
       )}
     </div>

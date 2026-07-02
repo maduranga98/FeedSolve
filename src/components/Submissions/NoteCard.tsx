@@ -7,16 +7,16 @@ interface NoteCardProps {
 
 export default function NoteCard({ note }: NoteCardProps) {
   return (
-    <div className="bg-[#F1F5F8] border border-[#D3D1C7] rounded-lg p-4">
+    <div className="bg-[#f5f0ec] border border-[#d6cabf] rounded-lg p-4">
       <div className="flex items-start justify-between mb-2">
         <div>
-          <p className="font-medium text-[#1E3A5F] text-sm">{note.createdBy}</p>
-          <p className="text-xs text-[#6B7B8D]">
+          <p className="font-medium text-[#1c1917] text-sm">{note.createdBy}</p>
+          <p className="text-xs text-[#78716c]">
             {formatDate(note.createdAt.toDate())}
           </p>
         </div>
       </div>
-      <p className="text-sm text-[#444441] whitespace-pre-wrap">
+      <p className="text-sm text-[#3c3632] whitespace-pre-wrap">
         {note.text}
       </p>
     </div>

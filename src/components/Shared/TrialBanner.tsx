@@ -31,7 +31,7 @@ export function TrialBanner() {
   return (
     <div
       className={`px-4 py-2.5 flex items-center justify-between gap-4 text-sm ${
-        isUrgent ? 'bg-amber-500 text-white' : 'bg-[#1E3A5F] text-white'
+        isUrgent ? 'bg-amber-500 text-white' : 'bg-[#1c1917] text-white'
       }`}
     >
       <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export function TrialBanner() {
         className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-medium transition-colors ${
           isUrgent
             ? 'bg-white text-amber-600 hover:bg-amber-50'
-            : 'bg-[#2E86AB] text-white hover:bg-[#1E6A8A]'
+            : 'bg-[#c0694a] text-white hover:bg-[#1E6A8A]'
         }`}
       >
         <Zap size={13} />

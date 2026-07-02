@@ -74,14 +74,14 @@ export function generateColorTheme(
     secondary,
     secondaryLight: lightenColor(secondary, 20),
     secondaryDark: darkenColor(secondary, 15),
-    textOnPrimary: isLightColor(primary) ? "#1E3A5F" : "#FFFFFF",
-    textOnSecondary: isLightColor(secondary) ? "#1E3A5F" : "#FFFFFF",
+    textOnPrimary: isLightColor(primary) ? "#1c1917" : "#FFFFFF",
+    textOnSecondary: isLightColor(secondary) ? "#1c1917" : "#FFFFFF",
   };
 }
 
 export const DEFAULT_COLOR_THEME: BrandColorTheme = generateColorTheme(
-  "#2E86AB",
-  "#1E3A5F"
+  "#c0694a",
+  "#1c1917"
 );
 
 export function applyBrandColors(

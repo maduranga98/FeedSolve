@@ -126,7 +126,7 @@ export function AdvancedSearch({
         <button
           onClick={handleCopyShareLink}
           title={t('advanced_search.copy_link')}
-          className="flex-shrink-0 p-2 rounded-lg bg-white border border-[#D3D1C7] text-[#6B7B8D] hover:text-[#2E86AB] hover:border-[#2E86AB] hover:bg-[#EBF5FB] transition-all"
+          className="flex-shrink-0 p-2 rounded-lg bg-white border border-[#d6cabf] text-[#78716c] hover:text-[#c0694a] hover:border-[#c0694a] hover:bg-[#f5e6df] transition-all"
         >
           <Copy size={15} />
         </button>
@@ -138,7 +138,7 @@ export function AdvancedSearch({
             className={`flex-shrink-0 p-2 rounded-lg border transition-all ${
               showSaved
                 ? 'bg-[#FFF8E6] border-[#FFD77A] text-[#B06F00]'
-                : 'bg-white border-[#D3D1C7] text-[#6B7B8D] hover:border-[#FFD77A] hover:text-[#B06F00]'
+                : 'bg-white border-[#d6cabf] text-[#78716c] hover:border-[#FFD77A] hover:text-[#B06F00]'
             }`}
           >
             <Bookmark size={15} />
@@ -151,8 +151,8 @@ export function AdvancedSearch({
 
       {/* ── Saved Filters (expandable) ── */}
       {showSaved && savedFilters.length > 0 && (
-        <div className="bg-white border border-[#E8ECF0] rounded-xl p-4">
-          <p className="text-xs font-bold text-[#6B7B8D] uppercase tracking-wider mb-3">{t('advanced_search.saved_filters')}</p>
+        <div className="bg-white border border-[#e9e0d9] rounded-xl p-4">
+          <p className="text-xs font-bold text-[#78716c] uppercase tracking-wider mb-3">{t('advanced_search.saved_filters')}</p>
           <SavedFilters
             filters={savedFilters}
             onSelect={handleSelectSavedFilter}

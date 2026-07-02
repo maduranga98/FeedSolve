@@ -80,7 +80,7 @@ export default function ReplyForm({
             <button
               type="button"
               onClick={() => setShowPicker((v) => !v)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#c0694a] bg-[#f5e6df] hover:bg-[#f0dcd0] rounded-lg transition-colors"
             >
               <LayoutTemplate size={13} />
               {t('reply_form.use_template')}
@@ -90,7 +90,7 @@ export default function ReplyForm({
               type="button"
               onClick={() => navigate('/pricing')}
               title={t('reply_form.template_locked')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#9AABBF] bg-[#E1E8EF] rounded-lg cursor-pointer hover:bg-[#E8ECF0] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#8f8680] bg-[#ece5de] rounded-lg cursor-pointer hover:bg-[#e9e0d9] transition-colors"
             >
               <Lock size={12} />
               {t('reply_form.use_template')}
@@ -116,7 +116,7 @@ export default function ReplyForm({
         onChange={(e) => setText(e.target.value)}
         disabled={loading}
         placeholder={t('reply_form.placeholder')}
-        className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none"
+        className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a] resize-none"
         rows={5}
       />
       <div className="flex gap-2">

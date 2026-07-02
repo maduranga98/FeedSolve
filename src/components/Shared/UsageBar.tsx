@@ -10,21 +10,21 @@ export function UsageBar({ current, limit, label, showPercentage = true }: Usage
   const isNearLimit = percentage >= 80;
   const isAtLimit = current >= limit;
 
-  const barColor = isAtLimit ? 'bg-[#E74C3C]' : isNearLimit ? 'bg-[#F39C12]' : 'bg-[#2E86AB]';
-  const trackColor = isAtLimit ? 'bg-[#FADBD8]' : isNearLimit ? 'bg-[#FEF5E7]' : 'bg-[#EBF5FB]';
+  const barColor = isAtLimit ? 'bg-[#c0392b]' : isNearLimit ? 'bg-[#F39C12]' : 'bg-[#c0694a]';
+  const trackColor = isAtLimit ? 'bg-[#FADBD8]' : isNearLimit ? 'bg-[#FEF5E7]' : 'bg-[#f5e6df]';
 
   return (
     <div>
       <div className="flex justify-between items-center mb-1.5">
-        <span className="text-xs font-medium text-[#1E3A5F]">{label}</span>
-        <span className="text-xs text-[#9AABBF]">
-          <span className={isAtLimit ? 'text-[#E74C3C] font-semibold' : isNearLimit ? 'text-[#D4A017] font-semibold' : 'text-[#2E86AB] font-medium'}>
+        <span className="text-xs font-medium text-[#1c1917]">{label}</span>
+        <span className="text-xs text-[#8f8680]">
+          <span className={isAtLimit ? 'text-[#c0392b] font-semibold' : isNearLimit ? 'text-[#D4A017] font-semibold' : 'text-[#c0694a] font-medium'}>
             {current}
           </span>
           {' / '}
           {limit === Infinity ? '∞' : limit}
           {showPercentage && limit !== Infinity && (
-            <span className="text-[#B0BEC9] ml-1">({Math.round(percentage)}%)</span>
+            <span className="text-[#b3a89f] ml-1">({Math.round(percentage)}%)</span>
           )}
         </span>
       </div>
@@ -35,7 +35,7 @@ export function UsageBar({ current, limit, label, showPercentage = true }: Usage
         />
       </div>
       {isAtLimit && (
-        <p className="text-xs text-[#E74C3C] mt-1 font-medium">Limit reached</p>
+        <p className="text-xs text-[#c0392b] mt-1 font-medium">Limit reached</p>
       )}
     </div>
   );

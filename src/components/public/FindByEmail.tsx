@@ -121,14 +121,14 @@ export function FindByEmail() {
 
   return (
     <div className="space-y-5 text-left">
-      <div className="rounded-xl border border-[#D3D1C7] bg-[#F1F5F8] p-4">
+      <div className="rounded-xl border border-[#d6cabf] bg-[#f5f0ec] p-4">
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EBF5FB]">
-            <ShieldCheck size={20} className="text-[#2E86AB]" />
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#f5e6df]">
+            <ShieldCheck size={20} className="text-[#c0694a]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#1E3A5F]">Find by Email</h2>
-            <p className="mt-1 text-sm leading-relaxed text-[#6B7B8D]">
+            <h2 className="text-lg font-bold text-[#1c1917]">Find by Email</h2>
+            <p className="mt-1 text-sm leading-relaxed text-[#78716c]">
               We only show submissions where you provided your email. Anonymous submissions cannot be retrieved.
             </p>
           </div>
@@ -169,9 +169,9 @@ export function FindByEmail() {
 
       {showEmptyState && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-[#D3D1C7] bg-white p-5 text-center">
-            <Info size={22} className="mx-auto mb-3 text-[#6B7B8D]" />
-            <p className="text-sm leading-relaxed text-[#6B7B8D]">
+          <div className="rounded-xl border border-[#d6cabf] bg-white p-5 text-center">
+            <Info size={22} className="mx-auto mb-3 text-[#78716c]" />
+            <p className="text-sm leading-relaxed text-[#78716c]">
               No submissions found for this email. Make sure you used the same email when submitting, or track using your code above.
             </p>
           </div>
@@ -186,13 +186,13 @@ export function FindByEmail() {
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#2E86AB] hover:text-[#1E3A5F]"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#c0694a] hover:text-[#1c1917]"
           >
             <ArrowLeft size={16} /> Back
           </button>
           <div>
-            <h3 className="text-base font-bold text-[#1E3A5F]">Which company are you looking for?</h3>
-            <p className="mt-1 text-sm text-[#6B7B8D]">Choose a company to see matching submissions.</p>
+            <h3 className="text-base font-bold text-[#1c1917]">Which company are you looking for?</h3>
+            <p className="mt-1 text-sm text-[#78716c]">Choose a company to see matching submissions.</p>
           </div>
           <div className="space-y-2">
             {companies.map(company => (
@@ -200,12 +200,12 @@ export function FindByEmail() {
                 key={company.id}
                 type="button"
                 onClick={() => setSelectedCompanyId(company.id)}
-                className="flex w-full items-center gap-3 rounded-xl border border-[#D3D1C7] bg-white p-4 text-left shadow-sm transition hover:border-[#2E86AB] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/30"
+                className="flex w-full items-center gap-3 rounded-xl border border-[#d6cabf] bg-white p-4 text-left shadow-sm transition hover:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/30"
               >
-                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]">
+                <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
                   <Building2 size={18} />
                 </span>
-                <span className="font-semibold text-[#1E3A5F]">{company.name}</span>
+                <span className="font-semibold text-[#1c1917]">{company.name}</span>
               </button>
             ))}
           </div>
@@ -217,15 +217,15 @@ export function FindByEmail() {
           <button
             type="button"
             onClick={handleBack}
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#2E86AB] hover:text-[#1E3A5F]"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#c0694a] hover:text-[#1c1917]"
           >
             <ArrowLeft size={16} /> Back to email lookup
           </button>
           <div>
-            <h3 className="text-base font-bold text-[#1E3A5F]">
+            <h3 className="text-base font-bold text-[#1c1917]">
               {selectedCompanySubmissions.length} submission{selectedCompanySubmissions.length === 1 ? "" : "s"} found
             </h3>
-            <p className="mt-1 text-sm text-[#6B7B8D]">
+            <p className="mt-1 text-sm text-[#78716c]">
               Select a tracking code to open the full status page.
             </p>
           </div>

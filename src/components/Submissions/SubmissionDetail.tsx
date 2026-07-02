@@ -36,12 +36,12 @@ interface SubmissionDetailProps {
 
 function StatusBadge({ status, t }: { status: Submission["status"]; t: (key: string) => string }) {
   const map: Record<Submission["status"], { labelKey: string; cls: string }> = {
-    received: { labelKey: "detail.received", cls: "bg-[#EBF5FB] text-[#1E6A9A]" },
+    received: { labelKey: "detail.received", cls: "bg-[#f5e6df] text-[#9c4a2f]" },
     in_review: { labelKey: "detail.in_review", cls: "bg-[#FFF3CD] text-[#856404]" },
     in_progress: { labelKey: "detail.in_progress", cls: "bg-[#FFF8E6] text-[#B06F00]" },
     escalated: { labelKey: "detail.escalated", cls: "bg-[#FDECEA] text-[#C0392B]" },
     resolved: { labelKey: "detail.resolved", cls: "bg-[#EAF9F2] text-[#1D8A57]" },
-    closed: { labelKey: "detail.closed", cls: "bg-[#F0F4F8] text-[#6B7B8D]" },
+    closed: { labelKey: "detail.closed", cls: "bg-[#f2ece6] text-[#78716c]" },
   };
   const { labelKey, cls } = map[status] ?? { labelKey: status, cls: "bg-gray-100 text-gray-700" };
   return (
@@ -66,27 +66,27 @@ function MergedSubmissionPreview({ submission, onClose, t }: { submission: Submi
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-end bg-black/40 p-4">
       <div className="h-full w-full max-w-md overflow-y-auto rounded-xl bg-white shadow-2xl">
-        <div className="sticky top-0 flex items-start justify-between gap-3 border-b border-[#E8ECF0] bg-white px-5 py-4">
+        <div className="sticky top-0 flex items-start justify-between gap-3 border-b border-[#e9e0d9] bg-white px-5 py-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">{t('detail.merged_submission')}</p>
-            <h3 className="mt-1 text-lg font-bold text-[#1E3A5F]">{submission.subject}</h3>
-            <p className="font-mono text-xs text-[#2E86AB]">{submission.trackingCode}</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-[#78716c]">{t('detail.merged_submission')}</p>
+            <h3 className="mt-1 text-lg font-bold text-[#1c1917]">{submission.subject}</h3>
+            <p className="font-mono text-xs text-[#c0694a]">{submission.trackingCode}</p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#9AABBF] hover:bg-[#E1E8EF] hover:text-[#444441]">
+          <button type="button" onClick={onClose} className="rounded-lg p-2 text-[#8f8680] hover:bg-[#ece5de] hover:text-[#3c3632]">
             <X size={18} />
           </button>
         </div>
         <div className="space-y-4 p-5 text-sm">
           <div className="rounded-xl bg-[#F1EFE8] px-3 py-2 text-xs font-semibold text-[#5F5E5A]">{t('detail.read_only_merged')}</div>
           <div className="grid grid-cols-2 gap-3">
-            <div><p className="text-xs text-[#9AABBF]">{t('detail.category')}</p><p className="font-semibold text-[#444441]">{submission.category}</p></div>
-            <div><p className="text-xs text-[#9AABBF]">{t('status')}</p><StatusBadge status={submission.status} t={t} /></div>
-            <div><p className="text-xs text-[#9AABBF]">{t('detail.submitted')}</p><p className="font-semibold text-[#444441]">{formatDate(submission.createdAt.toDate())}</p></div>
-            <div><p className="text-xs text-[#9AABBF]">{t('detail.merged_recently')}</p><p className="font-semibold text-[#444441]">{submission.mergedAt ? formatDate(submission.mergedAt.toDate()) : ""}</p></div>
+            <div><p className="text-xs text-[#8f8680]">{t('detail.category')}</p><p className="font-semibold text-[#3c3632]">{submission.category}</p></div>
+            <div><p className="text-xs text-[#8f8680]">{t('status')}</p><StatusBadge status={submission.status} t={t} /></div>
+            <div><p className="text-xs text-[#8f8680]">{t('detail.submitted')}</p><p className="font-semibold text-[#3c3632]">{formatDate(submission.createdAt.toDate())}</p></div>
+            <div><p className="text-xs text-[#8f8680]">{t('detail.merged_recently')}</p><p className="font-semibold text-[#3c3632]">{submission.mergedAt ? formatDate(submission.mergedAt.toDate()) : ""}</p></div>
           </div>
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#9AABBF]">Description</p>
-            <p className="whitespace-pre-wrap rounded-xl border border-[#E8ECF0] bg-[#FAFAFA] p-4 leading-relaxed text-[#444441]">{submission.description}</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#8f8680]">Description</p>
+            <p className="whitespace-pre-wrap rounded-xl border border-[#e9e0d9] bg-[#FAFAFA] p-4 leading-relaxed text-[#3c3632]">{submission.description}</p>
           </div>
         </div>
       </div>
@@ -202,15 +202,15 @@ export default function SubmissionDetail({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-xl">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-[#E8ECF0] px-6 py-4 flex items-start justify-between gap-4 z-10">
+        <div className="sticky top-0 bg-white border-b border-[#e9e0d9] px-6 py-4 flex items-start justify-between gap-4 z-10">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <StatusBadge status={submission.status} t={t} />
-              <span className="font-mono text-xs text-[#9AABBF] bg-[#E1E8EF] px-2 py-0.5 rounded">
+              <span className="font-mono text-xs text-[#8f8680] bg-[#ece5de] px-2 py-0.5 rounded">
                 {submission.trackingCode}
               </span>
             </div>
-            <h2 className="text-lg font-bold text-[#1E3A5F] mt-1 truncate">
+            <h2 className="text-lg font-bold text-[#1c1917] mt-1 truncate">
               {submission.subject}
             </h2>
           </div>
@@ -218,7 +218,7 @@ export default function SubmissionDetail({
             {/* Share */}
             <button
               onClick={handleCopyTrackingLink}
-              className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+              className="p-2 text-[#8f8680] hover:text-[#c0694a] hover:bg-[#f5e6df] rounded-lg transition-colors"
               title={t("detail.copy_tracking_link")}
             >
               {copied ? <Check size={18} className="text-[#1D8A57]" /> : <Share2 size={18} />}
@@ -226,7 +226,7 @@ export default function SubmissionDetail({
             {/* Export CSV */}
             <button
               onClick={() => exportSubmissionCSV(submission, t)}
-              className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+              className="p-2 text-[#8f8680] hover:text-[#c0694a] hover:bg-[#f5e6df] rounded-lg transition-colors"
               title={t("detail.export_as_csv")}
             >
               <Download size={18} />
@@ -236,7 +236,7 @@ export default function SubmissionDetail({
               href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+              className="p-2 text-[#8f8680] hover:text-[#c0694a] hover:bg-[#f5e6df] rounded-lg transition-colors"
               title={t("detail.open_tracking_page")}
             >
               <ExternalLink size={18} />
@@ -244,14 +244,14 @@ export default function SubmissionDetail({
             <div className="relative">
               <button
                 onClick={() => setActionsOpen((open) => !open)}
-                className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+                className="p-2 text-[#8f8680] hover:text-[#c0694a] hover:bg-[#f5e6df] rounded-lg transition-colors"
                 title={t("detail.more_actions")}
                 aria-label={t("detail.more_actions")}
               >
                 <MoreVertical size={18} />
               </button>
               {actionsOpen && (
-                <div className="absolute right-0 top-10 z-20 w-52 overflow-hidden rounded-lg border border-[#E8ECF0] bg-white shadow-lg">
+                <div className="absolute right-0 top-10 z-20 w-52 overflow-hidden rounded-lg border border-[#e9e0d9] bg-white shadow-lg">
                   <button
                     type="button"
                     disabled={submission.isMerged}
@@ -259,7 +259,7 @@ export default function SubmissionDetail({
                       setActionsOpen(false);
                       setMergeModalOpen(true);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-[#6B7B8D] transition hover:bg-[#F1F5F8] hover:text-[#1E3A5F] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium text-[#78716c] transition hover:bg-[#f5f0ec] hover:text-[#1c1917] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <GitMerge size={15} />
                     {t("detail.merge_with_another")}
@@ -269,7 +269,7 @@ export default function SubmissionDetail({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-[#9AABBF] hover:text-[#444441] hover:bg-[#E1E8EF] rounded-lg transition-colors ml-1"
+              className="p-2 text-[#8f8680] hover:text-[#3c3632] hover:bg-[#ece5de] rounded-lg transition-colors ml-1"
             >
               <X size={20} />
             </button>
@@ -280,7 +280,7 @@ export default function SubmissionDetail({
           {/* Status & Priority */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-2">
+              <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-2">
                 {t('status')}
               </label>
               <select
@@ -289,7 +289,7 @@ export default function SubmissionDetail({
                   handleStatusChange(e.target.value as Submission["status"])
                 }
                 disabled={loading}
-                className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-white"
+                className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a] bg-white"
               >
                 <option value="received">{t('detail.received')}</option>
                 <option value="in_review">{t('detail.in_review')}</option>
@@ -300,7 +300,7 @@ export default function SubmissionDetail({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-2">
+              <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-2">
                 {t('detail.priority')}
               </label>
               <PriorityDropdown
@@ -312,11 +312,11 @@ export default function SubmissionDetail({
           </div>
 
           {/* Assignment */}
-          <div className="bg-[#F8FBFD] border border-[#E4ECF3] rounded-xl p-4">
-            <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+          <div className="bg-[#faf8f5] border border-[#ece2da] rounded-xl p-4">
+            <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
               {t('detail.assigned_to')}
             </label>
-            <p className="text-xs text-[#6B7B8D] mb-3">
+            <p className="text-xs text-[#78716c] mb-3">
               {t('detail.assign_help')}
             </p>
             <AssignDropdown
@@ -327,18 +327,18 @@ export default function SubmissionDetail({
           </div>
 
           {submission.isMerged && (
-            <div className="rounded-xl border border-[#D3D1C7] bg-[#F1EFE8] p-4 text-sm text-[#5F5E5A]">
+            <div className="rounded-xl border border-[#d6cabf] bg-[#F1EFE8] p-4 text-sm text-[#5F5E5A]">
               {t('detail.merged_notice')}
             </div>
           )}
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-2">
+            <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-2">
               {t('description')}
             </label>
-            <div className="bg-[#FAFAFA] border border-[#E8ECF0] rounded-xl p-4">
-              <p className="text-[#444441] whitespace-pre-wrap text-sm leading-relaxed">
+            <div className="bg-[#FAFAFA] border border-[#e9e0d9] rounded-xl p-4">
+              <p className="text-[#3c3632] whitespace-pre-wrap text-sm leading-relaxed">
                 {submission.description}
               </p>
             </div>
@@ -347,25 +347,25 @@ export default function SubmissionDetail({
           {/* Submitter Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+              <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                 {t('detail.category')}
               </label>
-              <p className="text-[#444441]">{submission.category}</p>
+              <p className="text-[#3c3632]">{submission.category}</p>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+              <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                 {t('detail.submitted')}
               </label>
-              <p className="text-[#444441]">
+              <p className="text-[#3c3632]">
                 {formatDate(submission.createdAt.toDate())}
               </p>
             </div>
             {submission.location && (
               <div>
-                <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                   {t('detail.location')}
                 </label>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFF3F6] px-2.5 py-1 text-xs font-medium text-[#6B7B8D]">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1ebe5] px-2.5 py-1 text-xs font-medium text-[#78716c]">
                   <MapPin size={12} />
                   {submission.location}
                 </span>
@@ -373,10 +373,10 @@ export default function SubmissionDetail({
             )}
             {submission.isAnonymous ? (
               <div>
-                <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                   {t('detail.identity')}
                 </label>
-                <span className="inline-flex items-center gap-1 text-xs bg-[#F0F4F8] text-[#6B7B8D] px-2 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1 text-xs bg-[#f2ece6] text-[#78716c] px-2 py-1 rounded-full">
                   {t('detail.anonymous')}
                 </span>
               </div>
@@ -384,26 +384,26 @@ export default function SubmissionDetail({
               <>
                 {submission.submitterEmail && (
                   <div>
-                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                    <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                       {t('detail.submitter_email')}
                     </label>
-                    <p className="text-[#444441]">{submission.submitterEmail}</p>
+                    <p className="text-[#3c3632]">{submission.submitterEmail}</p>
                   </div>
                 )}
                 {submission.submitterName && (
                   <div>
-                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                    <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                       {t('name')}
                     </label>
-                    <p className="text-[#444441]">{submission.submitterName}</p>
+                    <p className="text-[#3c3632]">{submission.submitterName}</p>
                   </div>
                 )}
                 {submission.submitterMobile && (
                   <div>
-                    <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-1">
+                    <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-1">
                       {t('detail.mobile')}
                     </label>
-                    <p className="text-[#444441]">{submission.submitterMobile}</p>
+                    <p className="text-[#3c3632]">{submission.submitterMobile}</p>
                   </div>
                 )}
               </>
@@ -412,10 +412,10 @@ export default function SubmissionDetail({
 
           {/* Attachments — visible to admins */}
           {submission.attachments && submission.attachments.length > 0 && (
-            <div className="border-t border-[#E8ECF0] pt-5">
+            <div className="border-t border-[#e9e0d9] pt-5">
               <div className="flex items-center gap-2 mb-3">
-                <FileText size={16} className="text-[#2E86AB]" />
-                <label className="text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
+                <FileText size={16} className="text-[#c0694a]" />
+                <label className="text-xs font-semibold text-[#8f8680] uppercase tracking-wide">
                   Attachments ({submission.attachments.length})
                 </label>
               </div>
@@ -430,9 +430,9 @@ export default function SubmissionDetail({
 
           {/* Inline file preview */}
           {previewUrl && (
-            <div className="border border-[#E8ECF0] rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-2 bg-[#E1E8EF] border-b border-[#E8ECF0]">
-                <span className="text-xs font-medium text-[#6B7B8D] flex items-center gap-1">
+            <div className="border border-[#e9e0d9] rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-2 bg-[#ece5de] border-b border-[#e9e0d9]">
+                <span className="text-xs font-medium text-[#78716c] flex items-center gap-1">
                   <Eye size={13} />
                   {t('detail.file_preview')}
                 </span>
@@ -441,14 +441,14 @@ export default function SubmissionDetail({
                     href={previewUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-[#2E86AB] hover:underline flex items-center gap-1"
+                    className="text-xs text-[#c0694a] hover:underline flex items-center gap-1"
                   >
                     <ExternalLink size={12} />
                     {t('detail.open_new_tab')}
                   </a>
                   <button
                     onClick={() => setPreviewUrl(null)}
-                    className="text-xs text-[#9AABBF] hover:text-[#444441]"
+                    className="text-xs text-[#8f8680] hover:text-[#3c3632]"
                   >
                     <X size={14} />
                   </button>
@@ -463,10 +463,10 @@ export default function SubmissionDetail({
           )}
 
           {mergedSubmissions.length > 0 && (
-            <div className="rounded-xl border border-[#E8ECF0] bg-white p-4">
+            <div className="rounded-xl border border-[#e9e0d9] bg-white p-4">
               <div className="mb-3 flex items-center gap-2">
-                <GitMerge size={16} className="text-[#2E86AB]" />
-                <h3 className="text-sm font-bold text-[#1E3A5F]">{t('detail.merged_submissions')}</h3>
+                <GitMerge size={16} className="text-[#c0694a]" />
+                <h3 className="text-sm font-bold text-[#1c1917]">{t('detail.merged_submissions')}</h3>
               </div>
               <div className="space-y-2">
                 {mergedSubmissions.map((merged) => (
@@ -474,13 +474,13 @@ export default function SubmissionDetail({
                     key={merged.id}
                     type="button"
                     onClick={() => setReadOnlySubmission(merged)}
-                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#E8ECF0] px-3 py-2 text-left transition hover:bg-[#F1F5F8]"
+                    className="flex w-full items-center justify-between gap-3 rounded-lg border border-[#e9e0d9] px-3 py-2 text-left transition hover:bg-[#f5f0ec]"
                   >
-                    <span className="min-w-0 text-sm text-[#444441]">
-                      <span className="font-mono font-semibold text-[#2E86AB]">{merged.trackingCode}</span>
+                    <span className="min-w-0 text-sm text-[#3c3632]">
+                      <span className="font-mono font-semibold text-[#c0694a]">{merged.trackingCode}</span>
                       <span> — {merged.category} — {formatMergedAt(merged, t)}</span>
                     </span>
-                    <span className="flex-shrink-0 text-xs font-semibold text-[#2E86AB]">{t('detail.open')}</span>
+                    <span className="flex-shrink-0 text-xs font-semibold text-[#c0694a]">{t('detail.open')}</span>
                   </button>
                 ))}
               </div>
@@ -488,17 +488,17 @@ export default function SubmissionDetail({
           )}
 
           {/* Share link */}
-          <div className="bg-[#F8FBFD] border border-[#E4ECF3] rounded-xl p-4">
-            <label className="block text-xs font-semibold text-[#9AABBF] uppercase tracking-wide mb-2">
+          <div className="bg-[#faf8f5] border border-[#ece2da] rounded-xl p-4">
+            <label className="block text-xs font-semibold text-[#8f8680] uppercase tracking-wide mb-2">
               {t('detail.submitter_tracking_link')}
             </label>
             <div className="flex items-center gap-2">
-              <code className="flex-1 text-xs text-[#2E86AB] bg-white border border-[#E8ECF0] px-3 py-2 rounded-lg truncate">
+              <code className="flex-1 text-xs text-[#c0694a] bg-white border border-[#e9e0d9] px-3 py-2 rounded-lg truncate">
                 {window.location.origin}/track/{submission.trackingCode.replace(/^#/, '')}
               </code>
               <button
                 onClick={handleCopyTrackingLink}
-                className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-white border border-[#E8ECF0] rounded-lg transition-colors flex-shrink-0"
+                className="p-2 text-[#8f8680] hover:text-[#c0694a] hover:bg-white border border-[#e9e0d9] rounded-lg transition-colors flex-shrink-0"
                 title={t("detail.copy_link")}
               >
                 {copied ? (
@@ -508,7 +508,7 @@ export default function SubmissionDetail({
                 )}
               </button>
             </div>
-            <p className="text-xs text-[#9AABBF] mt-1.5">
+            <p className="text-xs text-[#8f8680] mt-1.5">
               {t('detail.share_link_desc')}
             </p>
           </div>
@@ -517,7 +517,7 @@ export default function SubmissionDetail({
           <div className="flex gap-2">
             <button
               onClick={() => exportSubmissionCSV(submission, t)}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#2E86AB] bg-[#EBF5FB] hover:bg-[#D6EEFA] rounded-xl transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#c0694a] bg-[#f5e6df] hover:bg-[#f0dcd0] rounded-xl transition-colors"
             >
               <Download size={15} />
               {t('detail.export_csv')}
@@ -526,7 +526,7 @@ export default function SubmissionDetail({
               href={`/track/${submission.trackingCode.replace(/^#/, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#6B7B8D] bg-[#E1E8EF] hover:bg-[#E8ECF0] rounded-xl transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[#78716c] bg-[#ece5de] hover:bg-[#e9e0d9] rounded-xl transition-colors"
             >
               <ExternalLink size={15} />
               {t('detail.public_tracking_page')}
@@ -534,7 +534,7 @@ export default function SubmissionDetail({
           </div>
 
           {/* Internal Discussion */}
-          <div className="border-t border-[#E8ECF0] pt-5">
+          <div className="border-t border-[#e9e0d9] pt-5">
             <InternalDiscussion
               submission={submission}
               currentUser={user}
@@ -543,7 +543,7 @@ export default function SubmissionDetail({
           </div>
 
           {/* Public Reply */}
-          <div className="border-t border-[#E8ECF0] pt-5">
+          <div className="border-t border-[#e9e0d9] pt-5">
             <PublicReplySection
               submissionId={submission.id}
               publicReply={submission.publicReply}
@@ -555,7 +555,7 @@ export default function SubmissionDetail({
           </div>
 
           {/* Close */}
-          <div className="pt-2 border-t border-[#E8ECF0]">
+          <div className="pt-2 border-t border-[#e9e0d9]">
             <Button variant="secondary" fullWidth onClick={onClose}>
               {t('close')}
             </Button>

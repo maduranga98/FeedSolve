@@ -59,55 +59,55 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
   };
 
   return (
-    <section className="rounded-xl border border-[#D3D1C7] bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-[#d6cabf] bg-white p-5 shadow-sm">
       <div className="mb-4 flex items-start gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#EBF5FB] text-[#2E86AB]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
           <CalendarClock size={18} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-bold text-[#1E3A5F]">Recurring Cycle</h2>
+            <h2 className="text-lg font-bold text-[#1c1917]">Recurring Cycle</h2>
             {!allowed && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F1EFE8] px-2 py-0.5 text-xs font-semibold text-[#5F5E5A]">
                 <Lock size={11} /> Growth+
               </span>
             )}
           </div>
-          <p className="mt-1 text-sm text-[#6B7B8D]">
+          <p className="mt-1 text-sm text-[#78716c]">
             Automatically archive submissions and start a fresh board cycle on a schedule.
           </p>
         </div>
       </div>
 
       {!allowed ? (
-        <div className="rounded-xl border border-dashed border-[#D3D1C7] bg-[#F1F5F8] p-4 text-sm text-[#6B7B8D]">
+        <div className="rounded-xl border border-dashed border-[#d6cabf] bg-[#f5f0ec] p-4 text-sm text-[#78716c]">
           Recurring cycles are available on Growth and Pro plans.
         </div>
       ) : (
         <div className="space-y-4">
-          <label className="flex items-start gap-3 rounded-xl border border-[#E8ECF0] bg-[#F1F5F8] p-4">
+          <label className="flex items-start gap-3 rounded-xl border border-[#e9e0d9] bg-[#f5f0ec] p-4">
             <input
               type="checkbox"
               checked={enabled}
               onChange={(event) => setEnabled(event.target.checked)}
-              className="mt-1 h-4 w-4 accent-[#2E86AB]"
+              className="mt-1 h-4 w-4 accent-[#c0694a]"
             />
             <span>
-              <span className="block text-sm font-bold text-[#1E3A5F]">Enable recurring cycles</span>
-              <span className="block text-sm text-[#6B7B8D]">
+              <span className="block text-sm font-bold text-[#1c1917]">Enable recurring cycles</span>
+              <span className="block text-sm text-[#78716c]">
                 New cycles keep prior submissions archived and viewable.
               </span>
             </span>
           </label>
 
           {enabled && (
-            <div className="grid grid-cols-1 gap-4 rounded-xl border border-[#E8ECF0] p-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 rounded-xl border border-[#e9e0d9] p-4 md:grid-cols-3">
               <div>
-                <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">Frequency</label>
+                <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#78716c]">Frequency</label>
                 <select
                   value={frequency}
                   onChange={(event) => setFrequency(event.target.value as RecurringFrequency)}
-                  className="w-full rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm focus:border-[#2E86AB] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/20"
+                  className="w-full rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/20"
                 >
                   <option value="monthly">Monthly</option>
                   <option value="quarterly">Quarterly</option>
@@ -117,7 +117,7 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
 
               {frequency === 'custom' && (
                 <div>
-                  <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">Every</label>
+                  <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#78716c]">Every</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="number"
@@ -125,28 +125,28 @@ export function RecurringCycleSettings({ board, company, onBoardChange }: Recurr
                       max={365}
                       value={customDays}
                       onChange={(event) => setCustomDays(Number(event.target.value))}
-                      className="w-full rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm focus:border-[#2E86AB] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/20"
+                      className="w-full rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/20"
                     />
-                    <span className="text-sm text-[#6B7B8D]">days</span>
+                    <span className="text-sm text-[#78716c]">days</span>
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#6B7B8D]">Start date</label>
+                <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-[#78716c]">Start date</label>
                 <input
                   type="date"
                   value={toDateInputValue(startDate)}
                   onChange={(event) => setStartDate(event.target.value ? new Date(`${event.target.value}T00:00:00`) : null)}
-                  className="w-full rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm focus:border-[#2E86AB] focus:outline-none focus:ring-2 focus:ring-[#2E86AB]/20"
+                  className="w-full rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/20"
                 />
               </div>
 
-              <div className="md:col-span-3 rounded-lg bg-[#EBF5FB] px-3 py-2 text-sm font-semibold text-[#1E3A5F]">
+              <div className="md:col-span-3 rounded-lg bg-[#f5e6df] px-3 py-2 text-sm font-semibold text-[#1c1917]">
                 Next cycle starts: {nextCycleDate ? nextCycleDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : 'Choose a start date'}
               </div>
 
-              <div className="md:col-span-3 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] px-3 py-2 text-sm text-[#6B7B8D]">
+              <div className="md:col-span-3 rounded-lg border border-[#d6cabf] bg-[#f5f0ec] px-3 py-2 text-sm text-[#78716c]">
                 Existing submissions will be assigned to the current cycle. New cycles don't delete submissions — they're archived and viewable.
               </div>
             </div>

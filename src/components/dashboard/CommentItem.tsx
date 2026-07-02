@@ -35,11 +35,11 @@ export function CommentItem({
   const isOwnComment = comment.authorId === currentUserId && !isSystemComment;
 
   return (
-    <div className={isReply ? "pl-8 border-l-2 border-[#D3D1C7]" : ""}>
-      <div className={`group rounded-xl p-3 shadow-sm ring-1 ${isSystemComment ? "bg-[#F1EFE8] ring-[#D3D1C7]" : "bg-white ring-[#D3D1C7]/70"}`}>
+    <div className={isReply ? "pl-8 border-l-2 border-[#d6cabf]" : ""}>
+      <div className={`group rounded-xl p-3 shadow-sm ring-1 ${isSystemComment ? "bg-[#F1EFE8] ring-[#d6cabf]" : "bg-white ring-[#d6cabf]/70"}`}>
         <div className="flex gap-3">
           {isSystemComment ? (
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-[#D3D1C7]">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-[#d6cabf]">
               <img src="/logo.png" alt="FeedSolve" className="h-5 w-5 object-contain" />
             </div>
           ) : (
@@ -49,22 +49,22 @@ export function CommentItem({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <p className="truncate text-sm font-semibold text-[#1E3A5F]">{isSystemComment ? "FeedSolve" : comment.authorName}</p>
-                  {isSystemComment && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#6B7B8D]">system</span>}
-                  <span className="text-xs text-[#6B7B8D]">{relativeTime(comment)}</span>
+                  <p className="truncate text-sm font-semibold text-[#1c1917]">{isSystemComment ? "FeedSolve" : comment.authorName}</p>
+                  {isSystemComment && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#78716c]">system</span>}
+                  <span className="text-xs text-[#78716c]">{relativeTime(comment)}</span>
                   {comment.isEdited && !comment.isDeleted && (
-                    <span className="text-xs font-medium text-[#6B7B8D]">Edited</span>
+                    <span className="text-xs font-medium text-[#78716c]">Edited</span>
                   )}
                 </div>
               </div>
 
               {isOwnComment && !comment.isDeleted && !isEditing && (
                 <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
-                  <MoreHorizontal size={14} className="hidden text-[#6B7B8D] sm:block" />
+                  <MoreHorizontal size={14} className="hidden text-[#78716c] sm:block" />
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="text-xs font-medium text-[#2E86AB] hover:text-[#1E3A5F]"
+                    className="text-xs font-medium text-[#c0694a] hover:text-[#1c1917]"
                   >
                     Edit
                   </button>
@@ -94,7 +94,7 @@ export function CommentItem({
                 />
               </div>
             ) : (
-              <p className={`mt-2 whitespace-pre-wrap text-sm leading-relaxed ${comment.isDeleted ? "italic text-[#6B7B8D]" : "text-[#444441]"}`}>
+              <p className={`mt-2 whitespace-pre-wrap text-sm leading-relaxed ${comment.isDeleted ? "italic text-[#78716c]" : "text-[#3c3632]"}`}>
                 {comment.isDeleted ? "This comment was deleted" : comment.body}
               </p>
             )}
@@ -115,7 +115,7 @@ export function CommentItem({
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="rounded-md bg-white px-2.5 py-1 text-xs font-semibold text-[#6B7B8D]"
+                  className="rounded-md bg-white px-2.5 py-1 text-xs font-semibold text-[#78716c]"
                 >
                   Cancel
                 </button>
@@ -126,7 +126,7 @@ export function CommentItem({
               <button
                 type="button"
                 onClick={() => setIsReplying(true)}
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#2E86AB] hover:text-[#1E3A5F]"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#c0694a] hover:text-[#1c1917]"
               >
                 <MessageCircle size={13} /> Reply
               </button>
@@ -136,7 +136,7 @@ export function CommentItem({
       </div>
 
       {!isReply && isReplying && (
-        <div className="mt-3 pl-8 border-l-2 border-[#D3D1C7]">
+        <div className="mt-3 pl-8 border-l-2 border-[#d6cabf]">
           <CommentInput
             compact
             autoFocus
