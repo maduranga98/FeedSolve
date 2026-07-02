@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LayoutTemplate } from 'lucide-react';
+import { LayoutTemplate, Search, Star } from 'lucide-react';
 import { Navbar } from '../../components/Navigation/Navbar';
 import { LoadingSpinner } from '../../components/Shared';
 import { getTemplates } from '../../lib/firebase';
@@ -71,19 +71,19 @@ export function TemplatesPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-[#E1E8EF]">
+      <div className="min-h-screen bg-color-bg">
         {/* Header */}
-        <div className="bg-white border-b border-[#E8ECF0]">
+        <div className="bg-white border-b border-[#e9e0d9]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-                <LayoutTemplate size={20} className="text-[#2E86AB]" />
+              <div className="w-10 h-10 bg-[#f5e6df] rounded-xl flex items-center justify-center">
+                <LayoutTemplate size={20} className="text-[#c0694a]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">
+                <h1 className="text-2xl font-bold text-[#1c1917]">
                   {t('boards:templates.title')}
                 </h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                <p className="text-sm text-[#78716c] mt-0.5">
                   {t('boards:templates.browse')}
                 </p>
               </div>
@@ -93,41 +93,42 @@ export function TemplatesPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Search and Filter */}
-          <div className="mb-8 space-y-4">
-            <div>
+          <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+            <div className="relative flex-1">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-color-muted-text"
+              />
               <input
                 type="text"
                 placeholder={t('search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full rounded-lg border border-color-border bg-color-surface py-2.5 pl-10 pr-4 text-sm text-color-body-text placeholder:text-color-muted-text focus:border-transparent focus:outline-none focus:ring-2 focus:ring-color-accent"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('boards:templates.industry')}
-              </label>
-              <select
-                value={selectedIndustry}
-                onChange={(e) => setSelectedIndustry(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">{t('all_industries')}</option>
-                {industries.map(industry => (
-                  <option key={industry} value={industry}>
-                    {formatIndustryLabel(industry)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedIndustry}
+              onChange={(e) => setSelectedIndustry(e.target.value)}
+              aria-label={t('boards:templates.industry')}
+              className="rounded-lg border border-color-border bg-color-surface px-4 py-2.5 text-sm text-color-body-text focus:border-transparent focus:outline-none focus:ring-2 focus:ring-color-accent sm:w-56"
+            >
+              <option value="">{t('all_industries')}</option>
+              {industries.map(industry => (
+                <option key={industry} value={industry}>
+                  {formatIndustryLabel(industry)}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Featured Templates */}
           {featuredTemplates.length > 0 && (
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-[#1E3A5F] mb-6">
-                ⭐ {t('boards:templates.featured')}
+              <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-color-primary">
+                <Star size={18} className="text-color-accent" fill="currentColor" />
+                {t('boards:templates.featured')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredTemplates.map(template => (
@@ -145,7 +146,7 @@ export function TemplatesPage() {
 
           {/* All Templates */}
           <div>
-            <h2 className="text-2xl font-bold text-[#1E3A5F] mb-6">
+            <h2 className="mb-6 text-xl font-bold text-color-primary">
               {t('boards:templates.browse')}
             </h2>
             {otherTemplates.length > 0 ? (
@@ -162,7 +163,7 @@ export function TemplatesPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500">{t('boards:dashboard.no_data')}</p>
+                <p className="text-color-muted-text">{t('boards:dashboard.no_data')}</p>
               </div>
             )}
           </div>
