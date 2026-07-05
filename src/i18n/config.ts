@@ -17,33 +17,12 @@ import es_boards from '../locales/es/boards.json';
 import es_errors from '../locales/es/errors.json';
 import es_templates from '../locales/es/templates.json';
 
-// Sinhala
-import si_common from '../locales/si/common.json';
-import si_forms from '../locales/si/forms.json';
-import si_boards from '../locales/si/boards.json';
-import si_errors from '../locales/si/errors.json';
-import si_templates from '../locales/si/templates.json';
-
-// Tamil
-import ta_common from '../locales/ta/common.json';
-import ta_forms from '../locales/ta/forms.json';
-import ta_boards from '../locales/ta/boards.json';
-import ta_errors from '../locales/ta/errors.json';
-import ta_templates from '../locales/ta/templates.json';
-
 // Arabic
 import ar_common from '../locales/ar/common.json';
 import ar_forms from '../locales/ar/forms.json';
 import ar_boards from '../locales/ar/boards.json';
 import ar_errors from '../locales/ar/errors.json';
 import ar_templates from '../locales/ar/templates.json';
-
-// Hindi
-import hi_common from '../locales/hi/common.json';
-import hi_forms from '../locales/hi/forms.json';
-import hi_boards from '../locales/hi/boards.json';
-import hi_errors from '../locales/hi/errors.json';
-import hi_templates from '../locales/hi/templates.json';
 
 // Portuguese (Brazil)
 import pt_common from '../locales/pt/common.json';
@@ -67,33 +46,12 @@ const resources = {
     errors: es_errors,
     templates: es_templates,
   },
-  si: {
-    common: si_common,
-    forms: si_forms,
-    boards: si_boards,
-    errors: si_errors,
-    templates: si_templates,
-  },
-  ta: {
-    common: ta_common,
-    forms: ta_forms,
-    boards: ta_boards,
-    errors: ta_errors,
-    templates: ta_templates,
-  },
   ar: {
     common: ar_common,
     forms: ar_forms,
     boards: ar_boards,
     errors: ar_errors,
     templates: ar_templates,
-  },
-  hi: {
-    common: hi_common,
-    forms: hi_forms,
-    boards: hi_boards,
-    errors: hi_errors,
-    templates: hi_templates,
   },
   pt: {
     common: pt_common,

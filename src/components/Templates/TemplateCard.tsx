@@ -45,7 +45,7 @@ function formatIndustryLabel(industry: string): string {
 
 export function TemplateCard({ template, onSelect }: TemplateCardProps) {
   const { i18n, t } = useTranslation();
-  const currentLang = i18n.language as 'en' | 'si' | 'ta' | 'ar' | 'hi';
+  const currentLang = i18n.language as 'en' | 'es' | 'ar' | 'pt';
   const translation = template.translations[currentLang] || template.translations['en'];
   const Icon = INDUSTRY_ICONS[template.industry] ?? LayoutTemplate;
 
