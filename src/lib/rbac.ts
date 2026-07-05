@@ -116,7 +116,11 @@ export function canDemoteRole(userRole: UserRole, currentRole: UserRole, newRole
 export function getAssignableRoles(userRole: UserRole): UserRole[] {
   const hierarchy = ROLE_HIERARCHY[userRole];
   return Object.entries(ROLE_HIERARCHY)
-    .filter(([_, level]) => level < hierarchy)
+    .filter(
+      ([role, level]) =>
+        role !== 'owner' &&
+        (level < hierarchy || (userRole === 'admin' && role === 'admin'))
+    )
     .map(([role]) => role as UserRole);
 }
 
