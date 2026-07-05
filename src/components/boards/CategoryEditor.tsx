@@ -43,9 +43,11 @@ export function CategoryEditor({
 
   // Languages to offer translation fields for, in the app's canonical order.
   const activeLanguages = SUPPORTED_LANGUAGES.filter(l => supportedLanguages.includes(l.code));
-  // The toggle is only meaningful once the board supports more than one language.
-  const canTranslate = activeLanguages.length > 1;
-  const showTranslations = canTranslate && translationsEnabled;
+  const hasMultipleLanguages = activeLanguages.length > 1;
+  // Translation fields only make sense with more than one language, but the
+  // toggle is always available so admins can enable the feature while editing.
+  const showTranslations = translationsEnabled && hasMultipleLanguages;
+  const showAddLanguageHint = translationsEnabled && !hasMultipleLanguages;
 
   const handleAddCategory = () => {
     const trimmed = newCategory.trim();
@@ -87,26 +89,29 @@ export function CategoryEditor({
         {t('forms:board.categories')}
       </label>
 
-      {canTranslate && (
-        <div className="mb-3">
-          <label className="flex items-start gap-2.5 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={translationsEnabled}
-              onChange={e => onToggleTranslations(e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
-            />
-            <span>
-              <span className="text-sm text-[#1c1917] font-medium block">
-                {t('forms:board.enable_category_translations')}
-              </span>
-              <span className="text-[#78716c] text-xs">
-                {t('forms:board.category_translations_help')}
-              </span>
+      <div className="mb-3">
+        <label className="flex items-start gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={translationsEnabled}
+            onChange={e => onToggleTranslations(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
+          />
+          <span>
+            <span className="text-sm text-[#1c1917] font-medium block">
+              {t('forms:board.enable_category_translations')}
             </span>
-          </label>
-        </div>
-      )}
+            <span className="text-[#78716c] text-xs">
+              {t('forms:board.category_translations_help')}
+            </span>
+          </span>
+        </label>
+        {showAddLanguageHint && (
+          <p className="text-[#c0694a] text-xs mt-2 ml-6">
+            {t('forms:board.category_translations_add_language')}
+          </p>
+        )}
+      </div>
 
       <div className="space-y-2 mb-4">
         {categories.map((category) => (

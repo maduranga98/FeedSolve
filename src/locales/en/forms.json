@@ -71,6 +71,7 @@
     "category_placeholder": "Enter category name",
     "enable_category_translations": "Translate categories per language",
     "category_translations_help": "Add a translation for each language so the category name matches the submitter's chosen language. Leave blank to use the default name.",
+    "category_translations_add_language": "Add more than one language to this form (below) to translate categories.",
     "color": "Color",
     "select_color": "Select a color",
     "anonymous_allowed": "Allow Anonymous Submissions",

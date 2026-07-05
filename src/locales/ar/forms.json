@@ -48,6 +48,7 @@
     "category_placeholder": "أدخل اسم الفئة",
     "enable_category_translations": "ترجمة الفئات لكل لغة",
     "category_translations_help": "أضف ترجمة لكل لغة حتى يتطابق اسم الفئة مع اللغة التي يختارها مُرسِل التعليق. اتركه فارغاً لاستخدام الاسم الافتراضي.",
+    "category_translations_add_language": "أضف أكثر من لغة واحدة إلى هذا النموذج (بالأسفل) لترجمة الفئات.",
     "color": "اللون",
     "select_color": "اختر لوناً",
     "anonymous_allowed": "السماح بالتعليقات المجهولة",

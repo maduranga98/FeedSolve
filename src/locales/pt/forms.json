@@ -71,6 +71,7 @@
     "category_placeholder": "Digite o nome da categoria",
     "enable_category_translations": "Traduzir categorias por idioma",
     "category_translations_help": "Adicione uma tradução para cada idioma para que o nome da categoria corresponda ao idioma escolhido por quem envia. Deixe em branco para usar o nome padrão.",
+    "category_translations_add_language": "Adicione mais de um idioma a este formulário (abaixo) para traduzir as categorias.",
     "color": "Cor",
     "select_color": "Selecione uma cor",
     "anonymous_allowed": "Permitir Envios Anônimos",
