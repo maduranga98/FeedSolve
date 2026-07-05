@@ -5,10 +5,11 @@ import { useAuth } from '../../hooks/useAuth';
 import { useUsage } from '../../hooks/useUsage';
 import { createBoard, getTemplate, addAuditLog, incrementTemplateUsage } from '../../lib/firestore';
 import { Button, Input } from '../../components/Shared';
+import { CategoryEditor } from '../../components/boards/CategoryEditor';
+import { pruneCategoryTranslations } from '../../lib/utils';
 import type { BoardFormInput } from '../../types';
 import type { BoardTemplate } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../config/languages';
-import { Plus, Trash2 } from 'lucide-react';
 
 export function CreateBoard() {
   const navigate = useNavigate();
@@ -21,12 +22,13 @@ export function CreateBoard() {
     name: '',
     description: '',
     categories: ['Bug Report', 'Feature Request', 'Complaint'],
+    categoryTranslationsEnabled: false,
+    categoryTranslations: {},
     isAnonymousAllowed: false,
     showSatisfactionRating: false,
     satisfactionRequired: false,
     supportedLanguages: ['en'],
   });
-  const [newCategory, setNewCategory] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -58,7 +60,6 @@ export function CreateBoard() {
   }, [location]);
 
   const BOARD_NAME_MAX = 100;
-  const CATEGORY_NAME_MAX = 100;
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -85,19 +86,12 @@ export function CreateBoard() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddCategory = () => {
-    const trimmed = newCategory.trim();
-    if (!trimmed) return;
-    if (trimmed.length > CATEGORY_NAME_MAX) {
-      setErrors(prev => ({ ...prev, newCategory: t('forms:validation.category_name_max', { max: CATEGORY_NAME_MAX }) }));
-      return;
-    }
-    setErrors(prev => { const e = { ...prev }; delete e.newCategory; return e; });
-    setFormData({
-      ...formData,
-      categories: [...formData.categories, trimmed],
-    });
-    setNewCategory('');
+  const handleCategoriesChange = (
+    categories: string[],
+    categoryTranslations: BoardFormInput['categoryTranslations']
+  ) => {
+    setErrors(prev => { const e = { ...prev }; delete e.categories; return e; });
+    setFormData(prev => ({ ...prev, categories, categoryTranslations }));
   };
 
   const handleToggleLanguage = (code: string) => {
@@ -108,13 +102,6 @@ export function CreateBoard() {
         ? current.filter(c => c !== code)
         : [...current, code];
       return { ...prev, supportedLanguages: next };
-    });
-  };
-
-  const handleRemoveCategory = (index: number) => {
-    setFormData({
-      ...formData,
-      categories: formData.categories.filter((_, i) => i !== index),
     });
   };
 
@@ -132,7 +119,17 @@ export function CreateBoard() {
 
     setIsLoading(true);
     try {
-      const newBoard = await createBoard(user.companyId, formData);
+      const payload: BoardFormInput = {
+        ...formData,
+        categoryTranslations: formData.categoryTranslationsEnabled
+          ? pruneCategoryTranslations(
+              formData.categories,
+              formData.supportedLanguages ?? [],
+              formData.categoryTranslations
+            )
+          : {},
+      };
+      const newBoard = await createBoard(user.companyId, payload);
       void addAuditLog(user.companyId, {
         userId: user.id,
         userName: user.name,
@@ -216,60 +213,26 @@ export function CreateBoard() {
             error={errors.description}
           />
 
-          <div>
-            <label className="block text-sm font-medium text-[#1c1917] mb-3">
-              {t('forms:board.categories')}
-            </label>
-
-            <div className="space-y-2 mb-4">
-              {formData.categories.map((category, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between bg-[#f5f0ec] p-3 rounded-lg border border-[#d6cabf]"
-                >
-                  <span className="text-[#1c1917]">{category}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveCategory(index)}
-                    className="text-[#c0392b] hover:text-[#C0392B]"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {errors.categories && (
-              <p className="text-sm text-[#c0392b] mb-3">{errors.categories}</p>
-            )}
-
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={t('forms:board.category_placeholder')}
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value.slice(0, CATEGORY_NAME_MAX))}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddCategory();
-                  }
-                }}
-                className="flex-1 px-4 py-2 border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleAddCategory}
-                className="flex items-center gap-2"
-              >
-                <Plus size={18} />
-              </Button>
-            </div>
-            {errors.newCategory && (
-              <p className="text-xs text-[#c0392b] mt-1">{errors.newCategory}</p>
-            )}
-          </div>
+          <CategoryEditor
+            categories={formData.categories}
+            translations={formData.categoryTranslations ?? {}}
+            supportedLanguages={formData.supportedLanguages ?? []}
+            translationsEnabled={formData.categoryTranslationsEnabled ?? false}
+            onToggleTranslations={(enabled) =>
+              setFormData(prev => ({ ...prev, categoryTranslationsEnabled: enabled }))
+            }
+            onChange={handleCategoriesChange}
+            error={errors.categories}
+            newCategoryError={errors.newCategory}
+            onNewCategoryError={(message) =>
+              setErrors(prev => {
+                const e = { ...prev };
+                if (message) e.newCategory = message;
+                else delete e.newCategory;
+                return e;
+              })
+            }
+          />
 
           <div>
             <label className="block text-sm font-medium text-[#1c1917] mb-1">

@@ -8,6 +8,7 @@ import {
 } from "../../lib/firestore";
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
+import { getCategoryLabel } from "../../lib/utils";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../config/languages";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
 import { SatisfactionRating } from "../../components/public/SatisfactionRating";
@@ -892,7 +893,16 @@ export function SubmitFeedback() {
                     label={t("forms:feedback.category")}
                     value={formData.category}
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
-                    options={board.categories.map(cat => ({ value: cat, label: cat }))}
+                    options={board.categories.map(cat => ({
+                      value: cat,
+                      label: board.categoryTranslationsEnabled
+                        ? getCategoryLabel(
+                            cat,
+                            formData.submissionLanguage || i18n.language,
+                            board.categoryTranslations
+                          )
+                        : cat,
+                    }))}
                     error={errors.category}
                   />
 
