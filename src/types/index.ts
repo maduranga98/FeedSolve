@@ -165,6 +165,14 @@ export interface BoardCycle {
   stats: BoardCycleStats;
 }
 
+/**
+ * Optional localized labels for board categories.
+ * Keyed by the canonical category name (the value stored on submissions),
+ * then by language code, mapping to the translated label to show submitters.
+ * Example: { "Harassment": { "es": "Acoso", "pt": "Assédio" } }
+ */
+export type CategoryTranslations = Record<string, Record<string, string>>;
+
 export interface Board {
   id: string;
   companyId: string;
@@ -172,6 +180,7 @@ export interface Board {
   description: string;
   slug: string;
   categories: string[];
+  categoryTranslations?: CategoryTranslations;
   locations: string[];
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
@@ -264,6 +273,7 @@ export interface BoardFormInput {
   name: string;
   description: string;
   categories: string[];
+  categoryTranslations?: CategoryTranslations;
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
   satisfactionRequired: boolean;

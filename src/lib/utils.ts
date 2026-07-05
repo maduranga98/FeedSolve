@@ -1,3 +1,46 @@
+import type { CategoryTranslations } from '../types';
+
+/**
+ * Resolve the label to show for a category in a given language.
+ * Falls back to the canonical category name when no translation exists.
+ */
+export function getCategoryLabel(
+  category: string,
+  lang: string | undefined,
+  translations?: CategoryTranslations
+): string {
+  if (lang) {
+    const translated = translations?.[category]?.[lang];
+    if (translated && translated.trim()) return translated.trim();
+  }
+  return category;
+}
+
+/**
+ * Remove empty/whitespace translations and any entries that no longer
+ * correspond to an existing category or a currently supported language.
+ * Produces a clean map safe to persist to Firestore.
+ */
+export function pruneCategoryTranslations(
+  categories: string[],
+  supportedLanguages: string[],
+  translations: CategoryTranslations | undefined
+): CategoryTranslations {
+  const result: CategoryTranslations = {};
+  if (!translations) return result;
+  for (const category of categories) {
+    const langMap = translations[category];
+    if (!langMap) continue;
+    const cleaned: Record<string, string> = {};
+    for (const lang of supportedLanguages) {
+      const value = langMap[lang]?.trim();
+      if (value) cleaned[lang] = value;
+    }
+    if (Object.keys(cleaned).length > 0) result[category] = cleaned;
+  }
+  return result;
+}
+
 export function generateTrackingCode(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code = '#FSV-';

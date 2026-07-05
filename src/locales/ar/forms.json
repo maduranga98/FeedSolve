@@ -34,7 +34,8 @@
     "email": "يرجى إدخال عنوان بريد إلكتروني صحيح",
     "min_length": "الحد الأدنى {{count}} أحرف مطلوب",
     "max_length": "الحد الأقصى {{count}} حرفاً مسموح",
-    "invalid_format": "صيغة غير صحيحة"
+    "invalid_format": "صيغة غير صحيحة",
+    "category_duplicate": "الفئة موجودة بالفعل"
   },
   "board": {
     "name": "اسم اللوحة",
@@ -45,6 +46,7 @@
     "add_category": "إضافة فئة",
     "category_name": "اسم الفئة",
     "category_placeholder": "أدخل اسم الفئة",
+    "category_translations_help": "أضف ترجمة لكل لغة حتى يتطابق اسم الفئة مع اللغة التي يختارها مُرسِل التعليق. اتركه فارغاً لاستخدام الاسم الافتراضي.",
     "color": "اللون",
     "select_color": "اختر لوناً",
     "anonymous_allowed": "السماح بالتعليقات المجهولة",

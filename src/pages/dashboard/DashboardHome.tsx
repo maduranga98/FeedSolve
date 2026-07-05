@@ -2,8 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { getCompanyBoards, deleteBoard, updateBoard, addAuditLog } from "../../lib/firestore";
-import type { Board } from "../../types";
+import type { Board, CategoryTranslations } from "../../types";
 import { LoadingSpinner, Button } from "../../components/Shared";
+import { CategoryEditor } from "../../components/boards/CategoryEditor";
+import { pruneCategoryTranslations } from "../../lib/utils";
 import { UsageOverview } from "../../components/dashboard/UsageOverview";
 import {
   Plus,
@@ -25,6 +27,7 @@ type EditBoardData = {
   name: string;
   description: string;
   categories: string[];
+  categoryTranslations: CategoryTranslations;
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
   satisfactionRequired: boolean;
@@ -44,7 +47,9 @@ function EditBoardModal({
   const [name, setName] = useState(board.name);
   const [description, setDescription] = useState(board.description);
   const [categories, setCategories] = useState<string[]>(board.categories);
-  const [newCategory, setNewCategory] = useState("");
+  const [categoryTranslations, setCategoryTranslations] = useState<CategoryTranslations>(
+    board.categoryTranslations ?? {}
+  );
   const [isAnonymousAllowed, setIsAnonymousAllowed] = useState(board.isAnonymousAllowed);
   const [showSatisfactionRating, setShowSatisfactionRating] = useState(board.showSatisfactionRating);
   const [satisfactionRequired, setSatisfactionRequired] = useState(board.satisfactionRequired);
@@ -52,14 +57,6 @@ function EditBoardModal({
   const [saving, setSaving] = useState(false);
 
   const BOARD_NAME_MAX = 100;
-  const CATEGORY_NAME_MAX = 100;
-
-  const handleAddCategory = () => {
-    const trimmed = newCategory.trim();
-    if (!trimmed || trimmed.length > CATEGORY_NAME_MAX) return;
-    setCategories((prev) => [...prev, trimmed]);
-    setNewCategory("");
-  };
 
   const handleToggleLanguage = (code: string) => {
     setSupportedLanguages((prev) =>
@@ -76,6 +73,11 @@ function EditBoardModal({
         name: name.trim(),
         description: description.trim(),
         categories,
+        categoryTranslations: pruneCategoryTranslations(
+          categories,
+          supportedLanguages,
+          categoryTranslations
+        ),
         isAnonymousAllowed,
         showSatisfactionRating,
         satisfactionRequired,
@@ -127,46 +129,15 @@ function EditBoardModal({
           </div>
 
           {/* Categories */}
-          <div>
-            <label className="block text-sm font-medium text-[#3c3632] mb-2">
-              {t("forms:board.categories")}
-            </label>
-            <div className="space-y-1.5 mb-3">
-              {categories.map((cat, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between bg-[#f5f0ec] px-3 py-2 rounded-lg border border-[#d6cabf]"
-                >
-                  <span className="text-sm text-[#1c1917]">{cat}</span>
-                  <button
-                    type="button"
-                    onClick={() => setCategories((prev) => prev.filter((_, i) => i !== index))}
-                    className="text-[#E74C3C] hover:text-[#C0392B]"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder={t("forms:board.category_placeholder")}
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value.slice(0, CATEGORY_NAME_MAX))}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddCategory();
-                  }
-                }}
-                className="flex-1 px-3 py-2 border border-[#d6cabf] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
-              />
-              <Button type="button" variant="secondary" size="sm" onClick={handleAddCategory}>
-                <Plus size={16} />
-              </Button>
-            </div>
-          </div>
+          <CategoryEditor
+            categories={categories}
+            translations={categoryTranslations}
+            supportedLanguages={supportedLanguages}
+            onChange={(nextCategories, nextTranslations) => {
+              setCategories(nextCategories);
+              setCategoryTranslations(nextTranslations);
+            }}
+          />
 
           {/* Languages */}
           <div>

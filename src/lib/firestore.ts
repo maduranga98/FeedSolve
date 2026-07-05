@@ -215,6 +215,7 @@ export async function createBoard(
       description: input.description,
       slug,
       categories: input.categories,
+      categoryTranslations: input.categoryTranslations ?? {},
       locations: [],
       isAnonymousAllowed: input.isAnonymousAllowed,
       showSatisfactionRating: input.showSatisfactionRating ?? false,
@@ -268,7 +269,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'categoryTranslations' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
