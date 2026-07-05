@@ -1,0 +1,22 @@
+{
+  "network_error": "Erro de rede. Tente novamente.",
+  "server_error": "Erro no servidor. Tente novamente mais tarde.",
+  "unauthorized": "Você não tem autorização para realizar esta ação.",
+  "not_found": "O recurso solicitado não foi encontrado.",
+  "invalid_input": "Entrada inválida. Verifique seus dados.",
+  "password_mismatch": "As senhas não coincidem.",
+  "email_exists": "Este e-mail já está cadastrado.",
+  "invalid_email": "Digite um endereço de e-mail válido.",
+  "weak_password": "A senha deve ter pelo menos 8 caracteres.",
+  "session_expired": "Sua sessão expirou. Faça login novamente.",
+  "access_denied": "Acesso negado.",
+  "something_went_wrong": "Algo deu errado. Tente novamente.",
+  "file_too_large": "O arquivo é muito grande. O tamanho máximo é {{size}}.",
+  "invalid_file_type": "Tipo de arquivo inválido.",
+  "request_failed": "A solicitação falhou. Tente novamente.",
+  "timeout": "A solicitação expirou. Tente novamente.",
+  "rate_limit": "Muitas solicitações. Aguarde um momento e tente novamente.",
+  "validation_error": "Verifique os dados informados e tente novamente.",
+  "duplicate_entry": "Este registro já existe.",
+  "cannot_delete": "Não é possível excluir este item porque há itens dependentes."
+}

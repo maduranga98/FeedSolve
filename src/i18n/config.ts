@@ -45,6 +45,13 @@ import hi_boards from '../locales/hi/boards.json';
 import hi_errors from '../locales/hi/errors.json';
 import hi_templates from '../locales/hi/templates.json';
 
+// Portuguese (Brazil)
+import pt_common from '../locales/pt/common.json';
+import pt_forms from '../locales/pt/forms.json';
+import pt_boards from '../locales/pt/boards.json';
+import pt_errors from '../locales/pt/errors.json';
+import pt_templates from '../locales/pt/templates.json';
+
 const resources = {
   en: {
     common: en_common,
@@ -87,6 +94,13 @@ const resources = {
     boards: hi_boards,
     errors: hi_errors,
     templates: hi_templates,
+  },
+  pt: {
+    common: pt_common,
+    forms: pt_forms,
+    boards: pt_boards,
+    errors: pt_errors,
+    templates: pt_templates,
   },
 };
 
