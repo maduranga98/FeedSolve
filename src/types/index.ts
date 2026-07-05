@@ -387,7 +387,7 @@ export interface BoardTemplate {
 }
 
 export interface LocalizationSettings {
-  defaultLanguage: "en" | "es" | "si" | "ta" | "ar" | "hi";
+  defaultLanguage: "en" | "es" | "ar" | "pt";
   supportedLanguages: string[];
   rtlEnabled: boolean;
 }
