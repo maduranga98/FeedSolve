@@ -536,6 +536,11 @@ export async function getInvitationById(
   return { ...snapshot.data(), id: snapshot.id } as TeamInvitation;
 }
 
+export async function deleteInvitation(invitationId: string): Promise<void> {
+  const invitationRef = doc(db, 'teamInvitations', invitationId);
+  await deleteDoc(invitationRef);
+}
+
 export async function acceptInvitation(invitationId: string): Promise<void> {
   const invitationRef = doc(db, 'teamInvitations', invitationId);
   await updateDoc(invitationRef, { status: 'accepted' });

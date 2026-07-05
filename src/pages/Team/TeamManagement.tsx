@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Users } from "lucide-react";
+import { Users, Trash2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { usePermissions } from "../../hooks/usePermissions";
 import { useUsage } from "../../hooks/useUsage";
@@ -18,6 +18,7 @@ import {
   removeTeamMember,
   inviteTeamMember,
   getCompanyInvitations,
+  deleteInvitation,
   addAuditLog,
 } from "../../lib/firestore";
 import type { TeamMember, TeamInvitation, User, UserRole } from "../../types";
@@ -35,6 +36,9 @@ export function TeamManagement() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<UserRole>("viewer");
   const [inviting, setInviting] = useState(false);
+  const [cancellingInvitationId, setCancellingInvitationId] = useState<
+    string | null
+  >(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -118,6 +122,38 @@ export function TeamManagement() {
       console.error(err);
     } finally {
       setInviting(false);
+    }
+  }
+
+  async function handleCancelInvitation(invitation: TeamInvitation) {
+    if (!confirm(t("team_page.confirm_cancel_invitation"))) return;
+
+    try {
+      setCancellingInvitationId(invitation.id);
+      setError("");
+      await deleteInvitation(invitation.id);
+      void addAuditLog(currentUser.companyId, {
+        userId: currentUser.id,
+        userName: currentUser.name,
+        userEmail: currentUser.email,
+        action: "Cancelled invitation",
+        resourceType: "team",
+        resourceId: invitation.id,
+        resourceName: invitation.email,
+        details: { invitedEmail: invitation.email, role: invitation.role },
+      });
+      setSuccess(t("team_page.invitation_cancelled"));
+      await loadTeamData();
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("team_page.failed_cancel_invitation"),
+      );
+      console.error(err);
+    } finally {
+      setCancellingInvitationId(null);
     }
   }
 
@@ -288,9 +324,21 @@ export function TeamManagement() {
                       {t("team_page.invited_as", { role: invitation.role })}
                     </p>
                   </div>
-                  <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide self-start sm:self-auto flex-shrink-0">
-                    {t("team_page.pending")}
-                  </span>
+                  <div className="flex items-center gap-2 self-start sm:self-auto flex-shrink-0">
+                    <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide">
+                      {t("team_page.pending")}
+                    </span>
+                    <PermissionGuard permission="team:invite">
+                      <button
+                        onClick={() => handleCancelInvitation(invitation)}
+                        disabled={cancellingInvitationId === invitation.id}
+                        className="p-2 text-[#E74C3C] hover:bg-[#FFE5E5] rounded-lg transition disabled:opacity-50"
+                        title={t("team_page.cancel_invitation")}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </PermissionGuard>
+                  </div>
                 </div>
               ))}
             </div>
