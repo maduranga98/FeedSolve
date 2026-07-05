@@ -27,6 +27,7 @@ type EditBoardData = {
   name: string;
   description: string;
   categories: string[];
+  categoryTranslationsEnabled: boolean;
   categoryTranslations: CategoryTranslations;
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;
@@ -49,6 +50,9 @@ function EditBoardModal({
   const [categories, setCategories] = useState<string[]>(board.categories);
   const [categoryTranslations, setCategoryTranslations] = useState<CategoryTranslations>(
     board.categoryTranslations ?? {}
+  );
+  const [categoryTranslationsEnabled, setCategoryTranslationsEnabled] = useState(
+    board.categoryTranslationsEnabled ?? false
   );
   const [isAnonymousAllowed, setIsAnonymousAllowed] = useState(board.isAnonymousAllowed);
   const [showSatisfactionRating, setShowSatisfactionRating] = useState(board.showSatisfactionRating);
@@ -73,11 +77,10 @@ function EditBoardModal({
         name: name.trim(),
         description: description.trim(),
         categories,
-        categoryTranslations: pruneCategoryTranslations(
-          categories,
-          supportedLanguages,
-          categoryTranslations
-        ),
+        categoryTranslationsEnabled,
+        categoryTranslations: categoryTranslationsEnabled
+          ? pruneCategoryTranslations(categories, supportedLanguages, categoryTranslations)
+          : {},
         isAnonymousAllowed,
         showSatisfactionRating,
         satisfactionRequired,
@@ -133,6 +136,8 @@ function EditBoardModal({
             categories={categories}
             translations={categoryTranslations}
             supportedLanguages={supportedLanguages}
+            translationsEnabled={categoryTranslationsEnabled}
+            onToggleTranslations={setCategoryTranslationsEnabled}
             onChange={(nextCategories, nextTranslations) => {
               setCategories(nextCategories);
               setCategoryTranslations(nextTranslations);

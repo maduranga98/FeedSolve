@@ -22,6 +22,7 @@ export function CreateBoard() {
     name: '',
     description: '',
     categories: ['Bug Report', 'Feature Request', 'Complaint'],
+    categoryTranslationsEnabled: false,
     categoryTranslations: {},
     isAnonymousAllowed: false,
     showSatisfactionRating: false,
@@ -120,11 +121,13 @@ export function CreateBoard() {
     try {
       const payload: BoardFormInput = {
         ...formData,
-        categoryTranslations: pruneCategoryTranslations(
-          formData.categories,
-          formData.supportedLanguages ?? [],
-          formData.categoryTranslations
-        ),
+        categoryTranslations: formData.categoryTranslationsEnabled
+          ? pruneCategoryTranslations(
+              formData.categories,
+              formData.supportedLanguages ?? [],
+              formData.categoryTranslations
+            )
+          : {},
       };
       const newBoard = await createBoard(user.companyId, payload);
       void addAuditLog(user.companyId, {
@@ -214,6 +217,10 @@ export function CreateBoard() {
             categories={formData.categories}
             translations={formData.categoryTranslations ?? {}}
             supportedLanguages={formData.supportedLanguages ?? []}
+            translationsEnabled={formData.categoryTranslationsEnabled ?? false}
+            onToggleTranslations={(enabled) =>
+              setFormData(prev => ({ ...prev, categoryTranslationsEnabled: enabled }))
+            }
             onChange={handleCategoriesChange}
             error={errors.categories}
             newCategoryError={errors.newCategory}

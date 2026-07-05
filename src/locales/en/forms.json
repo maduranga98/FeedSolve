@@ -69,6 +69,7 @@
     "add_category": "Add Category",
     "category_name": "Category Name",
     "category_placeholder": "Enter category name",
+    "enable_category_translations": "Translate categories per language",
     "category_translations_help": "Add a translation for each language so the category name matches the submitter's chosen language. Leave blank to use the default name.",
     "color": "Color",
     "select_color": "Select a color",

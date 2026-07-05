@@ -180,6 +180,8 @@ export interface Board {
   description: string;
   slug: string;
   categories: string[];
+  /** When true, categories can carry per-language labels (see categoryTranslations). Off for legacy boards. */
+  categoryTranslationsEnabled?: boolean;
   categoryTranslations?: CategoryTranslations;
   locations: string[];
   isAnonymousAllowed: boolean;
@@ -273,6 +275,7 @@ export interface BoardFormInput {
   name: string;
   description: string;
   categories: string[];
+  categoryTranslationsEnabled?: boolean;
   categoryTranslations?: CategoryTranslations;
   isAnonymousAllowed: boolean;
   showSatisfactionRating: boolean;

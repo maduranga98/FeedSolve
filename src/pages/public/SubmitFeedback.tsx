@@ -895,11 +895,13 @@ export function SubmitFeedback() {
                     onChange={e => setFormData({ ...formData, category: e.target.value })}
                     options={board.categories.map(cat => ({
                       value: cat,
-                      label: getCategoryLabel(
-                        cat,
-                        formData.submissionLanguage || i18n.language,
-                        board.categoryTranslations
-                      ),
+                      label: board.categoryTranslationsEnabled
+                        ? getCategoryLabel(
+                            cat,
+                            formData.submissionLanguage || i18n.language,
+                            board.categoryTranslations
+                          )
+                        : cat,
                     }))}
                     error={errors.category}
                   />

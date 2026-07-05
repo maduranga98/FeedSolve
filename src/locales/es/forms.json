@@ -69,6 +69,7 @@
     "add_category": "Agregar categoría",
     "category_name": "Nombre de la categoría",
     "category_placeholder": "Ingresa el nombre de la categoría",
+    "enable_category_translations": "Traducir categorías por idioma",
     "category_translations_help": "Agrega una traducción para cada idioma para que el nombre de la categoría coincida con el idioma elegido por quien envía. Déjalo en blanco para usar el nombre predeterminado.",
     "color": "Color",
     "select_color": "Selecciona un color",

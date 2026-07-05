@@ -46,6 +46,7 @@
     "add_category": "إضافة فئة",
     "category_name": "اسم الفئة",
     "category_placeholder": "أدخل اسم الفئة",
+    "enable_category_translations": "ترجمة الفئات لكل لغة",
     "category_translations_help": "أضف ترجمة لكل لغة حتى يتطابق اسم الفئة مع اللغة التي يختارها مُرسِل التعليق. اتركه فارغاً لاستخدام الاسم الافتراضي.",
     "color": "اللون",
     "select_color": "اختر لوناً",
