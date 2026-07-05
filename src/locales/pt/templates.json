@@ -1,0 +1,91 @@
+{
+  "templates": {
+    "customer_feedback": {
+      "name": "Feedback de Clientes",
+      "description": "Colete feedback de clientes sobre seus produtos e serviços"
+    },
+    "supplier_issues": {
+      "name": "Problemas com Fornecedores",
+      "description": "Acompanhe problemas de qualidade, entrega e preços dos fornecedores"
+    },
+    "distributor_feedback": {
+      "name": "Feedback de Distribuidores",
+      "description": "Gerencie reclamações e preocupações dos seus distribuidores"
+    },
+    "restaurant_feedback": {
+      "name": "Feedback de Restaurante",
+      "description": "Colete feedback sobre qualidade da comida, atendimento e limpeza"
+    },
+    "delivery_feedback": {
+      "name": "Feedback de Entregas",
+      "description": "Acompanhe problemas com atrasos, danos e comportamento do entregador"
+    },
+    "tenant_requests": {
+      "name": "Solicitações de Inquilinos",
+      "description": "Gerencie solicitações de manutenção e reclamações dos inquilinos"
+    },
+    "patient_feedback": {
+      "name": "Feedback de Pacientes",
+      "description": "Colete feedback sobre médicos, equipe, instalações e cobrança"
+    },
+    "employee_feedback": {
+      "name": "Feedback de Funcionários",
+      "description": "Reúna feedback sobre carreira, salário, cultura e benefícios"
+    },
+    "support_tickets": {
+      "name": "Tickets de Suporte",
+      "description": "Gerencie solicitações de suporte técnico e de novos recursos"
+    },
+    "event_feedback": {
+      "name": "Feedback de Eventos",
+      "description": "Colete feedback sobre locais, organização, conteúdo e palestrantes"
+    }
+  },
+  "industries": {
+    "retail": "Varejo",
+    "manufacturing": "Indústria",
+    "distribution": "Distribuição",
+    "food_beverage": "Alimentos e Bebidas",
+    "logistics": "Logística",
+    "real_estate": "Imóveis",
+    "healthcare": "Saúde",
+    "human_resources": "Recursos Humanos",
+    "technology": "Tecnologia",
+    "events": "Eventos e Entretenimento"
+  },
+  "select_template": "Selecionar Modelo",
+  "categories": {
+    "bug_report": "Relatar Erro",
+    "feature_request": "Solicitação de Recurso",
+    "complaint": "Reclamação",
+    "compliment": "Elogio",
+    "quality_issue": "Problema de Qualidade",
+    "delivery_problem": "Problema de Entrega",
+    "pricing": "Preços",
+    "stock_issue": "Problema de Estoque",
+    "price_concern": "Preocupação com Preço",
+    "support": "Suporte",
+    "food_quality": "Qualidade da Comida",
+    "service": "Atendimento",
+    "cleanliness": "Limpeza",
+    "late_delivery": "Entrega Atrasada",
+    "damage": "Dano",
+    "driver_behavior": "Comportamento do Entregador",
+    "maintenance": "Manutenção",
+    "amenities": "Comodidades",
+    "doctor": "Médico",
+    "staff": "Equipe",
+    "facilities": "Instalações",
+    "billing": "Cobrança",
+    "career": "Carreira",
+    "salary": "Salário",
+    "culture": "Cultura",
+    "benefits": "Benefícios",
+    "how_to": "Como Fazer",
+    "account": "Conta",
+    "venue": "Local",
+    "organization": "Organização",
+    "content": "Conteúdo",
+    "speakers": "Palestrantes"
+  }
+}
