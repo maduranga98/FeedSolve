@@ -1,6 +1,6 @@
 import './firebase-init';
 import * as functions from 'firebase-functions';
-export * from './webhooks';
+export * from './submission-notifications';
 export * from './attachments-cleanup';
 export * from './comment-notifications';
 export * from './analytics-scheduler';

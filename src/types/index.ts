@@ -87,8 +87,6 @@ export interface Company {
   paymentMethod?: PaymentMethod;
   monthlySubmissionLimit: number;
   boardCount: number;
-  webhooks?: WebhookConfig;
-  webhookStats?: WebhookStats;
   branding?: CompanyBranding;
   showPublicFeed?: boolean;
   companySlug?: string;
@@ -405,43 +403,24 @@ export interface LocalizationSettings {
   rtlEnabled: boolean;
 }
 
-export interface SlackWebhook {
-  enabled: boolean;
-  webhookUrl: string;
-  channelId?: string;
-  events: string[];
-  format: "detailed" | "compact" | "minimal";
-  mentionOnNew: boolean;
-  connectedAt: Timestamp;
-}
+export type EmailFrequency = "instant" | "daily_digest" | "weekly_digest";
 
-export interface EmailWebhook {
+/** Company-wide email notification rule for submission activity. */
+export interface EmailNotificationConfig {
   enabled: boolean;
+  /** Team roles whose members are notified; resolved from the team list. */
+  roles: UserRole[];
+  /** Extra addresses that are not team members (a shared inbox, for example). */
   recipients: string[];
   events: string[];
-  frequency: "instant" | "daily_digest" | "weekly_digest";
-  connectedAt: Timestamp;
-}
-
-export interface CustomWebhook {
-  enabled: boolean;
-  url: string;
-  secret: string;
-  events: string[];
-  connectedAt: Timestamp;
-}
-
-export interface WebhookConfig {
-  enabled: boolean;
-  slack?: SlackWebhook;
-  email?: EmailWebhook;
-  custom?: CustomWebhook;
+  frequency: EmailFrequency;
+  updatedAt?: Timestamp;
 }
 
 /** Extra (or replacement) notification recipients for a single board. */
 export interface BoardRecipients {
   recipients: string[];
-  /** When true these addresses replace the company-wide list for this board. */
+  /** When true these addresses replace the company-wide recipients for this board. */
   replaceCompany?: boolean;
 }
 
@@ -459,9 +438,7 @@ export interface SubmitterPreferences {
  * readable company document.
  */
 export interface NotificationSettings {
-  slack?: SlackWebhook;
-  email?: EmailWebhook;
-  custom?: CustomWebhook;
+  email?: EmailNotificationConfig;
   boardRecipients?: Record<string, BoardRecipients>;
   submitter?: SubmitterPreferences;
   updatedAt?: Timestamp;
@@ -472,28 +449,15 @@ export const DEFAULT_SUBMITTER_PREFERENCES: SubmitterPreferences = {
   updates: true,
 };
 
-export interface WebhookStats {
-  totalSent: number;
-  failureCount: number;
-  successRate?: number;
-  lastEventAt?: Timestamp;
-  nextRetryAt?: Timestamp;
-}
-
-export interface WebhookLog {
+/** One delivery attempt, written by Cloud Functions. */
+export interface NotificationLog {
   id: string;
   companyId: string;
-  webhookType: "slack" | "email" | "custom";
   event: string;
-  status: "success" | "failed" | "retrying" | "queued";
-  statusCode?: number;
-  errorMessage?: string;
-  retryCount: number;
-  maxRetries: number;
-  requestBody: string;
-  response?: string;
+  status: "success" | "failed" | "queued";
+  errorMessage?: string | null;
+  details?: Record<string, unknown>;
   createdAt: Timestamp;
-  nextRetryAt?: Timestamp;
 }
 
 export interface SearchFilters {

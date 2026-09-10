@@ -1,36 +1,38 @@
 /**
- * Notification configuration shared by the webhook, digest and submitter flows.
+ * Notification configuration shared by the submission, digest and submitter flows.
  *
  * Settings live in the private document `companies/{companyId}/private/notifications`
- * so recipient addresses, Slack URLs and webhook secrets are never exposed by the
- * publicly readable company document. Companies configured before that move are
- * still honoured through the legacy `companies/{companyId}.webhooks` fallback.
+ * so recipient addresses are never exposed by the publicly readable company
+ * document. Companies configured before that move are still honoured through the
+ * legacy `companies/{companyId}.webhooks.email` fallback.
  */
 import * as admin from "firebase-admin";
-export declare const NOTIFICATION_DOC = "notifications";
 export declare const PRIVATE_COLLECTION = "private";
+export declare const NOTIFICATION_DOC = "notifications";
 export type EmailFrequency = "instant" | "daily_digest" | "weekly_digest";
+export type TeamRole = "owner" | "admin" | "manager" | "viewer";
 export interface EmailNotificationConfig {
     enabled: boolean;
+    /** Team roles whose members are notified; resolved from the users collection. */
+    roles: TeamRole[];
+    /** Extra addresses that are not team members (a shared inbox, for example). */
     recipients: string[];
     events: string[];
     frequency: EmailFrequency;
 }
 export interface BoardRecipientConfig {
     recipients: string[];
-    /** When true the board list replaces the company-wide list instead of extending it. */
+    /** When true the board list replaces the company-wide recipients instead of extending them. */
     replaceCompany?: boolean;
 }
 export interface SubmitterPreferences {
     /** Confirmation email to the submitter when their feedback is received. */
     ack: boolean;
-    /** Follow-up email when their submission gets a public reply or is resolved. */
+    /** Follow-up when their submission gets a public reply or is resolved. */
     updates: boolean;
 }
 export interface NotificationSettings {
-    email?: EmailNotificationConfig;
-    slack?: Record<string, unknown>;
-    custom?: Record<string, unknown>;
+    email?: Partial<EmailNotificationConfig>;
     boardRecipients?: Record<string, BoardRecipientConfig>;
     submitter?: Partial<SubmitterPreferences>;
 }
@@ -39,11 +41,14 @@ export declare function notificationDocRef(companyId: string): admin.firestore.D
 export declare function getNotificationSettings(companyId: string): Promise<NotificationSettings>;
 /** Submitter-facing email preferences, defaulting to enabled. */
 export declare function submitterPreferences(settings: NotificationSettings): SubmitterPreferences;
+/** Email addresses of every team member holding one of the given roles. */
+export declare function resolveRoleRecipients(companyId: string, roles: TeamRole[] | undefined): Promise<string[]>;
 /**
- * Recipients for one board: the company-wide list plus any board-specific
- * addresses, or only the board list when it is configured to replace.
+ * Everyone who should receive a notification for one board: team members in the
+ * selected roles, the extra company-wide addresses, and any board-specific
+ * addresses — or only the board addresses when it is set to replace.
  */
-export declare function resolveRecipients(settings: NotificationSettings, boardId?: string): string[];
+export declare function resolveRecipients(companyId: string, settings: NotificationSettings, boardId?: string): Promise<string[]>;
 /** True when email notifications are on and this event is subscribed. */
 export declare function emailWantsEvent(settings: NotificationSettings, eventType: string): boolean;
 //# sourceMappingURL=notification-settings.d.ts.map

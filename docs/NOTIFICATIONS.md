@@ -1,12 +1,12 @@
 # Notification System
 
-Everything that leaves FeedSolve as email, Slack or a webhook call, and the UI that
-configures it.
+Email is the only notification channel. Slack and custom webhooks were removed.
 
 ## What happens when a submission is received
 
-`handleSubmissionEvent` (`functions/src/webhooks.ts`) fires on every write to
-`submissions/{id}`, classifies the change into an event type, and fans it out:
+`onSubmissionNotification` (`functions/src/submission-notifications.ts`) fires on every
+write to `submissions/{id}`, classifies the change, and emails the configured recipients
+from **hello@feedsolve.com**.
 
 | Event | Fired when |
 | --- | --- |
@@ -16,27 +16,35 @@ configures it.
 | `submission.assigned` | `assignedTo` changed |
 | `submission.reply_added` | a public reply was added |
 
-Each enabled channel that subscribes to the event receives it. Email goes to the
-company-wide recipients plus any board-specific ones, from **hello@feedsolve.com**.
-
 `notifySubmitter` (`functions/src/submitter-notifications.ts`) handles the other
 direction — emails to the person who submitted the feedback:
 
 - **Receipt** on create: tracking code plus a link to `/track/:code`.
 - **Update** when a public reply is added or the submission is resolved.
 
-Both are per-company toggles that default to on, and neither ever fires for
-anonymous submissions or submissions without an email address.
+Both default to on and never fire for anonymous submissions or submissions without an
+email address.
+
+## Who receives it
+
+Recipients are resolved per submission, in this order:
+
+1. **Roles** — every team member in `users` whose `role` is one of the selected roles
+   (owner / admin / manager / viewer). Staff changes need no config change.
+2. **Extra addresses** — anything typed in manually: a shared inbox, someone off-team.
+3. **Board recipients** — extra addresses for one board. With `replaceCompany: true` they
+   are used *instead of* 1 and 2 for that board.
+
+Addresses are normalised, de-duplicated, and sent on BCC so recipients don't see each
+other.
 
 ## Delivery frequency
 
 `instant` sends immediately. `daily_digest` and `weekly_digest` queue the event to
-`notification_digests/{companyId}/events` instead; the scheduled functions
-`sendDailyDigests` (08:00 UTC daily) and `sendWeeklyDigests` (Mondays 08:00 UTC) drain
-the queue, group events by recipient set, send one roll-up email per group, and delete
-what they sent. A failed send leaves the events queued for the next run.
-
-Test sends from the UI always deliver instantly, whatever the frequency.
+`notification_digests/{companyId}/events`; `sendDailyDigests` (08:00 UTC daily) and
+`sendWeeklyDigests` (Mondays 08:00 UTC) drain the queue, group by recipient set, send one
+roll-up per group, and delete what they sent. A failed send leaves events queued for the
+next run. Test sends always deliver instantly.
 
 ## Where settings live
 
@@ -45,10 +53,13 @@ admins only:
 
 ```jsonc
 {
-  "email":  { "enabled": true, "recipients": ["ops@acme.com"],
-              "events": ["submission.created"], "frequency": "instant" },
-  "slack":  { "enabled": true, "webhookUrl": "…", "events": [...] },
-  "custom": { "enabled": true, "url": "…", "secret": "…", "events": [...] },
+  "email": {
+    "enabled": true,
+    "roles": ["owner", "admin"],
+    "recipients": ["ops@acme.com"],
+    "events": ["submission.created"],
+    "frequency": "instant"
+  },
   "boardRecipients": {
     "<boardId>": { "recipients": ["hr@acme.com"], "replaceCompany": false }
   },
@@ -56,30 +67,28 @@ admins only:
 }
 ```
 
-This used to live on `companies/{companyId}.webhooks`, which is **publicly readable**
-(the public submit and tracking pages read branding from it) — so recipient addresses,
-Slack URLs and webhook secrets were being served to anyone. Existing configs are read
-from the old location as a fallback and migrated to the private document the first time
-settings are saved from the UI, at which point the legacy field is deleted.
+This used to live on `companies/{companyId}.webhooks`, which is **publicly readable** (the
+public submit and tracking pages read branding from it), so recipient addresses were being
+served to anyone. The old location is still read as a fallback and migrated to the private
+document the first time settings are saved, at which point the legacy field is deleted.
 
-`boardRecipients` entries extend the company list by default; `replaceCompany: true`
-sends that board's notifications *only* to its own addresses.
+Delivery attempts are written to `notification_logs/{companyId}/logs`.
 
 ## UI
 
 `/notifications` (owner/admin, in the sidebar; `/integrations` redirects there):
 
-- Channel cards with pause / test / edit / remove.
-- **Email**: recipient chips, event checkboxes, delivery frequency.
-- **Emails to the submitter**: the two toggles above.
-- **Board-specific recipients**: per-board list plus the "only notify these" option.
-- **Delivery history**: `webhook_logs/{companyId}/logs`, filterable by status
-  (`success` / `queued` / `failed`).
+- **Email notifications** — on/off, role checkboxes with a live headcount, extra
+  addresses, event selection, delivery frequency, and a **Send test** button.
+- **Emails to the submitter** — the two toggles above.
+- **Board-specific recipients** — per-board list plus "only notify these".
+- **Delivery history** — filterable by sent / queued / failed.
 
 ## SMTP configuration
 
 All mail goes through `functions/src/mailer.ts` — one pooled transport shared by
-notifications, digests, team invitations, escalation rules and cycle rotation.
+notifications, digests, submitter emails, team invitations, escalation rules and cycle
+rotation.
 
 | Variable | Default | Notes |
 | --- | --- | --- |
@@ -97,5 +106,11 @@ firebase functions:secrets:set SMTP_PASS
 > The SMTP password was previously hardcoded in four function files and is therefore in
 > git history. **Rotate it** and set the new one as a secret.
 
-Multi-recipient mail is sent with the recipients on BCC so addresses are not disclosed
-between recipients.
+## Deploying
+
+The old functions `handleSubmissionEvent` and `testWebhook` no longer exist. Delete them
+when the CLI offers, or run:
+
+```bash
+firebase functions:delete handleSubmissionEvent testWebhook
+```

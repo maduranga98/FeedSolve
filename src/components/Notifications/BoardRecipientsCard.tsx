@@ -6,7 +6,6 @@ import { EmailChipInput } from './EmailChipInput';
 interface BoardRecipientsCardProps {
   boards: Board[];
   boardRecipients: Record<string, BoardRecipients>;
-  companyRecipients: string[];
   onSave: (boardId: string, config: BoardRecipients | null) => Promise<void>;
 }
 
@@ -17,7 +16,6 @@ interface BoardRecipientsCardProps {
 export function BoardRecipientsCard({
   boards,
   boardRecipients,
-  companyRecipients,
   onSave,
 }: BoardRecipientsCardProps) {
   const [openBoardId, setOpenBoardId] = useState<string | null>(null);
@@ -74,10 +72,8 @@ export function BoardRecipientsCard({
                   </span>
                   <span className="mt-0.5 block truncate text-xs text-[#78716c]">
                     {configured?.recipients.length
-                      ? `${configured.recipients.length} address${configured.recipients.length === 1 ? '' : 'es'}${configured.replaceCompany ? ' · replaces company list' : ' · in addition to company list'}`
-                      : companyRecipients.length
-                        ? 'Uses the company-wide list'
-                        : 'No recipients configured'}
+                      ? `${configured.recipients.length} address${configured.recipients.length === 1 ? '' : 'es'}${configured.replaceCompany ? ' · instead of the default recipients' : ' · in addition to the default recipients'}`
+                      : 'Uses the default recipients'}
                   </span>
                 </span>
                 <ChevronDown
@@ -91,7 +87,7 @@ export function BoardRecipientsCard({
                   <EmailChipInput
                     value={draft.recipients}
                     onChange={recipients => setDraft(prev => ({ ...prev, recipients }))}
-                    hint="Leave empty to fall back to the company-wide recipients."
+                    hint="Leave empty to fall back to the default recipients."
                   />
 
                   <label className="flex items-start gap-2.5 text-sm text-[#3c3632]">
@@ -106,7 +102,7 @@ export function BoardRecipientsCard({
                     <span>
                       Only notify these addresses for this board
                       <span className="mt-0.5 block text-xs text-[#78716c]">
-                        The company-wide recipients are skipped for {board.name}.
+                        The roles and addresses above are skipped for {board.name}.
                       </span>
                     </span>
                   </label>

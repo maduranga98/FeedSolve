@@ -11,8 +11,8 @@ export type Permission =
   | 'team:invite'
   | 'team:manage'
   | 'team:remove'
-  | 'webhooks:read'
-  | 'webhooks:write'
+  | 'notifications:read'
+  | 'notifications:write'
   | 'integrations:read'
   | 'integrations:write'
   | 'analytics:read'
@@ -34,8 +34,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'team:invite',
     'team:manage',
     'team:remove',
-    'webhooks:read',
-    'webhooks:write',
+    'notifications:read',
+    'notifications:write',
     'integrations:read',
     'integrations:write',
     'analytics:read',
@@ -56,8 +56,8 @@ export const ROLE_PERMISSIONS: Record<UserRole, Set<Permission>> = {
     'team:invite',
     'team:manage',
     'team:remove',
-    'webhooks:read',
-    'webhooks:write',
+    'notifications:read',
+    'notifications:write',
     'integrations:read',
     'integrations:write',
     'analytics:read',
@@ -95,7 +95,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 
 export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
   owner: 'Full access, can manage team, billing, and company settings',
-  admin: 'Manage submissions, team members, webhooks, and integrations',
+  admin: 'Manage submissions, team members, and notification settings',
   manager: 'View and manage submissions, assign tasks, and reply to submitters',
   viewer: 'Read-only access to submissions and analytics',
 };
