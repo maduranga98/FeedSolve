@@ -27,7 +27,7 @@ const ApiKeyDisplay: React.FC<ApiKeyDisplayProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-xl max-w-lg w-full">
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-xl max-w-lg w-full max-h-[90dvh] overflow-y-auto">
         <div className="bg-green-50 dark:bg-green-950 border-b-2 border-green-200 dark:border-green-800 p-6">
           <h2 className="text-xl font-bold text-green-900 dark:text-green-200">API Key Created Successfully</h2>
           <p className="text-sm text-green-700 dark:text-green-300 mt-1">Your new API key "{name}" has been created.</p>

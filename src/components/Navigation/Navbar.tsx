@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LogOut,
@@ -16,6 +16,8 @@ import {
   Bell,
   Lock,
   HelpCircle,
+  Menu,
+  X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
@@ -34,6 +36,9 @@ type NavItem = {
   lockedMessage?: string;
 };
 
+const navButtonBase =
+  "relative w-full inline-flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-2xl transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)] text-left";
+
 export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,10 +46,30 @@ export function Navbar() {
   const { t } = useTranslation();
   const { subscription } = useSubscription();
   const { templates } = useTemplates();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
+  /*
+   * Navigating away — the browser back button included — must never leave the
+   * drawer up. Adjusting during render rather than in an effect avoids a frame
+   * where the drawer is still painted over the new page.
+   */
+  const [renderedPath, setRenderedPath] = useState(location.pathname);
+  if (renderedPath !== location.pathname) {
+    setRenderedPath(location.pathname);
+    if (drawerOpen) setDrawerOpen(false);
+  }
 
   const handleLogout = async () => {
+    closeDrawer();
     await logout();
     navigate("/login");
+  };
+
+  const go = (path: string) => {
+    closeDrawer();
+    navigate(path);
   };
 
   const isActive = (path: string) =>
@@ -112,113 +137,165 @@ export function Navbar() {
         .toUpperCase()
     : "??";
 
+  /*
+   * The inset that keeps page content clear of the fixed chrome lives in
+   * index.css so it can differ per breakpoint; the class is all this needs
+   * to toggle.
+   */
   useEffect(() => {
-    const previousPaddingLeft = document.body.style.paddingLeft;
-    document.body.style.paddingLeft = "17rem";
-
-    return () => {
-      document.body.style.paddingLeft = previousPaddingLeft;
-    };
+    document.body.classList.add("fs-has-sidebar");
+    return () => document.body.classList.remove("fs-has-sidebar");
   }, []);
 
+  useEffect(() => {
+    document.body.classList.toggle("fs-drawer-open", drawerOpen);
+    return () => document.body.classList.remove("fs-drawer-open");
+  }, [drawerOpen]);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDrawerOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
+
+  const renderNavButton = (item: NavItem) => {
+    const active = isActive(item.path);
+    return (
+      <button
+        key={item.path}
+        onClick={() => go(item.path)}
+        aria-current={active ? "page" : undefined}
+        className={`${navButtonBase} ${
+          active
+            ? "text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)]"
+            : "text-[var(--c-t78716c)] hover:text-[var(--c-t1c1917)] hover:bg-[var(--c-sf0eae5)]"
+        }`}
+      >
+        <span className={active ? "text-[var(--c-tc0694a)]" : "text-[var(--c-ta89890)]"}>
+          {item.icon}
+        </span>
+        <span className="truncate">{item.label}</span>
+        {item.locked && (
+          <span className="ms-auto text-[var(--c-td4860f)]" title={item.lockedMessage}>
+            <Lock size={13} />
+          </span>
+        )}
+        {item.path === "/reply-templates" && templates.length > 0 && (
+          <span className="ms-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)]">
+            {templates.length}
+          </span>
+        )}
+      </button>
+    );
+  };
+
   return (
-    <nav className="fixed left-0 top-0 h-screen w-64 bg-[var(--c-sffffff)] border-r border-[var(--c-be0d6cf)] z-50 shadow-sm px-4 py-5 flex flex-col">
-      <div className="mb-6">
+    <>
+      {/* Mobile top bar — replaces the sidebar below `lg`. */}
+      <header className="lg:hidden fixed inset-x-0 top-0 z-40 h-14 flex items-center gap-2 px-4 bg-[var(--c-sffffff)] border-b border-[var(--c-be0d6cf)] shadow-sm">
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(true)}
+          aria-label={t("nav.open_menu", "Open menu")}
+          aria-expanded={drawerOpen}
+          className="-ms-2 p-2 rounded-xl text-[var(--c-t78716c)] hover:bg-[var(--c-sf0eae5)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)]"
+        >
+          <Menu size={20} />
+        </button>
         <button
           onClick={() => navigate("/dashboard")}
-          className="flex items-center gap-2 focus:outline-none"
+          className="flex items-center gap-2 min-w-0 focus:outline-none"
         >
-          <img src="/logo.png" alt={"FeedSolve"} className="h-7" />
-          <span className="text-sm font-semibold text-[var(--c-t1c1917)]">FeedSolve</span>
+          <img src="/logo.png" alt="FeedSolve" className="h-6 w-auto" />
+          <span className="text-sm font-semibold text-[var(--c-t1c1917)] truncate">
+            FeedSolve
+          </span>
         </button>
-      </div>
-
-      {user && (
-        <div className="flex-1 overflow-y-auto">
-          <div className="flex flex-col gap-2">
-            {navItems.map((item) => {
-              const active = isActive(item.path);
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`relative w-full inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-2xl transition-colors duration-150 focus:outline-none text-left
-                    ${
-                      active
-                        ? "text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)]"
-                        : "text-[var(--c-t78716c)] hover:text-[var(--c-t1c1917)] hover:bg-[var(--c-sf0eae5)]"
-                    }`}
-                >
-                  <span className={active ? "text-[var(--c-tc0694a)]" : "text-[var(--c-ta89890)]"}>
-                    {item.icon}
-                  </span>
-                  <span className="truncate">{item.label}</span>
-                  {item.locked && (
-                    <span className="ml-auto text-[var(--c-td4860f)]" title={item.lockedMessage}>
-                      <Lock size={13} />
-                    </span>
-                  )}
-                  {item.path === '/reply-templates' && templates.length > 0 && (
-                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)]">
-                      {templates.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+        <div className="ms-auto flex items-center gap-1">
+          <ThemeToggle />
         </div>
+      </header>
+
+      {/* Scrim — only rendered while the drawer is up. */}
+      {drawerOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+          onClick={closeDrawer}
+          aria-hidden="true"
+        />
       )}
 
-      {user && (
-        <div className="pt-3 mt-2 border-t border-[var(--c-be0d6cf)]">
+      <nav
+        aria-label={t("nav.primary", "Primary")}
+        className={`fixed inset-y-0 start-0 z-50 w-[17rem] max-w-[85vw] bg-[var(--c-sffffff)] border-e border-[var(--c-be0d6cf)] shadow-sm px-4 py-5 flex flex-col
+          transform transition-transform duration-200 ease-out will-change-transform
+          lg:translate-x-0 lg:transition-none
+          ${drawerOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"}`}
+      >
+        <div className="mb-6 flex items-center gap-2">
           <button
-            onClick={() => navigate(helpNavItem.path)}
-            className={`relative w-full inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-2xl transition-colors duration-150 focus:outline-none text-left
-              ${
-                isActive(helpNavItem.path)
-                  ? "text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)]"
-                  : "text-[var(--c-t78716c)] hover:text-[var(--c-t1c1917)] hover:bg-[var(--c-sf0eae5)]"
-              }`}
+            onClick={() => go("/dashboard")}
+            className="flex items-center gap-2 min-w-0 focus:outline-none"
           >
-            <span className={isActive(helpNavItem.path) ? "text-[var(--c-tc0694a)]" : "text-[var(--c-ta89890)]"}>
-              {helpNavItem.icon}
+            <img src="/logo.png" alt="FeedSolve" className="h-7 w-auto" />
+            <span className="text-sm font-semibold text-[var(--c-t1c1917)] truncate">
+              FeedSolve
             </span>
-            <span className="truncate">{helpNavItem.label}</span>
+          </button>
+          <button
+            type="button"
+            onClick={closeDrawer}
+            aria-label={t("nav.close_menu", "Close menu")}
+            className="lg:hidden ms-auto -me-2 p-2 rounded-xl text-[var(--c-t78716c)] hover:bg-[var(--c-sf0eae5)] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)]"
+          >
+            <X size={18} />
           </button>
         </div>
-      )}
 
-      {user && (
-        <div className="pt-4 border-t border-[var(--c-be0d6cf)] space-y-3">
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle className="ml-auto" />
+        {user && (
+          <div className="flex-1 overflow-y-auto -mx-1 px-1">
+            <div className="flex flex-col gap-1.5">{navItems.map(renderNavButton)}</div>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--c-sc0694a)] to-[var(--c-s1c1917)] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-              {initials}
-            </div>
-            <div className="text-left min-w-0">
-              <p className="text-sm font-semibold text-[var(--c-t1c1917)] leading-tight truncate max-w-[130px]">
-                {user.name}
-              </p>
-              <p className="text-xs text-[var(--c-ta89890)] truncate max-w-[130px]">
-                {user.email}
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="ml-auto text-[var(--c-t78716c)] hover:text-[var(--c-tc0392b)]"
-              title={t("logout")}
-            >
-              <LogOut size={16} />
-            </Button>
+        )}
+
+        {user && (
+          <div className="pt-3 mt-2 border-t border-[var(--c-be0d6cf)]">
+            {renderNavButton(helpNavItem)}
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+
+        {user && (
+          <div className="pt-4 border-t border-[var(--c-be0d6cf)] space-y-3">
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <ThemeToggle className="ms-auto hidden lg:inline-flex" />
+            </div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--c-sc0694a)] to-[var(--c-s1c1917)] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                {initials}
+              </div>
+              <div className="text-left min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[var(--c-t1c1917)] leading-tight truncate">
+                  {user.name}
+                </p>
+                <p className="text-xs text-[var(--c-ta89890)] truncate">{user.email}</p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="ms-auto flex-shrink-0 text-[var(--c-t78716c)] hover:text-[var(--c-tc0392b)]"
+                title={t("logout")}
+              >
+                <LogOut size={16} />
+              </Button>
+            </div>
+          </div>
+        )}
+      </nav>
+    </>
   );
 }

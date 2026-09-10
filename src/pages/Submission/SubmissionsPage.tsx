@@ -264,7 +264,7 @@ export function SubmissionsPage() {
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
   return (
-    <div className="h-screen flex flex-col bg-[var(--c-sf2ede7)] overflow-hidden">
+    <div className="fs-viewport flex flex-col bg-[var(--c-sf2ede7)] overflow-hidden">
 
       {/* ── Fixed top header ── */}
       <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be9e0d9)] flex-shrink-0 shadow-sm">

@@ -46,7 +46,7 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full p-6 shadow-lg">
+      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full p-5 sm:p-6 shadow-lg max-h-[90dvh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-[var(--c-t1e3a5f)]">Add Team Member</h2>
           <button

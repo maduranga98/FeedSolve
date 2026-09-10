@@ -159,7 +159,7 @@ export function AdvancedFilterPanel({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[420px] bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-[420px] max-w-[calc(100vw-2rem)] bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl shadow-2xl z-50 overflow-hidden">
           {/* Dropdown header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--c-bf0f4f8)]">
             <h3 className="text-sm font-bold text-[var(--c-t1e3a5f)]">Filter Submissions</h3>
@@ -292,7 +292,7 @@ export function AdvancedFilterPanel({
                           : undefined,
                       });
                     }}
-                    className="w-full px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
+                    className="w-full min-w-0 px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -323,7 +323,7 @@ export function AdvancedFilterPanel({
                           : undefined,
                       });
                     }}
-                    className="w-full px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
+                    className="w-full min-w-0 px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
                   />
                 </div>
               </div>

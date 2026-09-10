@@ -75,7 +75,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-80 rounded-xl border border-[var(--c-be3edf4)] bg-[var(--c-sffffff)] p-4 shadow-xl">
+        <div className="absolute right-0 z-30 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl border border-[var(--c-be3edf4)] bg-[var(--c-sffffff)] p-4 shadow-xl">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--c-t6b7b8d)]">
             Quick presets
           </p>

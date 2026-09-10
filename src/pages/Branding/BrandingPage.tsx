@@ -433,7 +433,7 @@ export function BrandingPage() {
               <p className="text-xs text-[var(--c-t6b7b8d)] font-medium uppercase tracking-wide">
                 {t("branding_page.auto_variants")}
               </p>
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {[
                   { label: "Light", color: theme.primaryLight },
                   { label: "Primary", color: theme.primary },

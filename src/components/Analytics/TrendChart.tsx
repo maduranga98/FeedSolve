@@ -82,7 +82,7 @@ export function TrendChart({
       </div>
 
       {isCustom && (
-        <div className="mb-6 p-4 bg-color-bg rounded border border-color-border flex items-end gap-3">
+        <div className="mb-6 p-4 bg-color-bg rounded border border-color-border flex flex-wrap items-end gap-3">
           <div>
             <label className="block text-sm font-medium text-color-body-text mb-1">
               {t('analytics.from')}
@@ -91,7 +91,7 @@ export function TrendChart({
               type="date"
               value={customFrom}
               onChange={(e) => setCustomFrom(e.target.value)}
-              className="px-3 py-2 border border-color-border rounded bg-color-surface text-color-body-text"
+              className="w-full min-w-0 px-3 py-2 border border-color-border rounded bg-color-surface text-color-body-text"
             />
           </div>
           <div>
@@ -102,7 +102,7 @@ export function TrendChart({
               type="date"
               value={customTo}
               onChange={(e) => setCustomTo(e.target.value)}
-              className="px-3 py-2 border border-color-border rounded bg-color-surface text-color-body-text"
+              className="w-full min-w-0 px-3 py-2 border border-color-border rounded bg-color-surface text-color-body-text"
             />
           </div>
           <button
