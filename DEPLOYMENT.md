@@ -55,8 +55,7 @@ VITE_STRIPE_PRICE_BUSINESS_ANNUAL=price_...
 
 ### 2. Cloud Functions Secrets
 
-Email notifications (submission alerts, digests, submitter receipts, team
-invitations) send through SMTP as `hello@feedsolve.com` and will not deliver
+Email notifications (submission alerts, digests, team invitations) send through SMTP as `hello@feedsolve.com` and will not deliver
 without a password configured in the runtime environment:
 
 ```bash

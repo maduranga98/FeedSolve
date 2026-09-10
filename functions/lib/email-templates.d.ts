@@ -55,28 +55,6 @@ export declare function renderSubmissionAlertEmail(args: {
     html: string;
     text: string;
 };
-/** Confirmation sent to the person who submitted the feedback. */
-export declare function renderSubmissionReceiptEmail(args: {
-    submission: SubmissionEmailData;
-    trackingUrl: string;
-    companyName?: string;
-}): {
-    subject: string;
-    html: string;
-    text: string;
-};
-/** Follow-up to the submitter when their feedback gets a reply or is resolved. */
-export declare function renderSubmissionUpdateEmail(args: {
-    submission: SubmissionEmailData;
-    trackingUrl: string;
-    companyName?: string;
-    reply?: string;
-    resolved?: boolean;
-}): {
-    subject: string;
-    html: string;
-    text: string;
-};
 /** Daily or weekly roll-up of submission activity for the team. */
 export declare function renderDigestEmail(args: {
     period: "daily" | "weekly";

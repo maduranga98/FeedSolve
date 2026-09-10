@@ -6,17 +6,14 @@ import {
   getNotificationLogs,
   getNotificationSettings,
   setEmailNotificationsEnabled,
-  submitterPreferences,
   updateBoardRecipients,
   updateEmailNotifications,
-  updateSubmitterPreferences,
 } from '@/lib/notifications';
 import type {
   BoardRecipients,
   EmailNotificationConfig,
   NotificationLog,
   NotificationSettings,
-  SubmitterPreferences,
 } from '@/types';
 
 /** Company notification settings: email rule, per-board recipients, submitter emails. */
@@ -72,21 +69,14 @@ export function useNotificationSettings() {
     });
   };
 
-  const setSubmitterPreferences = async (preferences: SubmitterPreferences) => {
-    await updateSubmitterPreferences(requireCompany(), preferences);
-    setSettings(prev => ({ ...(prev || {}), submitter: preferences }));
-  };
-
   return {
     settings,
-    submitter: submitterPreferences(settings),
     loading,
     error,
     refresh,
     saveEmailConfig,
     setEmailEnabled,
     setBoardRecipients,
-    setSubmitterPreferences,
   };
 }
 

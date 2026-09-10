@@ -7,7 +7,6 @@ Firestore triggers, scheduled jobs and callables backing FeedSolve.
 | Function | Kind | What it does |
 | --- | --- | --- |
 | `onSubmissionNotification` | Firestore `onWrite` on `submissions/{id}` | Emails the configured roles and addresses when a submission is created, updated, assigned, replied to or resolved. |
-| `notifySubmitter` | Firestore `onWrite` on `submissions/{id}` | Sends the submitter a receipt on create, and a follow-up on public reply or resolve. |
 | `sendDailyDigests` | Scheduled, 08:00 UTC | Sends the daily roll-up for companies on the daily digest. |
 | `sendWeeklyDigests` | Scheduled, Mondays 08:00 UTC | Same, weekly. |
 | `sendTestNotification` | Callable (owner/admin) | Sends a sample notification to the configured recipients, ignoring the digest schedule. |

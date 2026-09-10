@@ -21,14 +21,12 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import {
-  DEFAULT_SUBMITTER_PREFERENCES,
-  type BoardRecipients,
-  type EmailNotificationConfig,
-  type NotificationLog,
-  type NotificationSettings,
-  type SubmitterPreferences,
-  type UserRole,
+import type {
+  BoardRecipients,
+  EmailNotificationConfig,
+  NotifiableRole,
+  NotificationLog,
+  NotificationSettings,
 } from '@/types';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -52,8 +50,11 @@ export const EMAIL_FREQUENCIES = [
   { id: 'weekly_digest', label: 'Weekly digest', hint: 'One roll-up every Monday, 08:00 UTC.' },
 ] as const;
 
-export const NOTIFIABLE_ROLES: Array<{ id: UserRole; label: string; description: string }> = [
-  { id: 'owner', label: 'Owner', description: 'Full access to the company' },
+export const NOTIFIABLE_ROLES: Array<{
+  id: NotifiableRole;
+  label: string;
+  description: string;
+}> = [
   { id: 'admin', label: 'Admin', description: 'Manages submissions, team and settings' },
   { id: 'manager', label: 'Manager', description: 'Handles and resolves submissions' },
   { id: 'viewer', label: 'Viewer', description: 'Read-only access' },
@@ -61,7 +62,7 @@ export const NOTIFIABLE_ROLES: Array<{ id: UserRole; label: string; description:
 
 export const DEFAULT_EMAIL_CONFIG: EmailNotificationConfig = {
   enabled: true,
-  roles: ['owner', 'admin'],
+  roles: ['admin'],
   recipients: [],
   events: ['submission.created'],
   frequency: 'instant',
@@ -90,13 +91,6 @@ export async function getNotificationSettings(
   const snapshot = await getDoc(settingsRef(companyId));
   if (snapshot.exists()) return snapshot.data() as NotificationSettings;
   return (await readLegacySettings(companyId)) ?? {};
-}
-
-/** Submitter preferences with defaults applied. */
-export function submitterPreferences(
-  settings: NotificationSettings | null
-): SubmitterPreferences {
-  return { ...DEFAULT_SUBMITTER_PREFERENCES, ...(settings?.submitter ?? {}) };
 }
 
 /**
@@ -145,13 +139,6 @@ export async function updateBoardRecipients(
   await saveSettings(companyId, {
     [`boardRecipients.${boardId}`]: config ?? deleteField(),
   });
-}
-
-export async function updateSubmitterPreferences(
-  companyId: string,
-  preferences: SubmitterPreferences
-) {
-  await saveSettings(companyId, { submitter: preferences });
 }
 
 /** Delivery history written by Cloud Functions. */

@@ -11,20 +11,17 @@ import {
   BoardRecipientsCard,
   EmailNotificationsCard,
   NotificationLogs,
-  SubmitterEmailsCard,
 } from '@/components/Notifications';
 import { addAuditLog, getCompanyBoards, getTeamMembers } from '@/lib/firestore';
 import type {
   Board,
   BoardRecipients,
   EmailNotificationConfig,
-  SubmitterPreferences,
+  NotifiableRole,
   TeamMember,
-  UserRole,
 } from '@/types';
 
-const EMPTY_ROLE_COUNTS: Record<UserRole, number> = {
-  owner: 0,
+const EMPTY_ROLE_COUNTS: Record<NotifiableRole, number> = {
   admin: 0,
   manager: 0,
   viewer: 0,
@@ -34,13 +31,11 @@ export function NotificationsPage() {
   const { user } = useAuth();
   const {
     settings,
-    submitter,
     loading,
     error,
     saveEmailConfig,
     setEmailEnabled,
     setBoardRecipients,
-    setSubmitterPreferences,
   } = useNotificationSettings();
   const { logs, loading: logsLoading, fetchLogs } = useNotificationLogs();
   const { sendTest, sending } = useTestNotification();
@@ -66,7 +61,7 @@ export function NotificationsPage() {
     () =>
       team.reduce((counts, member) => {
         // Roles are stored with inconsistent casing in older documents.
-        const role = String(member.role).toLowerCase() as UserRole;
+        const role = String(member.role).toLowerCase() as NotifiableRole;
         if (role in counts) counts[role] += 1;
         return counts;
       }, { ...EMPTY_ROLE_COUNTS }),
@@ -131,14 +126,6 @@ export function NotificationsPage() {
     );
   };
 
-  const handleSubmitterPreferences = async (preferences: SubmitterPreferences) => {
-    await withToast(
-      () => setSubmitterPreferences(preferences),
-      'Submitter emails updated',
-      'Failed to update submitter emails'
-    );
-  };
-
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f5f0ec]">
@@ -156,8 +143,7 @@ export function NotificationsPage() {
           </div>
           <h1 className="text-3xl font-bold text-[#1c1917]">Notifications</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[#78716c]">
-            Choose who on your team hears about new submissions, and what the submitter gets
-            back.
+            Choose who on your team gets an email when a submission comes in.
           </p>
         </header>
 
@@ -169,6 +155,7 @@ export function NotificationsPage() {
         )}
 
         <EmailNotificationsCard
+          key={settings?.email ? 'configured' : 'new'}
           config={settings?.email}
           roleCounts={roleCounts}
           onSave={handleSaveEmail}
@@ -176,8 +163,6 @@ export function NotificationsPage() {
           onTest={handleTest}
           testing={sending}
         />
-
-        <SubmitterEmailsCard preferences={submitter} onSave={handleSubmitterPreferences} />
 
         <BoardRecipientsCard
           boards={boards}

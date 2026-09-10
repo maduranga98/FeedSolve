@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AlertCircle, Loader2, Mail, Send } from 'lucide-react';
-import type { EmailNotificationConfig, UserRole } from '@/types';
+import type { EmailNotificationConfig, NotifiableRole } from '@/types';
 import {
   DEFAULT_EMAIL_CONFIG,
   EMAIL_FREQUENCIES,
@@ -12,11 +12,24 @@ import { EmailChipInput } from './EmailChipInput';
 interface EmailNotificationsCardProps {
   config?: EmailNotificationConfig;
   /** How many team members hold each role, for the "2 people" hint. */
-  roleCounts: Record<UserRole, number>;
+  roleCounts: Record<NotifiableRole, number>;
   onSave: (config: EmailNotificationConfig) => Promise<void>;
   onToggle: (enabled: boolean) => Promise<void>;
   onTest: () => Promise<void>;
   testing?: boolean;
+}
+
+/** A test sends to the saved recipients, so unsaved edits have to land first. */
+function isSameConfig(a: EmailNotificationConfig, b?: EmailNotificationConfig) {
+  if (!b) return false;
+  const normalise = (config: EmailNotificationConfig) => ({
+    enabled: config.enabled,
+    roles: [...config.roles].sort(),
+    recipients: [...config.recipients].sort(),
+    events: [...config.events].sort(),
+    frequency: config.frequency,
+  });
+  return JSON.stringify(normalise(a)) === JSON.stringify(normalise(b));
 }
 
 /** Who gets an email when a submission comes in: by team role, plus extra addresses. */
@@ -28,20 +41,19 @@ export function EmailNotificationsCard({
   onTest,
   testing = false,
 }: EmailNotificationsCardProps) {
+  // The page loads settings before rendering this card, so the prop is the source of
+  // truth on mount; every later change flows through onSave.
   const [draft, setDraft] = useState<EmailNotificationConfig>(config ?? DEFAULT_EMAIL_CONFIG);
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (config) setDraft(config);
-  }, [config]);
-
   const recipientCount =
     draft.roles.reduce((total, role) => total + (roleCounts[role] ?? 0), 0) +
     draft.recipients.length;
+  const unsaved = !isSameConfig(draft, config);
 
-  const toggleRole = (role: UserRole) =>
+  const toggleRole = (role: NotifiableRole) =>
     setDraft(prev => ({
       ...prev,
       roles: prev.roles.includes(role)
@@ -76,6 +88,15 @@ export function EmailNotificationsCard({
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleTest = async () => {
+    if (unsaved) {
+      setError('Save your changes first — a test sends to the saved recipients.');
+      return;
+    }
+    setError('');
+    await onTest();
   };
 
   const handleToggle = async () => {
@@ -242,13 +263,15 @@ export function EmailNotificationsCard({
         <p className="text-xs text-[#8f8680]">
           {recipientCount === 0
             ? 'Nobody is set to receive notifications yet.'
-            : `${recipientCount} recipient${recipientCount === 1 ? '' : 's'} will be notified.`}
+            : unsaved
+              ? `${recipientCount} recipient${recipientCount === 1 ? '' : 's'} — unsaved changes.`
+              : `${recipientCount} recipient${recipientCount === 1 ? '' : 's'} will be notified.`}
         </p>
 
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={onTest}
+            onClick={handleTest}
             disabled={testing || recipientCount === 0}
             className="inline-flex items-center gap-1.5 rounded-xl border border-[#d6cabf] px-3.5 py-2 text-sm font-semibold text-[#3c3632] transition-colors hover:bg-[#f5f0ec] disabled:opacity-50"
           >

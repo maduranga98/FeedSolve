@@ -223,7 +223,7 @@ export interface SubmissionEmailData {
   boardName?: string;
 }
 
-/** Detail card used inside staff and submitter emails. */
+/** Detail card used inside the notification emails. */
 function submissionCard(submission: SubmissionEmailData): string {
   const rows: Array<[string, string]> = [];
   if (submission.status) rows.push(["Status", titleCase(submission.status)]);
@@ -288,75 +288,6 @@ export function renderSubmissionAlertEmail(args: {
     (args.submissionUrl ? `\nOpen submission: ${args.submissionUrl}\n` : "") +
     (args.settingsUrl ? `\nManage notification recipients: ${args.settingsUrl}\n` : "") +
     `\n— FeedSolve · Collect feedback. Resolve it fast.`;
-  return { subject, html, text };
-}
-
-/** Confirmation sent to the person who submitted the feedback. */
-export function renderSubmissionReceiptEmail(args: {
-  submission: SubmissionEmailData;
-  trackingUrl: string;
-  companyName?: string;
-}): { subject: string; html: string; text: string } {
-  const org = args.companyName ? escapeHtml(args.companyName) : "the team";
-  const subject = `We received your feedback — #${args.submission.trackingCode}`;
-  const body = `${submissionCard(args.submission)}
-    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:${TEXT_BODY};">
-      Keep your tracking code <strong>#${escapeHtml(args.submission.trackingCode)}</strong> — you can check the status of your submission at any time, and you'll hear from us when there's an update.
-    </p>`;
-  const html = renderBrandedEmail({
-    preheader: `Your feedback reached ${args.companyName || "the team"} — tracking code #${args.submission.trackingCode}.`,
-    title: "Thanks — we've got your feedback",
-    intro: `Your submission has been received by <strong>${org}</strong> and is now in the queue.`,
-    body,
-    ctaLabel: "Track Your Submission",
-    ctaUrl: args.trackingUrl,
-    footerNote: "This is a one-time confirmation for feedback you submitted. No account or action is required.",
-  });
-  const text =
-    `Thanks — we've got your feedback.\n\n` +
-    `Your submission has been received by ${args.companyName || "the team"}.\n\n` +
-    submissionText(args.submission) +
-    `\nTrack your submission: ${args.trackingUrl}\n\n` +
-    `— FeedSolve · Collect feedback. Resolve it fast.`;
-  return { subject, html, text };
-}
-
-/** Follow-up to the submitter when their feedback gets a reply or is resolved. */
-export function renderSubmissionUpdateEmail(args: {
-  submission: SubmissionEmailData;
-  trackingUrl: string;
-  companyName?: string;
-  reply?: string;
-  resolved?: boolean;
-}): { subject: string; html: string; text: string } {
-  const org = args.companyName ? escapeHtml(args.companyName) : "The team";
-  const title = args.resolved ? "Your feedback has been resolved" : "You have a reply";
-  const subject = `${title} — #${args.submission.trackingCode}`;
-  const replyBlock = args.reply
-    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND_ACCENT_BG};border-radius:12px;padding:16px 18px;margin-bottom:24px;">
-         <tr><td>
-           <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:${BRAND_PRIMARY};margin-bottom:6px;">Reply from ${org}</div>
-           <div style="font-size:14px;line-height:1.6;color:${TEXT_BODY};">${escapeHtml(args.reply)}</div>
-         </td></tr>
-       </table>`
-    : "";
-  const html = renderBrandedEmail({
-    preheader: `${title} on submission #${args.submission.trackingCode}.`,
-    title,
-    intro: args.resolved
-      ? `<strong>${org}</strong> marked your submission as resolved.`
-      : `<strong>${org}</strong> responded to the feedback you submitted.`,
-    body: `${replyBlock}${submissionCard(args.submission)}`,
-    ctaLabel: "View Full Update",
-    ctaUrl: args.trackingUrl,
-    footerNote: "You're receiving this because you left your email address with this submission.",
-  });
-  const text =
-    `${title}\n\n` +
-    (args.reply ? `Reply from ${args.companyName || "the team"}:\n${args.reply}\n\n` : "") +
-    submissionText(args.submission) +
-    `\nView the update: ${args.trackingUrl}\n\n` +
-    `— FeedSolve · Collect feedback. Resolve it fast.`;
   return { subject, html, text };
 }
 

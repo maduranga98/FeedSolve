@@ -246,7 +246,7 @@ export const sendTestNotification = functions.https.onCall(async (data, context)
   if (!recipients.length) {
     throw new functions.https.HttpsError(
       "failed-precondition",
-      "Add a role or an email address before sending a test",
+      "Save a role or an email address before sending a test",
     );
   }
 

@@ -1,5 +1,5 @@
 /**
- * Notification configuration shared by the submission, digest and submitter flows.
+ * Notification configuration shared by the submission and digest flows.
  *
  * Settings live in the private document `companies/{companyId}/private/notifications`
  * so recipient addresses are never exposed by the publicly readable company
@@ -25,22 +25,13 @@ export interface BoardRecipientConfig {
     /** When true the board list replaces the company-wide recipients instead of extending them. */
     replaceCompany?: boolean;
 }
-export interface SubmitterPreferences {
-    /** Confirmation email to the submitter when their feedback is received. */
-    ack: boolean;
-    /** Follow-up when their submission gets a public reply or is resolved. */
-    updates: boolean;
-}
 export interface NotificationSettings {
     email?: Partial<EmailNotificationConfig>;
     boardRecipients?: Record<string, BoardRecipientConfig>;
-    submitter?: Partial<SubmitterPreferences>;
 }
 export declare function notificationDocRef(companyId: string): admin.firestore.DocumentReference;
 /** Load a company's notification settings, falling back to the legacy location. */
 export declare function getNotificationSettings(companyId: string): Promise<NotificationSettings>;
-/** Submitter-facing email preferences, defaulting to enabled. */
-export declare function submitterPreferences(settings: NotificationSettings): SubmitterPreferences;
 /** Email addresses of every team member holding one of the given roles. */
 export declare function resolveRoleRecipients(companyId: string, roles: TeamRole[] | undefined): Promise<string[]>;
 /**
