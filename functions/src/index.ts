@@ -12,7 +12,6 @@ export * from './team-invitations';
 export * from './evaluateEscalationRules';
 export * from './rotateBoardCycles';
 export * from './onSubmissionCreate';
-export * from './submitter-notifications';
 export * from './notification-digests';
 
 export const api = functions.https.onRequest(app);

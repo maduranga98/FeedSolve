@@ -405,11 +405,14 @@ export interface LocalizationSettings {
 
 export type EmailFrequency = "instant" | "daily_digest" | "weekly_digest";
 
+/** Roles that can be picked as notification recipients. Companies have no owner role. */
+export type NotifiableRole = Exclude<UserRole, "owner">;
+
 /** Company-wide email notification rule for submission activity. */
 export interface EmailNotificationConfig {
   enabled: boolean;
   /** Team roles whose members are notified; resolved from the team list. */
-  roles: UserRole[];
+  roles: NotifiableRole[];
   /** Extra addresses that are not team members (a shared inbox, for example). */
   recipients: string[];
   events: string[];
@@ -424,14 +427,6 @@ export interface BoardRecipients {
   replaceCompany?: boolean;
 }
 
-/** Emails sent to the person who submitted the feedback. */
-export interface SubmitterPreferences {
-  /** Confirmation email when the submission is received. */
-  ack: boolean;
-  /** Follow-up when a public reply is added or the submission is resolved. */
-  updates: boolean;
-}
-
 /**
  * All notification configuration for a company. Stored privately at
  * `companies/{companyId}/private/notifications` — never on the publicly
@@ -440,14 +435,8 @@ export interface SubmitterPreferences {
 export interface NotificationSettings {
   email?: EmailNotificationConfig;
   boardRecipients?: Record<string, BoardRecipients>;
-  submitter?: SubmitterPreferences;
   updatedAt?: Timestamp;
 }
-
-export const DEFAULT_SUBMITTER_PREFERENCES: SubmitterPreferences = {
-  ack: true,
-  updates: true,
-};
 
 /** One delivery attempt, written by Cloud Functions. */
 export interface NotificationLog {

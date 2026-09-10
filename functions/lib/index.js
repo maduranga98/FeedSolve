@@ -53,7 +53,6 @@ __exportStar(require("./team-invitations"), exports);
 __exportStar(require("./evaluateEscalationRules"), exports);
 __exportStar(require("./rotateBoardCycles"), exports);
 __exportStar(require("./onSubmissionCreate"), exports);
-__exportStar(require("./submitter-notifications"), exports);
 __exportStar(require("./notification-digests"), exports);
 exports.api = functions.https.onRequest(api_1.default);
 //# sourceMappingURL=index.js.map

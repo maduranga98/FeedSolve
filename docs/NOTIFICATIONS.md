@@ -16,21 +16,13 @@ from **hello@feedsolve.com**.
 | `submission.assigned` | `assignedTo` changed |
 | `submission.reply_added` | a public reply was added |
 
-`notifySubmitter` (`functions/src/submitter-notifications.ts`) handles the other
-direction — emails to the person who submitted the feedback:
-
-- **Receipt** on create: tracking code plus a link to `/track/:code`.
-- **Update** when a public reply is added or the submission is resolved.
-
-Both default to on and never fire for anonymous submissions or submissions without an
-email address.
-
 ## Who receives it
 
 Recipients are resolved per submission, in this order:
 
 1. **Roles** — every team member in `users` whose `role` is one of the selected roles
-   (owner / admin / manager / viewer). Staff changes need no config change.
+   (admin / manager / viewer; accounts are created as `admin`, there is no owner role).
+   Staff changes need no config change.
 2. **Extra addresses** — anything typed in manually: a shared inbox, someone off-team.
 3. **Board recipients** — extra addresses for one board. With `replaceCompany: true` they
    are used *instead of* 1 and 2 for that board.
@@ -55,15 +47,14 @@ admins only:
 {
   "email": {
     "enabled": true,
-    "roles": ["owner", "admin"],
+    "roles": ["admin"],
     "recipients": ["ops@acme.com"],
     "events": ["submission.created"],
     "frequency": "instant"
   },
   "boardRecipients": {
     "<boardId>": { "recipients": ["hr@acme.com"], "replaceCompany": false }
-  },
-  "submitter": { "ack": true, "updates": true }
+  }
 }
 ```
 
@@ -79,16 +70,15 @@ Delivery attempts are written to `notification_logs/{companyId}/logs`.
 `/notifications` (owner/admin, in the sidebar; `/integrations` redirects there):
 
 - **Email notifications** — on/off, role checkboxes with a live headcount, extra
-  addresses, event selection, delivery frequency, and a **Send test** button.
-- **Emails to the submitter** — the two toggles above.
+  addresses, event selection, delivery frequency, and a **Send test** button. A test
+  sends to the *saved* recipients, so it refuses to run while there are unsaved edits.
 - **Board-specific recipients** — per-board list plus "only notify these".
 - **Delivery history** — filterable by sent / queued / failed.
 
 ## SMTP configuration
 
 All mail goes through `functions/src/mailer.ts` — one pooled transport shared by
-notifications, digests, submitter emails, team invitations, escalation rules and cycle
-rotation.
+notifications, digests, team invitations, escalation rules and cycle rotation.
 
 | Variable | Default | Notes |
 | --- | --- | --- |

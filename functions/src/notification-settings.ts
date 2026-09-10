@@ -1,5 +1,5 @@
 /**
- * Notification configuration shared by the submission, digest and submitter flows.
+ * Notification configuration shared by the submission and digest flows.
  *
  * Settings live in the private document `companies/{companyId}/private/notifications`
  * so recipient addresses are never exposed by the publicly readable company
@@ -31,20 +31,10 @@ export interface BoardRecipientConfig {
   replaceCompany?: boolean;
 }
 
-export interface SubmitterPreferences {
-  /** Confirmation email to the submitter when their feedback is received. */
-  ack: boolean;
-  /** Follow-up when their submission gets a public reply or is resolved. */
-  updates: boolean;
-}
-
 export interface NotificationSettings {
   email?: Partial<EmailNotificationConfig>;
   boardRecipients?: Record<string, BoardRecipientConfig>;
-  submitter?: Partial<SubmitterPreferences>;
 }
-
-const DEFAULT_SUBMITTER: SubmitterPreferences = { ack: true, updates: true };
 
 export function notificationDocRef(
   companyId: string,
@@ -71,13 +61,6 @@ export async function getNotificationSettings(
     .get();
   const legacyEmail = companyDoc.data()?.webhooks?.email;
   return legacyEmail ? { email: legacyEmail } : {};
-}
-
-/** Submitter-facing email preferences, defaulting to enabled. */
-export function submitterPreferences(
-  settings: NotificationSettings,
-): SubmitterPreferences {
-  return { ...DEFAULT_SUBMITTER, ...(settings.submitter || {}) };
 }
 
 /** Email addresses of every team member holding one of the given roles. */
