@@ -457,6 +457,7 @@
     "csv_attachments": "المرفقات"
   },
   "nav": {
+    "notifications": "الإشعارات",
     "analytics": "التحليلات",
     "reply_templates": "قوالب الرد",
     "escalation_rules": "قواعد التصعيد",

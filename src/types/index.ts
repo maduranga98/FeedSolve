@@ -438,6 +438,40 @@ export interface WebhookConfig {
   custom?: CustomWebhook;
 }
 
+/** Extra (or replacement) notification recipients for a single board. */
+export interface BoardRecipients {
+  recipients: string[];
+  /** When true these addresses replace the company-wide list for this board. */
+  replaceCompany?: boolean;
+}
+
+/** Emails sent to the person who submitted the feedback. */
+export interface SubmitterPreferences {
+  /** Confirmation email when the submission is received. */
+  ack: boolean;
+  /** Follow-up when a public reply is added or the submission is resolved. */
+  updates: boolean;
+}
+
+/**
+ * All notification configuration for a company. Stored privately at
+ * `companies/{companyId}/private/notifications` — never on the publicly
+ * readable company document.
+ */
+export interface NotificationSettings {
+  slack?: SlackWebhook;
+  email?: EmailWebhook;
+  custom?: CustomWebhook;
+  boardRecipients?: Record<string, BoardRecipients>;
+  submitter?: SubmitterPreferences;
+  updatedAt?: Timestamp;
+}
+
+export const DEFAULT_SUBMITTER_PREFERENCES: SubmitterPreferences = {
+  ack: true,
+  updates: true,
+};
+
 export interface WebhookStats {
   totalSent: number;
   failureCount: number;
@@ -451,7 +485,7 @@ export interface WebhookLog {
   companyId: string;
   webhookType: "slack" | "email" | "custom";
   event: string;
-  status: "success" | "failed" | "retrying";
+  status: "success" | "failed" | "retrying" | "queued";
   statusCode?: number;
   errorMessage?: string;
   retryCount: number;

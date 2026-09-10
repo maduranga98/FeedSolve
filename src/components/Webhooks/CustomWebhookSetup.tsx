@@ -80,19 +80,18 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold mb-4">Setup Custom Webhook</h3>
+    <div className="space-y-6">
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-          <AlertCircle size={18} className="text-red-600 mt-0.5" />
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="mb-4 p-3 bg-[#FDECEA] border border-[#F1C0B8] rounded-xl flex items-start gap-2">
+          <AlertCircle size={18} className="text-[#C0392B] mt-0.5" />
+          <p className="text-sm text-[#C0392B]">{error}</p>
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3c3632] mb-2">
             Endpoint URL *
           </label>
           <input
@@ -100,15 +99,15 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
             value={url}
             onChange={e => setUrl(e.target.value)}
             placeholder="https://example.com/webhooks/feedsolve"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[#d6cabf] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5e6df]"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#78716c] mt-1">
             FeedSolve will POST events to this URL with a signature header
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3c3632] mb-2">
             Signing Secret *
           </label>
           <div className="flex gap-2">
@@ -117,44 +116,44 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
                 type={showSecret ? 'text' : 'password'}
                 value={secret}
                 onChange={e => setSecret(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                className="w-full px-3 py-2 border border-[#d6cabf] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5e6df] pr-10"
                 placeholder="64-character hex string"
               />
               <button
                 onClick={() => setShowSecret(!showSecret)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8a29e] hover:text-[#3c3632]"
               >
                 {showSecret ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             <button
               onClick={handleGenerateSecret}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="px-3 py-2 bg-[#f5f0ec] text-[#3c3632] rounded-xl hover:bg-[#f2ece6]"
             >
               Generate
             </button>
             <button
               onClick={handleCopySecret}
-              className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="px-3 py-2 bg-[#f5f0ec] text-[#3c3632] rounded-xl hover:bg-[#f2ece6]"
             >
               {copied ? <Check size={18} /> : <Copy size={18} />}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#78716c] mt-1">
             Use this secret to verify webhook signatures
           </p>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="text-sm text-blue-900">
+        <div className="bg-[#f5e6df] border border-[#e0d6cf] rounded-xl p-3">
+          <p className="text-sm text-[#1c1917]">
             <strong>Signature Verification:</strong> Events will include a{' '}
-            <code className="bg-blue-100 px-1 rounded">X-FeedSolve-Signature</code> header with an
+            <code className="bg-[#f5e6df] px-1 rounded">X-FeedSolve-Signature</code> header with an
             HMAC SHA-256 signature. Use your secret to verify the signature.
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-[#3c3632] mb-3">
             Events to send *
           </label>
           <div className="space-y-2">
@@ -166,7 +165,7 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
                   onChange={() => handleEventToggle(event.id)}
                   className="w-4 h-4"
                 />
-                <span className="text-sm text-gray-700">{event.label}</span>
+                <span className="text-sm text-[#3c3632]">{event.label}</span>
               </label>
             ))}
           </div>
@@ -177,14 +176,14 @@ export function CustomWebhookSetup({ config, onSave, onCancel }: CustomWebhookSe
         <button
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+          className="px-4 py-2 text-[#3c3632] border border-[#d6cabf] rounded-xl hover:bg-[#f5f0ec] disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 bg-[#c0694a] text-white rounded-xl hover:bg-[#a85a3e] disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Save & Connect'}
         </button>

@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as nodemailer from "nodemailer";
 import {renderInvitationEmail} from "./email-templates";
+import {appUrl, sendMail} from "./mailer";
 
 interface TeamInvitation {
   companyId: string;
@@ -11,16 +11,6 @@ interface TeamInvitation {
   inviteCode: string;
   status: "pending" | "accepted" | "expired";
 }
-
-const transporter = nodemailer.createTransport({
-  host: "mail.spacemail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "hello@feedsolve.com",
-    pass: "2_qY5u9z",
-  },
-});
 
 export const onTeamInvitationCreated = functions.firestore
   .document("teamInvitations/{invitationId}")
@@ -41,11 +31,7 @@ export const onTeamInvitationCreated = functions.firestore
       ? (inviterDoc.data()?.name as string | undefined) || "Your teammate"
       : "Your teammate";
 
-    const configuredUrl = process.env.APP_URL || "";
-    const appUrl = /localhost/i.test(configuredUrl)
-      ? "https://app.feedsolve.com"
-      : configuredUrl || "https://app.feedsolve.com";
-    const inviteLink = `${appUrl.replace(/\/$/, "")}/accept-invite?id=${snap.id}`;
+    const inviteLink = `${appUrl()}/accept-invite?id=${snap.id}`;
 
     try {
       const email = renderInvitationEmail({
@@ -53,8 +39,7 @@ export const onTeamInvitationCreated = functions.firestore
         role: invitation.role,
         inviteUrl: inviteLink,
       });
-      await transporter.sendMail({
-        from: '"FeedSolve" <hello@feedsolve.com>',
+      await sendMail({
         to: invitation.email,
         subject: email.subject,
         text: email.text,

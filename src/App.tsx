@@ -55,6 +55,7 @@ const BrandingPage = lazy(() => import('./pages/Branding/BrandingPage').then(m =
 
 // Settings Pages
 const ReplyTemplatesPage = lazy(() => import('./pages/Settings/ReplyTemplatesPage').then(m => ({ default: m.ReplyTemplatesPage })));
+const NotificationsPage = lazy(() => import('./pages/Notifications/NotificationsPage').then(m => ({ default: m.NotificationsPage })));
 const CompanySettings = lazy(() => import('./pages/dashboard/settings/CompanySettings').then(m => ({ default: m.CompanySettings })));
 const EscalationRulesPage = lazy(() => import('./pages/dashboard/settings/EscalationRulesPage').then(m => ({ default: m.EscalationRulesPage })));
 const PublicResolutionFeed = lazy(() => import('./pages/public/PublicResolutionFeed').then(m => ({ default: m.PublicResolutionFeed })));
@@ -247,7 +248,17 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route path="/integrations" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/notifications"
+          element={
+            <PermissionRoute permission="company:update">
+              <Navbar />
+              <NotificationsPage />
+            </PermissionRoute>
+          }
+        />
+        {/* Legacy path kept so existing links and emails still resolve. */}
+        <Route path="/integrations" element={<Navigate to="/notifications" replace />} />
         <Route
           path="/branding"
           element={

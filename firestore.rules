@@ -186,10 +186,16 @@ service cloud.firestore {
              validLocation;
     }
 
-    // Webhook logs - Cloud Functions write, Admin+ read
-    match /webhook_logs/{companyId}/{logId} {
+    // Webhook logs - Cloud Functions write, Admin+ read.
+    // Functions write to webhook_logs/{companyId}/logs/{logId}.
+    match /webhook_logs/{companyId}/logs/{logId} {
       allow read: if canManageCompany(companyId);
       allow write: if false;
+    }
+
+    // Queued digest events - Cloud Functions only, never client-readable.
+    match /notification_digests/{companyId}/events/{eventId} {
+      allow read, write: if false;
     }
 
     // Users collection - RBAC enforced
@@ -223,6 +229,13 @@ service cloud.firestore {
       match /webhook_logs/{logId} {
         allow read: if canManageCompany(companyId);
         allow write: if false;
+      }
+
+      // Private company config (notification recipients, Slack URLs, webhook
+      // secrets). The company document itself is publicly readable, so none of
+      // this may live there.
+      match /private/{docId} {
+        allow read, write: if canManageCompany(companyId);
       }
 
       // Escalation rules are feature-gated in the app; rules enforce company membership and owner/admin writes.

@@ -64,19 +64,18 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold mb-4">Setup Slack Integration</h3>
+    <div className="space-y-6">
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-          <AlertCircle size={18} className="text-red-600 mt-0.5" />
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="mb-4 p-3 bg-[#FDECEA] border border-[#F1C0B8] rounded-xl flex items-start gap-2">
+          <AlertCircle size={18} className="text-[#C0392B] mt-0.5" />
+          <p className="text-sm text-[#C0392B]">{error}</p>
         </div>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3c3632] mb-2">
             Slack Webhook URL *
           </label>
           <input
@@ -84,15 +83,15 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
             value={webhookUrl}
             onChange={e => setWebhookUrl(e.target.value)}
             placeholder="https://hooks.slack.com/services/..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[#d6cabf] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5e6df]"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#78716c] mt-1">
             Get this from Slack workspace settings → Apps → Incoming Webhooks
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3c3632] mb-2">
             Channel ID (optional)
           </label>
           <input
@@ -100,12 +99,12 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
             value={channelId}
             onChange={e => setChannelId(e.target.value)}
             placeholder="e.g., C1234567890"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-[#d6cabf] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5e6df]"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-[#3c3632] mb-2">
             Message Format
           </label>
           <div className="space-y-2">
@@ -116,7 +115,7 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
                   name="format"
                   value={fmt.id}
                   checked={format === fmt.id}
-                  onChange={e => setFormat(e.target.value as any)}
+                  onChange={e => setFormat(e.target.value as SlackWebhook['format'])}
                   className="w-4 h-4"
                 />
                 <span className="text-sm">
@@ -135,12 +134,12 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
               onChange={e => setMentionOnNew(e.target.checked)}
               className="w-4 h-4"
             />
-            <span className="text-sm text-gray-700">Mention @channel on new submissions</span>
+            <span className="text-sm text-[#3c3632]">Mention @channel on new submissions</span>
           </label>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label className="block text-sm font-medium text-[#3c3632] mb-3">
             Events to notify on *
           </label>
           <div className="space-y-2">
@@ -152,7 +151,7 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
                   onChange={() => handleEventToggle(event.id)}
                   className="w-4 h-4"
                 />
-                <span className="text-sm text-gray-700">{event.label}</span>
+                <span className="text-sm text-[#3c3632]">{event.label}</span>
               </label>
             ))}
           </div>
@@ -163,14 +162,14 @@ export function SlackSetup({ config, onSave, onCancel }: SlackSetupProps) {
         <button
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+          className="px-4 py-2 text-[#3c3632] border border-[#d6cabf] rounded-xl hover:bg-[#f5f0ec] disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="px-4 py-2 bg-[#c0694a] text-white rounded-xl hover:bg-[#a85a3e] disabled:opacity-50"
         >
           {loading ? 'Saving...' : 'Save & Connect'}
         </button>

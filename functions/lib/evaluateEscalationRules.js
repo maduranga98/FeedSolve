@@ -36,17 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.evaluateEscalationRules = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-const nodemailer = __importStar(require("nodemailer"));
+const mailer_1 = require("./mailer");
 const db = admin.firestore();
-const transporter = nodemailer.createTransport({
-    host: "mail.spacemail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: "hello@feedsolve.com",
-        pass: process.env.SMTP_PASS || "2_qY5u9z",
-    },
-});
 function hoursBetween(start, end) {
     if (!start)
         return 0;
@@ -108,9 +99,8 @@ async function sendEscalationEmails(recipients, rule, submission) {
     const trackingRef = submission.trackingCode || submission.id || "submission";
     const subject = submission.subject || "Untitled submission";
     try {
-        await transporter.sendMail({
-            from: '"FeedSolve" <hello@feedsolve.com>',
-            to: recipients.join(", "),
+        await (0, mailer_1.sendMail)({
+            to: recipients,
             subject: `Escalation rule triggered: ${rule.name}`,
             text: `FeedSolve escalation rule "${rule.name}" triggered for submission ${trackingRef}.\n` +
                 `Subject: ${subject}`,
