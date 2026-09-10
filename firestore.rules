@@ -186,9 +186,8 @@ service cloud.firestore {
              validLocation;
     }
 
-    // Webhook logs - Cloud Functions write, Admin+ read.
-    // Functions write to webhook_logs/{companyId}/logs/{logId}.
-    match /webhook_logs/{companyId}/logs/{logId} {
+    // Notification delivery history - Cloud Functions write, Admin+ read.
+    match /notification_logs/{companyId}/logs/{logId} {
       allow read: if canManageCompany(companyId);
       allow write: if false;
     }
@@ -226,14 +225,8 @@ service cloud.firestore {
       allow update: if canManageCompany(companyId);
       allow delete: if isOwner(companyId);
 
-      match /webhook_logs/{logId} {
-        allow read: if canManageCompany(companyId);
-        allow write: if false;
-      }
-
-      // Private company config (notification recipients, Slack URLs, webhook
-      // secrets). The company document itself is publicly readable, so none of
-      // this may live there.
+      // Private company config (notification recipients). The company document
+      // itself is publicly readable, so none of this may live there.
       match /private/{docId} {
         allow read, write: if canManageCompany(companyId);
       }

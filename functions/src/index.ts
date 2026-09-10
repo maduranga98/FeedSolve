@@ -2,7 +2,7 @@ import './firebase-init'; // Must be first: initializes admin before any other m
 import * as functions from 'firebase-functions';
 import app from './api';
 
-export * from './webhooks';
+export * from './submission-notifications';
 export * from './attachments-cleanup';
 export * from './comment-notifications';
 export * from './analytics-scheduler';

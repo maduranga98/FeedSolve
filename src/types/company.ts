@@ -1,5 +1,4 @@
 import type { Timestamp } from 'firebase/firestore';
-import type { WebhookConfig, WebhookStats } from './index';
 
 export interface Subscription {
   tier: 'free' | 'starter' | 'growth' | 'business';
@@ -62,8 +61,6 @@ export interface Company {
   paymentMethod?: PaymentMethod;
   monthlySubmissionLimit: number;
   boardCount: number;
-  webhooks?: WebhookConfig;
-  webhookStats?: WebhookStats;
   branding?: CompanyBranding;
   showPublicFeed?: boolean;
   companySlug?: string;

@@ -43,7 +43,7 @@ exports.api = void 0;
 require("./firebase-init"); // Must be first: initializes admin before any other module loads
 const functions = __importStar(require("firebase-functions"));
 const api_1 = __importDefault(require("./api"));
-__exportStar(require("./webhooks"), exports);
+__exportStar(require("./submission-notifications"), exports);
 __exportStar(require("./attachments-cleanup"), exports);
 __exportStar(require("./comment-notifications"), exports);
 __exportStar(require("./analytics-scheduler"), exports);

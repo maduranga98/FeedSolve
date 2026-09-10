@@ -289,7 +289,7 @@ export function CompanySettings() {
 export function WebhooksPage() {
   return (
     <PermissionGuard 
-      permission="webhooks:write"
+      permission="notifications:write"
       fallback={<PermissionDenied message="Only admins can configure webhooks" />}
     >
       <WebhookConfiguration />
