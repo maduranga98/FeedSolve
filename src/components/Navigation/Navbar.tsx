@@ -13,6 +13,7 @@ import {
   FileText,
   Settings,
   ShieldAlert,
+  Bell,
   Lock,
   HelpCircle,
 } from "lucide-react";
@@ -72,6 +73,12 @@ export function Navbar() {
       permission: "company:update",
       locked: escalationLocked,
       lockedMessage: t("nav.escalation_locked"),
+    },
+    {
+      path: "/notifications",
+      label: t("nav.notifications"),
+      icon: <Bell size={15} />,
+      permission: "company:update",
     },
     { path: "/analytics", label: t("nav.analytics"), icon: <BarChart3 size={15} />, permission: "analytics:read" },
     { path: "/branding", label: t("branding"), icon: <Paintbrush size={15} /> },

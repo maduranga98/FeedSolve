@@ -199,3 +199,214 @@ export function renderBoardCycleEmail(args: {
     `— FeedSolve · Collect feedback. Resolve it fast.`;
   return { subject, html, text };
 }
+
+/** Compact label helpers shared by the submission emails. */
+function titleCase(value: string): string {
+  return value.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+const EVENT_TITLES: Record<string, string> = {
+  "submission.created": "New feedback submitted",
+  "submission.updated": "Feedback updated",
+  "submission.assigned": "Feedback assigned",
+  "submission.reply_added": "Reply added",
+  "submission.resolved": "Feedback resolved",
+};
+
+export interface SubmissionEmailData {
+  trackingCode: string;
+  subject: string;
+  description?: string;
+  category?: string;
+  status?: string;
+  priority?: string;
+  boardName?: string;
+}
+
+/** Detail card used inside staff and submitter emails. */
+function submissionCard(submission: SubmissionEmailData): string {
+  const rows: Array<[string, string]> = [];
+  if (submission.status) rows.push(["Status", titleCase(submission.status)]);
+  if (submission.priority) rows.push(["Priority", titleCase(submission.priority)]);
+  if (submission.category) rows.push(["Category", submission.category]);
+
+  const cells = rows
+    .map(
+      ([label, value]) => `
+        <td width="33%" style="padding-top:10px;vertical-align:top;">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:${TEXT_MUTED};margin-bottom:3px;">${escapeHtml(label)}</div>
+          <div style="font-size:13px;font-weight:600;color:${BRAND_SECONDARY};">${escapeHtml(value)}</div>
+        </td>`,
+    )
+    .join("");
+
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F8FAFB;border:1px solid #E3EDF4;border-radius:12px;padding:16px 18px;margin-bottom:24px;">
+      <tr><td>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:${BRAND_PRIMARY};margin-bottom:4px;">Submission</div>
+        <div style="font-size:15px;font-weight:600;color:${BRAND_SECONDARY};">${escapeHtml(submission.subject)}</div>
+        <div style="font-size:12px;color:${TEXT_MUTED};margin-top:2px;">#${escapeHtml(submission.trackingCode)}${submission.boardName ? ` · ${escapeHtml(submission.boardName)}` : ""}</div>
+      </td></tr>
+      ${cells ? `<tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>${cells}</tr></table></td></tr>` : ""}
+    </table>
+  `;
+}
+
+function submissionText(submission: SubmissionEmailData): string {
+  return (
+    `Submission: ${submission.subject} (#${submission.trackingCode})\n` +
+    (submission.boardName ? `Board: ${submission.boardName}\n` : "") +
+    (submission.status ? `Status: ${titleCase(submission.status)}\n` : "") +
+    (submission.priority ? `Priority: ${titleCase(submission.priority)}\n` : "") +
+    (submission.category ? `Category: ${submission.category}\n` : "")
+  );
+}
+
+/** Internal notification sent to the team addresses configured for a company. */
+export function renderSubmissionAlertEmail(args: {
+  eventType: string;
+  submission: SubmissionEmailData;
+  submissionUrl?: string;
+  settingsUrl?: string;
+}): { subject: string; html: string; text: string } {
+  const title = EVENT_TITLES[args.eventType] || "Feedback update";
+  const subject = `[FeedSolve] ${title} — ${args.submission.subject}`;
+  const html = renderBrandedEmail({
+    preheader: `${title}: ${args.submission.subject}`,
+    title,
+    intro: `A submission on your FeedSolve board needs your attention.`,
+    body: submissionCard(args.submission),
+    ctaLabel: args.submissionUrl ? "Open Submission" : undefined,
+    ctaUrl: args.submissionUrl,
+    footerNote: args.settingsUrl
+      ? `You're receiving this because your address is on this company's notification list. Manage recipients at ${args.settingsUrl}`
+      : undefined,
+  });
+  const text =
+    `FeedSolve — ${title}\n\n` +
+    submissionText(args.submission) +
+    (args.submissionUrl ? `\nOpen submission: ${args.submissionUrl}\n` : "") +
+    (args.settingsUrl ? `\nManage notification recipients: ${args.settingsUrl}\n` : "") +
+    `\n— FeedSolve · Collect feedback. Resolve it fast.`;
+  return { subject, html, text };
+}
+
+/** Confirmation sent to the person who submitted the feedback. */
+export function renderSubmissionReceiptEmail(args: {
+  submission: SubmissionEmailData;
+  trackingUrl: string;
+  companyName?: string;
+}): { subject: string; html: string; text: string } {
+  const org = args.companyName ? escapeHtml(args.companyName) : "the team";
+  const subject = `We received your feedback — #${args.submission.trackingCode}`;
+  const body = `${submissionCard(args.submission)}
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:${TEXT_BODY};">
+      Keep your tracking code <strong>#${escapeHtml(args.submission.trackingCode)}</strong> — you can check the status of your submission at any time, and you'll hear from us when there's an update.
+    </p>`;
+  const html = renderBrandedEmail({
+    preheader: `Your feedback reached ${args.companyName || "the team"} — tracking code #${args.submission.trackingCode}.`,
+    title: "Thanks — we've got your feedback",
+    intro: `Your submission has been received by <strong>${org}</strong> and is now in the queue.`,
+    body,
+    ctaLabel: "Track Your Submission",
+    ctaUrl: args.trackingUrl,
+    footerNote: "This is a one-time confirmation for feedback you submitted. No account or action is required.",
+  });
+  const text =
+    `Thanks — we've got your feedback.\n\n` +
+    `Your submission has been received by ${args.companyName || "the team"}.\n\n` +
+    submissionText(args.submission) +
+    `\nTrack your submission: ${args.trackingUrl}\n\n` +
+    `— FeedSolve · Collect feedback. Resolve it fast.`;
+  return { subject, html, text };
+}
+
+/** Follow-up to the submitter when their feedback gets a reply or is resolved. */
+export function renderSubmissionUpdateEmail(args: {
+  submission: SubmissionEmailData;
+  trackingUrl: string;
+  companyName?: string;
+  reply?: string;
+  resolved?: boolean;
+}): { subject: string; html: string; text: string } {
+  const org = args.companyName ? escapeHtml(args.companyName) : "The team";
+  const title = args.resolved ? "Your feedback has been resolved" : "You have a reply";
+  const subject = `${title} — #${args.submission.trackingCode}`;
+  const replyBlock = args.reply
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND_ACCENT_BG};border-radius:12px;padding:16px 18px;margin-bottom:24px;">
+         <tr><td>
+           <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:${BRAND_PRIMARY};margin-bottom:6px;">Reply from ${org}</div>
+           <div style="font-size:14px;line-height:1.6;color:${TEXT_BODY};">${escapeHtml(args.reply)}</div>
+         </td></tr>
+       </table>`
+    : "";
+  const html = renderBrandedEmail({
+    preheader: `${title} on submission #${args.submission.trackingCode}.`,
+    title,
+    intro: args.resolved
+      ? `<strong>${org}</strong> marked your submission as resolved.`
+      : `<strong>${org}</strong> responded to the feedback you submitted.`,
+    body: `${replyBlock}${submissionCard(args.submission)}`,
+    ctaLabel: "View Full Update",
+    ctaUrl: args.trackingUrl,
+    footerNote: "You're receiving this because you left your email address with this submission.",
+  });
+  const text =
+    `${title}\n\n` +
+    (args.reply ? `Reply from ${args.companyName || "the team"}:\n${args.reply}\n\n` : "") +
+    submissionText(args.submission) +
+    `\nView the update: ${args.trackingUrl}\n\n` +
+    `— FeedSolve · Collect feedback. Resolve it fast.`;
+  return { subject, html, text };
+}
+
+/** Daily or weekly roll-up of submission activity for the team. */
+export function renderDigestEmail(args: {
+  period: "daily" | "weekly";
+  items: Array<{ eventType: string; submission: SubmissionEmailData }>;
+  dashboardUrl: string;
+  settingsUrl?: string;
+}): { subject: string; html: string; text: string } {
+  const label = args.period === "daily" ? "Daily" : "Weekly";
+  const count = args.items.length;
+  const subject = `[FeedSolve] ${label} digest — ${count} update${count === 1 ? "" : "s"}`;
+
+  const rows = args.items
+    .map((item) => {
+      const title = EVENT_TITLES[item.eventType] || "Feedback update";
+      return `
+        <tr>
+          <td style="padding:12px 0;border-bottom:1px solid #EEF3F7;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:${BRAND_PRIMARY};margin-bottom:3px;">${escapeHtml(title)}</div>
+            <div style="font-size:14px;font-weight:600;color:${BRAND_SECONDARY};">${escapeHtml(item.submission.subject)}</div>
+            <div style="font-size:12px;color:${TEXT_MUTED};margin-top:2px;">#${escapeHtml(item.submission.trackingCode)}${item.submission.boardName ? ` · ${escapeHtml(item.submission.boardName)}` : ""}${item.submission.status ? ` · ${escapeHtml(titleCase(item.submission.status))}` : ""}</div>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  const html = renderBrandedEmail({
+    preheader: `${count} feedback update${count === 1 ? "" : "s"} in your ${label.toLowerCase()} digest.`,
+    title: `${label} feedback digest`,
+    intro: `Here ${count === 1 ? "is" : "are"} the <strong>${count}</strong> update${count === 1 ? "" : "s"} from your FeedSolve boards.`,
+    body: `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">${rows}</table>`,
+    ctaLabel: "Open Dashboard",
+    ctaUrl: args.dashboardUrl,
+    footerNote: args.settingsUrl
+      ? `You chose the ${label.toLowerCase()} digest for these notifications. Change the frequency at ${args.settingsUrl}`
+      : undefined,
+  });
+
+  const text =
+    `FeedSolve — ${label} feedback digest (${count} update${count === 1 ? "" : "s"})\n\n` +
+    args.items
+      .map(
+        (item) =>
+          `• ${EVENT_TITLES[item.eventType] || "Feedback update"}: ${item.submission.subject} (#${item.submission.trackingCode})`,
+      )
+      .join("\n") +
+    `\n\nOpen your dashboard: ${args.dashboardUrl}\n` +
+    (args.settingsUrl ? `Change digest frequency: ${args.settingsUrl}\n` : "") +
+    `\n— FeedSolve · Collect feedback. Resolve it fast.`;
+  return { subject, html, text };
+}

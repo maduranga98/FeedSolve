@@ -41,18 +41,11 @@ const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 const axios_1 = __importDefault(require("axios"));
 const crypto_1 = __importDefault(require("crypto"));
-const nodemailer = __importStar(require("nodemailer"));
+const mailer_1 = require("./mailer");
+const email_templates_1 = require("./email-templates");
+const notification_settings_1 = require("./notification-settings");
 const db = admin.firestore();
 const MAX_RETRIES = 3;
-const transporter = nodemailer.createTransport({
-    host: "mail.spacemail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: "hello@feedsolve.com",
-        pass: process.env.SMTP_PASS || "2_qY5u9z",
-    },
-});
 exports.handleSubmissionEvent = functions.firestore
     .document("submissions/{submissionId}")
     .onWrite(async (change) => {
@@ -60,6 +53,9 @@ exports.handleSubmissionEvent = functions.firestore
     const previousSubmission = change.before.data();
     if (!submission)
         return;
+    // Submission documents do not store their own id; take it from the trigger
+    // so links and log payloads point at the real document.
+    submission.id = change.after.id;
     let eventType = "submission.updated";
     if (!change.before.exists) {
         eventType = "submission.created";
@@ -82,18 +78,13 @@ exports.handleSubmissionEvent = functions.firestore
         eventType = "submission.reply_added";
     }
     try {
-        const companyDoc = await db
-            .collection("companies")
-            .doc(submission.companyId)
-            .get();
-        const webhooks = (companyDoc.data()?.webhooks || {});
+        const webhooks = (await (0, notification_settings_1.getNotificationSettings)(submission.companyId));
         if (webhooks.slack?.enabled &&
             webhooks.slack.events.includes(eventType)) {
             await sendSlackNotification(submission, previousSubmission, eventType, webhooks.slack);
         }
-        if (webhooks.email?.enabled &&
-            webhooks.email.events.includes(eventType)) {
-            await sendEmailNotification(submission, previousSubmission, eventType, webhooks.email);
+        if ((0, notification_settings_1.emailWantsEvent)(webhooks, eventType)) {
+            await deliverEmailNotification(submission, eventType, webhooks);
         }
         if (webhooks.custom?.enabled &&
             webhooks.custom.events.includes(eventType)) {
@@ -118,20 +109,85 @@ async function sendSlackNotification(submission, previousSubmission, eventType, 
         await logWebhookEvent(submission.companyId, "slack", eventType, "failed", undefined, errorMessage, JSON.stringify({ submission: submission.id }));
     }
 }
-async function sendEmailNotification(submission, previousSubmission, eventType, emailConfig) {
-    const recipients = emailConfig.recipients;
-    const subject = buildEmailSubject(submission, eventType);
-    const htmlContent = buildEmailHtml(submission, eventType);
-    const textContent = buildEmailText(submission, eventType);
+/** Board name for email context; never fails the notification. */
+async function getBoardName(boardId) {
+    if (!boardId)
+        return undefined;
     try {
-        await transporter.sendMail({
-            from: '"FeedSolve" <hello@feedsolve.com>',
-            to: recipients.join(", "),
-            subject,
-            html: htmlContent,
-            text: textContent,
+        const boardDoc = await db.collection("boards").doc(boardId).get();
+        return boardDoc.data()?.name || undefined;
+    }
+    catch {
+        return undefined;
+    }
+}
+function toEmailData(submission, boardName) {
+    return {
+        trackingCode: submission.trackingCode,
+        subject: submission.subject,
+        description: submission.description,
+        category: submission.category,
+        status: submission.status,
+        priority: submission.priority,
+        boardName,
+    };
+}
+/**
+ * Route an email notification: instant delivery, or queued for the
+ * daily/weekly digest when that frequency is configured.
+ */
+async function deliverEmailNotification(submission, eventType, settings) {
+    const recipients = (0, notification_settings_1.resolveRecipients)(settings, submission.boardId);
+    if (!recipients.length)
+        return;
+    const frequency = settings.email?.frequency || "instant";
+    const boardName = await getBoardName(submission.boardId);
+    if (frequency === "instant") {
+        await sendEmailNotification(submission, eventType, recipients, boardName);
+        return;
+    }
+    await queueDigestEvent(submission, eventType, recipients, frequency, boardName);
+}
+/** Store an event for the next digest run instead of emailing immediately. */
+async function queueDigestEvent(submission, eventType, recipients, frequency, boardName) {
+    try {
+        await db
+            .collection("notification_digests")
+            .doc(submission.companyId)
+            .collection("events")
+            .add({
+            companyId: submission.companyId,
+            eventType,
+            frequency,
+            recipients,
+            submission: toEmailData(submission, boardName),
+            submissionId: submission.id,
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
         });
-        await logWebhookEvent(submission.companyId, "email", eventType, "success", 250, undefined, JSON.stringify({ submission: submission.id, recipients }));
+        await logWebhookEvent(submission.companyId, "email", eventType, "queued", 202, undefined, JSON.stringify({ submission: submission.id, frequency, recipients: recipients.length }));
+    }
+    catch (error) {
+        functions.logger.error("Failed to queue digest event", { error });
+    }
+}
+async function sendEmailNotification(submission, eventType, recipients, boardName) {
+    const base = (0, mailer_1.appUrl)();
+    const email = (0, email_templates_1.renderSubmissionAlertEmail)({
+        eventType,
+        submission: toEmailData(submission, boardName),
+        submissionUrl: `${base}/submission/${submission.id}`,
+        settingsUrl: `${base}/notifications`,
+    });
+    try {
+        const sent = await (0, mailer_1.sendMail)({
+            to: recipients,
+            subject: email.subject,
+            html: email.html,
+            text: email.text,
+        });
+        if (!sent)
+            return;
+        await logWebhookEvent(submission.companyId, "email", eventType, "success", 250, undefined, JSON.stringify({ submission: submission.id, recipients: recipients.length }));
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -287,89 +343,6 @@ function buildSlackMessage(submission, previousSubmission, eventType, format) {
         ],
     };
 }
-function buildEmailSubject(submission, eventType) {
-    const eventMap = {
-        "submission.created": "New Feedback Submitted",
-        "submission.updated": "Feedback Status Updated",
-        "submission.assigned": "Feedback Assigned to You",
-        "submission.reply_added": "Reply Added to Feedback",
-        "submission.resolved": "Feedback Marked as Resolved",
-    };
-    return `[FeedSolve] ${eventMap[eventType] || "Feedback Update"} - ${submission.subject}`;
-}
-function buildEmailHtml(submission, eventType) {
-    const title = getEventTitle(eventType);
-    const statusLabel = submission.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
-    const priorityLabel = submission.priority.charAt(0).toUpperCase() + submission.priority.slice(1);
-    return `<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
-<body style="margin:0;padding:0;background:#F1F5F8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#3B4A5A;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F1F5F8;padding:32px 12px;">
-    <tr><td align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(30,58,95,0.08);border:1px solid #E3EDF4;">
-        <tr>
-          <td style="background:linear-gradient(135deg,#2E86AB 0%,#1E3A5F 100%);padding:20px 28px;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="font-size:20px;font-weight:800;color:#fff;">FeedSolve</td>
-                <td align="right" style="font-size:10px;color:rgba(255,255,255,0.75);letter-spacing:1px;text-transform:uppercase;font-weight:600;">Collect. Resolve. Grow.</td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:28px 32px 20px;">
-            <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#1E3A5F;">${title}</h1>
-            <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3B4A5A;">A submission on your FeedSolve board requires your attention.</p>
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F8FAFB;border-radius:10px;padding:16px 18px;margin-bottom:20px;">
-              <tr><td style="padding-bottom:8px;">
-                <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#2E86AB;margin-bottom:4px;">Submission</div>
-                <div style="font-size:15px;font-weight:600;color:#1E3A5F;">${submission.subject}</div>
-                <div style="font-size:12px;color:#7A8896;margin-top:2px;">#${submission.trackingCode}</div>
-              </td></tr>
-              <tr><td>
-                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td width="33%" style="padding-top:10px;">
-                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Status</div>
-                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${statusLabel}</div>
-                    </td>
-                    <td width="33%" style="padding-top:10px;">
-                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Priority</div>
-                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${priorityLabel}</div>
-                    </td>
-                    <td width="33%" style="padding-top:10px;">
-                      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#7A8896;margin-bottom:3px;">Category</div>
-                      <div style="font-size:13px;font-weight:600;color:#1E3A5F;">${submission.category}</div>
-                    </td>
-                  </tr>
-                </table>
-              </td></tr>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding:16px 32px 24px;border-top:1px solid #EEF3F7;text-align:center;">
-            <div style="font-size:12px;font-weight:700;color:#1E3A5F;margin-bottom:4px;">FeedSolve</div>
-            <div style="font-size:11px;color:#7A8896;">Collect feedback. Resolve it fast. · <a href="https://feedsolve.com" style="color:#2E86AB;text-decoration:none;">feedsolve.com</a></div>
-          </td>
-        </tr>
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
-}
-function buildEmailText(submission, eventType) {
-    const title = getEventTitle(eventType);
-    return (`FeedSolve — ${title}\n\n` +
-        `Submission: ${submission.subject} (#${submission.trackingCode})\n` +
-        `Status: ${submission.status}\n` +
-        `Priority: ${submission.priority}\n` +
-        `Category: ${submission.category}\n\n` +
-        `— FeedSolve · Collect feedback. Resolve it fast. · feedsolve.com`);
-}
 function createHmacSignature(payload, secret) {
     const jsonString = JSON.stringify(payload);
     return crypto_1.default.createHmac("sha256", secret).update(jsonString).digest("hex");
@@ -388,10 +361,21 @@ exports.testWebhook = functions.https.onCall(async (data, context) => {
     if (!context.auth) {
         throw new functions.https.HttpsError("unauthenticated", "User must be authenticated");
     }
-    const { companyId, webhookType } = data;
+    const { companyId, webhookType, boardId } = data;
+    if (!companyId || !webhookType) {
+        throw new functions.https.HttpsError("invalid-argument", "companyId and webhookType are required");
+    }
+    // Only owners/admins of that company may fire test notifications.
+    const callerDoc = await db.collection("users").doc(context.auth.uid).get();
+    const caller = callerDoc.data();
+    const callerRole = caller?.role?.toLowerCase();
+    if (caller?.companyId !== companyId ||
+        !["owner", "admin"].includes(callerRole || "")) {
+        throw new functions.https.HttpsError("permission-denied", "You do not have permission to test this company's notifications");
+    }
     const testSubmission = {
         id: "test-submission-" + Date.now(),
-        boardId: "test-board",
+        boardId: boardId || "test-board",
         companyId,
         trackingCode: "TEST-001",
         subject: "Test Submission",
@@ -404,15 +388,22 @@ exports.testWebhook = functions.https.onCall(async (data, context) => {
         updatedAt: new Date().toISOString(),
     };
     try {
-        const companyDoc = await db.collection("companies").doc(companyId).get();
-        const webhooks = (companyDoc.data()?.webhooks || {});
+        const webhooks = (await (0, notification_settings_1.getNotificationSettings)(companyId));
         if (webhookType === "slack" && webhooks.slack?.enabled) {
             await sendSlackNotification(testSubmission, undefined, "submission.created", webhooks.slack);
             return { success: true, message: "Test Slack message sent" };
         }
         if (webhookType === "email" && webhooks.email?.enabled) {
-            await sendEmailNotification(testSubmission, undefined, "submission.created", webhooks.email);
-            return { success: true, message: "Test email sent" };
+            const recipients = (0, notification_settings_1.resolveRecipients)(webhooks, testSubmission.boardId);
+            if (!recipients.length) {
+                throw new functions.https.HttpsError("failed-precondition", "Add at least one recipient before sending a test email");
+            }
+            // A test always sends immediately, even on a digest schedule.
+            await sendEmailNotification(testSubmission, "submission.created", recipients);
+            return {
+                success: true,
+                message: `Test email sent to ${recipients.length} recipient${recipients.length === 1 ? "" : "s"}`,
+            };
         }
         if (webhookType === "custom" && webhooks.custom?.enabled) {
             await sendCustomWebhook(testSubmission, undefined, "submission.created", webhooks.custom);
@@ -421,6 +412,8 @@ exports.testWebhook = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("invalid-argument", "Webhook not found or not enabled");
     }
     catch (error) {
+        if (error instanceof functions.https.HttpsError)
+            throw error;
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
         throw new functions.https.HttpsError("internal", errorMessage);
     }

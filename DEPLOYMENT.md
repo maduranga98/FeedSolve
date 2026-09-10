@@ -53,7 +53,21 @@ VITE_STRIPE_PRICE_BUSINESS_MONTHLY=price_...
 VITE_STRIPE_PRICE_BUSINESS_ANNUAL=price_...
 ```
 
-### 2. Firebase Configuration
+### 2. Cloud Functions Secrets
+
+Email notifications (submission alerts, digests, submitter receipts, team
+invitations) send through SMTP as `hello@feedsolve.com` and will not deliver
+without a password configured in the runtime environment:
+
+```bash
+firebase functions:secrets:set SMTP_PASS
+# optional overrides: SMTP_HOST, SMTP_PORT, SMTP_USER, MAIL_FROM, APP_URL
+```
+
+See [docs/NOTIFICATIONS.md](docs/NOTIFICATIONS.md) for the full notification
+configuration reference.
+
+### 3. Firebase Configuration
 
 ```bash
 # Select production project

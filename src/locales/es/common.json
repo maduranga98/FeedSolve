@@ -457,6 +457,7 @@
     "csv_attachments": "Adjuntos"
   },
   "nav": {
+    "notifications": "Notificaciones",
     "analytics": "Analíticas",
     "reply_templates": "Plantillas de Respuesta",
     "escalation_rules": "Reglas de Escalación",

@@ -1,54 +1,8 @@
-import { collection, doc, getDoc, updateDoc, query, where, getDocs, deleteField } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { SlackWebhook, EmailWebhook, CustomWebhook, WebhookLog } from '@/types';
+import type { WebhookLog } from '@/types';
 
-// Webhook management functions
-export async function getCompanyWebhooks(companyId: string) {
-  const companyDoc = await getDoc(doc(db, 'companies', companyId));
-  return companyDoc.data()?.webhooks || {};
-}
-
-export async function updateSlackWebhook(companyId: string, slackConfig: SlackWebhook) {
-  const webhooksRef = doc(db, 'companies', companyId);
-  await updateDoc(webhooksRef, {
-    'webhooks.slack': slackConfig,
-    'webhooks.enabled': true,
-  });
-}
-
-export async function updateEmailWebhook(companyId: string, emailConfig: EmailWebhook) {
-  const webhooksRef = doc(db, 'companies', companyId);
-  await updateDoc(webhooksRef, {
-    'webhooks.email': emailConfig,
-    'webhooks.enabled': true,
-  });
-}
-
-export async function updateCustomWebhook(companyId: string, customConfig: CustomWebhook) {
-  const webhooksRef = doc(db, 'companies', companyId);
-  await updateDoc(webhooksRef, {
-    'webhooks.custom': customConfig,
-    'webhooks.enabled': true,
-  });
-}
-
-export async function deleteWebhook(companyId: string, webhookType: 'slack' | 'email' | 'custom') {
-  const webhooksRef = doc(db, 'companies', companyId);
-  const updateData: Record<string, any> = {};
-  updateData[`webhooks.${webhookType}`] = deleteField();
-  await updateDoc(webhooksRef, updateData);
-}
-
-export async function toggleWebhook(
-  companyId: string,
-  webhookType: 'slack' | 'email' | 'custom',
-  enabled: boolean
-) {
-  const webhooksRef = doc(db, 'companies', companyId);
-  const updateData: Record<string, any> = {};
-  updateData[`webhooks.${webhookType}.enabled`] = enabled;
-  await updateDoc(webhooksRef, updateData);
-}
+// Notification settings CRUD lives in '@/lib/notifications' (private company doc).
 
 // Webhook logs
 export async function getWebhookLogs(companyId: string, limit = 50): Promise<WebhookLog[]> {
@@ -95,7 +49,7 @@ export async function getWebhookLogsByType(
 
 export async function getWebhookLogsByStatus(
   companyId: string,
-  status: 'success' | 'failed' | 'retrying',
+  status: WebhookLog['status'],
   limit = 50
 ): Promise<WebhookLog[]> {
   const logsRef = collection(db, 'webhook_logs', companyId, 'logs');

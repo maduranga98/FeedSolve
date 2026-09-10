@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as nodemailer from "nodemailer";
 import {renderBoardCycleEmail} from "./email-templates";
+import {appUrl, sendMail} from "./mailer";
 
 interface BoardData {
   companyId: string;
@@ -27,16 +27,6 @@ const emptyStats = {
   resolutionRate: 0,
   avgResolutionHours: 0,
 };
-
-const transporter = nodemailer.createTransport({
-  host: "mail.spacemail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "hello@feedsolve.com",
-    pass: "2_qY5u9z",
-  },
-});
 
 function addFrequencyDays(
   date: Date,
@@ -106,14 +96,9 @@ async function notifyBoardOwner(
   if (!companyEmail) return;
 
   try {
-    const configuredUrl = process.env.APP_URL || "";
-    const appUrl = /localhost/i.test(configuredUrl)
-      ? "https://app.feedsolve.com"
-      : configuredUrl || "https://app.feedsolve.com";
-    const dashboardUrl = `${appUrl.replace(/\/$/, "")}/dashboard`;
+    const dashboardUrl = `${appUrl()}/dashboard`;
     const email = renderBoardCycleEmail({boardName: board.name, dashboardUrl});
-    await transporter.sendMail({
-      from: '"FeedSolve" <hello@feedsolve.com>',
+    await sendMail({
       to: companyEmail,
       subject: email.subject,
       text: email.text,

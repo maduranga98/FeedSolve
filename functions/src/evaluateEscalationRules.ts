@@ -1,18 +1,8 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import * as nodemailer from "nodemailer";
+import { sendMail } from "./mailer";
 
 const db = admin.firestore();
-
-const transporter = nodemailer.createTransport({
-  host: "mail.spacemail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "hello@feedsolve.com",
-    pass: process.env.SMTP_PASS || "2_qY5u9z",
-  },
-});
 
 type TriggerType = "time_since_created" | "time_since_status_change" | "time_unassigned";
 
@@ -110,9 +100,8 @@ async function sendEscalationEmails(recipients: string[] | undefined, rule: Esca
   const subject = submission.subject || "Untitled submission";
 
   try {
-    await transporter.sendMail({
-      from: '"FeedSolve" <hello@feedsolve.com>',
-      to: recipients.join(", "),
+    await sendMail({
+      to: recipients,
       subject: `Escalation rule triggered: ${rule.name}`,
       text:
         `FeedSolve escalation rule "${rule.name}" triggered for submission ${trackingRef}.\n` +

@@ -1,117 +1,127 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { httpsCallable, getFunctions } from 'firebase/functions';
 import { useAuth } from '@/hooks/useAuth';
+import app from '@/lib/firebase';
 import {
-  getCompanyWebhooks,
-  updateSlackWebhook,
-  updateEmailWebhook,
+  deleteChannel,
+  getNotificationSettings,
+  submitterPreferences,
+  toggleChannel,
+  updateBoardRecipients,
   updateCustomWebhook,
-  deleteWebhook,
-  toggleWebhook,
+  updateEmailWebhook,
+  updateSlackWebhook,
+  updateSubmitterPreferences,
+  type NotificationChannel,
+} from '@/lib/notifications';
+import {
   getWebhookLogs,
-  getWebhookLogsByType,
   getWebhookLogsByStatus,
+  getWebhookLogsByType,
 } from '@/lib/webhooks';
 import type {
-  SlackWebhook,
-  EmailWebhook,
+  BoardRecipients,
   CustomWebhook,
+  EmailWebhook,
+  NotificationSettings,
+  SlackWebhook,
+  SubmitterPreferences,
   WebhookLog,
-  WebhookConfig,
 } from '@/types';
-import { httpsCallable } from 'firebase/functions';
-import { getFunctions } from 'firebase/functions';
-import app from '@/lib/firebase';
 
-export function useWebhooks() {
+/** Company notification settings: channels, per-board recipients, submitter emails. */
+export function useNotificationSettings() {
   const { user } = useAuth();
-  const [webhooks, setWebhooks] = useState<WebhookConfig | null>(null);
+  const [settings, setSettings] = useState<NotificationSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const companyId = user?.companyId;
+
+  const refresh = useCallback(async () => {
+    if (!companyId) return;
+    try {
+      setLoading(true);
+      setSettings(await getNotificationSettings(companyId));
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load notification settings');
+    } finally {
+      setLoading(false);
+    }
+  }, [companyId]);
+
   useEffect(() => {
-    if (!user) return;
+    void refresh();
+  }, [refresh]);
 
-    const fetchWebhooks = async () => {
-      try {
-        setLoading(true);
-        const data = await getCompanyWebhooks(user.companyId);
-        setWebhooks(data);
-        setError(null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch webhooks');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWebhooks();
-  }, [user]);
+  const requireCompany = () => {
+    if (!companyId) throw new Error('Not authenticated');
+    return companyId;
+  };
 
   const updateSlack = async (config: SlackWebhook) => {
-    if (!user) throw new Error('Not authenticated');
-    await updateSlackWebhook(user.companyId, config);
-    setWebhooks(prev => ({
-      ...(prev || {}),
-      slack: config,
-      enabled: true,
-    }));
+    await updateSlackWebhook(requireCompany(), config);
+    setSettings(prev => ({ ...(prev || {}), slack: config }));
   };
 
   const updateEmail = async (config: EmailWebhook) => {
-    if (!user) throw new Error('Not authenticated');
-    await updateEmailWebhook(user.companyId, config);
-    setWebhooks(prev => ({
-      ...(prev || {}),
-      email: config,
-      enabled: true,
-    }));
+    await updateEmailWebhook(requireCompany(), config);
+    setSettings(prev => ({ ...(prev || {}), email: config }));
   };
 
   const updateCustom = async (config: CustomWebhook) => {
-    if (!user) throw new Error('Not authenticated');
-    await updateCustomWebhook(user.companyId, config);
-    setWebhooks(prev => ({
-      ...(prev || {}),
-      custom: config,
-      enabled: true,
-    }));
+    await updateCustomWebhook(requireCompany(), config);
+    setSettings(prev => ({ ...(prev || {}), custom: config }));
   };
 
-  const deleteWebhookConfig = async (webhookType: 'slack' | 'email' | 'custom') => {
-    if (!user) throw new Error('Not authenticated');
-    await deleteWebhook(user.companyId, webhookType);
-    setWebhooks(prev => {
+  const removeChannel = async (channel: NotificationChannel) => {
+    await deleteChannel(requireCompany(), channel);
+    setSettings(prev => {
       if (!prev) return prev;
-      const updated = { ...prev };
-      delete updated[webhookType];
-      return updated;
+      const next = { ...prev };
+      delete next[channel];
+      return next;
     });
   };
 
-  const toggleWebhookConfig = async (webhookType: 'slack' | 'email' | 'custom', enabled: boolean) => {
-    if (!user) throw new Error('Not authenticated');
-    await toggleWebhook(user.companyId, webhookType, enabled);
-    setWebhooks(prev => {
-      if (!prev || !prev[webhookType]) return prev;
-      return {
-        ...prev,
-        [webhookType]: {
-          ...prev[webhookType],
-          enabled,
-        },
-      };
+  const setChannelEnabled = async (channel: NotificationChannel, enabled: boolean) => {
+    await toggleChannel(requireCompany(), channel, enabled);
+    setSettings(prev => {
+      const current = prev?.[channel];
+      if (!prev || !current) return prev;
+      return { ...prev, [channel]: { ...current, enabled } };
     });
+  };
+
+  const setBoardRecipients = async (boardId: string, config: BoardRecipients | null) => {
+    await updateBoardRecipients(requireCompany(), boardId, config);
+    setSettings(prev => {
+      const boardRecipients = { ...(prev?.boardRecipients || {}) };
+      if (config) boardRecipients[boardId] = config;
+      else delete boardRecipients[boardId];
+      return { ...(prev || {}), boardRecipients };
+    });
+  };
+
+  const setSubmitterPreferences = async (preferences: SubmitterPreferences) => {
+    await updateSubmitterPreferences(requireCompany(), preferences);
+    setSettings(prev => ({ ...(prev || {}), submitter: preferences }));
   };
 
   return {
-    webhooks,
+    settings,
+    submitter: submitterPreferences(settings),
     loading,
     error,
+    refresh,
     updateSlack,
     updateEmail,
     updateCustom,
-    deleteWebhookConfig,
-    toggleWebhookConfig,
+    removeChannel,
+    setChannelEnabled,
+    setBoardRecipients,
+    setSubmitterPreferences,
   };
 }
 
@@ -121,33 +131,38 @@ export function useWebhookLogs() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchLogs = async (webhookType?: string, status?: string) => {
-    if (!user) return;
+  const companyId = user?.companyId;
 
-    try {
-      setLoading(true);
-      let data: WebhookLog[] = [];
+  const fetchLogs = useCallback(
+    async (webhookType?: string, status?: string) => {
+      if (!companyId) return;
 
-      if (webhookType) {
-        data = await getWebhookLogsByType(user.companyId, webhookType);
-      } else if (status) {
-        data = await getWebhookLogsByStatus(user.companyId, status as any);
-      } else {
-        data = await getWebhookLogs(user.companyId);
+      try {
+        setLoading(true);
+        let data: WebhookLog[] = [];
+
+        if (webhookType) {
+          data = await getWebhookLogsByType(companyId, webhookType);
+        } else if (status) {
+          data = await getWebhookLogsByStatus(companyId, status as WebhookLog['status']);
+        } else {
+          data = await getWebhookLogs(companyId);
+        }
+
+        setLogs(data);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch logs');
+      } finally {
+        setLoading(false);
       }
-
-      setLogs(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch logs');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [companyId]
+  );
 
   useEffect(() => {
-    fetchLogs();
-  }, [user]);
+    void fetchLogs();
+  }, [fetchLogs]);
 
   return { logs, loading, error, fetchLogs };
 }
@@ -157,15 +172,14 @@ export function useTestWebhook() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const testWebhook = async (webhookType: 'slack' | 'email' | 'custom') => {
+  const testWebhook = async (webhookType: NotificationChannel) => {
     if (!user) throw new Error('Not authenticated');
 
     try {
       setLoading(true);
       setError(null);
 
-      const functions = getFunctions(app);
-      const testWebhookFn = httpsCallable(functions, 'testWebhook');
+      const testWebhookFn = httpsCallable(getFunctions(app), 'testWebhook');
       const result = await testWebhookFn({
         companyId: user.companyId,
         webhookType,
@@ -173,8 +187,8 @@ export function useTestWebhook() {
 
       return result.data;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to test webhook';
-      setError(errorMessage);
+      const message = err instanceof Error ? err.message : 'Failed to test webhook';
+      setError(message);
       throw err;
     } finally {
       setLoading(false);

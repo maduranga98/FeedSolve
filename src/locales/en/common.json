@@ -457,6 +457,7 @@
     "csv_attachments": "Attachments"
   },
   "nav": {
+    "notifications": "Notifications",
     "analytics": "Analytics",
     "reply_templates": "Reply Templates",
     "escalation_rules": "Escalation Rules",

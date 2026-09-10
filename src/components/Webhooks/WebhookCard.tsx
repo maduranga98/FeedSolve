@@ -1,9 +1,20 @@
-import { useState } from 'react';
-import { AlertCircle, CheckCircle2, MoreVertical } from 'lucide-react';
-import type { SlackWebhook, EmailWebhook, CustomWebhook } from '@/types';
+import { useEffect, useRef, useState } from 'react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  Link2,
+  Loader2,
+  Mail,
+  MessageSquare,
+  MoreVertical,
+} from 'lucide-react';
+import type { CustomWebhook, EmailWebhook, SlackWebhook } from '@/types';
+import { EMAIL_FREQUENCIES, WEBHOOK_EVENTS } from '@/lib/webhooks';
+
+type ChannelType = 'slack' | 'email' | 'custom';
 
 interface WebhookCardProps {
-  type: 'slack' | 'email' | 'custom';
+  type: ChannelType;
   config: SlackWebhook | EmailWebhook | CustomWebhook | undefined;
   enabled: boolean;
   onToggle: (enabled: boolean) => Promise<void>;
@@ -12,6 +23,24 @@ interface WebhookCardProps {
   onTest: () => Promise<void>;
   testing?: boolean;
   error?: string;
+}
+
+const CHANNEL_META: Record<ChannelType, { label: string; icon: typeof Mail }> = {
+  slack: { label: 'Slack', icon: MessageSquare },
+  email: { label: 'Email notifications', icon: Mail },
+  custom: { label: 'Custom webhook', icon: Link2 },
+};
+
+const eventLabel = (id: string) =>
+  WEBHOOK_EVENTS.find(event => event.id === id)?.label ?? id;
+
+function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-[#8f8680]">{label}</p>
+      <div className="mt-1 text-sm text-[#3c3632]">{children}</div>
+    </div>
+  );
 }
 
 export function WebhookCard({
@@ -26,188 +55,194 @@ export function WebhookCard({
   error,
 }: WebhookCardProps) {
   const [showMenu, setShowMenu] = useState(false);
-  const [toggling, setToggling] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+  const [busy, setBusy] = useState<'toggle' | 'delete' | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    const close = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setShowMenu(false);
+    };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [showMenu]);
+
+  if (!config) return null;
+
+  const meta = CHANNEL_META[type];
+  const Icon = meta.icon;
 
   const handleToggle = async () => {
     try {
-      setToggling(true);
+      setBusy('toggle');
       await onToggle(!enabled);
     } finally {
-      setToggling(false);
+      setBusy(null);
     }
   };
 
   const handleDelete = async () => {
-    if (confirm(`Delete ${type} webhook?`)) {
-      try {
-        setDeleting(true);
-        await onDelete();
-      } finally {
-        setDeleting(false);
-      }
+    if (!window.confirm(`Remove the ${meta.label.toLowerCase()} integration?`)) return;
+    try {
+      setBusy('delete');
+      await onDelete();
+    } finally {
+      setBusy(null);
     }
   };
 
-  const getTypeInfo = () => {
-    const info: Record<string, { label: string; icon: string; color: string }> = {
-      slack: { label: 'Slack', icon: '💬', color: 'bg-blue-500' },
-      email: { label: 'Email', icon: '📧', color: 'bg-red-500' },
-      custom: { label: 'Custom Webhook', icon: '🔗', color: 'bg-purple-500' },
-    };
-    return info[type];
-  };
-
-  const info = getTypeInfo();
-
-  if (!config) {
-    return null;
-  }
+  const menuItem =
+    'block w-full px-4 py-2.5 text-left text-sm text-[#3c3632] transition-colors hover:bg-[#f5f0ec] disabled:opacity-50';
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className={`${info.color} text-white p-2 rounded-lg`}>
-            <span className="text-lg">{info.icon}</span>
-          </div>
-          <div>
-            <h3 className="font-semibold text-gray-900">{info.label}</h3>
-            {error && <p className="text-sm text-red-600 mt-1 flex items-center gap-1">
-              <AlertCircle size={14} /> {error}
-            </p>}
-            {!error && enabled && (
-              <p className="text-sm text-green-600 mt-1 flex items-center gap-1">
-                <CheckCircle2 size={14} /> Connected
+    <article className="rounded-2xl border border-[#e0d6cf] bg-white p-6">
+      <header className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
+            <Icon size={18} />
+          </span>
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-semibold text-[#1c1917]">{meta.label}</h3>
+            {error ? (
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-[#C0392B]">
+                <AlertCircle size={13} /> {error}
+              </p>
+            ) : (
+              <p
+                className={`mt-0.5 flex items-center gap-1 text-xs ${
+                  enabled ? 'text-[#2E7D5B]' : 'text-[#8f8680]'
+                }`}
+              >
+                {enabled ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
+                {enabled ? 'Active' : 'Paused'}
               </p>
             )}
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            type="button"
+            onClick={() => setShowMenu(value => !value)}
+            aria-label="Integration options"
+            className="rounded-lg p-2 text-[#8f8680] transition-colors hover:bg-[#f5f0ec]"
           >
-            <MoreVertical size={20} className="text-gray-500" />
+            <MoreVertical size={18} />
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+            <div className="absolute right-0 z-10 mt-1 w-48 overflow-hidden rounded-xl border border-[#e0d6cf] bg-white py-1 shadow-lg">
               <button
+                type="button"
+                className={menuItem}
                 onClick={() => {
                   onEdit();
                   setShowMenu(false);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 border-b"
               >
-                Edit Settings
+                Edit settings
               </button>
               <button
+                type="button"
+                className={menuItem}
+                disabled={busy === 'toggle'}
                 onClick={() => {
-                  handleToggle();
+                  void handleToggle();
                   setShowMenu(false);
                 }}
-                disabled={toggling}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 border-b disabled:opacity-50"
               >
-                {enabled ? 'Disable' : 'Enable'}
+                {enabled ? 'Pause notifications' : 'Resume notifications'}
               </button>
               <button
-                onClick={() => {
-                  onTest();
-                  setShowMenu(false);
-                }}
+                type="button"
+                className={menuItem}
                 disabled={!enabled || testing}
-                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 border-b disabled:opacity-50"
-              >
-                {testing ? 'Testing...' : 'Send Test'}
-              </button>
-              <button
                 onClick={() => {
-                  handleDelete();
+                  void onTest();
                   setShowMenu(false);
                 }}
-                disabled={deleting}
-                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
               >
-                {deleting ? 'Deleting...' : 'Delete'}
+                {testing ? 'Sending test…' : 'Send test'}
+              </button>
+              <button
+                type="button"
+                className={`${menuItem} text-[#C0392B] hover:bg-[#FDECEA]`}
+                disabled={busy === 'delete'}
+                onClick={() => {
+                  void handleDelete();
+                  setShowMenu(false);
+                }}
+              >
+                Remove
               </button>
             </div>
           )}
         </div>
-      </div>
+      </header>
 
       <div className="space-y-3">
-        {type === 'slack' && 'webhookUrl' in config && (
+        {type === 'email' && 'recipients' in config && (
           <>
-            <div>
-              <label className="text-sm text-gray-600">Webhook URL</label>
-              <p className="text-sm font-mono text-gray-700 truncate">
-                {config.webhookUrl.substring(0, 50)}...
-              </p>
-            </div>
-            {config.channelId && (
-              <div>
-                <label className="text-sm text-gray-600">Channel</label>
-                <p className="text-sm text-gray-700">#{config.channelId}</p>
-              </div>
-            )}
-            <div>
-              <label className="text-sm text-gray-600">Events ({config.events.length})</label>
-              <p className="text-sm text-gray-700">{config.events.join(', ')}</p>
-            </div>
+            <Detail label={`Recipients (${config.recipients.length})`}>
+              <ul className="flex flex-wrap gap-1.5">
+                {config.recipients.map(email => (
+                  <li key={email} className="rounded-full bg-[#f5e6df] px-2.5 py-1 text-xs">
+                    {email}
+                  </li>
+                ))}
+              </ul>
+            </Detail>
+            <Detail label="Delivery">
+              {EMAIL_FREQUENCIES.find(item => item.id === config.frequency)?.label ??
+                config.frequency}
+            </Detail>
+            <Detail label="Events">{config.events.map(eventLabel).join(' · ')}</Detail>
           </>
         )}
 
-        {type === 'email' && 'recipients' in config && (
+        {type === 'slack' && 'webhookUrl' in config && (
           <>
-            <div>
-              <label className="text-sm text-gray-600">Recipients ({config.recipients.length})</label>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {config.recipients.map(email => (
-                  <span key={email} className="px-2 py-1 bg-gray-100 rounded text-sm">
-                    {email}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Frequency</label>
-              <p className="text-sm text-gray-700 capitalize">{config.frequency}</p>
-            </div>
+            {config.channelId && <Detail label="Channel">#{config.channelId}</Detail>}
+            <Detail label="Events">{config.events.map(eventLabel).join(' · ')}</Detail>
           </>
         )}
 
         {type === 'custom' && 'url' in config && (
           <>
-            <div>
-              <label className="text-sm text-gray-600">Endpoint URL</label>
-              <p className="text-sm font-mono text-gray-700 truncate">{config.url}</p>
-            </div>
-            <div>
-              <label className="text-sm text-gray-600">Events ({config.events.length})</label>
-              <p className="text-sm text-gray-700">{config.events.join(', ')}</p>
-            </div>
+            <Detail label="Endpoint">
+              <span className="block truncate font-mono text-xs">{config.url}</span>
+            </Detail>
+            <Detail label="Events">{config.events.map(eventLabel).join(' · ')}</Detail>
           </>
         )}
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <p className="text-xs text-gray-500">
-          Connected {config.connectedAt?.toDate?.().toLocaleDateString() || 'recently'}
+      <footer className="mt-5 flex items-center justify-between gap-3 border-t border-[#f2ece6] pt-4">
+        <p className="text-xs text-[#8f8680]">
+          Connected {config.connectedAt?.toDate?.().toLocaleDateString() ?? 'recently'}
         </p>
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={() => handleToggle()}
-            disabled={toggling}
-            className="w-4 h-4 rounded"
-          />
-          <span className="text-sm text-gray-600">{enabled ? 'Active' : 'Inactive'}</span>
-        </label>
-      </div>
-    </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-label={`${meta.label} enabled`}
+          onClick={handleToggle}
+          disabled={busy === 'toggle'}
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${
+            enabled ? 'bg-[#c0694a]' : 'bg-[#d6cabf]'
+          }`}
+        >
+          {busy === 'toggle' ? (
+            <Loader2 size={13} className="mx-auto animate-spin text-white" />
+          ) : (
+            <span
+              className={`inline-block h-[18px] w-[18px] transform rounded-full bg-white transition-transform ${
+                enabled ? 'translate-x-[22px]' : 'translate-x-1'
+              }`}
+            />
+          )}
+        </button>
+      </footer>
+    </article>
   );
 }
