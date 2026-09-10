@@ -49,7 +49,7 @@ export function RoleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full shadow-lg">
+      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full shadow-lg max-h-[90dvh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-color-border">
           <h2 className="text-xl font-bold text-color-primary">Change Member Role</h2>
           <button

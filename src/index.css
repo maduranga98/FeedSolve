@@ -334,3 +334,51 @@
   --fb-fill-soft: var(--fs-surface-light);
   --fb-surface: var(--fs-surface);
 }
+
+/*
+ * App shell layout.
+ *
+ * The dashboard sidebar is fixed, so the page content is inset by the same
+ * amount. Below `lg` the sidebar collapses into a slide-over drawer and the
+ * inset becomes a top bar instead, so the inset is expressed as CSS variables
+ * that the media query re-points rather than as an inline style (which cannot
+ * be made responsive).
+ *
+ * `padding-inline-start` rather than `padding-left` keeps the inset on the
+ * correct side under RTL locales.
+ */
+:root {
+  --fs-sidebar-w: 17rem;
+  --fs-topbar-h: 3.5rem;
+}
+
+body.fs-has-sidebar {
+  padding-inline-start: 0;
+  padding-top: var(--fs-topbar-h);
+}
+
+@media (min-width: 1024px) {
+  body.fs-has-sidebar {
+    padding-inline-start: var(--fs-sidebar-w);
+    padding-top: 0;
+  }
+}
+
+/*
+ * Full-height panes (a header plus an independently scrolling body) must stop
+ * short of the mobile top bar, otherwise the last row is pushed below the fold.
+ */
+.fs-viewport {
+  height: calc(100dvh - var(--fs-topbar-h));
+}
+
+@media (min-width: 1024px) {
+  .fs-viewport {
+    height: 100dvh;
+  }
+}
+
+/* The drawer is open: freeze the page behind it. */
+body.fs-drawer-open {
+  overflow: hidden;
+}

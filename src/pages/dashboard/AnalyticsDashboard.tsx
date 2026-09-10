@@ -245,15 +245,15 @@ export function AnalyticsDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8">
 
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-color-primary">Analytics & Reports</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-color-primary">Analytics & Reports</h1>
             <p className="text-color-muted-text mt-1">
               Track submissions, performance, and trends
             </p>
           </div>
           {hasFull && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleExportCSV}
                 disabled={exportLoading}
@@ -275,12 +275,12 @@ export function AnalyticsDashboard() {
         </div>
 
         {/* Tab Bar */}
-        <div className="flex gap-1 mb-8 bg-color-surface rounded-lg p-1 border border-color-border w-fit">
+        <div className="flex gap-1 mb-8 bg-color-surface rounded-lg p-1 border border-color-border w-full overflow-x-auto sm:w-fit">
           {tabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`flex flex-shrink-0 items-center gap-2 whitespace-nowrap px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.key
                   ? 'bg-[var(--c-s1c1917)] text-white shadow-sm'
                   : 'text-[var(--c-t1c1917)] bg-[var(--c-sf5e6df)] hover:bg-[var(--c-sc0694a)] hover:text-white'

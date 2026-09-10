@@ -97,8 +97,8 @@ export function BulkActionBar({
 
   return (
     <>
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-        <div className="pointer-events-auto bg-[var(--c-s1c1917)] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 max-w-[calc(100vw-2rem)]">
+      <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none w-full px-4 flex justify-center">
+        <div className="pointer-events-auto bg-[var(--c-s1c1917)] rounded-xl shadow-xl px-4 sm:px-6 py-3 flex items-center gap-3 max-w-full overflow-x-auto">
           {/* Count */}
           <span className="text-white text-sm font-semibold whitespace-nowrap flex-shrink-0">
             {t('bulk.selected', { count: selectedCount })}

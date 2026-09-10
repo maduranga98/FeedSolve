@@ -240,7 +240,7 @@ export default function FilterBar({
                   const start = e.target.value ? new Date(e.target.value) : undefined;
                   onDateRangeChange(start, currentFilters.dateRange.end);
                 }}
-                className="px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
+                className="w-full min-w-0 px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
               />
               <input
                 type="date"
@@ -249,7 +249,7 @@ export default function FilterBar({
                   const end = e.target.value ? new Date(e.target.value) : undefined;
                   onDateRangeChange(currentFilters.dateRange.start, end);
                 }}
-                className="px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
+                className="w-full min-w-0 px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
               />
             </div>
           </div>
