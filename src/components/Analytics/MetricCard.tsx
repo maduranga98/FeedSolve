@@ -15,34 +15,34 @@ interface MetricCardProps {
 
 const colorMap = {
   primary: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    text: 'text-blue-900',
-    accent: 'text-blue-600',
+    bg: 'bg-blue-50 dark:bg-blue-950',
+    border: 'border-blue-200 dark:border-blue-800',
+    text: 'text-blue-900 dark:text-blue-200',
+    accent: 'text-blue-600 dark:text-blue-400',
   },
   success: {
-    bg: 'bg-green-50',
-    border: 'border-green-200',
-    text: 'text-green-900',
-    accent: 'text-green-600',
+    bg: 'bg-green-50 dark:bg-green-950',
+    border: 'border-green-200 dark:border-green-800',
+    text: 'text-green-900 dark:text-green-200',
+    accent: 'text-green-600 dark:text-green-400',
   },
   warning: {
-    bg: 'bg-yellow-50',
-    border: 'border-yellow-200',
-    text: 'text-yellow-900',
-    accent: 'text-yellow-600',
+    bg: 'bg-yellow-50 dark:bg-yellow-950',
+    border: 'border-yellow-200 dark:border-yellow-800',
+    text: 'text-yellow-900 dark:text-yellow-200',
+    accent: 'text-yellow-600 dark:text-yellow-400',
   },
   error: {
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    text: 'text-red-900',
-    accent: 'text-red-600',
+    bg: 'bg-red-50 dark:bg-red-950',
+    border: 'border-red-200 dark:border-red-800',
+    text: 'text-red-900 dark:text-red-200',
+    accent: 'text-red-600 dark:text-red-400',
   },
   accent: {
-    bg: 'bg-cyan-50',
-    border: 'border-cyan-200',
-    text: 'text-cyan-900',
-    accent: 'text-cyan-600',
+    bg: 'bg-cyan-50 dark:bg-cyan-950',
+    border: 'border-cyan-200 dark:border-cyan-800',
+    text: 'text-cyan-900 dark:text-cyan-200',
+    accent: 'text-cyan-600 dark:text-cyan-400',
   },
 };
 
@@ -72,16 +72,16 @@ export function MetricCard({
       {trend && (
         <div className="flex items-center gap-1">
           {trend.direction === 'up' ? (
-            <TrendingUp className="w-4 h-4 text-green-600" />
+            <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
           ) : trend.direction === 'down' ? (
-            <TrendingDown className="w-4 h-4 text-red-600" />
+            <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
           ) : null}
           <span
             className={`text-xs font-medium ${
               trend.direction === 'up'
-                ? 'text-green-600'
+                ? 'text-green-600 dark:text-green-400'
                 : trend.direction === 'down'
-                  ? 'text-red-600'
+                  ? 'text-red-600 dark:text-red-400'
                   : 'text-gray-600'
             }`}
           >

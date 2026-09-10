@@ -38,13 +38,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
-          <div className="min-h-screen flex items-center justify-center bg-[#f5f0ec] px-4">
+          <div className="min-h-screen flex items-center justify-center bg-[var(--c-sf5f0ec)] px-4">
             <div className="max-w-md text-center">
-              <AlertTriangle className="w-16 h-16 text-[#c0392b] mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-[#1c1917] mb-2">
+              <AlertTriangle className="w-16 h-16 text-[var(--c-tc0392b)] mx-auto mb-4" />
+              <h1 className="text-2xl font-bold text-[var(--c-t1c1917)] mb-2">
                 Something went wrong
               </h1>
-              <p className="text-[#78716c] mb-6">
+              <p className="text-[var(--c-t78716c)] mb-6">
                 {this.state.error?.message || 'An unexpected error occurred. Please try again.'}
               </p>
               <div className="flex gap-3 justify-center">
@@ -65,10 +65,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
               </div>
               {import.meta.env.DEV && this.state.error && (
                 <details className="mt-8 text-left">
-                  <summary className="cursor-pointer text-sm font-medium text-[#78716c]">
+                  <summary className="cursor-pointer text-sm font-medium text-[var(--c-t78716c)]">
                     Error Details (Dev Only)
                   </summary>
-                  <pre className="mt-4 p-4 bg-[#E8E8E8] rounded overflow-auto text-xs text-[#1c1917]">
+                  <pre className="mt-4 p-4 bg-[var(--c-se8e8e8)] rounded overflow-auto text-xs text-[var(--c-t1c1917)]">
                     {this.state.error.stack}
                   </pre>
                 </details>

@@ -49,7 +49,7 @@ export function RoleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full shadow-lg">
+      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full shadow-lg">
         <div className="flex items-center justify-between p-6 border-b border-color-border">
           <h2 className="text-xl font-bold text-color-primary">Change Member Role</h2>
           <button
@@ -68,9 +68,9 @@ export function RoleModal({
           </div>
 
           {!canChangeRole && (
-            <div className="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <AlertCircle size={18} className="text-yellow-600 mt-0.5 flex-shrink-0" />
-              <p className="text-sm text-yellow-800">
+            <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <AlertCircle size={18} className="text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
                 You cannot change the role of someone with equal or higher privileges
               </p>
             </div>
@@ -92,8 +92,8 @@ export function RoleModal({
               />
 
               {selectedRole !== currentRole && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
+                <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
                     Changing to <strong>{ROLE_LABELS[selectedRole]}</strong>
                   </p>
                 </div>
@@ -102,8 +102,8 @@ export function RoleModal({
           )}
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-800">{error}</p>
+            <div className="p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
             </div>
           )}
         </div>

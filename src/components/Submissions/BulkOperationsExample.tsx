@@ -92,11 +92,11 @@ export function BulkOperationsExample({
 
       {/* Error Message */}
       {bulk.error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex justify-between items-center">
-          <p className="text-red-700">{bulk.error}</p>
+        <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-4 flex justify-between items-center">
+          <p className="text-red-700 dark:text-red-300">{bulk.error}</p>
           <button
             onClick={bulk.clearError}
-            className="text-red-600 hover:text-red-800 font-medium text-sm"
+            className="text-red-600 dark:text-red-400 hover:text-red-800 hover:dark:text-red-200 font-medium text-sm"
           >
             Dismiss
           </button>
@@ -104,7 +104,7 @@ export function BulkOperationsExample({
       )}
 
       {/* Submissions Table with Selection */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-[var(--c-sffffff)] border border-gray-200 rounded-lg overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
@@ -127,7 +127,7 @@ export function BulkOperationsExample({
               <tr
                 key={submission.id}
                 className={`border-b border-gray-200 ${
-                  bulk.selectedIds.has(submission.id) ? 'bg-blue-50' : ''
+                  bulk.selectedIds.has(submission.id) ? 'bg-blue-50 dark:bg-blue-950' : ''
                 }`}
               >
                 <td className="px-6 py-4">
@@ -144,7 +144,7 @@ export function BulkOperationsExample({
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       submission.status === 'resolved'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
@@ -165,15 +165,15 @@ export function BulkOperationsExample({
 
       {/* Inline bulk action strip (example only) */}
       {bulk.selectedCount > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <span className="text-sm font-semibold text-blue-900">
+        <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <span className="text-sm font-semibold text-blue-900 dark:text-blue-200">
             {bulk.selectedCount} selected
           </span>
-          <button onClick={() => setSelectedAction('status')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Status</button>
-          <button onClick={() => setSelectedAction('priority')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Priority</button>
-          <button onClick={() => setSelectedAction('assign')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Assign To</button>
-          <button onClick={() => setSelectedAction('delete')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-red-50 text-red-700 border border-red-300 rounded-lg hover:bg-red-100 disabled:opacity-50">Delete</button>
-          <button onClick={() => bulk.deselectAll()} className="ml-auto text-sm text-blue-600 hover:underline">Clear</button>
+          <button onClick={() => setSelectedAction('status')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-[var(--c-sffffff)] border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Status</button>
+          <button onClick={() => setSelectedAction('priority')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-[var(--c-sffffff)] border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Change Priority</button>
+          <button onClick={() => setSelectedAction('assign')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-[var(--c-sffffff)] border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">Assign To</button>
+          <button onClick={() => setSelectedAction('delete')} disabled={isProcessing || bulk.isLoading} className="px-3 py-1.5 text-sm bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-100 hover:dark:bg-red-900 disabled:opacity-50">Delete</button>
+          <button onClick={() => bulk.deselectAll()} className="ml-auto text-sm text-blue-600 dark:text-blue-400 hover:underline">Clear</button>
         </div>
       )}
 

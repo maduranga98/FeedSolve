@@ -72,7 +72,7 @@ export const SearchResults = memo(function SearchResults({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2E86AB]" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--c-b2e86ab)]" />
       </div>
     );
   }
@@ -80,11 +80,11 @@ export const SearchResults = memo(function SearchResults({
   if (results.length === 0) {
     return (
       <div className="text-center py-20">
-        <div className="w-14 h-14 bg-[#F0F4F8] rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Rows3 size={24} className="text-[#9AABBF]" />
+        <div className="w-14 h-14 bg-[var(--c-sf0f4f8)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Rows3 size={24} className="text-[var(--c-t9aabbf)]" />
         </div>
-        <p className="text-[#6B7B8D] font-semibold mb-1">No submissions found</p>
-        <p className="text-[#9AABBF] text-sm">Try adjusting your filters or search terms</p>
+        <p className="text-[var(--c-t6b7b8d)] font-semibold mb-1">No submissions found</p>
+        <p className="text-[var(--c-t9aabbf)] text-sm">Try adjusting your filters or search terms</p>
       </div>
     );
   }
@@ -102,25 +102,25 @@ export const SearchResults = memo(function SearchResults({
               title={allSelected ? 'Deselect all' : 'Select all'}
             />
           )}
-          <p className="text-sm font-medium text-[#6B7B8D]">
+          <p className="text-sm font-medium text-[var(--c-t6b7b8d)]">
             {results.length} submission{results.length !== 1 ? 's' : ''}
             {totalPages > 1 && (
-              <span className="text-[#9AABBF] ml-1.5">· page {safePage}/{totalPages}</span>
+              <span className="text-[var(--c-t9aabbf)] ml-1.5">· page {safePage}/{totalPages}</span>
             )}
           </p>
           <div className="flex items-center gap-1.5 flex-wrap">
-            {statusPill('new', statusSummary.received, 'bg-[#EBF5FB]', 'text-[#1E6A9A]')}
-            {statusPill('in progress', statusSummary.inProgress, 'bg-[#FFF8E6]', 'text-[#B06F00]')}
-            {statusPill('resolved', statusSummary.resolved, 'bg-[#EAF9F2]', 'text-[#1D8A57]')}
+            {statusPill('new', statusSummary.received, 'bg-[var(--c-sebf5fb)]', 'text-[var(--c-t1e6a9a)]')}
+            {statusPill('in progress', statusSummary.inProgress, 'bg-[var(--c-sfff8e6)]', 'text-[var(--c-tb06f00)]')}
+            {statusPill('resolved', statusSummary.resolved, 'bg-[var(--c-seaf9f2)]', 'text-[var(--c-t1d8a57)]')}
           </div>
         </div>
 
         {/* View toggle */}
-        <div className="inline-flex items-center bg-[#F0F4F8] rounded-lg p-1">
+        <div className="inline-flex items-center bg-[var(--c-sf0f4f8)] rounded-lg p-1">
           <button
             onClick={() => setViewMode('grid')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 ${
-              viewMode === 'grid' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#9AABBF] hover:text-[#6B7B8D]'
+              viewMode === 'grid' ? 'bg-[var(--c-sffffff)] text-[var(--c-t1e3a5f)] shadow-sm' : 'text-[var(--c-t9aabbf)] hover:text-[var(--c-t6b7b8d)]'
             }`}
           >
             <LayoutGrid size={13} />
@@ -129,7 +129,7 @@ export const SearchResults = memo(function SearchResults({
           <button
             onClick={() => setViewMode('list')}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors inline-flex items-center gap-1.5 ${
-              viewMode === 'list' ? 'bg-white text-[#1E3A5F] shadow-sm' : 'text-[#9AABBF] hover:text-[#6B7B8D]'
+              viewMode === 'list' ? 'bg-[var(--c-sffffff)] text-[var(--c-t1e3a5f)] shadow-sm' : 'text-[var(--c-t9aabbf)] hover:text-[var(--c-t6b7b8d)]'
             }`}
           >
             <Rows3 size={13} />
@@ -160,18 +160,18 @@ export const SearchResults = memo(function SearchResults({
           <button
             onClick={() => onPageChange(safePage - 1)}
             disabled={safePage <= 1}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[var(--c-be8ecf0)] bg-[var(--c-sffffff)] text-[var(--c-t2e86ab)] hover:bg-[var(--c-sebf5fb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft size={14} />
             Prev
           </button>
-          <span className="text-sm text-[#6B7B8D] font-medium px-2">
+          <span className="text-sm text-[var(--c-t6b7b8d)] font-medium px-2">
             {safePage} / {totalPages}
           </span>
           <button
             onClick={() => onPageChange(safePage + 1)}
             disabled={safePage >= totalPages}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[#E8ECF0] bg-white text-[#2E86AB] hover:bg-[#EBF5FB] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-lg border border-[var(--c-be8ecf0)] bg-[var(--c-sffffff)] text-[var(--c-t2e86ab)] hover:bg-[var(--c-sebf5fb)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next
             <ChevronRight size={14} />

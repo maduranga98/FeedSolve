@@ -34,7 +34,7 @@ export function PaymentMethodCard({ paymentMethod, onManage }: PaymentMethodProp
   const brandEmoji = brandLogos[paymentMethod.brand.toLowerCase()] || '💳';
 
   return (
-    <div className="rounded-lg border-2 border-gray-300 p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="rounded-lg border-2 border-gray-300 p-6 bg-gradient-to-br from-blue-50 dark:from-blue-950 to-indigo-50 dark:to-indigo-950">
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-gray-600 text-sm">Payment Method</p>

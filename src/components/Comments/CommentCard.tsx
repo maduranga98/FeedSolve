@@ -46,7 +46,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
 
   return (
     <div className={`${isReply ? 'ml-6 mb-4' : 'mb-4'}`}>
-      <div className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition">
+      <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-4 hover:shadow-sm transition">
         {/* Comment Header */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
               </button>
               <button
                 onClick={() => onDelete(comment.id)}
-                className="p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 rounded transition"
+                className="p-1.5 text-gray-500 hover:bg-red-50 hover:dark:bg-red-950 hover:text-red-600 hover:dark:text-red-400 rounded transition"
                 title={t('comment_card.delete')}
               >
                 <Trash2 size={16} />
@@ -137,7 +137,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
                 }}
                 className={`px-2 py-1 rounded-full text-sm transition ${
                   reaction.userIds.includes(currentUserId)
-                    ? 'bg-blue-100 border border-blue-300'
+                    ? 'bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700'
                     : 'bg-gray-100 border border-gray-300 hover:bg-gray-200'
                 }`}
               >

@@ -685,5 +685,10 @@
     "aria_label": "Escolher ciclo do quadro",
     "current_cycle": "Ciclo Atual",
     "all_time": "Todo o Período"
-  }
+  },
+  "theme": "Tema",
+  "theme_light": "Claro",
+  "theme_dark": "Escuro",
+  "theme_system": "Sistema",
+  "theme_toggle": "Alterar tema"
 }

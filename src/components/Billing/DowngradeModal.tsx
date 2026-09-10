@@ -63,7 +63,7 @@ export function DowngradeModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4">
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-2xl max-w-md w-full mx-4">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold">Downgrade Plan</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -74,11 +74,11 @@ export function DowngradeModal({
         <div className="p-6">
           {/* Warning */}
           {featuresLost.length > 0 && (
-            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg flex gap-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-yellow-900 mb-2">You will lose:</p>
-                <ul className="text-sm text-yellow-800 space-y-1">
+                <p className="font-bold text-yellow-900 dark:text-yellow-200 mb-2">You will lose:</p>
+                <ul className="text-sm text-yellow-800 dark:text-yellow-200 space-y-1">
                   {featuresLost.map((feature) => (
                     <li key={feature}>• {feature}</li>
                   ))}
@@ -92,13 +92,13 @@ export function DowngradeModal({
             <p className="text-gray-600 text-sm mb-2">Downgrade from</p>
             <p className="text-xl font-bold text-gray-900 mb-4">{tierNames[fromTier]}</p>
 
-            <div className="text-2xl font-bold text-blue-600 mb-4">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
               → {tierNames[toTier]}
             </div>
           </div>
 
           {/* Pricing info */}
-          <div className="bg-green-50 rounded-lg p-4 mb-6">
+          <div className="bg-green-50 dark:bg-green-950 rounded-lg p-4 mb-6">
             <p className="text-gray-600 text-sm mb-2">
               {currentBilling === 'annual' ? 'New Annual Cost' : 'New Monthly Cost'}
             </p>
@@ -106,13 +106,13 @@ export function DowngradeModal({
               <span className="text-3xl font-bold text-gray-900">${toPrice}</span>
               <span className="text-gray-600">/{currentBilling === 'annual' ? 'yr' : 'mo'}</span>
             </div>
-            <p className="text-sm text-green-600 mt-2">
+            <p className="text-sm text-green-600 dark:text-green-400 mt-2">
               Save ${priceDiff} per {currentBilling === 'annual' ? 'year' : 'month'}
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 rounded text-sm">
               {error}
             </div>
           )}

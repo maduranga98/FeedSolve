@@ -128,29 +128,29 @@ export function NotificationsPage() {
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f5f0ec]">
-        <Loader2 className="animate-spin text-[#c0694a]" size={28} />
+      <main className="flex min-h-screen items-center justify-center bg-[var(--c-sf5f0ec)]">
+        <Loader2 className="animate-spin text-[var(--c-tc0694a)]" size={28} />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f5f0ec] px-4 py-8">
+    <main className="min-h-screen bg-[var(--c-sf5f0ec)] px-4 py-8">
       <div className="mx-auto max-w-3xl space-y-6">
         <header>
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#f5e6df] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#c0694a]">
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[var(--c-sf5e6df)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[var(--c-tc0694a)]">
             <Bell size={14} /> Notifications
           </div>
-          <h1 className="text-3xl font-bold text-[#1c1917]">Notifications</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#78716c]">
+          <h1 className="text-3xl font-bold text-[var(--c-t1c1917)]">Notifications</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--c-t78716c)]">
             Choose who on your team gets an email when a submission comes in.
           </p>
         </header>
 
         {error && (
-          <div className="flex items-start gap-2 rounded-xl border border-[#F1C0B8] bg-[#FDECEA] px-4 py-3">
-            <AlertCircle size={17} className="mt-0.5 shrink-0 text-[#C0392B]" />
-            <p className="text-sm text-[#C0392B]">{error}</p>
+          <div className="flex items-start gap-2 rounded-xl border border-[var(--c-bf1c0b8)] bg-[var(--c-sfdecea)] px-4 py-3">
+            <AlertCircle size={17} className="mt-0.5 shrink-0 text-[var(--c-tc0392b)]" />
+            <p className="text-sm text-[var(--c-tc0392b)]">{error}</p>
           </div>
         )}
 

@@ -216,26 +216,26 @@ export function TeamManagement() {
   }
 
   return (
-    <main className="min-h-screen bg-[#E1E8EF]">
+    <main className="min-h-screen bg-[var(--c-se1e8ef)]">
       {/* Page header */}
-      <div className="bg-white border-b border-[#E8ECF0]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be8ecf0)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
-                <Users size={20} className="text-[#2E86AB]" />
+              <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center flex-shrink-0">
+                <Users size={20} className="text-[var(--c-t2e86ab)]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">
+                <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">
                   {t("team_page.title")}
                 </h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                <p className="text-sm text-[var(--c-t6b7b8d)] mt-0.5">
                   {t("team_page.subtitle")}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-sm text-[#6B7B8D]">{t("team_page.your_role")}</span>
+              <span className="text-sm text-[var(--c-t6b7b8d)]">{t("team_page.your_role")}</span>
               <RoleIndicator />
             </div>
           </div>
@@ -244,13 +244,13 @@ export function TeamManagement() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {error && (
-          <div className="p-4 bg-[#FFE5E5] border border-[#E74C3C] text-[#E74C3C] rounded-xl">
+          <div className="p-4 bg-[var(--c-sffe5e5)] border border-[var(--c-be74c3c)] text-[var(--c-te74c3c)] rounded-xl">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="p-4 bg-[#EBF9F1] border border-[#27AE60] text-[#27AE60] rounded-xl">
+          <div className="p-4 bg-[var(--c-sebf9f1)] border border-[var(--c-b27ae60)] text-[var(--c-t27ae60)] rounded-xl">
             {success}
           </div>
         )}
@@ -263,8 +263,8 @@ export function TeamManagement() {
             </div>
           }
         >
-          <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
-            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+          <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] p-6">
+            <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">
               {t("team_page.invite_member")}
             </h2>
             <div className="space-y-4">
@@ -292,8 +292,8 @@ export function TeamManagement() {
           </div>
         </PermissionGuard>
 
-        <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
-          <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+        <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] p-6">
+          <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">
             {t("team_page.members_count", { count: teamMembers.length })}
           </h2>
           <TeamMembersTable
@@ -306,33 +306,33 @@ export function TeamManagement() {
         </div>
 
         {pendingInvitations.length > 0 && (
-          <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
-            <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">
+          <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] p-6">
+            <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">
               {t("team_page.pending_title", { count: pendingInvitations.length })}
             </h2>
             <div className="space-y-3">
               {pendingInvitations.map((invitation) => (
                 <div
                   key={invitation.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-[#FFF3CD] rounded-xl bg-[#FFFBF0]"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-[var(--c-bfff3cd)] rounded-xl bg-[var(--c-sfffbf0)]"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-[#1E3A5F] break-all">
+                    <p className="font-medium text-[var(--c-t1e3a5f)] break-all">
                       {invitation.email}
                     </p>
-                    <p className="text-sm text-[#6B7B8D]">
+                    <p className="text-sm text-[var(--c-t6b7b8d)]">
                       {t("team_page.invited_as", { role: invitation.role })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 self-start sm:self-auto flex-shrink-0">
-                    <span className="px-3 py-1 bg-[#FFF3CD] text-[#B06F00] rounded-full text-xs font-semibold uppercase tracking-wide">
+                    <span className="px-3 py-1 bg-[var(--c-sfff3cd)] text-[var(--c-tb06f00)] rounded-full text-xs font-semibold uppercase tracking-wide">
                       {t("team_page.pending")}
                     </span>
                     <PermissionGuard permission="team:invite">
                       <button
                         onClick={() => handleCancelInvitation(invitation)}
                         disabled={cancellingInvitationId === invitation.id}
-                        className="p-2 text-[#E74C3C] hover:bg-[#FFE5E5] rounded-lg transition disabled:opacity-50"
+                        className="p-2 text-[var(--c-te74c3c)] hover:bg-[var(--c-sffe5e5)] rounded-lg transition disabled:opacity-50"
                         title={t("team_page.cancel_invitation")}
                       >
                         <Trash2 size={16} />

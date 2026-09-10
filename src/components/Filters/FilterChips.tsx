@@ -59,12 +59,12 @@ export function FilterChips({
       {filters.status?.map((status) => (
         <div
           key={status}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium"
+          className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium"
         >
           <span>{statusLabels[status]}</span>
           <button
             onClick={() => onRemoveStatus(status)}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label={`Remove ${statusLabels[status]} filter`}
           >
             <X size={14} />
@@ -75,12 +75,12 @@ export function FilterChips({
       {filters.priority?.map((priority) => (
         <div
           key={priority}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium"
+          className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium"
         >
           <span>{priorityLabels[priority]}</span>
           <button
             onClick={() => onRemovePriority(priority)}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label={`Remove ${priorityLabels[priority]} filter`}
           >
             <X size={14} />
@@ -93,12 +93,12 @@ export function FilterChips({
         return (
           <div
             key={boardId}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium"
+            className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium"
           >
             <span>{board?.name || boardId}</span>
             <button
               onClick={() => onRemoveBoard(boardId)}
-              className="hover:text-[#444441]"
+              className="hover:text-[var(--c-t444441)]"
               aria-label={`Remove ${board?.name} filter`}
             >
               <X size={14} />
@@ -110,12 +110,12 @@ export function FilterChips({
       {filters.category?.map((category) => (
         <div
           key={category}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium"
+          className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium"
         >
           <span>{category}</span>
           <button
             onClick={() => onRemoveCategory(category)}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label={`Remove ${category} filter`}
           >
             <X size={14} />
@@ -127,12 +127,12 @@ export function FilterChips({
       {filters.location?.map((location) => (
         <div
           key={location}
-          className="inline-flex items-center gap-2 px-3 py-1 bg-[#EFF3F6] text-[#6B7B8D] rounded-full text-sm font-medium"
+          className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-seff3f6)] text-[var(--c-t6b7b8d)] rounded-full text-sm font-medium"
         >
           <span>Location: {location}</span>
           <button
             onClick={() => onRemoveLocation(location)}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label={`Remove ${location} location filter`}
           >
             <X size={14} />
@@ -141,11 +141,11 @@ export function FilterChips({
       ))}
 
       {filters.assignedTo && (
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium">
           <span>{users.find((u) => u.id === filters.assignedTo)?.name || filters.assignedTo}</span>
           <button
             onClick={onRemoveAssignee}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label="Remove assignee filter"
           >
             <X size={14} />
@@ -154,7 +154,7 @@ export function FilterChips({
       )}
 
       {filters.dateRange && (
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded-full text-sm font-medium">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded-full text-sm font-medium">
           <span>
             {filters.dateRange.from instanceof Date
               ? filters.dateRange.from.toLocaleDateString()
@@ -166,7 +166,7 @@ export function FilterChips({
           </span>
           <button
             onClick={onRemoveDateRange}
-            className="hover:text-[#444441]"
+            className="hover:text-[var(--c-t444441)]"
             aria-label="Remove date range filter"
           >
             <X size={14} />
@@ -177,7 +177,7 @@ export function FilterChips({
       {hasActiveFilters && (
         <button
           onClick={onClearAll}
-          className="ml-2 px-3 py-1 text-sm font-medium text-[#2E86AB] hover:bg-[#E0E8EF] rounded-full transition-colors"
+          className="ml-2 px-3 py-1 text-sm font-medium text-[var(--c-t2e86ab)] hover:bg-[var(--c-se0e8ef)] rounded-full transition-colors"
         >
           Clear All
         </button>

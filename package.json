@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "theme:generate": "node scripts/generate-theme.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },

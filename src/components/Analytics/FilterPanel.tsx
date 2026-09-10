@@ -189,7 +189,7 @@ export function FilterPanel({
           {onClose && (
             <button
               onClick={onClose}
-              className="w-full mt-4 px-4 py-2 text-sm font-medium text-[#1E3A5F] bg-[#EBF5FB] border border-[#C8DDE8] rounded hover:bg-[#1E3A5F] hover:text-white hover:border-[#1E3A5F] transition-colors"
+              className="w-full mt-4 px-4 py-2 text-sm font-medium text-[var(--c-t1e3a5f)] bg-[var(--c-sebf5fb)] border border-[var(--c-bc8dde8)] rounded hover:bg-[var(--c-s1e3a5f)] hover:text-white hover:border-[var(--c-b1e3a5f)] transition-colors"
             >
               Done
             </button>

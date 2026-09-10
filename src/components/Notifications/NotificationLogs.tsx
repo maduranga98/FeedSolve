@@ -25,9 +25,9 @@ const eventLabel = (id: string) =>
   NOTIFICATION_EVENTS.find(event => event.id === id)?.label ?? id;
 
 function statusStyle(status: NotificationLog['status']) {
-  if (status === 'success') return { icon: CheckCircle2, className: 'text-[#2E7D5B]' };
-  if (status === 'failed') return { icon: AlertCircle, className: 'text-[#C0392B]' };
-  return { icon: Clock, className: 'text-[#B7791F]' };
+  if (status === 'success') return { icon: CheckCircle2, className: 'text-[var(--c-t2e7d5b)]' };
+  if (status === 'failed') return { icon: AlertCircle, className: 'text-[var(--c-tc0392b)]' };
+  return { icon: Clock, className: 'text-[var(--c-tb7791f)]' };
 }
 
 function formatDate(value?: Timestamp) {
@@ -49,15 +49,15 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
     statusFilter === 'all' ? logs : logs.filter(log => log.status === statusFilter);
 
   return (
-    <section className="rounded-2xl border border-[#e0d6cf] bg-white p-6">
+    <section className="rounded-2xl border border-[var(--c-be0d6cf)] bg-[var(--c-sffffff)] p-6">
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-[#1c1917]">Delivery history</h2>
+        <h2 className="text-base font-semibold text-[var(--c-t1c1917)]">Delivery history</h2>
         {onRefresh && (
           <button
             type="button"
             onClick={onRefresh}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#d6cabf] px-3 py-1.5 text-sm font-semibold text-[#3c3632] transition-colors hover:bg-[#f5f0ec] disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--c-bd6cabf)] px-3 py-1.5 text-sm font-semibold text-[var(--c-t3c3632)] transition-colors hover:bg-[var(--c-sf5f0ec)] disabled:opacity-50"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             {loading ? 'Refreshing…' : 'Refresh'}
@@ -73,8 +73,8 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
             onClick={() => setStatusFilter(filter)}
             className={`rounded-full px-3 py-1 text-sm transition-colors ${
               statusFilter === filter
-                ? 'bg-[#c0694a] text-white'
-                : 'bg-[#f5f0ec] text-[#3c3632] hover:bg-[#f2ece6]'
+                ? 'bg-[var(--c-sc0694a)] text-white'
+                : 'bg-[var(--c-sf5f0ec)] text-[var(--c-t3c3632)] hover:bg-[var(--c-sf2ece6)]'
             }`}
           >
             {FILTER_LABELS[filter]} (
@@ -84,12 +84,12 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
       </div>
 
       {filteredLogs.length === 0 ? (
-        <p className="py-8 text-center text-sm text-[#78716c]">No notifications sent yet.</p>
+        <p className="py-8 text-center text-sm text-[var(--c-t78716c)]">No notifications sent yet.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[480px] text-sm">
             <thead>
-              <tr className="border-b border-[#e0d6cf] text-left text-xs uppercase tracking-wide text-[#8f8680]">
+              <tr className="border-b border-[var(--c-be0d6cf)] text-left text-xs uppercase tracking-wide text-[var(--c-t8f8680)]">
                 <th className="px-3 py-2 font-semibold">Time</th>
                 <th className="px-3 py-2 font-semibold">Event</th>
                 <th className="px-3 py-2 font-semibold">Status</th>
@@ -104,9 +104,9 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
 
                 return (
                   <Fragment key={log.id}>
-                    <tr className="border-b border-[#f2ece6]">
-                      <td className="px-3 py-3 text-[#3c3632]">{formatDate(log.createdAt)}</td>
-                      <td className="px-3 py-3 text-[#3c3632]">{eventLabel(log.event)}</td>
+                    <tr className="border-b border-[var(--c-bf2ece6)]">
+                      <td className="px-3 py-3 text-[var(--c-t3c3632)]">{formatDate(log.createdAt)}</td>
+                      <td className="px-3 py-3 text-[var(--c-t3c3632)]">{eventLabel(log.event)}</td>
                       <td className="px-3 py-3">
                         <span className={`inline-flex items-center gap-1.5 font-medium ${className}`}>
                           <StatusIcon size={15} />
@@ -119,7 +119,7 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
                             type="button"
                             aria-label={expanded ? 'Hide details' : 'Show details'}
                             onClick={() => setExpandedLog(expanded ? null : log.id)}
-                            className="rounded-lg p-1 text-[#8f8680] transition-colors hover:bg-[#f5f0ec]"
+                            className="rounded-lg p-1 text-[var(--c-t8f8680)] transition-colors hover:bg-[var(--c-sf5f0ec)]"
                           >
                             <ChevronDown
                               size={16}
@@ -131,21 +131,21 @@ export function NotificationLogs({ logs, loading = false, onRefresh }: Notificat
                     </tr>
 
                     {expanded && (
-                      <tr className="border-b border-[#f2ece6] bg-[#f5f0ec]">
+                      <tr className="border-b border-[var(--c-bf2ece6)] bg-[var(--c-sf5f0ec)]">
                         <td colSpan={4} className="px-3 py-3">
                           <div className="space-y-3 text-xs">
                             {log.errorMessage && (
                               <div>
-                                <p className="font-semibold text-[#8f8680]">Error</p>
-                                <p className="mt-1 break-all rounded-lg bg-white p-2 font-mono text-[#C0392B]">
+                                <p className="font-semibold text-[var(--c-t8f8680)]">Error</p>
+                                <p className="mt-1 break-all rounded-lg bg-[var(--c-sffffff)] p-2 font-mono text-[var(--c-tc0392b)]">
                                   {log.errorMessage}
                                 </p>
                               </div>
                             )}
                             {log.details && (
                               <div>
-                                <p className="font-semibold text-[#8f8680]">Details</p>
-                                <pre className="mt-1 overflow-x-auto rounded-lg bg-white p-2 text-[#3c3632]">
+                                <p className="font-semibold text-[var(--c-t8f8680)]">Details</p>
+                                <pre className="mt-1 overflow-x-auto rounded-lg bg-[var(--c-sffffff)] p-2 text-[var(--c-t3c3632)]">
                                   {JSON.stringify(log.details, null, 2)}
                                 </pre>
                               </div>

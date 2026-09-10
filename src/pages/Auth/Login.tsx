@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Mail, Lock, Zap, Workflow, ShieldCheck, Target } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { Button, Input } from "../../components/Shared";
+import { FloatingThemeToggle } from '../../components/Shared/ThemeToggle';
 function AppleIcon({ size = 24 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -121,8 +122,9 @@ export function Login() {
 
   return (
     <div className="min-h-screen flex">
+      <FloatingThemeToggle />
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 bg-gradient-to-br from-[#1E3A5F] via-[#2A567F] to-[#2E86AB] text-white relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 bg-gradient-to-br from-[var(--c-s1e3a5f)] via-[var(--c-s2a567f)] to-[var(--c-s2e86ab)] text-white relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5" />
         <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5" />
         <div className="absolute top-1/3 right-8 w-40 h-40 rounded-full bg-white/5" />
@@ -176,27 +178,27 @@ export function Login() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E1E8EF]">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--c-se1e8ef)]">
         {/* Mobile logo */}
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
-          <span className="text-xl font-bold text-[#1E3A5F]">FeedSolve</span>
+          <span className="text-xl font-bold text-[var(--c-t1e3a5f)]">FeedSolve</span>
         </div>
 
         <div className="w-full max-w-sm fade-in">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">
+            <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)] mb-1">
               {t("forms:login.sign_in")}
             </h1>
-            <p className="text-sm text-[#6B7B8D]">
+            <p className="text-sm text-[var(--c-t6b7b8d)]">
               {t("forms:login.subtitle")}
             </p>
           </div>
 
           {errors.submit && (
-            <div className="mb-5 p-3.5 bg-[#FEF0EF] border border-[#F5C6C2] rounded-lg flex items-start gap-2.5">
+            <div className="mb-5 p-3.5 bg-[var(--c-sfef0ef)] border border-[var(--c-bf5c6c2)] rounded-lg flex items-start gap-2.5">
               <svg
-                className="w-4 h-4 text-[#E74C3C] mt-0.5 flex-shrink-0"
+                className="w-4 h-4 text-[var(--c-te74c3c)] mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -206,7 +208,7 @@ export function Login() {
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-sm text-[#C0392B]">{errors.submit}</p>
+              <p className="text-sm text-[var(--c-tc0392b)]">{errors.submit}</p>
             </div>
           )}
 
@@ -216,10 +218,10 @@ export function Login() {
               type="button"
               onClick={handleGoogleLogin}
               disabled={anyLoading}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#E8ECF0] rounded-xl bg-white hover:bg-[#F1F5F8] text-sm font-medium text-[#1E3A5F] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[var(--c-be8ecf0)] rounded-xl bg-[var(--c-sffffff)] hover:bg-[var(--c-sf1f5f8)] text-sm font-medium text-[var(--c-t1e3a5f)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
               {socialLoading === "google" ? (
-                <span className="w-4 h-4 border-2 border-[#6B7B8D] border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[var(--c-b6b7b8d)] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <GoogleIcon />
               )}
@@ -229,10 +231,10 @@ export function Login() {
               type="button"
               onClick={handleAppleLogin}
               disabled={anyLoading}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[#1E3A5F] rounded-xl bg-[#1E3A5F] hover:bg-[#163056] text-sm font-medium text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 border border-[var(--c-b1e3a5f)] rounded-xl bg-[var(--c-s1e3a5f)] hover:bg-[var(--c-s163056)] text-sm font-medium text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-sm"
             >
               {socialLoading === "apple" ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-[var(--c-bffffff)] border-t-transparent rounded-full animate-spin" />
               ) : (
                 <AppleIcon size={24} />
               )}
@@ -243,10 +245,10 @@ export function Login() {
           {/* Divider */}
           <div className="relative mb-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-[#E8ECF0]" />
+              <div className="w-full border-t border-[var(--c-be8ecf0)]" />
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-3 bg-[#E1E8EF] text-[#9AABBF] font-medium">
+              <span className="px-3 bg-[var(--c-se1e8ef)] text-[var(--c-t9aabbf)] font-medium">
                 {t("auth.or_sign_in_with_email")}
               </span>
             </div>
@@ -290,11 +292,11 @@ export function Login() {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-[#6B7B8D] mt-6">
+          <p className="text-center text-sm text-[var(--c-t6b7b8d)] mt-6">
             {t("forms:login.no_account")}{" "}
             <Link
               to="/signup"
-              className="text-[#2E86AB] font-medium hover:underline"
+              className="text-[var(--c-t2e86ab)] font-medium hover:underline"
             >
               {t("forms:login.signup_link")}
             </Link>

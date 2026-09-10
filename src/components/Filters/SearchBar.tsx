@@ -65,7 +65,7 @@ export function SearchBar({
   return (
     <div ref={wrapperRef} className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6B7B8D]" size={18} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--c-t6b7b8d)]" size={18} />
         <input
           ref={inputRef}
           type="text"
@@ -77,12 +77,12 @@ export function SearchBar({
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-2 border border-[#D3D1C7] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB] focus:border-transparent"
+          className="w-full pl-10 pr-10 py-2 border border-[var(--c-bd3d1c7)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
         />
         {value && (
           <button
             onClick={() => onChange('')}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#6B7B8D] hover:text-[#444441]"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--c-t6b7b8d)] hover:text-[var(--c-t444441)]"
           >
             <X size={18} />
           </button>
@@ -90,14 +90,14 @@ export function SearchBar({
       </div>
 
       {isOpen && displaySuggestions.length > 0 && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-[#D3D1C7] rounded-lg shadow-lg">
+        <div className="absolute z-50 w-full mt-2 bg-[var(--c-sffffff)] border border-[var(--c-bd3d1c7)] rounded-lg shadow-lg">
           {displaySuggestions.map((suggestion, idx) => (
             <div
               key={idx}
               onClick={() => handleSelect(suggestion)}
-              className="px-4 py-2 hover:bg-[#F1F5F8] cursor-pointer border-b border-[#E0E8EF] last:border-b-0 flex items-center justify-between group"
+              className="px-4 py-2 hover:bg-[var(--c-sf1f5f8)] cursor-pointer border-b border-[var(--c-be0e8ef)] last:border-b-0 flex items-center justify-between group"
             >
-              <span className="text-[#444441] text-sm">{suggestion}</span>
+              <span className="text-[var(--c-t444441)] text-sm">{suggestion}</span>
               {value.length === 0 && (
                 <button
                   onClick={(e) => {
@@ -106,7 +106,7 @@ export function SearchBar({
                   }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <X size={14} className="text-[#6B7B8D]" />
+                  <X size={14} className="text-[var(--c-t6b7b8d)]" />
                 </button>
               )}
             </div>

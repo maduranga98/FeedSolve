@@ -110,16 +110,16 @@ export function EmailNotificationsCard({
   };
 
   return (
-    <section className="rounded-2xl border border-[#e0d6cf] bg-white p-6">
+    <section className="rounded-2xl border border-[var(--c-be0d6cf)] bg-[var(--c-sffffff)] p-6">
       <header className="mb-5 flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)]">
             <Mail size={18} />
           </span>
           <div className="min-w-0">
-            <h2 className="text-base font-semibold text-[#1c1917]">Email notifications</h2>
-            <p className="mt-0.5 text-sm leading-6 text-[#78716c]">
-              Sent from <strong className="font-semibold text-[#3c3632]">hello@feedsolve.com</strong>{' '}
+            <h2 className="text-base font-semibold text-[var(--c-t1c1917)]">Email notifications</h2>
+            <p className="mt-0.5 text-sm leading-6 text-[var(--c-t78716c)]">
+              Sent from <strong className="font-semibold text-[var(--c-t3c3632)]">hello@feedsolve.com</strong>{' '}
               when a submission comes in.
             </p>
           </div>
@@ -133,14 +133,14 @@ export function EmailNotificationsCard({
           onClick={handleToggle}
           disabled={toggling}
           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-60 ${
-            draft.enabled ? 'bg-[#c0694a]' : 'bg-[#d6cabf]'
+            draft.enabled ? 'bg-[var(--c-sc0694a)]' : 'bg-[var(--c-sd6cabf)]'
           }`}
         >
           {toggling ? (
             <Loader2 size={13} className="mx-auto animate-spin text-white" />
           ) : (
             <span
-              className={`inline-block h-[18px] w-[18px] transform rounded-full bg-white transition-transform ${
+              className={`inline-block h-[18px] w-[18px] transform rounded-full bg-[var(--c-sffffff)] transition-transform ${
                 draft.enabled ? 'translate-x-[22px]' : 'translate-x-1'
               }`}
             />
@@ -149,16 +149,16 @@ export function EmailNotificationsCard({
       </header>
 
       {error && (
-        <div className="mb-5 flex items-start gap-2 rounded-xl border border-[#F1C0B8] bg-[#FDECEA] px-4 py-3">
-          <AlertCircle size={17} className="mt-0.5 shrink-0 text-[#C0392B]" />
-          <p className="text-sm text-[#C0392B]">{error}</p>
+        <div className="mb-5 flex items-start gap-2 rounded-xl border border-[var(--c-bf1c0b8)] bg-[var(--c-sfdecea)] px-4 py-3">
+          <AlertCircle size={17} className="mt-0.5 shrink-0 text-[var(--c-tc0392b)]" />
+          <p className="text-sm text-[var(--c-tc0392b)]">{error}</p>
         </div>
       )}
 
       <div className="space-y-6">
         <fieldset>
-          <legend className="text-sm font-semibold text-[#1c1917]">Notify these roles</legend>
-          <p className="mb-2 text-xs text-[#78716c]">
+          <legend className="text-sm font-semibold text-[var(--c-t1c1917)]">Notify these roles</legend>
+          <p className="mb-2 text-xs text-[var(--c-t78716c)]">
             Everyone on your team with the role gets the email — no need to update this when
             people join or leave.
           </p>
@@ -171,24 +171,24 @@ export function EmailNotificationsCard({
                   key={role.id}
                   className={`flex cursor-pointer items-start gap-2.5 rounded-xl border px-3 py-2.5 transition-colors ${
                     checked
-                      ? 'border-[#c0694a] bg-[#f5e6df]'
-                      : 'border-[#d6cabf] bg-white hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)]'
+                      : 'border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => toggleRole(role.id)}
-                    className="mt-0.5 h-4 w-4 accent-[#c0694a]"
+                    className="mt-0.5 h-4 w-4 accent-[var(--c-sc0694a)]"
                   />
                   <span className="min-w-0">
-                    <span className="block text-sm font-semibold text-[#1c1917]">
+                    <span className="block text-sm font-semibold text-[var(--c-t1c1917)]">
                       {role.label}
-                      <span className="ml-1.5 font-normal text-[#8f8680]">
+                      <span className="ml-1.5 font-normal text-[var(--c-t8f8680)]">
                         ({count} {count === 1 ? 'person' : 'people'})
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-xs leading-5 text-[#78716c]">
+                    <span className="mt-0.5 block text-xs leading-5 text-[var(--c-t78716c)]">
                       {role.description}
                     </span>
                   </span>
@@ -206,7 +206,7 @@ export function EmailNotificationsCard({
         />
 
         <fieldset>
-          <legend className="mb-2 text-sm font-semibold text-[#1c1917]">Notify about</legend>
+          <legend className="mb-2 text-sm font-semibold text-[var(--c-t1c1917)]">Notify about</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {NOTIFICATION_EVENTS.map(event => {
               const checked = draft.events.includes(event.id);
@@ -215,15 +215,15 @@ export function EmailNotificationsCard({
                   key={event.id}
                   className={`flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm transition-colors ${
                     checked
-                      ? 'border-[#c0694a] bg-[#f5e6df] text-[#1c1917]'
-                      : 'border-[#d6cabf] bg-white text-[#3c3632] hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)] text-[var(--c-t1c1917)]'
+                      : 'border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] text-[var(--c-t3c3632)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => toggleEvent(event.id)}
-                    className="h-4 w-4 accent-[#c0694a]"
+                    className="h-4 w-4 accent-[var(--c-sc0694a)]"
                   />
                   {event.label}
                 </label>
@@ -233,7 +233,7 @@ export function EmailNotificationsCard({
         </fieldset>
 
         <fieldset>
-          <legend className="mb-2 text-sm font-semibold text-[#1c1917]">Delivery</legend>
+          <legend className="mb-2 text-sm font-semibold text-[var(--c-t1c1917)]">Delivery</legend>
           <div className="grid gap-2 sm:grid-cols-3">
             {EMAIL_FREQUENCIES.map(option => {
               const selected = draft.frequency === option.id;
@@ -244,12 +244,12 @@ export function EmailNotificationsCard({
                   onClick={() => setDraft(prev => ({ ...prev, frequency: option.id }))}
                   className={`rounded-xl border px-3 py-3 text-left transition-colors ${
                     selected
-                      ? 'border-[#c0694a] bg-[#f5e6df]'
-                      : 'border-[#d6cabf] bg-white hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)]'
+                      : 'border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
-                  <span className="block text-sm font-semibold text-[#1c1917]">{option.label}</span>
-                  <span className="mt-0.5 block text-xs leading-5 text-[#78716c]">
+                  <span className="block text-sm font-semibold text-[var(--c-t1c1917)]">{option.label}</span>
+                  <span className="mt-0.5 block text-xs leading-5 text-[var(--c-t78716c)]">
                     {option.hint}
                   </span>
                 </button>
@@ -259,8 +259,8 @@ export function EmailNotificationsCard({
         </fieldset>
       </div>
 
-      <footer className="mt-6 flex flex-col gap-3 border-t border-[#f2ece6] pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-[#8f8680]">
+      <footer className="mt-6 flex flex-col gap-3 border-t border-[var(--c-bf2ece6)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-[var(--c-t8f8680)]">
           {recipientCount === 0
             ? 'Nobody is set to receive notifications yet.'
             : unsaved
@@ -273,7 +273,7 @@ export function EmailNotificationsCard({
             type="button"
             onClick={handleTest}
             disabled={testing || recipientCount === 0}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-[#d6cabf] px-3.5 py-2 text-sm font-semibold text-[#3c3632] transition-colors hover:bg-[#f5f0ec] disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--c-bd6cabf)] px-3.5 py-2 text-sm font-semibold text-[var(--c-t3c3632)] transition-colors hover:bg-[var(--c-sf5f0ec)] disabled:opacity-50"
           >
             {testing ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
             {testing ? 'Sending…' : 'Send test'}
@@ -282,7 +282,7 @@ export function EmailNotificationsCard({
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#c0694a] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a85a3e] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--c-sc0694a)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--c-sa85a3e)] disabled:opacity-50"
           >
             {saving && <Loader2 size={15} className="animate-spin" />}
             {saving ? 'Saving…' : 'Save'}

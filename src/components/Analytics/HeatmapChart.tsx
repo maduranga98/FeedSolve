@@ -89,7 +89,7 @@ export function HeatmapChart({ data }: HeatmapChartProps) {
                     style={{ backgroundColor: color, height: '22px' }}
                     title={`${day} ${HOURS[hour]}: ${count} submissions`}
                   >
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10 whitespace-nowrap bg-gray-800 text-white text-xs rounded px-2 py-1 pointer-events-none">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10 whitespace-nowrap bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 text-xs rounded px-2 py-1 pointer-events-none">
                       {day} {HOURS[hour]}: {count}
                     </div>
                   </div>

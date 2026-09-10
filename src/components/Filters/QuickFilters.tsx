@@ -56,8 +56,8 @@ export function QuickFilters({ onApply, userId }: QuickFiltersProps) {
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <div className="flex items-center gap-1 flex-shrink-0">
-        <Zap size={11} className="text-[#9AABBF]" />
-        <span className="text-[10px] font-bold text-[#9AABBF] uppercase tracking-widest">Quick</span>
+        <Zap size={11} className="text-[var(--c-t9aabbf)]" />
+        <span className="text-[10px] font-bold text-[var(--c-t9aabbf)] uppercase tracking-widest">Quick</span>
       </div>
       {quickFilterOptions
         .filter((option) => option.id !== 'assigned-to-me' || userId)
@@ -67,7 +67,7 @@ export function QuickFilters({ onApply, userId }: QuickFiltersProps) {
             <button
               key={option.id}
               onClick={() => onApply(option.filters(userId))}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-full border border-[#E8ECF0] bg-white text-[#6B7B8D] hover:bg-[#EBF5FB] hover:border-[#2E86AB] hover:text-[#2E86AB] transition-all"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-full border border-[var(--c-be8ecf0)] bg-[var(--c-sffffff)] text-[var(--c-t6b7b8d)] hover:bg-[var(--c-sebf5fb)] hover:border-[var(--c-b2e86ab)] hover:text-[var(--c-t2e86ab)] transition-all"
             >
               <Icon size={10} />
               {option.label}

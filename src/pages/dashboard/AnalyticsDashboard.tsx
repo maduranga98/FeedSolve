@@ -63,13 +63,13 @@ function UpgradeGate({
   const tierLabel = requiredTier === 'business' ? 'Pro' : 'Growth';
 
   return (
-    <div className="rounded-xl border-2 border-dashed border-blue-200 bg-blue-50 p-10 flex flex-col items-center gap-4 text-center">
-      <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center">
-        <Lock size={26} className="text-blue-500" />
+    <div className="rounded-xl border-2 border-dashed border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-10 flex flex-col items-center gap-4 text-center">
+      <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+        <Lock size={26} className="text-blue-500 dark:text-blue-400" />
       </div>
       <div>
-        <p className="text-lg font-semibold text-blue-900">{label}</p>
-        <p className="text-sm text-blue-700 mt-1">
+        <p className="text-lg font-semibold text-blue-900 dark:text-blue-200">{label}</p>
+        <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
           Available on the <strong>{tierLabel}</strong> plan and above
         </p>
       </div>
@@ -257,7 +257,7 @@ export function AnalyticsDashboard() {
               <button
                 onClick={handleExportCSV}
                 disabled={exportLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-[#f5e6df] border border-[#C8DDE8] rounded-lg text-sm font-medium text-[#1c1917] hover:bg-[#c0694a] hover:text-white hover:border-[#c0694a] disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--c-sf5e6df)] border border-[var(--c-bc8dde8)] rounded-lg text-sm font-medium text-[var(--c-t1c1917)] hover:bg-[var(--c-sc0694a)] hover:text-white hover:border-[var(--c-bc0694a)] disabled:opacity-50 transition-colors"
               >
                 <Download size={15} />
                 CSV
@@ -282,8 +282,8 @@ export function AnalyticsDashboard() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-[#1c1917] text-white shadow-sm'
-                  : 'text-[#1c1917] bg-[#f5e6df] hover:bg-[#c0694a] hover:text-white'
+                  ? 'bg-[var(--c-s1c1917)] text-white shadow-sm'
+                  : 'text-[var(--c-t1c1917)] bg-[var(--c-sf5e6df)] hover:bg-[var(--c-sc0694a)] hover:text-white'
               }`}
             >
               {tab.icon}

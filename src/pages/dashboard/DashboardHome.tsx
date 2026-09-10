@@ -94,40 +94,40 @@ function EditBoardModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-lg w-full shadow-lg max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e9e0d9] flex-shrink-0">
-          <h2 className="text-lg font-semibold text-[#1c1917]">{t("forms:board.edit_board")}</h2>
-          <button onClick={onClose} className="text-[#8f8680] hover:text-[#1c1917]">
+      <div className="bg-[var(--c-sffffff)] rounded-xl max-w-lg w-full shadow-lg max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--c-be9e0d9)] flex-shrink-0">
+          <h2 className="text-lg font-semibold text-[var(--c-t1c1917)]">{t("forms:board.edit_board")}</h2>
+          <button onClick={onClose} className="text-[var(--c-t8f8680)] hover:text-[var(--c-t1c1917)]">
             <X size={20} />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-[#3c3632] mb-1">
+            <label className="block text-sm font-medium text-[var(--c-t3c3632)] mb-1">
               {t("forms:board.name")}
             </label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value.slice(0, BOARD_NAME_MAX))}
-              className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+              className="w-full px-3 py-2 border border-[var(--c-bd6cabf)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
               required
             />
-            <p className={`text-xs mt-1 text-right ${name.length >= BOARD_NAME_MAX ? "text-[#E74C3C]" : "text-[#8f8680]"}`}>
+            <p className={`text-xs mt-1 text-right ${name.length >= BOARD_NAME_MAX ? "text-[var(--c-te74c3c)]" : "text-[var(--c-t8f8680)]"}`}>
               {name.length}/{BOARD_NAME_MAX}
             </p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#3c3632] mb-1">
+            <label className="block text-sm font-medium text-[var(--c-t3c3632)] mb-1">
               {t("description")}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a] resize-none"
+              className="w-full px-3 py-2 border border-[var(--c-bd6cabf)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)] resize-none"
             />
           </div>
 
@@ -146,10 +146,10 @@ function EditBoardModal({
 
           {/* Languages */}
           <div>
-            <label className="block text-sm font-medium text-[#3c3632] mb-1">
+            <label className="block text-sm font-medium text-[var(--c-t3c3632)] mb-1">
               {t("forms:feedback.language")}
             </label>
-            <p className="text-[#78716c] text-xs mb-2">{t("forms:board.choose_languages_help")}</p>
+            <p className="text-[var(--c-t78716c)] text-xs mb-2">{t("forms:board.choose_languages_help")}</p>
             <div className="flex flex-wrap gap-2">
               {SUPPORTED_LANGUAGES.map((lang) => {
                 const selected = supportedLanguages.includes(lang.code);
@@ -161,8 +161,8 @@ function EditBoardModal({
                     aria-pressed={selected}
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs transition-colors ${
                       selected
-                        ? "bg-[#f5e6df] border-[#c0694a] text-[#1c1917] font-medium"
-                        : "bg-white border-[#d6cabf] text-[#78716c] hover:bg-[#f5f0ec]"
+                        ? "bg-[var(--c-sf5e6df)] border-[var(--c-bc0694a)] text-[var(--c-t1c1917)] font-medium"
+                        : "bg-[var(--c-sffffff)] border-[var(--c-bd6cabf)] text-[var(--c-t78716c)] hover:bg-[var(--c-sf5f0ec)]"
                     }`}
                   >
                     <span>{lang.flag}</span>
@@ -179,9 +179,9 @@ function EditBoardModal({
               type="checkbox"
               checked={isAnonymousAllowed}
               onChange={(e) => setIsAnonymousAllowed(e.target.checked)}
-              className="w-5 h-5 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
+              className="w-5 h-5 rounded border-[var(--c-bd6cabf)] text-[var(--c-tc0694a)] focus:ring-[var(--c-bc0694a)]"
             />
-            <span className="text-sm text-[#1c1917] font-medium">
+            <span className="text-sm text-[var(--c-t1c1917)] font-medium">
               {t("forms:board.anonymous_allowed")}
             </span>
           </label>
@@ -196,11 +196,11 @@ function EditBoardModal({
                   setShowSatisfactionRating(e.target.checked);
                   if (!e.target.checked) setSatisfactionRequired(false);
                 }}
-                className="w-5 h-5 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
+                className="w-5 h-5 rounded border-[var(--c-bd6cabf)] text-[var(--c-tc0694a)] focus:ring-[var(--c-bc0694a)]"
               />
               <div>
-                <span className="text-sm text-[#1c1917] font-medium block">{t("forms:board.collect_satisfaction")}</span>
-                <span className="text-[#78716c] text-xs">{t("forms:board.collect_satisfaction_help")}</span>
+                <span className="text-sm text-[var(--c-t1c1917)] font-medium block">{t("forms:board.collect_satisfaction")}</span>
+                <span className="text-[var(--c-t78716c)] text-xs">{t("forms:board.collect_satisfaction_help")}</span>
               </div>
             </label>
             {showSatisfactionRating && (
@@ -209,11 +209,11 @@ function EditBoardModal({
                   type="checkbox"
                   checked={satisfactionRequired}
                   onChange={(e) => setSatisfactionRequired(e.target.checked)}
-                  className="w-4 h-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
+                  className="w-4 h-4 rounded border-[var(--c-bd6cabf)] text-[var(--c-tc0694a)] focus:ring-[var(--c-bc0694a)]"
                 />
                 <div>
-                  <span className="text-sm text-[#1c1917] font-medium block">{t("forms:board.rating_required_label")}</span>
-                  <span className="text-[#78716c] text-xs">{t("forms:board.rating_required_help")}</span>
+                  <span className="text-sm text-[var(--c-t1c1917)] font-medium block">{t("forms:board.rating_required_label")}</span>
+                  <span className="text-[var(--c-t78716c)] text-xs">{t("forms:board.rating_required_help")}</span>
                 </div>
               </label>
             )}
@@ -258,14 +258,14 @@ function DeleteConfirmModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-sm w-full shadow-lg p-6">
-        <div className="w-12 h-12 bg-[#FFE5E5] rounded-full flex items-center justify-center mx-auto mb-4">
-          <Trash2 size={22} className="text-[#E74C3C]" />
+      <div className="bg-[var(--c-sffffff)] rounded-xl max-w-sm w-full shadow-lg p-6">
+        <div className="w-12 h-12 bg-[var(--c-sffe5e5)] rounded-full flex items-center justify-center mx-auto mb-4">
+          <Trash2 size={22} className="text-[var(--c-te74c3c)]" />
         </div>
-        <h2 className="text-lg font-semibold text-[#1c1917] text-center mb-2">
+        <h2 className="text-lg font-semibold text-[var(--c-t1c1917)] text-center mb-2">
           {t("boards:dashboard.delete_confirm_title")}
         </h2>
-        <p className="text-sm text-[#78716c] text-center mb-6">
+        <p className="text-sm text-[var(--c-t78716c)] text-center mb-6">
           {t("boards:dashboard.delete_confirm_body", { name: board.name })}
         </p>
         <div className="flex gap-3">
@@ -275,7 +275,7 @@ function DeleteConfirmModal({
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="flex-1 py-2 text-sm font-medium text-white bg-[#E74C3C] hover:bg-[#C0392B] rounded-lg transition-colors disabled:opacity-60"
+            className="flex-1 py-2 text-sm font-medium text-white bg-[var(--c-se74c3c)] hover:bg-[var(--c-sc0392b)] rounded-lg transition-colors disabled:opacity-60"
           >
             {deleting ? t("deleting") : t("delete")}
           </button>
@@ -370,21 +370,21 @@ export function DashboardHome() {
       : t("greetings.evening");
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF]">
+    <div className="min-h-screen bg-[var(--c-se1e8ef)]">
       {/* Page header */}
-      <div className="bg-white border-b border-[#e9e0d9]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be9e0d9)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <p className="text-sm text-[#8f8680] font-medium mb-0.5">
+              <p className="text-sm text-[var(--c-t8f8680)] font-medium mb-0.5">
                 {greeting}
                 {user?.name ? `, ${user.name.split(" ")[0]}` : ""} 👋
               </p>
-              <h1 className="text-2xl font-bold text-[#1c1917]">
+              <h1 className="text-2xl font-bold text-[var(--c-t1c1917)]">
                 {t("boards:dashboard.title")}
               </h1>
               {!loading && (
-                <p className="text-sm text-[#78716c] mt-1">
+                <p className="text-sm text-[var(--c-t78716c)] mt-1">
                   {t("boards:dashboard.boards_count", { count: boards.length })}
                 </p>
               )}
@@ -410,11 +410,11 @@ export function DashboardHome() {
 
         {/* Error message */}
         {error && (
-          <div className="mb-6 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
-            <p className="text-sm text-[#E74C3C]">{error}</p>
+          <div className="mb-6 p-4 bg-[var(--c-sffe5e5)] border border-[var(--c-be74c3c)] rounded-lg">
+            <p className="text-sm text-[var(--c-te74c3c)]">{error}</p>
             <button
               onClick={loadData}
-              className="mt-2 text-sm text-[#E74C3C] hover:text-[#C0392B] font-medium underline"
+              className="mt-2 text-sm text-[var(--c-te74c3c)] hover:text-[var(--c-tc0392b)] font-medium underline"
             >
               {t("try_again")}
             </button>
@@ -427,12 +427,12 @@ export function DashboardHome() {
             <LoadingSpinner size="lg" />
           </div>
         ) : boards.length === 0 ? (
-          <div className="card rounded-xl p-12 text-center slide-up bg-white border border-[#e9e0d9]">
-            <div className="w-16 h-16 bg-[#f5e6df] rounded-2xl flex items-center justify-center mx-auto mb-5">
-              <LayoutTemplate size={32} className="text-[#c0694a]" />
+          <div className="card rounded-xl p-12 text-center slide-up bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)]">
+            <div className="w-16 h-16 bg-[var(--c-sf5e6df)] rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <LayoutTemplate size={32} className="text-[var(--c-tc0694a)]" />
             </div>
-            <h2 className="text-lg font-semibold text-[#1c1917] mb-2">{t("boards:dashboard.no_boards_yet")}</h2>
-            <p className="text-sm text-[#78716c] mb-6 max-w-sm mx-auto">
+            <h2 className="text-lg font-semibold text-[var(--c-t1c1917)] mb-2">{t("boards:dashboard.no_boards_yet")}</h2>
+            <p className="text-sm text-[var(--c-t78716c)] mb-6 max-w-sm mx-auto">
               {t("boards:dashboard.create_first")}
             </p>
             <Button variant="primary" size="lg" onClick={() => navigate("/board/create")}>
@@ -444,10 +444,10 @@ export function DashboardHome() {
           <div className="slide-up">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-[#1c1917]">
+                <h2 className="text-lg font-semibold text-[var(--c-t1c1917)]">
                   {t("boards:dashboard.your_boards")}
                 </h2>
-                <p className="text-sm text-[#78716c] mt-0.5">
+                <p className="text-sm text-[var(--c-t78716c)] mt-0.5">
                   {t("boards:dashboard.your_boards_subtitle")}
                 </p>
               </div>
@@ -456,29 +456,29 @@ export function DashboardHome() {
               {boards.map((board) => (
                 <div
                   key={board.id}
-                  className="bg-white border border-[#e9e0d9] rounded-xl p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
+                  className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
                 >
                   {/* Header: name + action buttons */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-[#1c1917] truncate">
+                      <h3 className="text-base font-semibold text-[var(--c-t1c1917)] truncate">
                         {board.name}
                       </h3>
-                      <p className="text-sm text-[#78716c] line-clamp-2 mt-0.5">
+                      <p className="text-sm text-[var(--c-t78716c)] line-clamp-2 mt-0.5">
                         {board.description}
                       </p>
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => setEditingBoard(board)}
-                        className="p-1.5 text-[#8f8680] hover:text-[#c0694a] hover:bg-[#f5e6df] rounded-lg transition-colors"
+                        className="p-1.5 text-[var(--c-t8f8680)] hover:text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)] rounded-lg transition-colors"
                         title={t("boards:dashboard.edit_tooltip")}
                       >
                         <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => setDeletingBoard(board)}
-                        className="p-1.5 text-[#8f8680] hover:text-[#E74C3C] hover:bg-[#FFE5E5] rounded-lg transition-colors"
+                        className="p-1.5 text-[var(--c-t8f8680)] hover:text-[var(--c-te74c3c)] hover:bg-[var(--c-sffe5e5)] rounded-lg transition-colors"
                         title={t("boards:dashboard.delete_tooltip")}
                       >
                         <Trash2 size={15} />
@@ -487,7 +487,7 @@ export function DashboardHome() {
                   </div>
 
                   {/* Meta row */}
-                  <div className="flex items-center gap-4 text-xs text-[#8f8680]">
+                  <div className="flex items-center gap-4 text-xs text-[var(--c-t8f8680)]">
                     <span className="flex items-center gap-1">
                       <Calendar size={12} />
                       {formatDate(board.createdAt.toDate())}
@@ -504,14 +504,14 @@ export function DashboardHome() {
                       {board.categories.slice(0, 3).map((cat) => (
                         <span
                           key={cat}
-                          className="inline-flex items-center gap-1 text-xs bg-[#f2ece6] text-[#78716c] px-2 py-0.5 rounded-full"
+                          className="inline-flex items-center gap-1 text-xs bg-[var(--c-sf2ece6)] text-[var(--c-t78716c)] px-2 py-0.5 rounded-full"
                         >
                           <Tag size={10} />
                           {cat}
                         </span>
                       ))}
                       {board.categories.length > 3 && (
-                        <span className="text-xs text-[#8f8680] px-1">
+                        <span className="text-xs text-[var(--c-t8f8680)] px-1">
                           {t("boards:dashboard.more_count", { count: board.categories.length - 3 })}
                         </span>
                       )}
@@ -519,11 +519,11 @@ export function DashboardHome() {
                   )}
 
                   {/* Actions */}
-                  <div className="flex flex-wrap gap-2 pt-1 border-t border-[#f2ece6]">
+                  <div className="flex flex-wrap gap-2 pt-1 border-t border-[var(--c-bf2ece6)]">
                     <button
                       type="button"
                       onClick={() => navigate(`/board/${board.id}`)}
-                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#c0694a] bg-[#f5e6df] hover:bg-[#D6EEFA] py-2 px-2 rounded-lg transition-colors"
+                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)] hover:bg-[var(--c-sd6eefa)] py-2 px-2 rounded-lg transition-colors"
                     >
                       <QrCode size={13} className="flex-shrink-0" />
                       <span className="truncate">{t("boards:dashboard.qr_code_and_settings")}</span>
@@ -536,7 +536,7 @@ export function DashboardHome() {
                           "_blank"
                         )
                       }
-                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[#78716c] bg-[#E1E8EF] hover:bg-[#e9e0d9] py-2 px-2 rounded-lg transition-colors"
+                      className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[var(--c-t78716c)] bg-[var(--c-se1e8ef)] hover:bg-[var(--c-se9e0d9)] py-2 px-2 rounded-lg transition-colors"
                     >
                       <ExternalLink size={13} className="flex-shrink-0" />
                       <span className="truncate">{t("boards:dashboard.open_form")}</span>
@@ -547,7 +547,7 @@ export function DashboardHome() {
                   <button
                     type="button"
                     onClick={() => navigate(`/submissions`)}
-                    className="text-xs text-[#8f8680] hover:text-[#c0694a] transition-colors text-center"
+                    className="text-xs text-[var(--c-t8f8680)] hover:text-[var(--c-tc0694a)] transition-colors text-center"
                   >
                     {t("boards:dashboard.view_submissions")}
                   </button>

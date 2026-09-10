@@ -241,13 +241,13 @@ export function SubmissionDetail() {
 
         <div className="bg-color-surface rounded-lg shadow-md p-6 mb-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-100 border border-color-error text-color-error rounded-md">
+            <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 border border-color-error text-color-error rounded-md">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-4 bg-green-100 border border-color-success text-color-success rounded-md">
+            <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 border border-color-success text-color-success rounded-md">
               {success}
             </div>
           )}
@@ -370,18 +370,18 @@ export function SubmissionDetail() {
             )}
           </div>
 
-          <div className="mb-6 rounded-xl border border-[#d6cabf] bg-[#f5f0ec] p-4">
-            <div className="mb-3 flex items-center gap-2 text-[#1c1917]">
+          <div className="mb-6 rounded-xl border border-[var(--c-bd6cabf)] bg-[var(--c-sf5f0ec)] p-4">
+            <div className="mb-3 flex items-center gap-2 text-[var(--c-t1c1917)]">
               <History size={17} />
               <h2 className="text-base font-semibold">Escalation History</h2>
             </div>
             {escalationLog.length === 0 ? (
-              <p className="text-sm text-[#78716c]">No automated escalations have triggered for this submission.</p>
+              <p className="text-sm text-[var(--c-t78716c)]">No automated escalations have triggered for this submission.</p>
             ) : (
               <ul className="space-y-2">
                 {escalationLog.map((entry) => (
-                  <li key={entry.id} className="rounded-lg bg-white px-3 py-2 text-sm text-[#3c3632] ring-1 ring-[#d6cabf]/70">
-                    Rule <span className="font-semibold text-[#1c1917]">“{entry.ruleName}”</span> triggered {entry.triggeredAt ? formatDistanceToNow(entry.triggeredAt.toDate(), { addSuffix: true }) : 'recently'} → {entry.actionsTaken.join(', ')}
+                  <li key={entry.id} className="rounded-lg bg-[var(--c-sffffff)] px-3 py-2 text-sm text-[var(--c-t3c3632)] ring-1 ring-[var(--c-bd6cabf)]/70">
+                    Rule <span className="font-semibold text-[var(--c-t1c1917)]">“{entry.ruleName}”</span> triggered {entry.triggeredAt ? formatDistanceToNow(entry.triggeredAt.toDate(), { addSuffix: true }) : 'recently'} → {entry.actionsTaken.join(', ')}
                   </li>
                 ))}
               </ul>

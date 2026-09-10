@@ -85,7 +85,7 @@ export function CategoryEditor({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[#1c1917] mb-1">
+      <label className="block text-sm font-medium text-[var(--c-t1c1917)] mb-1">
         {t('forms:board.categories')}
       </label>
 
@@ -95,19 +95,19 @@ export function CategoryEditor({
             type="checkbox"
             checked={translationsEnabled}
             onChange={e => onToggleTranslations(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-[#d6cabf] text-[#c0694a] focus:ring-[#c0694a]"
+            className="mt-0.5 w-4 h-4 rounded border-[var(--c-bd6cabf)] text-[var(--c-tc0694a)] focus:ring-[var(--c-bc0694a)]"
           />
           <span>
-            <span className="text-sm text-[#1c1917] font-medium block">
+            <span className="text-sm text-[var(--c-t1c1917)] font-medium block">
               {t('forms:board.enable_category_translations')}
             </span>
-            <span className="text-[#78716c] text-xs">
+            <span className="text-[var(--c-t78716c)] text-xs">
               {t('forms:board.category_translations_help')}
             </span>
           </span>
         </label>
         {showAddLanguageHint && (
-          <p className="text-[#c0694a] text-xs mt-2 ml-6">
+          <p className="text-[var(--c-tc0694a)] text-xs mt-2 ml-6">
             {t('forms:board.category_translations_add_language')}
           </p>
         )}
@@ -117,14 +117,14 @@ export function CategoryEditor({
         {categories.map((category) => (
           <div
             key={category}
-            className="bg-[#f5f0ec] p-3 rounded-lg border border-[#d6cabf]"
+            className="bg-[var(--c-sf5f0ec)] p-3 rounded-lg border border-[var(--c-bd6cabf)]"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[#1c1917] font-medium">{category}</span>
+              <span className="text-[var(--c-t1c1917)] font-medium">{category}</span>
               <button
                 type="button"
                 onClick={() => handleRemoveCategory(category)}
-                className="text-[#c0392b] hover:text-[#C0392B]"
+                className="text-[var(--c-tc0392b)] hover:text-[var(--c-tc0392b)]"
                 aria-label={t('remove') || 'Remove'}
               >
                 <Trash2 size={18} />
@@ -136,7 +136,7 @@ export function CategoryEditor({
                 {activeLanguages.map(lang => (
                   <div key={lang.code} className="flex items-center gap-2">
                     <span
-                      className="flex items-center gap-1 text-xs text-[#78716c] w-28 flex-shrink-0"
+                      className="flex items-center gap-1 text-xs text-[var(--c-t78716c)] w-28 flex-shrink-0"
                       title={lang.name}
                     >
                       <span className="text-sm">{lang.flag}</span>
@@ -148,7 +148,7 @@ export function CategoryEditor({
                       value={translations[category]?.[lang.code] ?? ''}
                       placeholder={category}
                       onChange={e => handleTranslationChange(category, lang.code, e.target.value)}
-                      className="flex-1 px-3 py-1.5 text-sm bg-white border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+                      className="flex-1 px-3 py-1.5 text-sm bg-[var(--c-sffffff)] border border-[var(--c-bd6cabf)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
                     />
                   </div>
                 ))}
@@ -158,7 +158,7 @@ export function CategoryEditor({
         ))}
       </div>
 
-      {error && <p className="text-sm text-[#c0392b] mb-3">{error}</p>}
+      {error && <p className="text-sm text-[var(--c-tc0392b)] mb-3">{error}</p>}
 
       <div className="flex gap-2">
         <input
@@ -172,7 +172,7 @@ export function CategoryEditor({
               handleAddCategory();
             }
           }}
-          className="flex-1 px-4 py-2 border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+          className="flex-1 px-4 py-2 border border-[var(--c-bd6cabf)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
         />
         <Button
           type="button"
@@ -184,7 +184,7 @@ export function CategoryEditor({
         </Button>
       </div>
       {newCategoryError && (
-        <p className="text-xs text-[#c0392b] mt-1">{newCategoryError}</p>
+        <p className="text-xs text-[var(--c-tc0392b)] mt-1">{newCategoryError}</p>
       )}
     </div>
   );

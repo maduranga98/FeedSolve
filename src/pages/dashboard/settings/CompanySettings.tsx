@@ -152,23 +152,23 @@ export function CompanySettings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF]">
-      <div className="border-b border-[#E8ECF0] bg-white">
+    <div className="min-h-screen bg-[var(--c-se1e8ef)]">
+      <div className="border-b border-[var(--c-be8ecf0)] bg-[var(--c-sffffff)]">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('company_settings.title')}</h1>
-          <p className="mt-1 text-sm text-[#6B7B8D]">{t('company_settings.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">{t('company_settings.title')}</h1>
+          <p className="mt-1 text-sm text-[var(--c-t6b7b8d)]">{t('company_settings.subtitle')}</p>
         </div>
       </div>
 
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        <section className="rounded-xl border border-[#D3D1C7] bg-white p-6 shadow-sm">
+        <section className="rounded-xl border border-[var(--c-bd3d1c7)] bg-[var(--c-sffffff)] p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <Radio size={20} className="text-[#2E86AB]" />
-                <h2 className="text-xl font-bold text-[#1E3A5F]">{t('company_settings.public_feed')}</h2>
+                <Radio size={20} className="text-[var(--c-t2e86ab)]" />
+                <h2 className="text-xl font-bold text-[var(--c-t1e3a5f)]">{t('company_settings.public_feed')}</h2>
               </div>
-              <p className="mt-2 text-sm text-[#6B7B8D]">
+              <p className="mt-2 text-sm text-[var(--c-t6b7b8d)]">
                 {t('company_settings.public_feed_desc', { hostname: appHostname })}
               </p>
             </div>
@@ -179,13 +179,13 @@ export function CompanySettings() {
                 checked={form.showPublicFeed}
                 onChange={(event) => setForm((prev) => ({ ...prev, showPublicFeed: event.target.checked }))}
               />
-              <span className="h-7 w-12 flex-shrink-0 rounded-full bg-[#D3D1C7] transition peer-checked:bg-[#27AE60] after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-5" />
-              <span className="ml-3 text-sm font-semibold text-[#1E3A5F] whitespace-nowrap">{t('company_settings.show_public_feed')}</span>
+              <span className="h-7 w-12 flex-shrink-0 rounded-full bg-[var(--c-sd3d1c7)] transition peer-checked:bg-[var(--c-s27ae60)] after:absolute after:left-1 after:top-1 after:h-5 after:w-5 after:rounded-full after:bg-[var(--c-sffffff)] after:transition peer-checked:after:translate-x-5" />
+              <span className="ml-3 text-sm font-semibold text-[var(--c-t1e3a5f)] whitespace-nowrap">{t('company_settings.show_public_feed')}</span>
             </label>
           </div>
 
           {form.showPublicFeed && (
-            <div className="mt-6 space-y-5 border-t border-[#EEF2F5] pt-6">
+            <div className="mt-6 space-y-5 border-t border-[var(--c-beef2f5)] pt-6">
               <div className="grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end">
                 <Input
                   label="Preview URL"
@@ -193,7 +193,7 @@ export function CompanySettings() {
                   readOnly
                   helperText={hasUnsavedSlug ? t('company_settings.save_slug_hint') : t('company_settings.preview_hint')}
                 />
-                <a href={hasUnsavedSlug ? undefined : previewUrl} target="_blank" rel="noreferrer" aria-disabled={hasUnsavedSlug} className={`inline-flex items-center justify-center gap-2 rounded-lg border border-[#D3D1C7] bg-white px-4 py-2.5 text-sm font-medium text-[#1E3A5F] hover:bg-[#F1F5F8] ${hasUnsavedSlug ? 'pointer-events-none opacity-50' : ''}`}>
+                <a href={hasUnsavedSlug ? undefined : previewUrl} target="_blank" rel="noreferrer" aria-disabled={hasUnsavedSlug} className={`inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--c-bd3d1c7)] bg-[var(--c-sffffff)] px-4 py-2.5 text-sm font-medium text-[var(--c-t1e3a5f)] hover:bg-[var(--c-sf1f5f8)] ${hasUnsavedSlug ? 'pointer-events-none opacity-50' : ''}`}>
                   {t('preview')} <ExternalLink size={16} />
                 </a>
                 <Button type="button" variant="secondary" onClick={copyLink} disabled={hasUnsavedSlug}><Copy size={16} /> {t('company_settings.copy_link')}</Button>
@@ -214,27 +214,27 @@ export function CompanySettings() {
               />
 
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-[#1E3A5F]">{t('company_settings.custom_message')}</label>
+                <label className="mb-1.5 block text-sm font-medium text-[var(--c-t1e3a5f)]">{t('company_settings.custom_message')}</label>
                 <textarea
-                  className="min-h-28 w-full rounded-lg border border-[#D3D1C7] bg-white px-3.5 py-2.5 text-sm text-[#1E3A5F] outline-none transition focus:border-[#2E86AB] focus:ring-2 focus:ring-[#2E86AB]/30"
+                  className="min-h-28 w-full rounded-lg border border-[var(--c-bd3d1c7)] bg-[var(--c-sffffff)] px-3.5 py-2.5 text-sm text-[var(--c-t1e3a5f)] outline-none transition focus:border-[var(--c-b2e86ab)] focus:ring-2 focus:ring-[var(--c-b2e86ab)]/30"
                   maxLength={MESSAGE_LIMIT}
                   placeholder={t('company_settings.message_placeholder')}
                   value={form.publicFeedMessage}
                   onChange={(event) => setForm((prev) => ({ ...prev, publicFeedMessage: event.target.value.slice(0, MESSAGE_LIMIT) }))}
                 />
-                <p className="mt-1.5 text-xs text-[#6B7B8D]">{t('company_settings.characters', { count: form.publicFeedMessage.length, limit: MESSAGE_LIMIT })}</p>
+                <p className="mt-1.5 text-xs text-[var(--c-t6b7b8d)]">{t('company_settings.characters', { count: form.publicFeedMessage.length, limit: MESSAGE_LIMIT })}</p>
               </div>
 
-              <label className="flex items-start gap-3 rounded-lg border border-[#D3D1C7] bg-[#F1F5F8] p-4">
+              <label className="flex items-start gap-3 rounded-lg border border-[var(--c-bd3d1c7)] bg-[var(--c-sf1f5f8)] p-4">
                 <input
                   type="checkbox"
-                  className="mt-1 h-4 w-4 rounded border-[#D3D1C7] text-[#2E86AB]"
+                  className="mt-1 h-4 w-4 rounded border-[var(--c-bd3d1c7)] text-[var(--c-t2e86ab)]"
                   checked={form.showPublicFeedbackLink}
                   onChange={(event) => setForm((prev) => ({ ...prev, showPublicFeedbackLink: event.target.checked }))}
                 />
                 <span>
-                  <span className="block text-sm font-semibold text-[#1E3A5F]">{t('company_settings.show_feedback_link')}</span>
-                  <span className="block text-sm text-[#6B7B8D]">{t('company_settings.feedback_link_desc')}</span>
+                  <span className="block text-sm font-semibold text-[var(--c-t1e3a5f)]">{t('company_settings.show_feedback_link')}</span>
+                  <span className="block text-sm text-[var(--c-t6b7b8d)]">{t('company_settings.feedback_link_desc')}</span>
                 </span>
               </label>
 
@@ -245,7 +245,7 @@ export function CompanySettings() {
             </div>
           )}
 
-          <div className="mt-6 border-t border-[#EEF2F5] pt-4 text-sm font-medium text-[#6B7B8D]">
+          <div className="mt-6 border-t border-[var(--c-beef2f5)] pt-4 text-sm font-medium text-[var(--c-t6b7b8d)]">
             {t('powered_by_feedsolve')}
           </div>
         </section>

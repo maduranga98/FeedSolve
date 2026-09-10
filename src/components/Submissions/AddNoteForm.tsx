@@ -28,7 +28,7 @@ export default function AddNoteForm({ onSubmit, loading }: AddNoteFormProps) {
         onChange={(e) => setText(e.target.value)}
         disabled={loading}
         placeholder="Add an internal note..."
-        className="w-full px-3 py-2 border border-[#d6cabf] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c0694a] resize-none"
+        className="w-full px-3 py-2 border border-[var(--c-bd6cabf)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)] resize-none"
         rows={3}
       />
       <Button

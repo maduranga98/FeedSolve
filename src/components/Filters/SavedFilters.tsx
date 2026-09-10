@@ -23,8 +23,8 @@ export function SavedFilters({
   if (filters.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-[#6B7B8D] text-sm mb-2">No saved filters yet</p>
-        <p className="text-[#9BACBA] text-xs">Create and save your custom filters to access them quickly</p>
+        <p className="text-[var(--c-t6b7b8d)] text-sm mb-2">No saved filters yet</p>
+        <p className="text-[var(--c-t9bacba)] text-xs">Create and save your custom filters to access them quickly</p>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export function SavedFilters({
       {filters.map((filter) => (
         <div
           key={filter.id}
-          className="p-3 border border-[#D3D1C7] rounded-lg hover:bg-[#F1F5F8] transition-colors"
+          className="p-3 border border-[var(--c-bd3d1c7)] rounded-lg hover:bg-[var(--c-sf1f5f8)] transition-colors"
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -42,14 +42,14 @@ export function SavedFilters({
                 onClick={() => onSelect(filter)}
                 className="w-full text-left group"
               >
-                <h4 className="font-medium text-[#444441] group-hover:text-[#2E86AB] truncate">
+                <h4 className="font-medium text-[var(--c-t444441)] group-hover:text-[var(--c-t2e86ab)] truncate">
                   {filter.name}
                 </h4>
               </button>
               {filter.description && (
-                <p className="text-xs text-[#6B7B8D] mt-1 truncate">{filter.description}</p>
+                <p className="text-xs text-[var(--c-t6b7b8d)] mt-1 truncate">{filter.description}</p>
               )}
-              <p className="text-xs text-[#9BACBA] mt-1">
+              <p className="text-xs text-[var(--c-t9bacba)] mt-1">
                 Saved by {filter.createdBy}
               </p>
             </div>
@@ -58,19 +58,19 @@ export function SavedFilters({
               <button
                 onClick={() => onTogglePin(filter.id)}
                 disabled={loading}
-                className="p-1 text-[#6B7B8D] hover:text-[#FFB703] transition-colors disabled:opacity-50"
+                className="p-1 text-[var(--c-t6b7b8d)] hover:text-[var(--c-tffb703)] transition-colors disabled:opacity-50"
                 aria-label={filter.isPinned ? 'Unpin filter' : 'Pin filter'}
               >
                 <Star
                   size={16}
-                  className={filter.isPinned ? 'fill-[#FFB703]' : ''}
+                  className={filter.isPinned ? 'fill-[var(--c-tffb703)]' : ''}
                 />
               </button>
 
               <button
                 onClick={() => onSelect(filter)}
                 disabled={loading}
-                className="p-1 text-[#6B7B8D] hover:text-[#2E86AB] transition-colors disabled:opacity-50"
+                className="p-1 text-[var(--c-t6b7b8d)] hover:text-[var(--c-t2e86ab)] transition-colors disabled:opacity-50"
                 aria-label="Edit filter"
               >
                 <Edit2 size={16} />
@@ -86,7 +86,7 @@ export function SavedFilters({
                   }
                 }}
                 disabled={loading || deletingId === filter.id}
-                className="p-1 text-[#6B7B8D] hover:text-red-600 transition-colors disabled:opacity-50"
+                className="p-1 text-[var(--c-t6b7b8d)] hover:text-red-600 hover:dark:text-red-400 transition-colors disabled:opacity-50"
                 aria-label="Delete filter"
               >
                 <Trash2 size={16} />

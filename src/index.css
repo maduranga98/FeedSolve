@@ -1,19 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..800;1,14..32,300..800&display=swap');
 
 @import "tailwindcss";
+@import "./styles/theme.generated.css";
+
+/*
+ * Dark mode is driven by `data-theme` on <html>, written by the theme store
+ * (src/lib/theme.ts) rather than by the `prefers-color-scheme` media query, so
+ * an explicit user choice always wins over the OS setting.
+ */
+@custom-variant dark ([data-theme='dark'] &);
 
 @theme {
-  --color-primary: #1c1917;
-  --color-accent: #c0694a;
-  --color-accent-light: #f5e6df;
-  --color-success: #3a9b6f;
-  --color-warning: #d4860f;
-  --color-error: #c0392b;
-  --color-bg: #f5f0ec;
-  --color-surface: #ffffff;
-  --color-muted-text: #78716c;
-  --color-body-text: #3c3632;
-  --color-border: #e0d6cf;
+  --color-primary: var(--fs-primary);
+  --color-accent: var(--fs-accent);
+  --color-accent-light: var(--fs-accent-light);
+  --color-success: var(--fs-success);
+  --color-warning: var(--fs-warning);
+  --color-error: var(--fs-error);
+  --color-bg: var(--fs-bg);
+  --color-surface: var(--fs-surface);
+  --color-muted-text: var(--fs-muted-text);
+  --color-body-text: var(--fs-body-text);
+  --color-border: var(--fs-border);
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
@@ -22,18 +30,139 @@
    * `border-color-border`, etc. (used throughout the app) compile in
    * Tailwind v4. Without these, those classes generate no CSS at all.
    */
-  --color-color-primary: #1c1917;
-  --color-color-accent: #c0694a;
-  --color-color-accent-light: #f5e6df;
-  --color-color-success: #3a9b6f;
-  --color-color-warning: #d4860f;
-  --color-color-error: #c0392b;
-  --color-color-bg: #f5f0ec;
-  --color-color-surface: #ffffff;
-  --color-color-surface-light: #faf8f5;
-  --color-color-muted-text: #78716c;
-  --color-color-body-text: #3c3632;
-  --color-color-border: #e0d6cf;
+  --color-color-primary: var(--fs-primary);
+  --color-color-accent: var(--fs-accent);
+  --color-color-accent-light: var(--fs-accent-light);
+  --color-color-success: var(--fs-success);
+  --color-color-warning: var(--fs-warning);
+  --color-color-error: var(--fs-error);
+  --color-color-bg: var(--fs-bg);
+  --color-color-surface: var(--fs-surface);
+  --color-color-surface-light: var(--fs-surface-light);
+  --color-color-muted-text: var(--fs-muted-text);
+  --color-color-body-text: var(--fs-body-text);
+  --color-color-border: var(--fs-border);
+}
+
+/*
+ * Single source of truth for both themes. Every semantic token is defined
+ * here for light and re-declared for dark; utilities resolve the variable at
+ * runtime, so flipping `data-theme` re-themes the whole app without a reload.
+ */
+:root {
+  color-scheme: light;
+
+  --fs-primary: #1c1917;
+  --fs-accent: #c0694a;
+  --fs-accent-light: #f5e6df;
+  --fs-success: #3a9b6f;
+  --fs-warning: #d4860f;
+  --fs-error: #c0392b;
+  --fs-bg: #f5f0ec;
+  --fs-surface: #ffffff;
+  --fs-surface-light: #faf8f5;
+  --fs-surface-raised: #ffffff;
+  --fs-muted-text: #78716c;
+  --fs-body-text: #3c3632;
+  --fs-border: #e0d6cf;
+  --fs-border-strong: #d6cabf;
+
+  --fs-shadow-sm: 0 1px 3px 0 rgb(28 25 23 / 0.05), 0 1px 2px -1px rgb(28 25 23 / 0.04);
+  --fs-shadow-md: 0 4px 16px 0 rgb(192 105 74 / 0.12), 0 2px 6px -1px rgb(28 25 23 / 0.06);
+  --fs-header-gradient: linear-gradient(135deg, #1c1917 0%, #3c2e28 100%);
+  --fs-scrollbar-thumb: #d6cabf;
+  --fs-scrollbar-thumb-hover: #b3a89f;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --fs-primary: #f0ebe7;
+  --fs-accent: #dd9070;
+  --fs-accent-light: #33241c;
+  --fs-success: #58c294;
+  --fs-warning: #e0a63e;
+  --fs-error: #e5796b;
+  --fs-bg: #201e1c;
+  --fs-surface: #292725;
+  --fs-surface-light: #2f2c2a;
+  --fs-surface-raised: #34312e;
+  --fs-muted-text: #a39d99;
+  --fs-body-text: #d6d1cd;
+  --fs-border: #3d3835;
+  --fs-border-strong: #4d4741;
+
+  --fs-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --fs-shadow-md: 0 4px 16px 0 rgb(0 0 0 / 0.45), 0 2px 6px -1px rgb(0 0 0 / 0.35);
+  --fs-header-gradient: linear-gradient(135deg, #24211f 0%, #362b25 100%);
+  --fs-scrollbar-thumb: #4d4741;
+  --fs-scrollbar-thumb-hover: #635b54;
+
+  /*
+   * The neutral scales are inverted so the many `bg-gray-50` /
+   * `text-gray-700` / `border-gray-200` utilities in the app read correctly
+   * without touching each call site. The ramp is warm rather than blue-grey
+   * to match the brand neutrals above.
+   */
+  --color-gray-50: #262422;
+  --color-gray-100: #2d2a28;
+  --color-gray-200: #3a3633;
+  --color-gray-300: #494440;
+  --color-gray-400: #8f8781;
+  --color-gray-500: #a8a09a;
+  --color-gray-600: #bdb5ae;
+  --color-gray-700: #cfc8c2;
+  --color-gray-800: #e2dcd7;
+  --color-gray-900: #f2eeeb;
+  --color-gray-950: #faf8f6;
+
+  --color-slate-50: var(--color-gray-50);
+  --color-slate-100: var(--color-gray-100);
+  --color-slate-200: var(--color-gray-200);
+  --color-slate-300: var(--color-gray-300);
+  --color-slate-400: var(--color-gray-400);
+  --color-slate-500: var(--color-gray-500);
+  --color-slate-600: var(--color-gray-600);
+  --color-slate-700: var(--color-gray-700);
+  --color-slate-800: var(--color-gray-800);
+  --color-slate-900: var(--color-gray-900);
+  --color-slate-950: var(--color-gray-950);
+
+  --color-zinc-50: var(--color-gray-50);
+  --color-zinc-100: var(--color-gray-100);
+  --color-zinc-200: var(--color-gray-200);
+  --color-zinc-300: var(--color-gray-300);
+  --color-zinc-400: var(--color-gray-400);
+  --color-zinc-500: var(--color-gray-500);
+  --color-zinc-600: var(--color-gray-600);
+  --color-zinc-700: var(--color-gray-700);
+  --color-zinc-800: var(--color-gray-800);
+  --color-zinc-900: var(--color-gray-900);
+  --color-zinc-950: var(--color-gray-950);
+
+  --color-neutral-50: var(--color-gray-50);
+  --color-neutral-100: var(--color-gray-100);
+  --color-neutral-200: var(--color-gray-200);
+  --color-neutral-300: var(--color-gray-300);
+  --color-neutral-400: var(--color-gray-400);
+  --color-neutral-500: var(--color-gray-500);
+  --color-neutral-600: var(--color-gray-600);
+  --color-neutral-700: var(--color-gray-700);
+  --color-neutral-800: var(--color-gray-800);
+  --color-neutral-900: var(--color-gray-900);
+  --color-neutral-950: var(--color-gray-950);
+
+  --color-stone-50: var(--color-gray-50);
+  --color-stone-100: var(--color-gray-100);
+  --color-stone-200: var(--color-gray-200);
+  --color-stone-300: var(--color-gray-300);
+  --color-stone-400: var(--color-gray-400);
+  --color-stone-500: var(--color-gray-500);
+  --color-stone-600: var(--color-gray-600);
+  --color-stone-700: var(--color-gray-700);
+  --color-stone-800: var(--color-gray-800);
+  --color-stone-900: var(--color-gray-900);
+  --color-stone-950: var(--color-gray-950);
 }
 
 @layer base {
@@ -49,8 +178,8 @@
   }
 
   body {
-    background-color: var(--color-bg);
-    color: var(--color-body-text);
+    background-color: var(--fs-bg);
+    color: var(--fs-body-text);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -69,36 +198,36 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #d6cabf;
+    background: var(--fs-scrollbar-thumb);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #b3a89f;
+    background: var(--fs-scrollbar-thumb-hover);
   }
 }
 
 @layer utilities {
   .card {
-    background: #ffffff;
-    border: 1px solid #e0d6cf;
+    background: var(--fs-surface);
+    border: 1px solid var(--fs-border);
     border-radius: 16px;
-    box-shadow: 0 1px 3px 0 rgba(28, 25, 23, 0.05), 0 1px 2px -1px rgba(28, 25, 23, 0.04);
+    box-shadow: var(--fs-shadow-sm);
   }
 
   .card-hover {
     transition: box-shadow 150ms ease, transform 150ms ease;
   }
   .card-hover:hover {
-    box-shadow: 0 4px 16px 0 rgba(192, 105, 74, 0.12), 0 2px 6px -1px rgba(28, 25, 23, 0.06);
+    box-shadow: var(--fs-shadow-md);
     transform: translateY(-1px);
   }
 
   .page-header {
-    background: linear-gradient(135deg, #1c1917 0%, #3c2e28 100%);
+    background: var(--fs-header-gradient);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #1c1917, #c0694a);
+    background: linear-gradient(135deg, var(--fs-primary), var(--fs-accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -121,4 +250,87 @@
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+}
+
+/*
+ * Recharts paints axes, grids and its default tooltip with literal colours
+ * passed as SVG presentation attributes and inline styles. Presentation
+ * attributes lose to CSS, so the grid and axis rules below need no
+ * `!important`; the tooltip container is inline-styled and does.
+ */
+[data-theme='dark'] {
+  .recharts-cartesian-grid line,
+  .recharts-cartesian-axis-line,
+  .recharts-cartesian-axis-tick-line {
+    stroke: var(--fs-border);
+  }
+
+  .recharts-text,
+  .recharts-cartesian-axis-tick-value {
+    fill: var(--fs-muted-text);
+  }
+
+  .recharts-default-tooltip {
+    background-color: var(--fs-surface-raised) !important;
+    border-color: var(--fs-border) !important;
+    color: var(--fs-body-text) !important;
+  }
+
+  .recharts-tooltip-label,
+  .recharts-tooltip-item-name,
+  .recharts-tooltip-item-value {
+    color: var(--fs-body-text) !important;
+  }
+
+  .recharts-legend-item-text {
+    color: var(--fs-muted-text) !important;
+  }
+}
+
+/* Native form controls follow `color-scheme`, but pickers and autofill need
+   an explicit nudge to stop rendering on a white slab. */
+[data-theme='dark'] {
+  input[type='date'],
+  input[type='datetime-local'],
+  input[type='time'],
+  input[type='month'] {
+    color-scheme: dark;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--fs-body-text);
+    -webkit-box-shadow: 0 0 0 1000px var(--fs-surface-raised) inset;
+    caret-color: var(--fs-body-text);
+  }
+}
+
+/*
+ * Palette hooks for the legacy FormBuilder stylesheets, which were written
+ * against a fixed grey palette. The light values reproduce those greys
+ * exactly; the dark block re-points them at the app tokens.
+ */
+:root {
+  --fb-text: #333;
+  --fb-text-muted: #666;
+  --fb-text-subtle: #999;
+  --fb-border: #ddd;
+  --fb-border-strong: #e0e0e0;
+  --fb-fill: #f0f0f0;
+  --fb-fill-soft: #f9f9f9;
+  --fb-surface: #ffffff;
+}
+
+[data-theme='dark'] {
+  --fb-text: var(--fs-body-text);
+  --fb-text-muted: var(--fs-muted-text);
+  --fb-text-subtle: var(--fs-muted-text);
+  --fb-border: var(--fs-border);
+  --fb-border-strong: var(--fs-border-strong);
+  --fb-fill: var(--fs-surface-raised);
+  --fb-fill-soft: var(--fs-surface-light);
+  --fb-surface: var(--fs-surface);
 }

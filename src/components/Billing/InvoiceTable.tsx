@@ -69,9 +69,9 @@ export function InvoiceTable({ invoices, isLoading }: InvoiceTableProps) {
                 <span
                   className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${
                     invoice.status === 'paid'
-                      ? 'bg-green-100 text-green-800'
+                      ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
                       : invoice.status === 'open'
-                        ? 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
                         : 'bg-gray-100 text-gray-800'
                   }`}
                 >
@@ -85,7 +85,7 @@ export function InvoiceTable({ invoices, isLoading }: InvoiceTableProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     download
-                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                    className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:dark:text-blue-300 font-medium"
                   >
                     <Download className="w-4 h-4" />
                     <span className="hidden sm:inline">Download PDF</span>

@@ -23,22 +23,22 @@ export function BulkProgressIndicator({
   const isFailed = status === 'failed';
 
   const getStatusIcon = () => {
-    if (isCompleted) return <CheckCircle className="w-5 h-5 text-green-600" />;
-    if (isFailed) return <AlertCircle className="w-5 h-5 text-red-600" />;
-    if (isProcessing) return <Clock className="w-5 h-5 text-blue-600 animate-spin" />;
+    if (isCompleted) return <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />;
+    if (isFailed) return <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />;
+    if (isProcessing) return <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />;
     return null;
   };
 
   const getBackgroundColor = () => {
-    if (isCompleted) return 'bg-green-50 border-green-200';
-    if (isFailed) return 'bg-red-50 border-red-200';
-    return 'bg-blue-50 border-blue-200';
+    if (isCompleted) return 'bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800';
+    if (isFailed) return 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800';
+    return 'bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800';
   };
 
   const getTextColor = () => {
-    if (isCompleted) return 'text-green-900';
-    if (isFailed) return 'text-red-900';
-    return 'text-blue-900';
+    if (isCompleted) return 'text-green-900 dark:text-green-200';
+    if (isFailed) return 'text-red-900 dark:text-red-200';
+    return 'text-blue-900 dark:text-blue-200';
   };
 
   return (
@@ -64,23 +64,23 @@ export function BulkProgressIndicator({
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="text-xs text-blue-700 mt-1">{progress}% complete</p>
+              <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">{progress}% complete</p>
             </div>
           )}
 
           {isCompleted && (
-            <p className="text-sm text-green-700">
+            <p className="text-sm text-green-700 dark:text-green-300">
               Successfully updated {processedCount} submission{processedCount !== 1 ? 's' : ''}
             </p>
           )}
 
           {isFailed && (
             <div>
-              <p className="text-sm text-red-700 mb-1">
+              <p className="text-sm text-red-700 dark:text-red-300 mb-1">
                 Operation failed after {processedCount} of {totalCount} submissions
               </p>
               {errorMessage && (
-                <p className="text-sm text-red-600 font-mono bg-red-100 rounded px-2 py-1">
+                <p className="text-sm text-red-600 dark:text-red-400 font-mono bg-red-100 dark:bg-red-900 rounded px-2 py-1">
                   {errorMessage}
                 </p>
               )}
@@ -93,8 +93,8 @@ export function BulkProgressIndicator({
             onClick={onDismiss}
             className={`text-sm font-medium hover:underline ${
               isFailed
-                ? 'text-red-600 hover:text-red-800'
-                : 'text-green-600 hover:text-green-800'
+                ? 'text-red-600 dark:text-red-400 hover:text-red-800 hover:dark:text-red-200'
+                : 'text-green-600 dark:text-green-400 hover:text-green-800 hover:dark:text-green-200'
             }`}
           >
             Dismiss

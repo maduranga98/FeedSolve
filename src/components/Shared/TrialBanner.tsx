@@ -17,7 +17,7 @@ export function TrialBanner() {
         </div>
         <button
           onClick={() => navigate('/pricing')}
-          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 bg-white text-red-600 rounded-md font-medium hover:bg-red-50 transition-colors"
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--c-sffffff)] text-red-600 dark:text-red-400 rounded-md font-medium hover:bg-red-50 hover:dark:bg-red-950 transition-colors"
         >
           <Zap size={13} />
           Upgrade now
@@ -31,7 +31,7 @@ export function TrialBanner() {
   return (
     <div
       className={`px-4 py-2.5 flex items-center justify-between gap-4 text-sm ${
-        isUrgent ? 'bg-amber-500 text-white' : 'bg-[#1c1917] text-white'
+        isUrgent ? 'bg-amber-500 text-white' : 'bg-[var(--c-s1c1917)] text-white'
       }`}
     >
       <div className="flex items-center gap-2">
@@ -47,8 +47,8 @@ export function TrialBanner() {
         onClick={() => navigate('/pricing')}
         className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-md font-medium transition-colors ${
           isUrgent
-            ? 'bg-white text-amber-600 hover:bg-amber-50'
-            : 'bg-[#c0694a] text-white hover:bg-[#1E6A8A]'
+            ? 'bg-[var(--c-sffffff)] text-amber-600 dark:text-amber-400 hover:bg-amber-50 hover:dark:bg-amber-950'
+            : 'bg-[var(--c-sc0694a)] text-white hover:bg-[var(--c-s1e6a8a)]'
         }`}
       >
         <Zap size={13} />

@@ -65,7 +65,7 @@ export function TeamMembersTable({
   return (
     <>
       {error && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-300 text-red-800 rounded-lg">
+        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 rounded-lg">
           {error}
         </div>
       )}
@@ -100,7 +100,7 @@ export function TeamMembersTable({
                 <tr
                   key={member.userId}
                   className={`border-b border-color-border hover:bg-color-surface-light transition ${
-                    isCurrentUser ? 'bg-blue-50' : ''
+                    isCurrentUser ? 'bg-blue-50 dark:bg-blue-950' : ''
                   }`}
                 >
                   <td className="py-3 px-4">
@@ -129,7 +129,7 @@ export function TeamMembersTable({
                           <>
                             <button
                               onClick={() => setEditingMemberId(member.userId)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 hover:dark:bg-blue-950 rounded-lg transition"
                               title={t('team_page.edit_role')}
                               disabled={removingMemberId === member.userId}
                             >
@@ -137,7 +137,7 @@ export function TeamMembersTable({
                             </button>
                             <button
                               onClick={() => handleRemove(member.userId)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"
+                              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 hover:dark:bg-red-950 rounded-lg transition"
                               title={t('team_page.remove_member')}
                               disabled={removingMemberId === member.userId}
                             >

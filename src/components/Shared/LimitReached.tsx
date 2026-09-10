@@ -18,14 +18,14 @@ export function LimitReached({ feature, limit, tier }: LimitReachedProps) {
   const suggestedTier = upgradeSuggestions[tier];
 
   return (
-    <div className="rounded-lg border-2 border-red-300 bg-red-50 p-6 mb-6">
+    <div className="rounded-lg border-2 border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950 p-6 mb-6">
       <div className="flex gap-4">
-        <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
         <div>
-          <h3 className="font-bold text-red-900 mb-2">
+          <h3 className="font-bold text-red-900 dark:text-red-200 mb-2">
             {feature} limit reached ({limit} maximum)
           </h3>
-          <p className="text-red-800 mb-4">
+          <p className="text-red-800 dark:text-red-200 mb-4">
             You've hit the {feature} limit for your {tier} plan. Upgrade to continue.
           </p>
           <button

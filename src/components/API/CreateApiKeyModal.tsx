@@ -80,8 +80,8 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-[var(--c-sffffff)]">
           <h2 className="text-xl font-semibold text-gray-900">Create API Key</h2>
           <button
             onClick={onClose}
@@ -122,7 +122,7 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
                     type="checkbox"
                     checked={formData.permissions.includes(permission)}
                     onChange={() => handlePermissionToggle(permission)}
-                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 dark:text-blue-400 rounded focus:ring-2 focus:ring-blue-500"
                   />
                   <span className="text-sm font-mono text-gray-700">{permission}</span>
                 </label>
@@ -185,7 +185,7 @@ const CreateApiKeyModal: React.FC<CreateApiKeyModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveIp(ip)}
-                      className="text-red-600 hover:text-red-700 text-sm"
+                      className="text-red-600 dark:text-red-400 hover:text-red-700 hover:dark:text-red-300 text-sm"
                     >
                       Remove
                     </button>

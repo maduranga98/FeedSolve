@@ -24,6 +24,7 @@ import { useTemplates } from "../../hooks/useTemplates";
 import { hasPermission } from "../../lib/rbac";
 import { Button } from "../Shared";
 import { LanguageSwitcher } from "../Language/LanguageSwitcher";
+import { ThemeToggle } from "../Shared/ThemeToggle";
 
 type NavItem = {
   path: string;
@@ -121,14 +122,14 @@ export function Navbar() {
   }, []);
 
   return (
-    <nav className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-[#E0D6CF] z-50 shadow-sm px-4 py-5 flex flex-col">
+    <nav className="fixed left-0 top-0 h-screen w-64 bg-[var(--c-sffffff)] border-r border-[var(--c-be0d6cf)] z-50 shadow-sm px-4 py-5 flex flex-col">
       <div className="mb-6">
         <button
           onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 focus:outline-none"
         >
           <img src="/logo.png" alt={"FeedSolve"} className="h-7" />
-          <span className="text-sm font-semibold text-[#1C1917]">FeedSolve</span>
+          <span className="text-sm font-semibold text-[var(--c-t1c1917)]">FeedSolve</span>
         </button>
       </div>
 
@@ -144,21 +145,21 @@ export function Navbar() {
                   className={`relative w-full inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-2xl transition-colors duration-150 focus:outline-none text-left
                     ${
                       active
-                        ? "text-[#C0694A] bg-[#F5E6DF]"
-                        : "text-[#78716C] hover:text-[#1C1917] hover:bg-[#F0EAE5]"
+                        ? "text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)]"
+                        : "text-[var(--c-t78716c)] hover:text-[var(--c-t1c1917)] hover:bg-[var(--c-sf0eae5)]"
                     }`}
                 >
-                  <span className={active ? "text-[#C0694A]" : "text-[#A89890]"}>
+                  <span className={active ? "text-[var(--c-tc0694a)]" : "text-[var(--c-ta89890)]"}>
                     {item.icon}
                   </span>
                   <span className="truncate">{item.label}</span>
                   {item.locked && (
-                    <span className="ml-auto text-[#D4860F]" title={item.lockedMessage}>
+                    <span className="ml-auto text-[var(--c-td4860f)]" title={item.lockedMessage}>
                       <Lock size={13} />
                     </span>
                   )}
                   {item.path === '/reply-templates' && templates.length > 0 && (
-                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#F5E6DF] text-[#C0694A]">
+                    <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)]">
                       {templates.length}
                     </span>
                   )}
@@ -170,17 +171,17 @@ export function Navbar() {
       )}
 
       {user && (
-        <div className="pt-3 mt-2 border-t border-[#E0D6CF]">
+        <div className="pt-3 mt-2 border-t border-[var(--c-be0d6cf)]">
           <button
             onClick={() => navigate(helpNavItem.path)}
             className={`relative w-full inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-2xl transition-colors duration-150 focus:outline-none text-left
               ${
                 isActive(helpNavItem.path)
-                  ? "text-[#C0694A] bg-[#F5E6DF]"
-                  : "text-[#78716C] hover:text-[#1C1917] hover:bg-[#F0EAE5]"
+                  ? "text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)]"
+                  : "text-[var(--c-t78716c)] hover:text-[var(--c-t1c1917)] hover:bg-[var(--c-sf0eae5)]"
               }`}
           >
-            <span className={isActive(helpNavItem.path) ? "text-[#C0694A]" : "text-[#A89890]"}>
+            <span className={isActive(helpNavItem.path) ? "text-[var(--c-tc0694a)]" : "text-[var(--c-ta89890)]"}>
               {helpNavItem.icon}
             </span>
             <span className="truncate">{helpNavItem.label}</span>
@@ -189,17 +190,20 @@ export function Navbar() {
       )}
 
       {user && (
-        <div className="pt-4 border-t border-[#E0D6CF] space-y-3">
-          <LanguageSwitcher />
+        <div className="pt-4 border-t border-[var(--c-be0d6cf)] space-y-3">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle className="ml-auto" />
+          </div>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#C0694A] to-[#1C1917] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--c-sc0694a)] to-[var(--c-s1c1917)] flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
               {initials}
             </div>
             <div className="text-left min-w-0">
-              <p className="text-sm font-semibold text-[#1C1917] leading-tight truncate max-w-[130px]">
+              <p className="text-sm font-semibold text-[var(--c-t1c1917)] leading-tight truncate max-w-[130px]">
                 {user.name}
               </p>
-              <p className="text-xs text-[#A89890] truncate max-w-[130px]">
+              <p className="text-xs text-[var(--c-ta89890)] truncate max-w-[130px]">
                 {user.email}
               </p>
             </div>
@@ -207,7 +211,7 @@ export function Navbar() {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="ml-auto text-[#78716C] hover:text-[#C0392B]"
+              className="ml-auto text-[var(--c-t78716c)] hover:text-[var(--c-tc0392b)]"
               title={t("logout")}
             >
               <LogOut size={16} />

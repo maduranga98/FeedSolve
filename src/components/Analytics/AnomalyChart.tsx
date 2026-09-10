@@ -39,9 +39,9 @@ export function AnomalyChart({ data }: AnomalyChartProps) {
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold text-color-primary">Anomaly Detection</h2>
         {anomalyCount > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 rounded-full border border-red-200">
-            <AlertTriangle size={14} className="text-red-500" />
-            <span className="text-xs font-medium text-red-600">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-red-50 dark:bg-red-950 rounded-full border border-red-200 dark:border-red-800">
+            <AlertTriangle size={14} className="text-red-500 dark:text-red-400" />
+            <span className="text-xs font-medium text-red-600 dark:text-red-400">
               {anomalyCount} anomal{anomalyCount === 1 ? 'y' : 'ies'} detected
             </span>
           </div>

@@ -35,11 +35,11 @@ export function CommentItem({
   const isOwnComment = comment.authorId === currentUserId && !isSystemComment;
 
   return (
-    <div className={isReply ? "pl-8 border-l-2 border-[#d6cabf]" : ""}>
-      <div className={`group rounded-xl p-3 shadow-sm ring-1 ${isSystemComment ? "bg-[#F1EFE8] ring-[#d6cabf]" : "bg-white ring-[#d6cabf]/70"}`}>
+    <div className={isReply ? "pl-8 border-l-2 border-[var(--c-bd6cabf)]" : ""}>
+      <div className={`group rounded-xl p-3 shadow-sm ring-1 ${isSystemComment ? "bg-[var(--c-sf1efe8)] ring-[var(--c-bd6cabf)]" : "bg-[var(--c-sffffff)] ring-[var(--c-bd6cabf)]/70"}`}>
         <div className="flex gap-3">
           {isSystemComment ? (
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white ring-1 ring-[#d6cabf]">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--c-sffffff)] ring-1 ring-[var(--c-bd6cabf)]">
               <img src="/logo.png" alt="FeedSolve" className="h-5 w-5 object-contain" />
             </div>
           ) : (
@@ -49,29 +49,29 @@ export function CommentItem({
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <p className="truncate text-sm font-semibold text-[#1c1917]">{isSystemComment ? "FeedSolve" : comment.authorName}</p>
-                  {isSystemComment && <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#78716c]">system</span>}
-                  <span className="text-xs text-[#78716c]">{relativeTime(comment)}</span>
+                  <p className="truncate text-sm font-semibold text-[var(--c-t1c1917)]">{isSystemComment ? "FeedSolve" : comment.authorName}</p>
+                  {isSystemComment && <span className="rounded-full bg-[var(--c-sffffff)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--c-t78716c)]">system</span>}
+                  <span className="text-xs text-[var(--c-t78716c)]">{relativeTime(comment)}</span>
                   {comment.isEdited && !comment.isDeleted && (
-                    <span className="text-xs font-medium text-[#78716c]">Edited</span>
+                    <span className="text-xs font-medium text-[var(--c-t78716c)]">Edited</span>
                   )}
                 </div>
               </div>
 
               {isOwnComment && !comment.isDeleted && !isEditing && (
                 <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
-                  <MoreHorizontal size={14} className="hidden text-[#78716c] sm:block" />
+                  <MoreHorizontal size={14} className="hidden text-[var(--c-t78716c)] sm:block" />
                   <button
                     type="button"
                     onClick={() => setIsEditing(true)}
-                    className="text-xs font-medium text-[#c0694a] hover:text-[#1c1917]"
+                    className="text-xs font-medium text-[var(--c-tc0694a)] hover:text-[var(--c-t1c1917)]"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(true)}
-                    className="text-xs font-medium text-[#C0392B] hover:text-[#922B21]"
+                    className="text-xs font-medium text-[var(--c-tc0392b)] hover:text-[var(--c-t922b21)]"
                   >
                     Delete
                   </button>
@@ -94,13 +94,13 @@ export function CommentItem({
                 />
               </div>
             ) : (
-              <p className={`mt-2 whitespace-pre-wrap text-sm leading-relaxed ${comment.isDeleted ? "italic text-[#78716c]" : "text-[#3c3632]"}`}>
+              <p className={`mt-2 whitespace-pre-wrap text-sm leading-relaxed ${comment.isDeleted ? "italic text-[var(--c-t78716c)]" : "text-[var(--c-t3c3632)]"}`}>
                 {comment.isDeleted ? "This comment was deleted" : comment.body}
               </p>
             )}
 
             {confirmDelete && (
-              <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-[#F1C0B8] bg-[#FDECEA] px-3 py-2 text-sm text-[#922B21]">
+              <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-[var(--c-bf1c0b8)] bg-[var(--c-sfdecea)] px-3 py-2 text-sm text-[var(--c-t922b21)]">
                 <span className="mr-auto">Delete this comment?</span>
                 <button
                   type="button"
@@ -108,14 +108,14 @@ export function CommentItem({
                     await onDelete(comment.id);
                     setConfirmDelete(false);
                   }}
-                  className="rounded-md bg-[#C0392B] px-2.5 py-1 text-xs font-semibold text-white"
+                  className="rounded-md bg-[var(--c-sc0392b)] px-2.5 py-1 text-xs font-semibold text-white"
                 >
                   Delete
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="rounded-md bg-white px-2.5 py-1 text-xs font-semibold text-[#78716c]"
+                  className="rounded-md bg-[var(--c-sffffff)] px-2.5 py-1 text-xs font-semibold text-[var(--c-t78716c)]"
                 >
                   Cancel
                 </button>
@@ -126,7 +126,7 @@ export function CommentItem({
               <button
                 type="button"
                 onClick={() => setIsReplying(true)}
-                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#c0694a] hover:text-[#1c1917]"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--c-tc0694a)] hover:text-[var(--c-t1c1917)]"
               >
                 <MessageCircle size={13} /> Reply
               </button>
@@ -136,7 +136,7 @@ export function CommentItem({
       </div>
 
       {!isReply && isReplying && (
-        <div className="mt-3 pl-8 border-l-2 border-[#d6cabf]">
+        <div className="mt-3 pl-8 border-l-2 border-[var(--c-bd6cabf)]">
           <CommentInput
             compact
             autoFocus

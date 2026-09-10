@@ -39,10 +39,10 @@ export function BillingPage() {
 
   if (!subscription) {
     return (
-      <div className="min-h-screen bg-[#E1E8EF]">
+      <div className="min-h-screen bg-[var(--c-se1e8ef)]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <p className="text-[#6B7B8D]">Unable to load billing information</p>
+            <p className="text-[var(--c-t6b7b8d)]">Unable to load billing information</p>
           </div>
         </div>
       </div>
@@ -50,17 +50,17 @@ export function BillingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF]">
+    <div className="min-h-screen bg-[var(--c-se1e8ef)]">
       {/* Page header */}
-      <div className="bg-white border-b border-[#E8ECF0]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be8ecf0)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-              <CreditCard size={20} className="text-[#2E86AB]" />
+            <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center">
+              <CreditCard size={20} className="text-[var(--c-t2e86ab)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#1E3A5F]">Billing & Subscription</h1>
-              <p className="text-sm text-[#6B7B8D] mt-0.5">Manage your plan, payment method, and invoices</p>
+              <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">Billing & Subscription</h1>
+              <p className="text-sm text-[var(--c-t6b7b8d)] mt-0.5">Manage your plan, payment method, and invoices</p>
             </div>
           </div>
         </div>
@@ -68,14 +68,14 @@ export function BillingPage() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         {error && (
-          <div className="p-4 bg-[#FFE5E5] border border-[#E74C3C] text-[#E74C3C] rounded-xl">
+          <div className="p-4 bg-[var(--c-sffe5e5)] border border-[var(--c-be74c3c)] text-[var(--c-te74c3c)] rounded-xl">
             {error}
           </div>
         )}
 
         {/* Current Subscription */}
         <div>
-          <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Current Subscription</h2>
+          <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">Current Subscription</h2>
           <SubscriptionCard
             subscription={subscription}
             onCancel={() => handleCancelSubscription().catch((err) => setError(err.message))}
@@ -84,7 +84,7 @@ export function BillingPage() {
 
         {/* Subscription Management */}
         <div>
-          <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Manage Subscription</h2>
+          <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">Manage Subscription</h2>
           <SubscriptionManager subscription={subscription} onSubscriptionChange={handleSubscriptionChange} />
         </div>
 
@@ -94,7 +94,7 @@ export function BillingPage() {
             <button
               onClick={() => createBillingPortalSession().catch((err) => setError(err.message))}
               disabled={portalLoading}
-              className="px-5 py-2.5 bg-[#2E86AB] text-white rounded-lg hover:bg-[#1E6A9A] font-medium disabled:opacity-50 transition-colors text-sm"
+              className="px-5 py-2.5 bg-[var(--c-s2e86ab)] text-white rounded-lg hover:bg-[var(--c-s1e6a9a)] font-medium disabled:opacity-50 transition-colors text-sm"
             >
               {portalLoading ? 'Loading...' : 'Manage Billing in Portal'}
             </button>
@@ -103,8 +103,8 @@ export function BillingPage() {
 
         {/* Invoice History */}
         <div>
-          <h2 className="text-lg font-semibold text-[#1E3A5F] mb-4">Invoice History</h2>
-          <div className="bg-white rounded-xl border border-[#E8ECF0] overflow-hidden">
+          <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)] mb-4">Invoice History</h2>
+          <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] overflow-hidden">
             <InvoiceTable invoices={invoices} isLoading={invoicesLoading} />
           </div>
         </div>

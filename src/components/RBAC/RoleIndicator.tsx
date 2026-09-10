@@ -12,9 +12,9 @@ export function RoleIndicator({ showLabel = true, className = '' }: RoleIndicato
   if (!user) return null;
 
   const roleColors: Record<string, string> = {
-    owner: 'bg-purple-100 text-purple-800',
-    admin: 'bg-blue-100 text-blue-800',
-    manager: 'bg-green-100 text-green-800',
+    owner: 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200',
+    admin: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
+    manager: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
     viewer: 'bg-gray-100 text-gray-800',
   };
 

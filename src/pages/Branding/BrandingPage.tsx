@@ -154,18 +154,18 @@ export function BrandingPage() {
 
   if (!checkFeature('canRemoveBranding')) {
     return (
-      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
-          <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
-            <Lock size={28} className="text-[#2E86AB]" />
+      <div className="min-h-screen bg-[var(--c-se1e8ef)] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-[var(--c-sffffff)] rounded-2xl border border-[var(--c-be8ecf0)] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
+          <div className="w-16 h-16 bg-[var(--c-sebf5fb)] rounded-full flex items-center justify-center">
+            <Lock size={28} className="text-[var(--c-t2e86ab)]" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">{t("branding_page.custom_branding")}</h2>
-            <p className="text-[#6B7B8D] text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("branding_page.custom_branding_desc") }} />
+            <h2 className="text-xl font-bold text-[var(--c-t1e3a5f)] mb-2">{t("branding_page.custom_branding")}</h2>
+            <p className="text-[var(--c-t6b7b8d)] text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: t("branding_page.custom_branding_desc") }} />
           </div>
           <button
             onClick={() => navigate('/pricing')}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[var(--c-s2e86ab)] text-white rounded-lg font-medium hover:bg-[var(--c-s1e6a8a)] transition-colors"
           >
             <Zap size={16} />
             {t("branding_page.upgrade_growth")}
@@ -178,20 +178,20 @@ export function BrandingPage() {
   const theme = previewTheme || DEFAULT_COLOR_THEME;
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF]">
+    <div className="min-h-screen bg-[var(--c-se1e8ef)]">
       {/* Header */}
-      <div className="bg-white border-b border-[#E8ECF0]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be8ecf0)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
-                <Palette size={20} className="text-[#2E86AB]" />
+              <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center flex-shrink-0">
+                <Palette size={20} className="text-[var(--c-t2e86ab)]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">
+                <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">
                   {t("branding")}
                 </h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                <p className="text-sm text-[var(--c-t6b7b8d)] mt-0.5">
                   {t("branding_page.subtitle")}
                 </p>
               </div>
@@ -213,32 +213,32 @@ export function BrandingPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-[#FFE5E5] border border-[#E74C3C] rounded-lg">
-          <AlertCircle size={18} className="text-[#E74C3C] flex-shrink-0" />
-          <p className="text-sm text-[#E74C3C]">{error}</p>
+        <div className="flex items-center gap-2 p-4 bg-[var(--c-sffe5e5)] border border-[var(--c-be74c3c)] rounded-lg">
+          <AlertCircle size={18} className="text-[var(--c-te74c3c)] flex-shrink-0" />
+          <p className="text-sm text-[var(--c-te74c3c)]">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="flex items-center gap-2 p-4 bg-[#EBF9F1] border border-[#27AE60] rounded-lg">
-          <Check size={18} className="text-[#27AE60] flex-shrink-0" />
-          <p className="text-sm text-[#27AE60]">{t("branding_saved")}</p>
+        <div className="flex items-center gap-2 p-4 bg-[var(--c-sebf9f1)] border border-[var(--c-b27ae60)] rounded-lg">
+          <Check size={18} className="text-[var(--c-t27ae60)] flex-shrink-0" />
+          <p className="text-sm text-[var(--c-t27ae60)]">{t("branding_saved")}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Company Information */}
-        <div className="bg-white rounded-xl border border-[#E3EDF4] shadow-sm p-6 space-y-5">
+        <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be3edf4)] shadow-sm p-6 space-y-5">
           <div className="flex items-center gap-2 mb-2">
-            <Building2 size={18} className="text-[#2E86AB]" />
-            <h2 className="text-lg font-semibold text-[#1E3A5F]">
+            <Building2 size={18} className="text-[var(--c-t2e86ab)]" />
+            <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)]">
               {t("company_info")}
             </h2>
           </div>
 
           {/* Logo Upload */}
           <div>
-            <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t1e3a5f)] mb-2">
               {t("company_logo")}
             </label>
             {branding.logoUrl ? (
@@ -246,13 +246,13 @@ export function BrandingPage() {
                 <img
                   src={branding.logoUrl}
                   alt="Company logo"
-                  className="h-16 w-16 rounded-lg object-contain border border-[#E3EDF4]"
+                  className="h-16 w-16 rounded-lg object-contain border border-[var(--c-be3edf4)]"
                 />
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleRemoveLogo}
-                  className="text-[#E74C3C] hover:text-[#C0392B]"
+                  className="text-[var(--c-te74c3c)] hover:text-[var(--c-tc0392b)]"
                 >
                   <Trash2 size={16} />
                   <span className="ml-1">{t("remove_logo")}</span>
@@ -260,15 +260,15 @@ export function BrandingPage() {
               </div>
             ) : (
               <label
-                className={`flex flex-col items-center justify-center h-28 border-2 border-dashed border-[#D3D1C7] rounded-lg cursor-pointer hover:border-[#2E86AB] hover:bg-[#F1F5F8] transition-colors ${
+                className={`flex flex-col items-center justify-center h-28 border-2 border-dashed border-[var(--c-bd3d1c7)] rounded-lg cursor-pointer hover:border-[var(--c-b2e86ab)] hover:bg-[var(--c-sf1f5f8)] transition-colors ${
                   uploading ? "opacity-50 pointer-events-none" : ""
                 }`}
               >
-                <Upload size={24} className="text-[#6B7B8D] mb-2" />
-                <span className="text-sm text-[#6B7B8D]">
+                <Upload size={24} className="text-[var(--c-t6b7b8d)] mb-2" />
+                <span className="text-sm text-[var(--c-t6b7b8d)]">
                   {uploading ? t("branding_page.uploading") : t("upload_logo")}
                 </span>
-                <span className="text-xs text-[#9AABBF] mt-1">
+                <span className="text-xs text-[var(--c-t9aabbf)] mt-1">
                   {t("logo_requirements")}
                 </span>
                 <input
@@ -301,7 +301,7 @@ export function BrandingPage() {
           />
 
           <div>
-            <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t1e3a5f)] mb-2">
               {t("company_description")} ({t("optional")})
             </label>
             <textarea
@@ -313,7 +313,7 @@ export function BrandingPage() {
                 }))
               }
               placeholder="Brief description of your company"
-              className="w-full px-4 py-2 border border-[#D3D1C7] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[#2E86AB] transition-colors resize-none h-24 hover:border-[#2E86AB]"
+              className="w-full px-4 py-2 border border-[var(--c-bd3d1c7)] rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] transition-colors resize-none h-24 hover:border-[var(--c-b2e86ab)]"
             />
           </div>
 
@@ -354,17 +354,17 @@ export function BrandingPage() {
 
         {/* Color Theme */}
         <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-[#E3EDF4] shadow-sm p-6 space-y-5">
+          <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be3edf4)] shadow-sm p-6 space-y-5">
             <div className="flex items-center gap-2 mb-2">
-              <Palette size={18} className="text-[#2E86AB]" />
-              <h2 className="text-lg font-semibold text-[#1E3A5F]">
+              <Palette size={18} className="text-[var(--c-t2e86ab)]" />
+              <h2 className="text-lg font-semibold text-[var(--c-t1e3a5f)]">
                 {t("color_theme")}
               </h2>
             </div>
 
             {/* Primary Color */}
             <div>
-              <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
+              <label className="block text-sm font-medium text-[var(--c-t1e3a5f)] mb-2">
                 {t("primary_color")}
               </label>
               <div className="flex items-center gap-3">
@@ -374,7 +374,7 @@ export function BrandingPage() {
                   onChange={(e) =>
                     handleColorChange("primaryColor", e.target.value)
                   }
-                  className="w-12 h-12 rounded-lg border border-[#D3D1C7] cursor-pointer p-1"
+                  className="w-12 h-12 rounded-lg border border-[var(--c-bd3d1c7)] cursor-pointer p-1"
                 />
                 <Input
                   value={branding.primaryColor || "#2E86AB"}
@@ -397,7 +397,7 @@ export function BrandingPage() {
 
             {/* Secondary Color */}
             <div>
-              <label className="block text-sm font-medium text-[#1E3A5F] mb-2">
+              <label className="block text-sm font-medium text-[var(--c-t1e3a5f)] mb-2">
                 {t("secondary_color")}
               </label>
               <div className="flex items-center gap-3">
@@ -407,7 +407,7 @@ export function BrandingPage() {
                   onChange={(e) =>
                     handleColorChange("secondaryColor", e.target.value)
                   }
-                  className="w-12 h-12 rounded-lg border border-[#D3D1C7] cursor-pointer p-1"
+                  className="w-12 h-12 rounded-lg border border-[var(--c-bd3d1c7)] cursor-pointer p-1"
                 />
                 <Input
                   value={branding.secondaryColor || "#1E3A5F"}
@@ -430,7 +430,7 @@ export function BrandingPage() {
 
             {/* Color Swatches */}
             <div className="space-y-2">
-              <p className="text-xs text-[#6B7B8D] font-medium uppercase tracking-wide">
+              <p className="text-xs text-[var(--c-t6b7b8d)] font-medium uppercase tracking-wide">
                 {t("branding_page.auto_variants")}
               </p>
               <div className="grid grid-cols-5 gap-2">
@@ -443,10 +443,10 @@ export function BrandingPage() {
                 ].map((swatch) => (
                   <div key={swatch.label} className="text-center">
                     <div
-                      className="h-8 rounded-md border border-[#E3EDF4]"
+                      className="h-8 rounded-md border border-[var(--c-be3edf4)]"
                       style={{ backgroundColor: swatch.color }}
                     />
-                    <span className="text-[10px] text-[#6B7B8D]">
+                    <span className="text-[10px] text-[var(--c-t6b7b8d)]">
                       {swatch.label}
                     </span>
                   </div>
@@ -460,10 +460,10 @@ export function BrandingPage() {
                 ].map((swatch) => (
                   <div key={swatch.label} className="text-center">
                     <div
-                      className="h-8 rounded-md border border-[#E3EDF4]"
+                      className="h-8 rounded-md border border-[var(--c-be3edf4)]"
                       style={{ backgroundColor: swatch.color }}
                     />
-                    <span className="text-[10px] text-[#6B7B8D]">
+                    <span className="text-[10px] text-[var(--c-t6b7b8d)]">
                       {swatch.label}
                     </span>
                   </div>
@@ -473,8 +473,8 @@ export function BrandingPage() {
           </div>
 
           {/* Live Preview */}
-          <div className="bg-white rounded-xl border border-[#E3EDF4] shadow-sm p-6">
-            <p className="text-xs text-[#6B7B8D] font-medium uppercase tracking-wide mb-4">
+          <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be3edf4)] shadow-sm p-6">
+            <p className="text-xs text-[var(--c-t6b7b8d)] font-medium uppercase tracking-wide mb-4">
               {t("preview")}
             </p>
             <div

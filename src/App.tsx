@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './hooks/useAuth';
+import { ThemeProvider, useTheme } from './hooks/useTheme';
 import { useTemplateInit } from './hooks/useTemplateInit';
 import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
@@ -131,10 +132,11 @@ function PublicRoute({ children }: { children: ReactNode }) {
 
 function AppContent() {
   useTemplateInit();
+  const { theme } = useTheme();
 
   return (
     <ErrorBoundary>
-      <Toaster position="top-right" richColors closeButton />
+      <Toaster position="top-right" richColors closeButton theme={theme} />
       <TrialBanner />
       <OfflineIndicator />
       <Suspense fallback={<RouteLoadingFallback />}>
@@ -359,11 +361,13 @@ function App() {
   useRTL();
 
   return (
-    <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

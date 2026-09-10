@@ -27,17 +27,17 @@ const ApiKeyDisplay: React.FC<ApiKeyDisplayProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full">
-        <div className="bg-green-50 border-b-2 border-green-200 p-6">
-          <h2 className="text-xl font-bold text-green-900">API Key Created Successfully</h2>
-          <p className="text-sm text-green-700 mt-1">Your new API key "{name}" has been created.</p>
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-xl max-w-lg w-full">
+        <div className="bg-green-50 dark:bg-green-950 border-b-2 border-green-200 dark:border-green-800 p-6">
+          <h2 className="text-xl font-bold text-green-900 dark:text-green-200">API Key Created Successfully</h2>
+          <p className="text-sm text-green-700 dark:text-green-300 mt-1">Your new API key "{name}" has been created.</p>
         </div>
 
         <div className="p-6 space-y-6">
           {/* Warning */}
-          <div className="flex gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-            <AlertCircle className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
-            <div className="text-sm text-amber-800">
+          <div className="flex gap-3 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg">
+            <AlertCircle className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" size={20} />
+            <div className="text-sm text-amber-800 dark:text-amber-200">
               <p className="font-semibold mb-1">Save your API key now</p>
               <p>This key will only be displayed once. If you lose it, you'll need to create a new one.</p>
             </div>
@@ -89,7 +89,7 @@ const ApiKeyDisplay: React.FC<ApiKeyDisplayProps> = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Key Display (use for reference in UI)
             </label>
-            <div className="px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg font-mono text-sm text-blue-900">
+            <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg font-mono text-sm text-blue-900 dark:text-blue-200">
               {keyDisplay}
             </div>
           </div>
@@ -97,7 +97,7 @@ const ApiKeyDisplay: React.FC<ApiKeyDisplayProps> = ({
           {/* Usage Instructions */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-semibold text-gray-900 text-sm mb-2">How to use</h4>
-            <pre className="text-xs bg-gray-900 text-gray-100 p-3 rounded overflow-x-auto">
+            <pre className="text-xs bg-gray-900 dark:bg-gray-100 text-gray-100 dark:text-gray-900 p-3 rounded overflow-x-auto">
               {`curl -H "Authorization: Bearer ${apiKey}" \\
   https://api.feedsolve.com/api/company/submissions`}
             </pre>

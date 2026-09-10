@@ -27,7 +27,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({ apiKey, onDelete, onCopy }) => 
     : 'Never';
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-900">{apiKey.name}</h3>
@@ -35,7 +35,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({ apiKey, onDelete, onCopy }) => 
         </div>
         <button
           onClick={() => onDelete(apiKey.id)}
-          className="text-red-600 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition"
+          className="text-red-600 dark:text-red-400 hover:text-red-700 hover:dark:text-red-300 p-2 hover:bg-red-50 hover:dark:bg-red-950 rounded-lg transition"
           title="Delete API key"
         >
           <Trash2 size={18} />
@@ -59,7 +59,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({ apiKey, onDelete, onCopy }) => 
           {apiKey.permissions.map((perm) => (
             <span
               key={perm}
-              className="inline-flex items-center bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded"
+              className="inline-flex items-center bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs px-2 py-1 rounded"
             >
               {perm}
             </span>
@@ -69,7 +69,7 @@ const ApiKeyCard: React.FC<ApiKeyCardProps> = ({ apiKey, onDelete, onCopy }) => 
 
       <button
         onClick={() => onCopy(apiKey.keyDisplay)}
-        className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-100 py-2 rounded-lg transition font-medium text-sm"
+        className="w-full flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 hover:bg-blue-100 hover:dark:bg-blue-900 py-2 rounded-lg transition font-medium text-sm"
       >
         <Copy size={14} />
         Copy Key Display

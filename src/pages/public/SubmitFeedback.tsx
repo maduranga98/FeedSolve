@@ -11,6 +11,7 @@ import { applyTextDirection } from "../../lib/rtl";
 import { getCategoryLabel } from "../../lib/utils";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../config/languages";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
+import { FloatingThemeToggle } from "../../components/Shared/ThemeToggle";
 import { SatisfactionRating } from "../../components/public/SatisfactionRating";
 import type { SatisfactionScore } from "../../components/public/SatisfactionRating";
 import {
@@ -150,6 +151,53 @@ const BRANDED_STYLES = `
       var(--brand-secondary, #1c1917)
     );
     border-radius: 0 2px 2px 0;
+  }
+
+  /*
+   * Dark theme. The branded surfaces above bake in white and near-white
+   * gradients, so each one is restated against the dark palette. Brand
+   * colours themselves are left alone — a customer's accent should look the
+   * same in either theme.
+   */
+  [data-theme='dark'] [data-branded].brand-page-bg {
+    background: linear-gradient(
+      150deg,
+      var(--brand-primary-bg, rgba(192,105,74,0.16)) 0%,
+      #211f1d 55%,
+      #1b1918 100%
+    );
+  }
+
+  [data-theme='dark'] [data-branded] .brand-secondary-text {
+    color: var(--fs-primary);
+  }
+
+  [data-theme='dark'] [data-branded] .brand-form-body {
+    background-color: var(--fs-surface);
+  }
+
+  [data-theme='dark'] [data-branded] .brand-section-card {
+    background: var(--fs-surface-raised);
+    border-color: var(--fs-border);
+  }
+
+  [data-theme='dark'] [data-branded] input:not([type="checkbox"]):not([type="radio"]),
+  [data-theme='dark'] [data-branded] select,
+  [data-theme='dark'] [data-branded] textarea {
+    background-color: var(--fs-surface-light);
+    border-color: var(--fs-border-strong);
+    color: var(--fs-body-text);
+  }
+  [data-theme='dark'] [data-branded] input:not([type="checkbox"]):not([type="radio"]):hover,
+  [data-theme='dark'] [data-branded] select:hover,
+  [data-theme='dark'] [data-branded] textarea:hover,
+  [data-theme='dark'] [data-branded] input:not([type="checkbox"]):not([type="radio"]):focus,
+  [data-theme='dark'] [data-branded] select:focus,
+  [data-theme='dark'] [data-branded] textarea:focus {
+    background-color: var(--fs-surface-raised);
+  }
+  [data-theme='dark'] [data-branded] ::placeholder {
+    color: var(--fs-muted-text);
   }
 
   /* Animations */
@@ -396,7 +444,7 @@ export function SubmitFeedback() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f0ec] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--c-sf5f0ec)] flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -404,10 +452,10 @@ export function SubmitFeedback() {
 
   if (!board) {
     return (
-      <div className="min-h-screen bg-[#f5f0ec] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--c-sf5f0ec)] flex items-center justify-center p-4">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-[#1c1917] mb-4">{t("common:not_found")}</h1>
-          <p className="text-[#78716c]">{t("common:board_not_found")}</p>
+          <h1 className="text-2xl font-bold text-[var(--c-t1c1917)] mb-4">{t("common:not_found")}</h1>
+          <p className="text-[var(--c-t78716c)]">{t("common:board_not_found")}</p>
         </div>
       </div>
     );
@@ -422,9 +470,10 @@ export function SubmitFeedback() {
         className="min-h-screen brand-page-bg flex flex-col items-center justify-center p-4"
       >
         <style>{BRANDED_STYLES}</style>
+      <FloatingThemeToggle />
 
         <div className="w-full max-w-lg brand-animate-fadeup">
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#efe5dd]">
+          <div className="bg-[var(--c-sffffff)] rounded-3xl shadow-2xl overflow-hidden border border-[var(--c-befe5dd)]">
 
             {/* ── Hero gradient header ── */}
             <div className="brand-hero-gradient px-5 sm:px-8 pt-8 sm:pt-12 pb-8 sm:pb-10 text-center" style={{ position: "relative" }}>
@@ -494,7 +543,7 @@ export function SubmitFeedback() {
                   <MessageSquare size={13} style={{ color: "var(--brand-primary, #c0694a)" }} />
                   <span className="text-xs font-bold brand-primary-text">{board.name}</span>
                 </div>
-                <p className="text-sm text-[#78716c] leading-relaxed">
+                <p className="text-sm text-[var(--c-t78716c)] leading-relaxed">
                   {branding?.description || board.description || t("forms:feedback.intro_description")}
                 </p>
               </div>
@@ -509,11 +558,11 @@ export function SubmitFeedback() {
               </button>
 
               {/* Tracking lookup */}
-              <div className="mt-7 pt-6 border-t border-[#f2ece6]">
-                <p className="text-xs text-center text-[#8f8680] mb-3">
+              <div className="mt-7 pt-6 border-t border-[var(--c-bf2ece6)]">
+                <p className="text-xs text-center text-[var(--c-t8f8680)] mb-3">
                   {t("forms:feedback.already_submitted")}
                 </p>
-                <div className="flex gap-2 bg-[#faf8f5] border border-[#efe5dd] rounded-xl p-1.5">
+                <div className="flex gap-2 bg-[var(--c-sfaf8f5)] border border-[var(--c-befe5dd)] rounded-xl p-1.5">
                   <Input
                     placeholder={t("forms:feedback.enter_tracking_code")}
                     value={existingTrackingCode}
@@ -532,7 +581,7 @@ export function SubmitFeedback() {
                       const code = existingTrackingCode.trim().replace(/^#/, "");
                       if (code) navigate(`/track/${code}`);
                     }}
-                    className="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg bg-[#1c1917] text-white hover:bg-[#33302d] transition-colors"
+                    className="flex-shrink-0 px-4 py-2 text-xs font-bold rounded-lg bg-[var(--c-s1c1917)] text-white hover:bg-[var(--c-s33302d)] transition-colors"
                   >
                     {t("forms:feedback.view_updates")}
                   </button>
@@ -542,8 +591,8 @@ export function SubmitFeedback() {
 
             {/* Contact footer */}
             {(branding?.address || branding?.contactNumber || branding?.contactEmail) && (
-              <div className="px-5 sm:px-8 pb-5 sm:pb-6 border-t border-[#f2ece6] pt-4">
-                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#8f8680] justify-center">
+              <div className="px-5 sm:px-8 pb-5 sm:pb-6 border-t border-[var(--c-bf2ece6)] pt-4">
+                <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--c-t8f8680)] justify-center">
                   {branding.address && (
                     <span className="flex items-center gap-1.5">
                       <MapPin size={11} />{branding.address}
@@ -565,7 +614,7 @@ export function SubmitFeedback() {
           </div>
 
           {showPoweredBy && (
-            <p className="text-center text-xs text-[#8f8680] mt-4">
+            <p className="text-center text-xs text-[var(--c-t8f8680)] mt-4">
               {t("forms:feedback.powered_by")}
             </p>
           )}
@@ -583,8 +632,9 @@ export function SubmitFeedback() {
         className="min-h-screen brand-page-bg flex items-center justify-center p-4"
       >
         <style>{BRANDED_STYLES}</style>
+      <FloatingThemeToggle />
         <div className="w-full max-w-md brand-animate-pop">
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#efe5dd]">
+          <div className="bg-[var(--c-sffffff)] rounded-3xl shadow-2xl overflow-hidden border border-[var(--c-befe5dd)]">
 
             {/* ── Hero header ── */}
             <div className="brand-hero-gradient px-6 py-6" style={{ position: "relative" }}>
@@ -652,7 +702,7 @@ export function SubmitFeedback() {
               <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--brand-secondary, #1c1917)" }}>
                 {t("forms:feedback.submit_success")}
               </h1>
-              <p className="text-[#78716c] mb-8 leading-relaxed text-sm">
+              <p className="text-[var(--c-t78716c)] mb-8 leading-relaxed text-sm">
                 {t("forms:feedback.thank_you")}
               </p>
 
@@ -691,7 +741,7 @@ export function SubmitFeedback() {
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-[#8f8680]">
+                <p className="text-xs text-[var(--c-t8f8680)]">
                   {t("forms:feedback.save_code_helper")}
                 </p>
               </div>
@@ -726,7 +776,7 @@ export function SubmitFeedback() {
                   </>
                 )}
               </button>
-              <p className="text-xs text-[#8f8680] mb-1 -mt-1">
+              <p className="text-xs text-[var(--c-t8f8680)] mb-1 -mt-1">
                 {t("forms:feedback.pdf_help")}
               </p>
 
@@ -748,7 +798,7 @@ export function SubmitFeedback() {
                     satisfactionLabel: null,
                   });
                 }}
-                className="w-full px-5 py-2.5 text-sm text-[#8f8680] hover:text-[#78716c] transition-colors font-medium"
+                className="w-full px-5 py-2.5 text-sm text-[var(--c-t8f8680)] hover:text-[var(--c-t78716c)] transition-colors font-medium"
               >
                 {t("forms:feedback.submit_another")}
               </button>
@@ -756,7 +806,7 @@ export function SubmitFeedback() {
           </div>
 
           {showPoweredBy && (
-            <p className="text-center text-xs text-[#8f8680] mt-4">
+            <p className="text-center text-xs text-[var(--c-t8f8680)] mt-4">
               {t("forms:feedback.powered_by")}
             </p>
           )}
@@ -773,8 +823,9 @@ export function SubmitFeedback() {
       className="min-h-screen brand-page-bg p-4 sm:p-8"
     >
       <style>{BRANDED_STYLES}</style>
+      <FloatingThemeToggle />
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-3xl border border-[#efe5dd] shadow-2xl overflow-hidden">
+        <div className="bg-[var(--c-sffffff)] rounded-3xl border border-[var(--c-befe5dd)] shadow-2xl overflow-hidden">
 
           {/* ── Compact brand header ── */}
           <div className="brand-hero-gradient px-6 py-5" style={{ position: "relative" }}>
@@ -842,7 +893,7 @@ export function SubmitFeedback() {
               <h2 className="text-xl font-bold mb-1" style={{ color: "var(--brand-secondary, #1c1917)" }}>
                 {board.name}
               </h2>
-              <p className="text-sm text-[#78716c]">
+              <p className="text-sm text-[var(--c-t78716c)]">
                 {board.description || t("forms:feedback.form_description") || "Fill in the details below"}
               </p>
             </div>
@@ -850,7 +901,7 @@ export function SubmitFeedback() {
             {/* Location tag */}
             {locationTag && (
               <div className="mb-5">
-                <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[#9c4a2f] shadow-sm"
+                <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[var(--c-t9c4a2f)] shadow-sm"
                   style={{ background: "var(--brand-primary-bg, rgba(192,105,74,0.10))", border: "1px solid var(--brand-primary-border, rgba(192,105,74,0.20))" }}>
                   <MapPin size={14} />
                   <span>{locationTag}</span>
@@ -860,8 +911,8 @@ export function SubmitFeedback() {
 
             {/* Submit error */}
             {errors.submit && (
-              <div className="mb-5 p-4 bg-[#FFF5F5] border border-[#FCA5A5] rounded-xl">
-                <p className="text-sm text-[#c0392b]">{errors.submit}</p>
+              <div className="mb-5 p-4 bg-[var(--c-sfff5f5)] border border-[var(--c-bfca5a5)] rounded-xl">
+                <p className="text-sm text-[var(--c-tc0392b)]">{errors.submit}</p>
               </div>
             )}
 
@@ -914,7 +965,7 @@ export function SubmitFeedback() {
                       onChange={e => setFormData({ ...formData, subject: e.target.value.slice(0, SUBJECT_MAX) })}
                       error={errors.subject}
                     />
-                    <p className={`text-xs mt-1 text-right ${formData.subject.length >= SUBJECT_MAX ? "text-[#c0392b]" : "text-[#8f8680]"}`}>
+                    <p className={`text-xs mt-1 text-right ${formData.subject.length >= SUBJECT_MAX ? "text-[var(--c-tc0392b)]" : "text-[var(--c-t8f8680)]"}`}>
                       {formData.subject.length}/{SUBJECT_MAX}
                     </p>
                   </div>
@@ -932,14 +983,14 @@ export function SubmitFeedback() {
                       onChange={e => setFormData({ ...formData, description: e.target.value.slice(0, DESCRIPTION_MAX) })}
                       rows={5}
                       className={`w-full px-4 py-3 border rounded-xl text-sm resize-none focus:outline-none transition-all ${
-                        errors.description ? "border-[#c0392b]" : ""
+                        errors.description ? "border-[var(--c-bc0392b)]" : ""
                       }`}
                     />
                     <div className="flex items-start justify-between mt-1">
                       {errors.description ? (
-                        <p className="text-xs text-[#c0392b]">{errors.description}</p>
+                        <p className="text-xs text-[var(--c-tc0392b)]">{errors.description}</p>
                       ) : <span />}
-                      <p className={`text-xs ${formData.description.length >= DESCRIPTION_MAX ? "text-[#c0392b]" : "text-[#8f8680]"}`}>
+                      <p className={`text-xs ${formData.description.length >= DESCRIPTION_MAX ? "text-[var(--c-tc0392b)]" : "text-[var(--c-t8f8680)]"}`}>
                         {formData.description.length}/{DESCRIPTION_MAX}
                       </p>
                     </div>
@@ -1014,7 +1065,7 @@ export function SubmitFeedback() {
                         <div className="text-sm font-semibold" style={{ color: "var(--brand-secondary, #1c1917)" }}>
                           {t("forms:feedback.anonymous")}
                         </div>
-                        <div className="text-xs text-[#8f8680] mt-0.5">
+                        <div className="text-xs text-[var(--c-t8f8680)] mt-0.5">
                           {t("forms:feedback.anonymous_help")}
                         </div>
                       </div>
@@ -1052,7 +1103,7 @@ export function SubmitFeedback() {
                   )}
 
                   {formData.isAnonymous && (
-                    <p className="text-xs text-[#8f8680] text-center py-1">
+                    <p className="text-xs text-[var(--c-t8f8680)] text-center py-1">
                       {t("forms:feedback.anonymous_confirmed")}
                     </p>
                   )}
@@ -1114,7 +1165,7 @@ export function SubmitFeedback() {
                     <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1c1917)" }}>
                       {t("forms:feedback.satisfaction_section")}
                       {board.satisfactionRequired && (
-                        <span className="text-[#c0392b] ml-1">*</span>
+                        <span className="text-[var(--c-tc0392b)] ml-1">*</span>
                       )}
                     </h3>
                   </div>
@@ -1149,8 +1200,8 @@ export function SubmitFeedback() {
 
           {/* Contact footer */}
           {(branding?.address || branding?.contactNumber || branding?.contactEmail) && (
-            <div className="px-7 pb-6 border-t border-[#f2ece6] pt-4">
-              <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#8f8680] justify-center">
+            <div className="px-7 pb-6 border-t border-[var(--c-bf2ece6)] pt-4">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-[var(--c-t8f8680)] justify-center">
                 {branding.address && (
                   <span className="flex items-center gap-1.5"><MapPin size={11} />{branding.address}</span>
                 )}
@@ -1166,7 +1217,7 @@ export function SubmitFeedback() {
         </div>
 
         {showPoweredBy && (
-          <p className="text-center text-xs text-[#8f8680] mt-4">
+          <p className="text-center text-xs text-[var(--c-t8f8680)] mt-4">
             {t("forms:feedback.powered_by")}
           </p>
         )}
