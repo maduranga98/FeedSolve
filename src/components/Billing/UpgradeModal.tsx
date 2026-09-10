@@ -49,7 +49,7 @@ export function UpgradeModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-2xl max-w-md w-full mx-4">
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-2xl max-w-md w-full mx-4">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-2xl font-bold">Upgrade Plan</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -62,26 +62,26 @@ export function UpgradeModal({
             <p className="text-gray-600 text-sm mb-2">Upgrade from</p>
             <p className="text-xl font-bold text-gray-900 mb-4">{tierNames[fromTier]}</p>
 
-            <div className="text-2xl font-bold text-blue-600 mb-4">
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-4">
               → {tierNames[toTier]}
             </div>
           </div>
 
-          <div className="bg-blue-50 rounded-lg p-4 mb-6">
+          <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4 mb-6">
             <p className="text-gray-600 text-sm mb-2">New Monthly Cost</p>
             <div className="flex items-baseline gap-2">
               <span className="text-3xl font-bold text-gray-900">${toPrice}</span>
               <span className="text-gray-600">/month</span>
             </div>
             {priceDiff > 0 && (
-              <p className="text-sm text-blue-600 mt-2">
+              <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
                 +${priceDiff} more per month
               </p>
             )}
           </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 rounded text-sm">
               {error}
             </div>
           )}

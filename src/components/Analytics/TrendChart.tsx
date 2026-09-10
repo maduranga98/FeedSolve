@@ -59,8 +59,8 @@ export function TrendChart({
               onClick={() => handlePresetChange(preset)}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
                 dateRange.preset === preset
-                  ? 'bg-[#1E3A5F] text-white'
-                  : 'bg-[#EBF5FB] text-[#1E3A5F] border border-[#C8DDE8] hover:bg-[#2E86AB] hover:text-white hover:border-[#2E86AB]'
+                  ? 'bg-[var(--c-s1e3a5f)] text-white'
+                  : 'bg-[var(--c-sebf5fb)] text-[var(--c-t1e3a5f)] border border-[var(--c-bc8dde8)] hover:bg-[var(--c-s2e86ab)] hover:text-white hover:border-[var(--c-b2e86ab)]'
               }`}
             >
               {getPresetLabel(preset as DateRangePreset)}
@@ -71,8 +71,8 @@ export function TrendChart({
             onClick={() => setIsCustom(!isCustom)}
             className={`px-3 py-1 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
               isCustom
-                ? 'bg-[#1E3A5F] text-white'
-                : 'bg-[#EBF5FB] text-[#1E3A5F] border border-[#C8DDE8] hover:bg-[#2E86AB] hover:text-white hover:border-[#2E86AB]'
+                ? 'bg-[var(--c-s1e3a5f)] text-white'
+                : 'bg-[var(--c-sebf5fb)] text-[var(--c-t1e3a5f)] border border-[var(--c-bc8dde8)] hover:bg-[var(--c-s2e86ab)] hover:text-white hover:border-[var(--c-b2e86ab)]'
             }`}
           >
             <Calendar size={16} />
@@ -107,7 +107,7 @@ export function TrendChart({
           </div>
           <button
             onClick={handleCustomApply}
-            className="px-4 py-2 bg-[#1E3A5F] text-white rounded font-medium hover:bg-[#2E86AB] transition-colors"
+            className="px-4 py-2 bg-[var(--c-s1e3a5f)] text-white rounded font-medium hover:bg-[var(--c-s2e86ab)] transition-colors"
           >
             {t('analytics.apply')}
           </button>

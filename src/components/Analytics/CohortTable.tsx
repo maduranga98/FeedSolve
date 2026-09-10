@@ -6,11 +6,11 @@ interface CohortTableProps {
 
 function cellColor(pct: number): string {
   if (pct < 0) return '';
-  if (pct >= 80) return 'bg-green-100 text-green-800';
-  if (pct >= 60) return 'bg-blue-100 text-blue-800';
-  if (pct >= 40) return 'bg-yellow-100 text-yellow-800';
-  if (pct >= 20) return 'bg-orange-100 text-orange-800';
-  return 'bg-red-100 text-red-800';
+  if (pct >= 80) return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+  if (pct >= 60) return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
+  if (pct >= 40) return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
+  if (pct >= 20) return 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200';
+  return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
 }
 
 export function CohortTable({ data }: CohortTableProps) {
@@ -81,11 +81,11 @@ export function CohortTable({ data }: CohortTableProps) {
       <div className="flex items-center gap-2 mt-4">
         <span className="text-xs text-color-muted-text">% resolved by week:</span>
         {[
-          { label: '≥80%', cls: 'bg-green-100 text-green-800' },
-          { label: '≥60%', cls: 'bg-blue-100 text-blue-800' },
-          { label: '≥40%', cls: 'bg-yellow-100 text-yellow-800' },
-          { label: '≥20%', cls: 'bg-orange-100 text-orange-800' },
-          { label: '<20%', cls: 'bg-red-100 text-red-800' },
+          { label: '≥80%', cls: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' },
+          { label: '≥60%', cls: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' },
+          { label: '≥40%', cls: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' },
+          { label: '≥20%', cls: 'bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200' },
+          { label: '<20%', cls: 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' },
         ].map((l) => (
           <span key={l.label} className={`text-xs px-2 py-0.5 rounded font-medium ${l.cls}`}>
             {l.label}

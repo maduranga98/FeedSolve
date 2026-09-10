@@ -15,7 +15,7 @@ export default function ResolutionRateCard({
   const offset = circumference - (rate / 100) * circumference;
 
   return (
-    <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2E86AB] rounded-lg p-8 text-white shadow-lg">
+    <div className="bg-gradient-to-br from-[var(--c-s1e3a5f)] to-[var(--c-s2e86ab)] rounded-lg p-8 text-white shadow-lg">
       <div className="flex items-center justify-between mb-6">
         <div>
           <p className="text-sm font-medium opacity-90">Resolution Rate</p>

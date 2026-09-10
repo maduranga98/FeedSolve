@@ -29,12 +29,12 @@ export default function TeamMemberCard({ member, onRemoved }: TeamMemberCardProp
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white border border-[#D3D1C7] rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-[var(--c-sffffff)] border border-[var(--c-bd3d1c7)] rounded-lg">
       <div className="flex-1">
-        <h3 className="font-semibold text-[#444441]">{member.name}</h3>
-        <p className="text-sm text-[#6B7B8D]">{member.email}</p>
+        <h3 className="font-semibold text-[var(--c-t444441)]">{member.name}</h3>
+        <p className="text-sm text-[var(--c-t6b7b8d)]">{member.email}</p>
         <div className="mt-2">
-          <span className="inline-block px-2 py-1 bg-[#E0E8EF] text-[#1E3A5F] text-xs rounded font-medium">
+          <span className="inline-block px-2 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] text-xs rounded font-medium">
             {member.role === 'admin' ? 'Admin' : 'Member'}
           </span>
         </div>

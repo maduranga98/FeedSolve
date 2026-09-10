@@ -10,34 +10,34 @@ interface StatCardProps {
 
 const colorStyles: Record<string, { bg: string; text: string; icon: string }> = {
   blue: {
-    bg: 'bg-[#EBF5FB]',
-    text: 'text-[#185FA5]',
-    icon: 'text-[#185FA5]',
+    bg: 'bg-[var(--c-sebf5fb)]',
+    text: 'text-[var(--c-t185fa5)]',
+    icon: 'text-[var(--c-t185fa5)]',
   },
   teal: {
-    bg: 'bg-[#D6EEF5]',
-    text: 'text-[#2E86AB]',
-    icon: 'text-[#2E86AB]',
+    bg: 'bg-[var(--c-sd6eef5)]',
+    text: 'text-[var(--c-t2e86ab)]',
+    icon: 'text-[var(--c-t2e86ab)]',
   },
   green: {
-    bg: 'bg-[#EBF9F1]',
-    text: 'text-[#0F6E56]',
-    icon: 'text-[#0F6E56]',
+    bg: 'bg-[var(--c-sebf9f1)]',
+    text: 'text-[var(--c-t0f6e56)]',
+    icon: 'text-[var(--c-t0f6e56)]',
   },
   yellow: {
-    bg: 'bg-[#FEF5E7]',
-    text: 'text-[#854F0B]',
-    icon: 'text-[#854F0B]',
+    bg: 'bg-[var(--c-sfef5e7)]',
+    text: 'text-[var(--c-t854f0b)]',
+    icon: 'text-[var(--c-t854f0b)]',
   },
   red: {
-    bg: 'bg-[#FDE8E8]',
-    text: 'text-[#A32D2D]',
-    icon: 'text-[#A32D2D]',
+    bg: 'bg-[var(--c-sfde8e8)]',
+    text: 'text-[var(--c-ta32d2d)]',
+    icon: 'text-[var(--c-ta32d2d)]',
   },
   gray: {
-    bg: 'bg-[#EFF3F6]',
-    text: 'text-[#6B7B8D]',
-    icon: 'text-[#6B7B8D]',
+    bg: 'bg-[var(--c-seff3f6)]',
+    text: 'text-[var(--c-t6b7b8d)]',
+    icon: 'text-[var(--c-t6b7b8d)]',
   },
 };
 
@@ -51,7 +51,7 @@ export default function StatCard({
   const style = colorStyles[color];
 
   return (
-    <div className={`${style.bg} rounded-lg p-6 border border-[#D3D1C7]`}>
+    <div className={`${style.bg} rounded-lg p-6 border border-[var(--c-bd3d1c7)]`}>
       <div className="flex items-start justify-between mb-3">
         <span className={`text-sm font-medium ${style.text}`}>{label}</span>
         {icon && <div className={`${style.icon}`}>{icon}</div>}

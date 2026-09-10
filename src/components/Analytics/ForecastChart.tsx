@@ -46,9 +46,9 @@ export function ForecastChart({ data }: ForecastChartProps) {
           </p>
         </div>
         {forecastedDays.length > 0 && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 rounded-lg border border-purple-200">
-            <TrendingUp size={14} className="text-purple-600" />
-            <span className="text-xs font-medium text-purple-700">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950 rounded-lg border border-purple-200 dark:border-purple-800">
+            <TrendingUp size={14} className="text-purple-600 dark:text-purple-400" />
+            <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
               ~{projectedTotal} predicted next {forecastedDays.length}d
             </span>
           </div>

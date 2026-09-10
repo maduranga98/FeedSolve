@@ -35,8 +35,8 @@ interface PermissionDeniedProps {
 
 export function PermissionDenied({ message = 'You do not have permission to access this' }: PermissionDeniedProps) {
   return (
-    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-      <p className="text-yellow-800 text-sm">{message}</p>
+    <div className="p-4 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg text-center">
+      <p className="text-yellow-800 dark:text-yellow-200 text-sm">{message}</p>
     </div>
   );
 }

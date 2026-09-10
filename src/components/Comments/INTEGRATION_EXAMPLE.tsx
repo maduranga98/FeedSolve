@@ -33,7 +33,7 @@ export const SubmissionDetailWithComments: React.FC<SubmissionDetailProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Submission Details (Left) */}
       <div className="lg:col-span-2">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
             {submission.subject}
           </h1>
@@ -64,12 +64,12 @@ export const SubmissionDetailWithComments: React.FC<SubmissionDetailProps> = ({
       {/* Sidebar (Right) */}
       <div className="lg:col-span-1">
         {/* Comments Widget */}
-        <div className="bg-blue-50 rounded-lg border border-blue-200 p-4 mb-6">
+        <div className="bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800 p-4 mb-6">
           <button
             onClick={() => setShowComments(!showComments)}
             className="flex items-center justify-between w-full"
           >
-            <h3 className="font-semibold text-blue-900">Comments</h3>
+            <h3 className="font-semibold text-blue-900 dark:text-blue-200">Comments</h3>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <span className="bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
@@ -83,7 +83,7 @@ export const SubmissionDetailWithComments: React.FC<SubmissionDetailProps> = ({
         </div>
 
         {/* Other Sidebar Items */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
+        <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-4 space-y-4">
           {currentUser && (
             <>
               <div>
@@ -102,7 +102,7 @@ export const SubmissionDetailWithComments: React.FC<SubmissionDetailProps> = ({
       {/* Comments Section - Full Width */}
       {showComments && (
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
             <CommentThread
               submissionId={submission.id}
               companyId={submission.companyId}
@@ -171,7 +171,7 @@ export function SubmissionWithCommentsCount({ submissionId }: { submissionId: st
       {isLoading ? (
         <span className="text-gray-400">...</span>
       ) : (
-        <span className="font-bold text-blue-600">{commentCount}</span>
+        <span className="font-bold text-blue-600 dark:text-blue-400">{commentCount}</span>
       )}
     </div>
   );

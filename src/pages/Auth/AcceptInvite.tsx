@@ -91,7 +91,7 @@ export function AcceptInvite() {
   return (
     <div className="min-h-screen flex">
       {/* Left branding panel */}
-      <div className="hidden lg:flex lg:w-[40%] flex-col justify-between p-12 bg-gradient-to-br from-[#1E3A5F] via-[#2A567F] to-[#2E86AB] text-white relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[40%] flex-col justify-between p-12 bg-gradient-to-br from-[var(--c-s1e3a5f)] via-[var(--c-s2a567f)] to-[var(--c-s2e86ab)] text-white relative overflow-hidden">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5" />
         <div className="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/5" />
         <div className="flex items-center gap-3 relative z-10">
@@ -114,10 +114,10 @@ export function AcceptInvite() {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#E1E8EF] overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[var(--c-se1e8ef)] overflow-y-auto">
         <div className="lg:hidden mb-8 flex items-center justify-center gap-2">
           <img src="/logo.png" alt="FeedSolve" className="h-8 w-8" />
-          <span className="text-xl font-bold text-[#1E3A5F]">FeedSolve</span>
+          <span className="text-xl font-bold text-[var(--c-t1e3a5f)]">FeedSolve</span>
         </div>
 
         <div className="w-full max-w-sm fade-in">
@@ -127,35 +127,35 @@ export function AcceptInvite() {
             </div>
           ) : inviteError ? (
             <div className="text-center">
-              <div className="mb-4 p-4 bg-[#FEF0EF] border border-[#F5C6C2] rounded-lg">
-                <p className="text-sm text-[#C0392B]">{inviteError}</p>
+              <div className="mb-4 p-4 bg-[var(--c-sfef0ef)] border border-[var(--c-bf5c6c2)] rounded-lg">
+                <p className="text-sm text-[var(--c-tc0392b)]">{inviteError}</p>
               </div>
-              <Link to="/login" className="text-sm text-[#2E86AB] font-medium hover:underline">
+              <Link to="/login" className="text-sm text-[var(--c-t2e86ab)] font-medium hover:underline">
                 {t('auth.go_to_login')}
               </Link>
             </div>
           ) : (
             <>
               <div className="mb-7">
-                <h1 className="text-2xl font-bold text-[#1E3A5F] mb-1">{t('auth.accept_invitation')}</h1>
-                <p className="text-sm text-[#6B7B8D]" dangerouslySetInnerHTML={{ __html: t('auth.invited_as', { role: invitation!.role }) }}>
+                <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)] mb-1">{t('auth.accept_invitation')}</h1>
+                <p className="text-sm text-[var(--c-t6b7b8d)]" dangerouslySetInnerHTML={{ __html: t('auth.invited_as', { role: invitation!.role }) }}>
                 </p>
               </div>
 
               {errors.submit && (
-                <div className="mb-5 p-3.5 bg-[#FEF0EF] border border-[#F5C6C2] rounded-lg">
-                  <p className="text-sm text-[#C0392B]">{errors.submit}</p>
+                <div className="mb-5 p-3.5 bg-[var(--c-sfef0ef)] border border-[var(--c-bf5c6c2)] rounded-lg">
+                  <p className="text-sm text-[var(--c-tc0392b)]">{errors.submit}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#1E3A5F] mb-1">{t('auth.email_label')}</label>
+                  <label className="block text-sm font-medium text-[var(--c-t1e3a5f)] mb-1">{t('auth.email_label')}</label>
                   <input
                     type="email"
                     value={invitation!.email}
                     disabled
-                    className="w-full px-3 py-2.5 border border-[#E8ECF0] rounded-xl bg-[#EAEFF4] text-[#6B7B8D] text-sm cursor-not-allowed"
+                    className="w-full px-3 py-2.5 border border-[var(--c-be8ecf0)] rounded-xl bg-[var(--c-seaeff4)] text-[var(--c-t6b7b8d)] text-sm cursor-not-allowed"
                   />
                 </div>
                 <Input
@@ -200,9 +200,9 @@ export function AcceptInvite() {
                 </Button>
               </form>
 
-              <p className="text-center text-sm text-[#6B7B8D] mt-6">
+              <p className="text-center text-sm text-[var(--c-t6b7b8d)] mt-6">
                 {t('auth.already_have_account')}{' '}
-                <Link to="/login" className="text-[#2E86AB] font-medium hover:underline">
+                <Link to="/login" className="text-[var(--c-t2e86ab)] font-medium hover:underline">
                   {t('auth.log_in')}
                 </Link>
               </p>

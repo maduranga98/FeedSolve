@@ -685,5 +685,10 @@
     "aria_label": "Elegir ciclo del tablero",
     "current_cycle": "Ciclo actual",
     "all_time": "Todo el tiempo"
-  }
+  },
+  "theme": "Tema",
+  "theme_light": "Claro",
+  "theme_dark": "Oscuro",
+  "theme_system": "Sistema",
+  "theme_toggle": "Cambiar tema"
 }

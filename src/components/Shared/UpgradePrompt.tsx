@@ -17,13 +17,13 @@ export function UpgradePrompt({ feature, minTier = 'growth' }: UpgradePromptProp
   }
 
   return (
-    <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-4 flex gap-3 items-start">
-      <Zap className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+    <div className="rounded-lg border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-4 flex gap-3 items-start">
+      <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
       <div className="flex-1">
-        <p className="text-blue-900 font-medium">
+        <p className="text-blue-900 dark:text-blue-200 font-medium">
           {feature} is a {minTier} feature
         </p>
-        <p className="text-blue-800 text-sm">
+        <p className="text-blue-800 dark:text-blue-200 text-sm">
           Upgrade your plan to unlock {feature}
         </p>
       </div>

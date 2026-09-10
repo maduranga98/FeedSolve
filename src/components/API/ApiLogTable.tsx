@@ -19,25 +19,25 @@ const ApiLogTable: React.FC<ApiLogTableProps> = ({ logs, isLoading = false }) =>
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const getStatusColor = (code: number) => {
-    if (code < 300) return 'text-green-600 bg-green-50';
-    if (code < 400) return 'text-blue-600 bg-blue-50';
-    if (code < 500) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (code < 300) return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950';
+    if (code < 400) return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950';
+    if (code < 500) return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950';
+    return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950';
   };
 
   const getMethodColor = (method: string) => {
     const colors: Record<string, string> = {
-      GET: 'text-blue-600',
-      POST: 'text-green-600',
-      PATCH: 'text-yellow-600',
-      DELETE: 'text-red-600',
+      GET: 'text-blue-600 dark:text-blue-400',
+      POST: 'text-green-600 dark:text-green-400',
+      PATCH: 'text-yellow-600 dark:text-yellow-400',
+      DELETE: 'text-red-600 dark:text-red-400',
     };
     return colors[method] || 'text-gray-600';
   };
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+      <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-8 text-center">
         <div className="text-gray-500">Loading logs...</div>
       </div>
     );
@@ -45,7 +45,7 @@ const ApiLogTable: React.FC<ApiLogTableProps> = ({ logs, isLoading = false }) =>
 
   if (logs.length === 0) {
     return (
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+      <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-8 text-center">
         <div className="text-gray-500">No API logs yet</div>
         <p className="text-sm text-gray-400 mt-1">Your API requests will appear here</p>
       </div>
@@ -53,7 +53,7 @@ const ApiLogTable: React.FC<ApiLogTableProps> = ({ logs, isLoading = false }) =>
   }
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -118,7 +118,7 @@ const ApiLogTable: React.FC<ApiLogTableProps> = ({ logs, isLoading = false }) =>
                           <h4 className="text-xs font-semibold text-gray-700 mb-1">
                             Full Details
                           </h4>
-                          <div className="bg-gray-900 text-gray-100 p-3 rounded text-xs font-mono overflow-auto max-h-48 space-y-1">
+                          <div className="bg-gray-900 dark:bg-gray-100 text-gray-100 dark:text-gray-900 p-3 rounded text-xs font-mono overflow-auto max-h-48 space-y-1">
                             <div>
                               <span className="text-blue-400">method:</span>{' '}
                               <span className="text-green-400">{log.method}</span>

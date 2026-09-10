@@ -39,7 +39,7 @@ export const ReactionPicker: React.FC<ReactionPickerProps> = ({
   return (
     <div
       ref={pickerRef}
-      className="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50"
+      className="absolute bottom-full left-0 mb-2 bg-[var(--c-sffffff)] border border-gray-200 rounded-lg shadow-lg p-2 z-50"
     >
       <div className="grid grid-cols-7 gap-1">
         {EMOJI_LIST.map((emoji) => (

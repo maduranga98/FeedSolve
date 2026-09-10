@@ -685,5 +685,10 @@
     "aria_label": "Choose board cycle",
     "current_cycle": "Current Cycle",
     "all_time": "All Time"
-  }
+  },
+  "theme": "Theme",
+  "theme_light": "Light",
+  "theme_dark": "Dark",
+  "theme_system": "System",
+  "theme_toggle": "Switch theme"
 }

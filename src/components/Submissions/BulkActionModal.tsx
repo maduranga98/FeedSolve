@@ -45,12 +45,12 @@ export function BulkActionModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+      <div className="bg-[var(--c-sffffff)] rounded-lg shadow-xl max-w-md w-full">
         <div className="p-6">
           {isDangerous && (
-            <div className="flex items-center gap-3 mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-              <p className="text-sm text-red-700">This action cannot be undone immediately</p>
+            <div className="flex items-center gap-3 mb-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+              <p className="text-sm text-red-700 dark:text-red-300">This action cannot be undone immediately</p>
             </div>
           )}
 
@@ -58,8 +58,8 @@ export function BulkActionModal({
 
           <p className="text-gray-600 mb-4">{message}</p>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <p className="text-sm font-medium text-blue-900">
+          <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-200">
               {selectedCount} submission{selectedCount !== 1 ? 's' : ''} will be affected
             </p>
           </div>

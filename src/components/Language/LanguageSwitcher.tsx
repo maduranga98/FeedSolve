@@ -39,7 +39,7 @@ export function LanguageSwitcher() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-[var(--c-sffffff)] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -51,21 +51,21 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-[200] w-48 bottom-full mb-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+        <div className="absolute right-0 z-[200] w-48 bottom-full mb-2 bg-[var(--c-sffffff)] border border-gray-200 rounded-xl shadow-xl overflow-hidden">
           {LANGUAGES.map(lang => (
             <button
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code)}
               className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 transition-colors ${
                 currentLang.code === lang.code
-                  ? 'bg-blue-50 text-blue-700 font-semibold'
+                  ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold'
                   : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
               <span className="text-base">{lang.flag}</span>
               <span className="flex-1">{lang.name}</span>
               {currentLang.code === lang.code && (
-                <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}

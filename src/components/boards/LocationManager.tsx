@@ -100,18 +100,18 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
   };
 
   return (
-    <div className="bg-white rounded-xl border border-[#d6cabf] p-5 space-y-5">
+    <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-bd6cabf)] p-5 space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <MapPin size={18} className="text-[#c0694a]" />
-            <h2 className="text-lg font-semibold text-[#1c1917]">Locations</h2>
+            <MapPin size={18} className="text-[var(--c-tc0694a)]" />
+            <h2 className="text-lg font-semibold text-[var(--c-t1c1917)]">Locations</h2>
           </div>
-          <p className="text-sm text-[#78716c]">
+          <p className="text-sm text-[var(--c-t78716c)]">
             Define physical spots for location-tagged QR code variants.
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-[#f5e6df] px-3 py-1 text-xs font-semibold text-[#9c4a2f]">
+        <span className="shrink-0 rounded-full bg-[var(--c-sf5e6df)] px-3 py-1 text-xs font-semibold text-[var(--c-t9c4a2f)]">
           {locations.length} / {limitLabel(limit)} locations
         </span>
       </div>
@@ -121,13 +121,13 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
           {locations.map((location) => (
             <span
               key={location}
-              className="inline-flex items-center gap-2 rounded-full bg-[#f1ebe5] px-3 py-1 text-xs font-medium text-[#78716c]"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--c-sf1ebe5)] px-3 py-1 text-xs font-medium text-[var(--c-t78716c)]"
             >
               {location}
               <button
                 onClick={() => handleDelete(location)}
                 disabled={saving}
-                className="text-[#8f8680] hover:text-[#c0392b] disabled:opacity-50"
+                className="text-[var(--c-t8f8680)] hover:text-[var(--c-tc0392b)] disabled:opacity-50"
                 aria-label={`Delete ${location}`}
               >
                 <X size={13} />
@@ -136,25 +136,25 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
           ))}
         </div>
       ) : (
-        <p className="rounded-lg border border-dashed border-[#d6cabf] bg-[#f5f0ec] p-4 text-sm text-[#78716c]">
+        <p className="rounded-lg border border-dashed border-[var(--c-bd6cabf)] bg-[var(--c-sf5f0ec)] p-4 text-sm text-[var(--c-t78716c)]">
           No locations yet. Free boards can keep the default board QR; paid tiers can add location variants.
         </p>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-[#1c1917] mb-1.5">Add Location</label>
+          <label className="block text-sm font-medium text-[var(--c-t1c1917)] mb-1.5">Add Location</label>
           <div className="flex gap-2">
             <input
               value={locationInput}
               onChange={(event) => setLocationInput(event.target.value)}
               placeholder="Table 7"
-              className="min-w-0 flex-1 rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+              className="min-w-0 flex-1 rounded-lg border border-[var(--c-bd6cabf)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
             />
             <button
               onClick={handleAdd}
               disabled={saving || !locationInput.trim() || atLimit}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#c0694a] px-3 py-2 text-sm font-semibold text-white hover:bg-[#246D8B] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--c-sc0694a)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--c-s246d8b)] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={15} />
               Add
@@ -163,18 +163,18 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#1c1917] mb-1.5">Bulk add comma-separated</label>
+          <label className="block text-sm font-medium text-[var(--c-t1c1917)] mb-1.5">Bulk add comma-separated</label>
           <textarea
             value={bulkInput}
             onChange={(event) => setBulkInput(event.target.value)}
             placeholder="Table 1, Table 2, Table 3, Reception"
             rows={3}
-            className="w-full rounded-lg border border-[#d6cabf] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+            className="w-full rounded-lg border border-[var(--c-bd6cabf)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
           />
           <button
             onClick={handleBulkAdd}
             disabled={saving || !bulkInput.trim() || atLimit}
-            className="mt-2 rounded-lg bg-[#f5e6df] px-3 py-2 text-sm font-semibold text-[#9c4a2f] hover:bg-[#D7ECF7] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-2 rounded-lg bg-[var(--c-sf5e6df)] px-3 py-2 text-sm font-semibold text-[var(--c-t9c4a2f)] hover:bg-[var(--c-sd7ecf7)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Add all locations
           </button>
@@ -182,7 +182,7 @@ export function LocationManager({ board, company, onBoardChange }: LocationManag
       </div>
 
       {(error || atLimit) && (
-        <div className="rounded-lg border border-[#F6D58F] bg-[#FFF8E6] p-3 text-sm text-[#8A5A00]">
+        <div className="rounded-lg border border-[var(--c-bf6d58f)] bg-[var(--c-sfff8e6)] p-3 text-sm text-[var(--c-t8a5a00)]">
           {error || upgradeCopy(tier, limit)}
         </div>
       )}

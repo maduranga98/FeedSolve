@@ -22,13 +22,13 @@ export function Button({
 
   const variants = {
     primary:
-      "bg-[#c0694a] text-white hover:bg-[#246d8c] active:bg-[#1a5570] focus:ring-[#c0694a] shadow-sm hover:shadow",
+      "bg-[var(--c-sc0694a)] text-white hover:bg-[var(--c-s246d8c)] active:bg-[var(--c-s1a5570)] focus:ring-[var(--c-bc0694a)] shadow-sm hover:shadow",
     secondary:
-      "bg-white text-[#1c1917] border border-[#d6cabf] hover:bg-[#f2ece6] active:bg-[#E4EBF1] focus:ring-[#c0694a] shadow-sm",
+      "bg-[var(--c-sffffff)] text-[var(--c-t1c1917)] border border-[var(--c-bd6cabf)] hover:bg-[var(--c-sf2ece6)] active:bg-[var(--c-se4ebf1)] focus:ring-[var(--c-bc0694a)] shadow-sm",
     danger:
-      "bg-[#c0392b] text-white hover:bg-[#c0392b] active:bg-[#a93226] focus:ring-[#c0392b] shadow-sm hover:shadow",
+      "bg-[var(--c-sc0392b)] text-white hover:bg-[var(--c-sc0392b)] active:bg-[var(--c-sa93226)] focus:ring-[var(--c-bc0392b)] shadow-sm hover:shadow",
     ghost:
-      "bg-transparent text-[#c0694a] hover:bg-[#f5e6df] active:bg-[#D6EEF5] focus:ring-[#c0694a]",
+      "bg-transparent text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)] active:bg-[var(--c-sd6eef5)] focus:ring-[var(--c-bc0694a)]",
   };
 
   const sizes = {

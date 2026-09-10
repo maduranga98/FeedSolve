@@ -52,7 +52,7 @@ export function PricingCard({
           <div className="mb-6">
             <span className="text-4xl font-bold">Trial</span>
             <div className="mt-2">
-              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+              <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2 py-1 rounded-full">
                 7-day trial
               </span>
             </div>
@@ -63,7 +63,7 @@ export function PricingCard({
             <span className="text-4xl font-bold">${price}</span>
             <span className="text-gray-600 ml-2">/month</span>
             {billing === 'annual' && (
-              <div className="text-sm text-green-600 mt-2">
+              <div className="text-sm text-green-600 dark:text-green-400 mt-2">
                 ${displayPrice}/year (Save 20%)
               </div>
             )}
@@ -98,7 +98,7 @@ export function PricingCard({
         <ul className="space-y-4">
           {features.map((feature, idx) => (
             <li key={idx} className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+              <Check className="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0 mt-0.5" />
               <span className="text-gray-700">{feature}</span>
             </li>
           ))}

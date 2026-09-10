@@ -27,18 +27,18 @@ const ApiUsageChart: React.FC<ApiUsageChartProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
+    <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">API Usage</h3>
           <p className="text-sm text-gray-500">Current month requests</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-lg">
-          <TrendingUp size={16} className="text-blue-600" />
+        <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 dark:bg-blue-950 rounded-lg">
+          <TrendingUp size={16} className="text-blue-600 dark:text-blue-400" />
           <span className={`text-sm font-semibold ${
-            usagePercentage < 50 ? 'text-blue-600' :
-            usagePercentage < 80 ? 'text-yellow-600' :
-            'text-red-600'
+            usagePercentage < 50 ? 'text-blue-600 dark:text-blue-400' :
+            usagePercentage < 80 ? 'text-yellow-600 dark:text-yellow-400' :
+            'text-red-600 dark:text-red-400'
           }`}>
             {getStatusText()}
           </span>
@@ -76,14 +76,14 @@ const ApiUsageChart: React.FC<ApiUsageChartProps> = ({
       </div>
 
       {/* Reset Info */}
-      <div className="mt-4 p-3 bg-blue-50 rounded-lg text-sm text-blue-900">
+      <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950 rounded-lg text-sm text-blue-900 dark:text-blue-200">
         <p>Requests reset monthly on the 1st. <span className="font-semibold">Next reset: ~10 days</span></p>
       </div>
 
       {/* Warning if high usage */}
       {usagePercentage > 80 && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-900">
+        <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+          <p className="text-sm text-yellow-900 dark:text-yellow-200">
             <span className="font-semibold">Usage Alert:</span> You're approaching your monthly limit.
             Contact support to increase your limit.
           </p>
@@ -91,8 +91,8 @@ const ApiUsageChart: React.FC<ApiUsageChartProps> = ({
       )}
 
       {usagePercentage > 100 && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-900">
+        <div className="mt-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-sm text-red-900 dark:text-red-200">
             <span className="font-semibold">Limit Exceeded:</span> API requests are being rate limited.
           </p>
         </div>

@@ -163,17 +163,17 @@ export function AnalyticsDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-[#E1E8EF]">
-      <div className="bg-white border-b border-[#E8ECF0]">
+    <main className="min-h-screen bg-[var(--c-se1e8ef)]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be8ecf0)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-                <TrendingUp size={20} className="text-[#2E86AB]" />
+              <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center">
+                <TrendingUp size={20} className="text-[var(--c-t2e86ab)]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('analytics.title')}</h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">{t('analytics.subtitle')}</p>
+                <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">{t('analytics.title')}</h1>
+                <p className="text-sm text-[var(--c-t6b7b8d)] mt-0.5">{t('analytics.subtitle')}</p>
               </div>
             </div>
             <DateRangePicker value={dateRange} onChange={setDateRange} />
@@ -255,17 +255,17 @@ export function AnalyticsDashboard() {
 
         {/* Cycle comparison */}
         {sortedCycles.length > 0 && (
-          <div className="mb-8 rounded-xl border border-[#E8ECF0] bg-white p-6">
+          <div className="mb-8 rounded-xl border border-[var(--c-be8ecf0)] bg-[var(--c-sffffff)] p-6">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-bold text-[#1E3A5F]">{t('analytics.cycle_comparison')}</h2>
-                <p className="text-sm text-[#6B7B8D]">{t('analytics.cycle_comparison_desc')}</p>
+                <h2 className="text-lg font-bold text-[var(--c-t1e3a5f)]">{t('analytics.cycle_comparison')}</h2>
+                <p className="text-sm text-[var(--c-t6b7b8d)]">{t('analytics.cycle_comparison_desc')}</p>
               </div>
               <button
                 type="button"
                 onClick={handleExportCycleCSV}
                 disabled={!canExportCycleCsv}
-                className="inline-flex items-center gap-2 rounded-lg border border-[#D3D1C7] px-3 py-2 text-sm font-semibold text-[#2E86AB] transition hover:bg-[#EBF5FB] disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--c-bd3d1c7)] px-3 py-2 text-sm font-semibold text-[var(--c-t2e86ab)] transition hover:bg-[var(--c-sebf5fb)] disabled:cursor-not-allowed disabled:opacity-50"
                 title={canExportCycleCsv ? 'Export cycle data' : t('analytics.pro_plan_required')}
               >
                 <Download size={14} />
@@ -276,22 +276,22 @@ export function AnalyticsDashboard() {
             <div className="mb-6 flex items-end gap-3 overflow-x-auto pb-2">
               {sortedCycles.map((cycle) => (
                 <div key={cycle.id} className="flex min-w-24 flex-col items-center gap-2">
-                  <div className="flex h-32 w-12 items-end rounded-lg bg-[#F1EFE8] p-1">
+                  <div className="flex h-32 w-12 items-end rounded-lg bg-[var(--c-sf1efe8)] p-1">
                     <div
-                      className="w-full rounded-md bg-[#2E86AB]"
+                      className="w-full rounded-md bg-[var(--c-s2e86ab)]"
                       style={{ height: `${Math.max(4, (cycle.stats.resolutionRate / maxResolutionRate) * 100)}%` }}
                     />
                   </div>
-                  <span className="text-center text-xs font-semibold text-[#1E3A5F]">{cycle.label}</span>
-                  <span className="text-xs text-[#6B7B8D]">{Math.round(cycle.stats.resolutionRate)}%</span>
+                  <span className="text-center text-xs font-semibold text-[var(--c-t1e3a5f)]">{cycle.label}</span>
+                  <span className="text-xs text-[var(--c-t6b7b8d)]">{Math.round(cycle.stats.resolutionRate)}%</span>
                 </div>
               ))}
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="text-xs uppercase tracking-wide text-[#6B7B8D]">
-                  <tr className="border-b border-[#E8ECF0]">
+                <thead className="text-xs uppercase tracking-wide text-[var(--c-t6b7b8d)]">
+                  <tr className="border-b border-[var(--c-be8ecf0)]">
                     <th className="py-2 pr-4">{t('analytics.col_cycle')}</th>
                     <th className="py-2 pr-4">{t('analytics.col_board')}</th>
                     <th className="py-2 pr-4">{t('analytics.col_submissions')}</th>
@@ -300,10 +300,10 @@ export function AnalyticsDashboard() {
                     <th className="py-2 pr-4">{t('analytics.col_avg_hours')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F0F4F8] text-[#444441]">
+                <tbody className="divide-y divide-[var(--c-bf0f4f8)] text-[var(--c-t444441)]">
                   {sortedCycles.map((cycle) => (
                     <tr key={cycle.id}>
-                      <td className="py-2 pr-4 font-semibold text-[#1E3A5F]">{cycle.label}</td>
+                      <td className="py-2 pr-4 font-semibold text-[var(--c-t1e3a5f)]">{cycle.label}</td>
                       <td className="py-2 pr-4">{boardMap[cycle.boardId] || cycle.boardId}</td>
                       <td className="py-2 pr-4">{cycle.stats.totalSubmissions}</td>
                       <td className="py-2 pr-4">{cycle.stats.resolvedSubmissions}</td>
@@ -323,12 +323,12 @@ export function AnalyticsDashboard() {
         </div>
 
         {/* Filter Information */}
-        <div className="bg-white rounded-xl border border-[#E8ECF0] p-6 border-l-4 border-l-[#2E86AB]">
+        <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] p-6 border-l-4 border-l-[#2E86AB]">
           <div className="flex items-start gap-3">
-            <TrendingUp className="text-[#2E86AB] flex-shrink-0 mt-1" size={20} />
+            <TrendingUp className="text-[var(--c-t2e86ab)] flex-shrink-0 mt-1" size={20} />
             <div>
-              <h3 className="font-semibold text-[#1E3A5F] mb-1">{t('analytics.about_title')}</h3>
-              <p className="text-[#6B7B8D] text-sm">
+              <h3 className="font-semibold text-[var(--c-t1e3a5f)] mb-1">{t('analytics.about_title')}</h3>
+              <p className="text-[var(--c-t6b7b8d)] text-sm">
                 {t('analytics.about_desc')}
               </p>
             </div>

@@ -47,7 +47,7 @@ export function PricingComparisonTable() {
               <td className="text-center py-4 px-4">
                 {typeof feature.free === 'boolean' ? (
                   feature.free ? (
-                    <Check className="w-5 h-5 text-green-500 inline" />
+                    <Check className="w-5 h-5 text-green-500 dark:text-green-400 inline" />
                   ) : (
                     <X className="w-5 h-5 text-gray-300 inline" />
                   )
@@ -58,7 +58,7 @@ export function PricingComparisonTable() {
               <td className="text-center py-4 px-4">
                 {typeof feature.starter === 'boolean' ? (
                   feature.starter ? (
-                    <Check className="w-5 h-5 text-green-500 inline" />
+                    <Check className="w-5 h-5 text-green-500 dark:text-green-400 inline" />
                   ) : (
                     <X className="w-5 h-5 text-gray-300 inline" />
                   )
@@ -69,7 +69,7 @@ export function PricingComparisonTable() {
               <td className="text-center py-4 px-4">
                 {typeof feature.growth === 'boolean' ? (
                   feature.growth ? (
-                    <Check className="w-5 h-5 text-green-500 inline" />
+                    <Check className="w-5 h-5 text-green-500 dark:text-green-400 inline" />
                   ) : (
                     <X className="w-5 h-5 text-gray-300 inline" />
                   )
@@ -80,7 +80,7 @@ export function PricingComparisonTable() {
               <td className="text-center py-4 px-4">
                 {typeof feature.business === 'boolean' ? (
                   feature.business ? (
-                    <Check className="w-5 h-5 text-green-500 inline" />
+                    <Check className="w-5 h-5 text-green-500 dark:text-green-400 inline" />
                   ) : (
                     <X className="w-5 h-5 text-gray-300 inline" />
                   )

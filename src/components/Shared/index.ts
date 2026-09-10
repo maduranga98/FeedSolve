@@ -3,3 +3,4 @@ export { Input } from './Input';
 export { Select } from './Select';
 export { Badge } from './Badge';
 export { LoadingSpinner } from './LoadingSpinner';
+export { ThemeToggle } from './ThemeToggle';

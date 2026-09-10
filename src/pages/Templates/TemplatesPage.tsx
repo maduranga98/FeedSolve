@@ -73,17 +73,17 @@ export function TemplatesPage() {
       <Navbar />
       <div className="min-h-screen bg-color-bg">
         {/* Header */}
-        <div className="bg-white border-b border-[#e9e0d9]">
+        <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be9e0d9)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#f5e6df] rounded-xl flex items-center justify-center">
-                <LayoutTemplate size={20} className="text-[#c0694a]" />
+              <div className="w-10 h-10 bg-[var(--c-sf5e6df)] rounded-xl flex items-center justify-center">
+                <LayoutTemplate size={20} className="text-[var(--c-tc0694a)]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1c1917]">
+                <h1 className="text-2xl font-bold text-[var(--c-t1c1917)]">
                   {t('boards:templates.title')}
                 </h1>
-                <p className="text-sm text-[#78716c] mt-0.5">
+                <p className="text-sm text-[var(--c-t78716c)] mt-0.5">
                   {t('boards:templates.browse')}
                 </p>
               </div>

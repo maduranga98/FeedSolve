@@ -46,7 +46,7 @@ export const MentionDropdown: React.FC<MentionDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="absolute bottom-full left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+      className="absolute bottom-full left-0 w-full bg-[var(--c-sffffff)] border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
     >
       {filtered.map((member) => (
         <button

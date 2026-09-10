@@ -69,12 +69,12 @@ export function formatDate(date: Date): string {
 
 export function getStatusColor(status: string): { bg: string; text: string } {
   const colors: Record<string, { bg: string; text: string }> = {
-    received: { bg: 'bg-[#EFF3F6]', text: 'text-[#6B7B8D]' },
-    in_review: { bg: 'bg-[#EBF5FB]', text: 'text-[#185FA5]' },
-    in_progress: { bg: 'bg-[#FEF5E7]', text: 'text-[#854F0B]' },
-    escalated: { bg: 'bg-[#FDECEA]', text: 'text-[#C0392B]' },
-    resolved: { bg: 'bg-[#EBF9F1]', text: 'text-[#0F6E56]' },
-    closed: { bg: 'bg-[#F1EFE8]', text: 'text-[#5F5E5A]' },
+    received: { bg: 'bg-[var(--c-seff3f6)]', text: 'text-[var(--c-t6b7b8d)]' },
+    in_review: { bg: 'bg-[var(--c-sebf5fb)]', text: 'text-[var(--c-t185fa5)]' },
+    in_progress: { bg: 'bg-[var(--c-sfef5e7)]', text: 'text-[var(--c-t854f0b)]' },
+    escalated: { bg: 'bg-[var(--c-sfdecea)]', text: 'text-[var(--c-tc0392b)]' },
+    resolved: { bg: 'bg-[var(--c-sebf9f1)]', text: 'text-[var(--c-t0f6e56)]' },
+    closed: { bg: 'bg-[var(--c-sf1efe8)]', text: 'text-[var(--c-t5f5e5a)]' },
   };
   return colors[status] || colors.received;
 }

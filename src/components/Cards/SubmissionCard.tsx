@@ -16,10 +16,10 @@ interface SubmissionCardProps {
 }
 
 const priorityDot: Record<string, string> = {
-  low:      'bg-[#3498DB]',
-  medium:   'bg-[#F39C12]',
-  high:     'bg-[#E74C3C]',
-  critical: 'bg-[#8B0000]',
+  low:      'bg-[var(--c-s3498db)]',
+  medium:   'bg-[var(--c-sf39c12)]',
+  high:     'bg-[var(--c-se74c3c)]',
+  critical: 'bg-[var(--c-s8b0000)]',
 };
 
 const priorityLabel: Record<string, string> = {
@@ -31,11 +31,11 @@ const satisfactionEmoji: Record<number, string> = {
 };
 
 const satisfactionStyle: Record<number, string> = {
-  1: 'bg-[#FEE2E2] text-[#B91C1C]',
-  2: 'bg-[#FEF3C7] text-[#92400E]',
-  3: 'bg-[#F1F5F9] text-[#475569]',
-  4: 'bg-[#DBEAFE] text-[#1D4ED8]',
-  5: 'bg-[#DCFCE7] text-[#15803D]',
+  1: 'bg-[var(--c-sfee2e2)] text-[var(--c-tb91c1c)]',
+  2: 'bg-[var(--c-sfef3c7)] text-[var(--c-t92400e)]',
+  3: 'bg-[var(--c-sf1f5f9)] text-[var(--c-t475569)]',
+  4: 'bg-[var(--c-sdbeafe)] text-[var(--c-t1d4ed8)]',
+  5: 'bg-[var(--c-sdcfce7)] text-[var(--c-t15803d)]',
 };
 
 function SubmissionCardComponent({
@@ -77,10 +77,10 @@ function SubmissionCardComponent({
   return (
     <div
       onClick={handleClick}
-      className={`group relative bg-white rounded-xl p-4 transition-all duration-150 border
+      className={`group relative bg-[var(--c-sffffff)] rounded-xl p-4 transition-all duration-150 border
         ${isSelected
-          ? 'border-l-[3px] border-l-[#2E86AB] border-[#C8DDF0] bg-[#F8FBFD]'
-          : 'border-[#E8ECF0] hover:border-[#C8DDF0]'
+          ? 'border-l-[3px] border-l-[#2E86AB] border-[var(--c-bc8ddf0)] bg-[var(--c-sf8fbfd)]'
+          : 'border-[var(--c-be8ecf0)] hover:border-[var(--c-bc8ddf0)]'
         }
         ${onClick ? 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer' : ''}
       `}
@@ -100,7 +100,7 @@ function SubmissionCardComponent({
               checked={isSelected}
               onChange={handleCheckboxChange}
               onClick={(e) => e.stopPropagation()}
-              className="w-4 h-4 cursor-pointer accent-[#2E86AB]"
+              className="w-4 h-4 cursor-pointer accent-[var(--c-s2e86ab)]"
               aria-label={`Select ${submission.subject}`}
             />
           </div>
@@ -108,13 +108,13 @@ function SubmissionCardComponent({
 
         <div className="flex-1 min-w-0 flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className={`font-semibold text-[#1E3A5F] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
+            <h3 className={`font-semibold text-[var(--c-t1e3a5f)] truncate mb-0.5 ${compact ? 'text-[15px]' : 'text-sm'}`}>
               {submission.subject}
             </h3>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-[11px] text-[#9AABBF] font-mono">{submission.trackingCode}</p>
+              <p className="text-[11px] text-[var(--c-t9aabbf)] font-mono">{submission.trackingCode}</p>
               {submission.isMerged && (
-                <span className="rounded-full bg-[#F1EFE8] px-2 py-0.5 text-[11px] font-semibold text-[#5F5E5A]">
+                <span className="rounded-full bg-[var(--c-sf1efe8)] px-2 py-0.5 text-[11px] font-semibold text-[var(--c-t5f5e5a)]">
                   Merged
                 </span>
               )}
@@ -125,19 +125,19 @@ function SubmissionCardComponent({
       </div>
 
       {/* Description */}
-      <p className={`text-xs text-[#6B7B8D] leading-relaxed ${compact ? 'mb-2.5 line-clamp-1' : 'mb-3 line-clamp-2'}`}>
+      <p className={`text-xs text-[var(--c-t6b7b8d)] leading-relaxed ${compact ? 'mb-2.5 line-clamp-1' : 'mb-3 line-clamp-2'}`}>
         {submission.description}
       </p>
 
       {/* Footer */}
-      <div className={`flex items-center justify-between gap-x-2 gap-y-1.5 flex-wrap ${compact ? 'pt-2 border-t border-[#F0F4F8]' : ''}`}>
+      <div className={`flex items-center justify-between gap-x-2 gap-y-1.5 flex-wrap ${compact ? 'pt-2 border-t border-[var(--c-bf0f4f8)]' : ''}`}>
         <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#EBF5FB] text-[#2E86AB] text-[11px] font-semibold flex-shrink-0">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--c-sebf5fb)] text-[var(--c-t2e86ab)] text-[11px] font-semibold flex-shrink-0">
             {submission.category}
           </span>
 
           {submission.location && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#EFF3F6] text-[#6B7B8D] text-[11px] font-medium flex-shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[var(--c-seff3f6)] text-[var(--c-t6b7b8d)] text-[11px] font-medium flex-shrink-0">
               <MapPin size={10} />
               {submission.location}
             </span>
@@ -153,13 +153,13 @@ function SubmissionCardComponent({
             </span>
           )}
 
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#E1E8EF] text-[#6B7B8D] text-[11px] font-medium flex-shrink-0">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--c-se1e8ef)] text-[var(--c-t6b7b8d)] text-[11px] font-medium flex-shrink-0">
             <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
             {priorityLabel[submission.priority] || submission.priority}
           </span>
 
           {assignedUser && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#F0F4F8] text-[#4A6274] text-[11px] font-medium flex-shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--c-sf0f4f8)] text-[var(--c-t4a6274)] text-[11px] font-medium flex-shrink-0">
               <UserCircle size={10} />
               {assignedUser.name.split(' ')[0]}
             </span>
@@ -168,12 +168,12 @@ function SubmissionCardComponent({
 
         <div className="flex items-center gap-2.5 flex-shrink-0">
           {submission.internalNotes?.length > 0 && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-[#9AABBF]">
+            <span className="inline-flex items-center gap-1 text-[11px] text-[var(--c-t9aabbf)]">
               <MessageSquare size={10} />
               {submission.internalNotes.length}
             </span>
           )}
-          <span className="text-[11px] text-[#B0BEC9]">
+          <span className="text-[11px] text-[var(--c-tb0bec9)]">
             {formatDate(submission.createdAt.toDate())}
           </span>
         </div>

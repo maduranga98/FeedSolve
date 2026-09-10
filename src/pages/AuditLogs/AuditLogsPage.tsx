@@ -34,14 +34,14 @@ const RESOURCE_TYPE_KEYS: Record<AuditLog['resourceType'], string> = {
 };
 
 const RESOURCE_TYPE_COLORS: Record<AuditLog['resourceType'], string> = {
-  submission: 'bg-[#EBF5FB] text-[#1E6A9A]',
-  board: 'bg-[#EAF9F2] text-[#1D8A57]',
-  team: 'bg-[#FFF8E6] text-[#B06F00]',
-  webhook: 'bg-purple-100 text-purple-700',
-  billing: 'bg-pink-100 text-pink-700',
+  submission: 'bg-[var(--c-sebf5fb)] text-[var(--c-t1e6a9a)]',
+  board: 'bg-[var(--c-seaf9f2)] text-[var(--c-t1d8a57)]',
+  team: 'bg-[var(--c-sfff8e6)] text-[var(--c-tb06f00)]',
+  webhook: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
+  billing: 'bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300',
   settings: 'bg-slate-100 text-slate-700',
-  escalation: 'bg-orange-100 text-orange-700',
-  template: 'bg-indigo-100 text-indigo-700',
+  escalation: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
+  template: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300',
 };
 
 function formatDate(ts: Timestamp | Date | undefined): string {
@@ -128,20 +128,20 @@ export function AuditLogsPage() {
 
   if (getCurrentTier() !== 'business') {
     return (
-      <div className="min-h-screen bg-[#E1E8EF] flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-2xl border border-[#E8ECF0] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
-          <div className="w-16 h-16 bg-[#EBF5FB] rounded-full flex items-center justify-center">
-            <Lock size={28} className="text-[#2E86AB]" />
+      <div className="min-h-screen bg-[var(--c-se1e8ef)] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-[var(--c-sffffff)] rounded-2xl border border-[var(--c-be8ecf0)] shadow-sm p-10 flex flex-col items-center gap-5 text-center">
+          <div className="w-16 h-16 bg-[var(--c-sebf5fb)] rounded-full flex items-center justify-center">
+            <Lock size={28} className="text-[var(--c-t2e86ab)]" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-[#1E3A5F] mb-2">{t('audit.title')}</h2>
-            <p className="text-[#6B7B8D] text-sm leading-relaxed">
+            <h2 className="text-xl font-bold text-[var(--c-t1e3a5f)] mb-2">{t('audit.title')}</h2>
+            <p className="text-[var(--c-t6b7b8d)] text-sm leading-relaxed">
               {t('audit.tier_gate')}
             </p>
           </div>
           <button
             onClick={() => navigate('/pricing')}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E6A8A] transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[var(--c-s2e86ab)] text-white rounded-lg font-medium hover:bg-[var(--c-s1e6a8a)] transition-colors"
           >
             <Zap size={16} />
             {t('audit.upgrade_pro')}
@@ -164,18 +164,18 @@ export function AuditLogsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#E1E8EF]">
+    <div className="min-h-screen bg-[var(--c-se1e8ef)]">
       {/* Header */}
-      <div className="bg-white border-b border-[#E8ECF0]">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be8ecf0)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center">
-                <ClipboardList size={20} className="text-[#2E86AB]" />
+              <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center">
+                <ClipboardList size={20} className="text-[var(--c-t2e86ab)]" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#1E3A5F]">{t('audit.title')}</h1>
-                <p className="text-sm text-[#6B7B8D] mt-0.5">
+                <h1 className="text-2xl font-bold text-[var(--c-t1e3a5f)]">{t('audit.title')}</h1>
+                <p className="text-sm text-[var(--c-t6b7b8d)] mt-0.5">
                   {t('audit.subtitle')}
                 </p>
               </div>
@@ -183,7 +183,7 @@ export function AuditLogsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={loadLogs}
-                className="p-2 text-[#9AABBF] hover:text-[#2E86AB] hover:bg-[#EBF5FB] rounded-lg transition-colors"
+                className="p-2 text-[var(--c-t9aabbf)] hover:text-[var(--c-t2e86ab)] hover:bg-[var(--c-sebf5fb)] rounded-lg transition-colors"
                 title={t('refresh')}
               >
                 <RefreshCw size={18} />
@@ -191,19 +191,19 @@ export function AuditLogsPage() {
               <div className="relative">
                 <button
                   onClick={() => setExportMenuOpen((o) => !o)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#2E86AB] hover:bg-[#1E6A9A] rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[var(--c-s2e86ab)] hover:bg-[var(--c-s1e6a9a)] rounded-lg transition-colors"
                 >
                   <Download size={15} />
                   {t('export')}
                 </button>
                 {exportMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border border-[#E8ECF0] rounded-xl shadow-lg z-10 overflow-hidden">
+                  <div className="absolute right-0 mt-2 w-44 bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl shadow-lg z-10 overflow-hidden">
                     <button
                       onClick={() => {
                         exportCSV(filtered, getResourceLabel);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left"
+                      className="w-full px-4 py-3 text-sm text-[var(--c-t444441)] hover:bg-[var(--c-se1e8ef)] text-left"
                     >
                       {t('audit.export_csv')}
                     </button>
@@ -212,7 +212,7 @@ export function AuditLogsPage() {
                         downloadAuditLogsPDF(filtered, user?.name || 'FeedSolve Workspace');
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
+                      className="w-full px-4 py-3 text-sm text-[var(--c-t444441)] hover:bg-[var(--c-se1e8ef)] text-left border-t border-[var(--c-bf0f4f8)]"
                     >
                       {t('audit.export_pdf')}
                     </button>
@@ -221,7 +221,7 @@ export function AuditLogsPage() {
                         exportJSON(filtered);
                         setExportMenuOpen(false);
                       }}
-                      className="w-full px-4 py-3 text-sm text-[#444441] hover:bg-[#E1E8EF] text-left border-t border-[#F0F4F8]"
+                      className="w-full px-4 py-3 text-sm text-[var(--c-t444441)] hover:bg-[var(--c-se1e8ef)] text-left border-t border-[var(--c-bf0f4f8)]"
                     >
                       {t('audit.export_json')}
                     </button>
@@ -235,26 +235,26 @@ export function AuditLogsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
         {/* Filters */}
-        <div className="bg-white border border-[#E8ECF0] rounded-xl p-4 flex flex-wrap gap-3 items-center">
+        <div className="bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl p-4 flex flex-wrap gap-3 items-center">
           {/* Search */}
           <div className="relative flex-1 min-w-[200px]">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9AABBF]" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--c-t9aabbf)]" />
             <input
               type="text"
               placeholder={t('audit.search_placeholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-[#E8ECF0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-[#FAFAFA]"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-[var(--c-be8ecf0)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] bg-[var(--c-sfafafa)]"
             />
           </div>
 
           {/* Resource type filter */}
           <div className="flex items-center gap-2">
-            <Filter size={15} className="text-[#9AABBF]" />
+            <Filter size={15} className="text-[var(--c-t9aabbf)]" />
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value as AuditLog['resourceType'] | 'all')}
-              className="text-sm border border-[#E8ECF0] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2E86AB] bg-[#FAFAFA] text-[#444441]"
+              className="text-sm border border-[var(--c-be8ecf0)] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] bg-[var(--c-sfafafa)] text-[var(--c-t444441)]"
             >
               <option value="all">{t('all_types')}</option>
               {(Object.keys(RESOURCE_TYPE_KEYS) as AuditLog['resourceType'][]).map((rt) => (
@@ -265,7 +265,7 @@ export function AuditLogsPage() {
             </select>
           </div>
 
-          <span className="text-xs text-[#9AABBF] ml-auto">
+          <span className="text-xs text-[var(--c-t9aabbf)] ml-auto">
             {t('entries_count', { filtered: filtered.length, total: logs.length })}
           </span>
         </div>
@@ -276,71 +276,71 @@ export function AuditLogsPage() {
             <LoadingSpinner size="lg" />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white border border-[#E8ECF0] rounded-xl p-12 text-center">
-            <div className="w-14 h-14 bg-[#E1E8EF] rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <ClipboardList size={28} className="text-[#9AABBF]" />
+          <div className="bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl p-12 text-center">
+            <div className="w-14 h-14 bg-[var(--c-se1e8ef)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <ClipboardList size={28} className="text-[var(--c-t9aabbf)]" />
             </div>
-            <h3 className="text-base font-semibold text-[#1E3A5F] mb-1">
+            <h3 className="text-base font-semibold text-[var(--c-t1e3a5f)] mb-1">
               {logs.length === 0 ? t('audit.no_logs') : t('audit.no_matching')}
             </h3>
-            <p className="text-sm text-[#9AABBF]">
+            <p className="text-sm text-[var(--c-t9aabbf)]">
               {logs.length === 0
                 ? t('audit.no_logs_desc')
                 : t('audit.no_matching_desc')}
             </p>
           </div>
         ) : (
-          <div className="bg-white border border-[#E8ECF0] rounded-xl overflow-hidden">
+          <div className="bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl overflow-hidden">
             {/* Table header */}
-            <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-[#F1F5F8] border-b border-[#E8ECF0]">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
+            <div className="hidden sm:grid grid-cols-[1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-[var(--c-sf1f5f8)] border-b border-[var(--c-be8ecf0)]">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--c-t9aabbf)] uppercase tracking-wide">
                 <Clock size={12} />
                 {t('timestamp')}
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--c-t9aabbf)] uppercase tracking-wide">
                 <User size={12} />
                 {t('user')}
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--c-t9aabbf)] uppercase tracking-wide">
                 {t('audit.action_resource')}
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-[#9AABBF] uppercase tracking-wide">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--c-t9aabbf)] uppercase tracking-wide">
                 <Layers size={12} />
                 {t('type')}
               </div>
             </div>
 
             {/* Rows */}
-            <div className="divide-y divide-[#F0F4F8]">
+            <div className="divide-y divide-[var(--c-bf0f4f8)]">
               {filtered.map((log) => (
                 <div
                   key={log.id}
-                  className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 sm:gap-4 px-6 py-4 hover:bg-[#FAFBFC] transition-colors"
+                  className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_1fr_auto] gap-2 sm:gap-4 px-6 py-4 hover:bg-[var(--c-sfafbfc)] transition-colors"
                 >
                   {/* Timestamp */}
-                  <div className="text-xs text-[#9AABBF] flex items-center gap-1">
+                  <div className="text-xs text-[var(--c-t9aabbf)] flex items-center gap-1">
                     <Clock size={11} className="flex-shrink-0 sm:hidden" />
                     {formatDate(log.createdAt)}
                   </div>
 
                   {/* User */}
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-[#EBF5FB] flex items-center justify-center text-xs font-bold text-[#2E86AB] flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[var(--c-sebf5fb)] flex items-center justify-center text-xs font-bold text-[var(--c-t2e86ab)] flex-shrink-0">
                       {log.userName?.charAt(0)?.toUpperCase() ?? '?'}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#1E3A5F] truncate">
+                      <p className="text-sm font-medium text-[var(--c-t1e3a5f)] truncate">
                         {log.userName}
                       </p>
-                      <p className="text-xs text-[#9AABBF] truncate">{log.userEmail}</p>
+                      <p className="text-xs text-[var(--c-t9aabbf)] truncate">{log.userEmail}</p>
                     </div>
                   </div>
 
                   {/* Action */}
                   <div>
-                    <p className="text-sm text-[#444441] font-medium">{log.action}</p>
+                    <p className="text-sm text-[var(--c-t444441)] font-medium">{log.action}</p>
                     {log.resourceName && (
-                      <p className="text-xs text-[#9AABBF] truncate mt-0.5">
+                      <p className="text-xs text-[var(--c-t9aabbf)] truncate mt-0.5">
                         {log.resourceName}
                       </p>
                     )}
@@ -350,7 +350,7 @@ export function AuditLogsPage() {
                   <div className="flex items-start sm:justify-end">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                        RESOURCE_TYPE_COLORS[log.resourceType] ?? 'bg-[#F0F4F8] text-[#6B7B8D]'
+                        RESOURCE_TYPE_COLORS[log.resourceType] ?? 'bg-[var(--c-sf0f4f8)] text-[var(--c-t6b7b8d)]'
                       }`}
                     >
                       {getResourceLabel(log.resourceType)}

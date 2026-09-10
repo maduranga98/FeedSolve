@@ -105,12 +105,12 @@ export default function AssignDropdown({
     <div className="space-y-2">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <UserPlus size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8f8680]" />
+          <UserPlus size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--c-t8f8680)]" />
           <select
             value={localAssignedId || ''}
             onChange={(e) => handleChange(e.target.value)}
             disabled={loading || members.length === 0}
-            className="w-full pl-8 pr-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#1c1917] bg-white focus:outline-none focus:ring-2 focus:ring-[#c0694a] disabled:opacity-50"
+            className="w-full pl-8 pr-3 py-2.5 border border-[var(--c-bd3dce6)] rounded-lg text-sm text-[var(--c-t1c1917)] bg-[var(--c-sffffff)] focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)] disabled:opacity-50"
           >
             <option value="">Unassigned</option>
             {members.map((member) => (
@@ -124,13 +124,13 @@ export default function AssignDropdown({
           type="button"
           disabled={!localAssignedId || loading}
           onClick={handleUnassign}
-          className="px-3 py-2.5 border border-[#D3DCE6] rounded-lg text-sm text-[#78716c] hover:bg-[#ece5de] disabled:opacity-50 inline-flex items-center gap-1"
+          className="px-3 py-2.5 border border-[var(--c-bd3dce6)] rounded-lg text-sm text-[var(--c-t78716c)] hover:bg-[var(--c-sece5de)] disabled:opacity-50 inline-flex items-center gap-1"
         >
           <UserX size={14} />
           Clear
         </button>
       </div>
-      <p className="text-xs text-[#8f8680]">
+      <p className="text-xs text-[var(--c-t8f8680)]">
         {members.length === 0
           ? 'No team members available for assignment.'
           : assignedMember

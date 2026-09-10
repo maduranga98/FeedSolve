@@ -45,13 +45,13 @@ export function SLAChart({ data }: SLAChartProps) {
         <h2 className="text-xl font-semibold text-color-primary">{t('sla.title')}</h2>
         <div className="flex items-center gap-2">
           {overallCompliance >= 80 ? (
-            <CheckCircle size={18} className="text-green-500" />
+            <CheckCircle size={18} className="text-green-500 dark:text-green-400" />
           ) : (
-            <AlertTriangle size={18} className="text-amber-500" />
+            <AlertTriangle size={18} className="text-amber-500 dark:text-amber-400" />
           )}
           <span
             className={`text-sm font-semibold ${
-              overallCompliance >= 80 ? 'text-green-600' : 'text-amber-600'
+              overallCompliance >= 80 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'
             }`}
           >
             {isNaN(overallCompliance) ? '—' : t('sla.overall', { value: overallCompliance.toFixed(1) })}
@@ -104,10 +104,10 @@ export function SLAChart({ data }: SLAChartProps) {
                       m.totalResolved === 0
                         ? 'text-color-muted-text'
                         : m.complianceRate >= 80
-                          ? 'text-green-600'
+                          ? 'text-green-600 dark:text-green-400'
                           : m.complianceRate >= 60
-                            ? 'text-amber-600'
-                            : 'text-red-600'
+                            ? 'text-amber-600 dark:text-amber-400'
+                            : 'text-red-600 dark:text-red-400'
                     }`}
                   >
                     {m.totalResolved === 0 ? '—' : `${m.complianceRate.toFixed(1)}%`}

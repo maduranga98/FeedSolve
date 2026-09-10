@@ -98,7 +98,7 @@ export function BulkActionBar({
   return (
     <>
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-        <div className="pointer-events-auto bg-[#1c1917] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 max-w-[calc(100vw-2rem)]">
+        <div className="pointer-events-auto bg-[var(--c-s1c1917)] rounded-xl shadow-xl px-6 py-3 flex items-center gap-3 max-w-[calc(100vw-2rem)]">
           {/* Count */}
           <span className="text-white text-sm font-semibold whitespace-nowrap flex-shrink-0">
             {t('bulk.selected', { count: selectedCount })}
@@ -120,12 +120,12 @@ export function BulkActionBar({
               <ChevronDown size={14} />
             </button>
             {statusOpen && (
-              <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-xl border border-[#e9e0d9] py-1 min-w-[160px] z-50">
+              <div className="absolute bottom-full mb-2 left-0 bg-[var(--c-sffffff)] rounded-xl shadow-xl border border-[var(--c-be9e0d9)] py-1 min-w-[160px] z-50">
                 {statusOptions.map(({ value, label }) => (
                   <button
                     key={value}
                     onClick={() => handleStatusSelect(value)}
-                    className="w-full text-left px-4 py-2.5 text-sm text-[#1c1917] hover:bg-[#ece5de] transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm text-[var(--c-t1c1917)] hover:bg-[var(--c-sece5de)] transition-colors"
                   >
                     {label}
                   </button>
@@ -148,17 +148,17 @@ export function BulkActionBar({
               <ChevronDown size={14} />
             </button>
             {assignOpen && (
-              <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-xl border border-[#e9e0d9] py-1 min-w-[180px] z-50">
+              <div className="absolute bottom-full mb-2 left-0 bg-[var(--c-sffffff)] rounded-xl shadow-xl border border-[var(--c-be9e0d9)] py-1 min-w-[180px] z-50">
                 {users.length === 0 ? (
-                  <p className="px-4 py-2.5 text-sm text-[#8f8680]">{t('bulk.no_team_members')}</p>
+                  <p className="px-4 py-2.5 text-sm text-[var(--c-t8f8680)]">{t('bulk.no_team_members')}</p>
                 ) : (
                   users.map((u) => (
                     <button
                       key={u.id}
                       onClick={() => handleAssignSelect(u.id, u.name)}
-                      className="w-full text-left px-4 py-2.5 text-sm text-[#1c1917] hover:bg-[#ece5de] transition-colors flex items-center gap-2"
+                      className="w-full text-left px-4 py-2.5 text-sm text-[var(--c-t1c1917)] hover:bg-[var(--c-sece5de)] transition-colors flex items-center gap-2"
                     >
-                      <div className="w-6 h-6 rounded-full bg-[#f5e6df] flex items-center justify-center text-xs font-bold text-[#c0694a] flex-shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-[var(--c-sf5e6df)] flex items-center justify-center text-xs font-bold text-[var(--c-tc0694a)] flex-shrink-0">
                         {u.name.charAt(0).toUpperCase()}
                       </div>
                       <span className="truncate">{u.name}</span>

@@ -106,21 +106,21 @@ export function LocationComparisonChart({ submissions, maxLocations = 8 }: Locat
   }, [submissions, maxLocations]);
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8ECF0] p-6">
+    <div className="bg-[var(--c-sffffff)] rounded-xl border border-[var(--c-be8ecf0)] p-6">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 bg-[#EBF5FB] rounded-xl flex items-center justify-center flex-shrink-0">
-            <MapPin size={18} className="text-[#2E86AB]" />
+          <div className="w-10 h-10 bg-[var(--c-sebf5fb)] rounded-xl flex items-center justify-center flex-shrink-0">
+            <MapPin size={18} className="text-[var(--c-t2e86ab)]" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#1E3A5F]">Compare Locations</h2>
-            <p className="text-sm text-[#6B7B8D]">
+            <h2 className="text-lg font-bold text-[var(--c-t1e3a5f)]">Compare Locations</h2>
+            <p className="text-sm text-[var(--c-t6b7b8d)]">
               See how submissions stack up across your top locations.
             </p>
           </div>
         </div>
 
-        <div className="inline-flex rounded-lg border border-[#D5DDE5] bg-white p-0.5 text-xs font-semibold">
+        <div className="inline-flex rounded-lg border border-[var(--c-bd5dde5)] bg-[var(--c-sffffff)] p-0.5 text-xs font-semibold">
           {([
             { key: 'total', label: 'Volume' },
             { key: 'status', label: 'By status' },
@@ -132,8 +132,8 @@ export function LocationComparisonChart({ submissions, maxLocations = 8 }: Locat
               onClick={() => setMetric(opt.key)}
               className={`px-3 py-1.5 rounded-md transition-colors ${
                 metric === opt.key
-                  ? 'bg-[#2E86AB] text-white'
-                  : 'bg-[#F1F5F8] text-[#1E3A5F] hover:bg-[#2E86AB] hover:text-white'
+                  ? 'bg-[var(--c-s2e86ab)] text-white'
+                  : 'bg-[var(--c-sf1f5f8)] text-[var(--c-t1e3a5f)] hover:bg-[var(--c-s2e86ab)] hover:text-white'
               }`}
             >
               {opt.label}
@@ -143,7 +143,7 @@ export function LocationComparisonChart({ submissions, maxLocations = 8 }: Locat
       </div>
 
       {data.length === 0 ? (
-        <div className="h-72 flex items-center justify-center text-sm text-[#9AABBF]">
+        <div className="h-72 flex items-center justify-center text-sm text-[var(--c-t9aabbf)]">
           No location-tagged submissions yet.
         </div>
       ) : (

@@ -73,16 +73,16 @@ export function BoardComparisonChart({ data }: BoardComparisonChartProps) {
               <tr key={b.boardId} className="border-b border-color-border hover:bg-color-bg">
                 <td className="py-2 px-3 text-color-body-text font-medium">{b.boardName}</td>
                 <td className="py-2 px-3 text-right text-color-body-text">{b.totalSubmissions}</td>
-                <td className="py-2 px-3 text-right text-amber-600 font-medium">{b.openCount}</td>
-                <td className="py-2 px-3 text-right text-green-600 font-medium">{b.resolvedSubmissions}</td>
+                <td className="py-2 px-3 text-right text-amber-600 dark:text-amber-400 font-medium">{b.openCount}</td>
+                <td className="py-2 px-3 text-right text-green-600 dark:text-green-400 font-medium">{b.resolvedSubmissions}</td>
                 <td className="py-2 px-3 text-right">
                   <span
                     className={`font-semibold ${
                       b.resolutionRate >= 70
-                        ? 'text-green-600'
+                        ? 'text-green-600 dark:text-green-400'
                         : b.resolutionRate >= 40
-                          ? 'text-amber-600'
-                          : 'text-red-600'
+                          ? 'text-amber-600 dark:text-amber-400'
+                          : 'text-red-600 dark:text-red-400'
                     }`}
                   >
                     {b.resolutionRate.toFixed(1)}%

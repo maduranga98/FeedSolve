@@ -52,7 +52,7 @@ function MetricCard({
 }) {
   return (
     <div className={`rounded-xl p-4 border ${bg} ${border}`}>
-      <div className="flex items-center gap-2 mb-2 text-[#78716c]">
+      <div className="flex items-center gap-2 mb-2 text-[var(--c-t78716c)]">
         {icon}
         <span className="text-xs font-semibold">{label}</span>
       </div>
@@ -77,14 +77,14 @@ function TabButton({
       onClick={onClick}
       className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
         active
-          ? 'bg-[#1c1917] text-white shadow-sm'
-          : 'bg-white text-[#78716c] border border-[#e9e0d9] hover:bg-[#f5e6df] hover:text-[#c0694a] hover:border-[#c0694a]'
+          ? 'bg-[var(--c-s1c1917)] text-white shadow-sm'
+          : 'bg-[var(--c-sffffff)] text-[var(--c-t78716c)] border border-[var(--c-be9e0d9)] hover:bg-[var(--c-sf5e6df)] hover:text-[var(--c-tc0694a)] hover:border-[var(--c-bc0694a)]'
       }`}
     >
       {children}
       <span
         className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
-          active ? 'bg-white/20 text-white' : 'bg-[#f2ece6] text-[#78716c]'
+          active ? 'bg-white/20 text-white' : 'bg-[var(--c-sf2ece6)] text-[var(--c-t78716c)]'
         }`}
       >
         {count}
@@ -264,19 +264,19 @@ export function SubmissionsPage() {
     activeTab === 'active' ? activeSubmissions : completedSubmissions;
 
   return (
-    <div className="h-screen flex flex-col bg-[#f2ede7] overflow-hidden">
+    <div className="h-screen flex flex-col bg-[var(--c-sf2ede7)] overflow-hidden">
 
       {/* ── Fixed top header ── */}
-      <div className="bg-white border-b border-[#e9e0d9] flex-shrink-0 shadow-sm">
+      <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be9e0d9)] flex-shrink-0 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-[#f5e6df] rounded-xl flex items-center justify-center flex-shrink-0">
-                <Inbox size={18} className="text-[#c0694a]" />
+              <div className="w-9 h-9 bg-[var(--c-sf5e6df)] rounded-xl flex items-center justify-center flex-shrink-0">
+                <Inbox size={18} className="text-[var(--c-tc0694a)]" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-[#1c1917] leading-tight">{t('submissions_page.title')}</h1>
-                <p className="text-xs text-[#8f8680] mt-0.5">{t('submissions_page.subtitle')}</p>
+                <h1 className="text-xl font-bold text-[var(--c-t1c1917)] leading-tight">{t('submissions_page.title')}</h1>
+                <p className="text-xs text-[var(--c-t8f8680)] mt-0.5">{t('submissions_page.subtitle')}</p>
               </div>
             </div>
 
@@ -285,7 +285,7 @@ export function SubmissionsPage() {
                 onClick={loadInitial}
                 disabled={loading}
                 title={t('refresh')}
-                className="p-2 rounded-lg bg-white border border-[#e9e0d9] text-[#78716c] hover:bg-[#f2ece6] transition-colors disabled:opacity-50"
+                className="p-2 rounded-lg bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] text-[var(--c-t78716c)] hover:bg-[var(--c-sf2ece6)] transition-colors disabled:opacity-50"
               >
                 <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
               </button>
@@ -293,7 +293,7 @@ export function SubmissionsPage() {
                 onClick={() => downloadCSV(displayedSubmissions)}
                 disabled={displayedSubmissions.length === 0}
                 title={t('submissions_page.export_tooltip')}
-                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[#c0694a] hover:bg-[#9c4a2f] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[var(--c-sc0694a)] hover:bg-[var(--c-s9c4a2f)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={13} />
                 <span className="hidden sm:inline">{t('submissions_page.export_csv')}</span>
@@ -321,46 +321,46 @@ export function SubmissionsPage() {
                     value={newCount}
                     label={t('submissions_page.new')}
                     icon={<Inbox size={13} />}
-                    valueCls="text-[#9c4a2f]"
-                    bg="bg-[#f5e6df]"
-                    border="border-[#ecd3c6]"
+                    valueCls="text-[var(--c-t9c4a2f)]"
+                    bg="bg-[var(--c-sf5e6df)]"
+                    border="border-[var(--c-becd3c6)]"
                   />
                   <MetricCard
                     value={inProgressCount}
                     label={t('submissions_page.in_progress')}
                     icon={<Clock size={13} />}
-                    valueCls="text-[#B06F00]"
-                    bg="bg-[#FFF8E6]"
-                    border="border-[#F5D78E]"
+                    valueCls="text-[var(--c-tb06f00)]"
+                    bg="bg-[var(--c-sfff8e6)]"
+                    border="border-[var(--c-bf5d78e)]"
                   />
                   <MetricCard
                     value={resolvedCount}
                     label={t('submissions_page.resolved')}
                     icon={<CheckCircle2 size={13} />}
-                    valueCls="text-[#1D8A57]"
-                    bg="bg-[#EAF9F2]"
-                    border="border-[#A8E6C6]"
+                    valueCls="text-[var(--c-t1d8a57)]"
+                    bg="bg-[var(--c-seaf9f2)]"
+                    border="border-[var(--c-ba8e6c6)]"
                   />
                   <MetricCard
                     value={unassignedCount}
                     label={t('submissions_page.unassigned')}
                     icon={<Users size={13} />}
-                    valueCls={unassignedCount > 0 ? 'text-[#B06F00]' : 'text-[#1c1917]'}
-                    bg={unassignedCount > 0 ? 'bg-[#FFF3E0]' : 'bg-[#f2ece6]'}
-                    border={unassignedCount > 0 ? 'border-[#FFCC80]' : 'border-[#e9e0d9]'}
+                    valueCls={unassignedCount > 0 ? 'text-[var(--c-tb06f00)]' : 'text-[var(--c-t1c1917)]'}
+                    bg={unassignedCount > 0 ? 'bg-[var(--c-sfff3e0)]' : 'bg-[var(--c-sf2ece6)]'}
+                    border={unassignedCount > 0 ? 'border-[var(--c-bffcc80)]' : 'border-[var(--c-be9e0d9)]'}
                   />
                 </div>
               )}
 
               {/* ── My Assigned ── */}
               {mySubmissions.length > 0 && (
-                <div className="bg-white border border-[#e9e0d9] rounded-xl px-5 py-4">
+                <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl px-5 py-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <UserCheck size={14} className="text-[#c0694a] flex-shrink-0" />
-                    <span className="text-sm font-semibold text-[#1c1917]">{t('submissions_page.my_assigned')}</span>
-                    <span className="text-sm font-bold text-[#c0694a] ml-auto flex-shrink-0">{myPct}%</span>
+                    <UserCheck size={14} className="text-[var(--c-tc0694a)] flex-shrink-0" />
+                    <span className="text-sm font-semibold text-[var(--c-t1c1917)]">{t('submissions_page.my_assigned')}</span>
+                    <span className="text-sm font-bold text-[var(--c-tc0694a)] ml-auto flex-shrink-0">{myPct}%</span>
                   </div>
-                  <div className="h-2 bg-[#f0e9e3] rounded-full overflow-hidden mb-2">
+                  <div className="h-2 bg-[var(--c-sf0e9e3)] rounded-full overflow-hidden mb-2">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{
@@ -369,13 +369,13 @@ export function SubmissionsPage() {
                       }}
                     />
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-[#8f8680]">
+                  <div className="flex items-center gap-3 text-xs text-[var(--c-t8f8680)]">
                     <span className="flex items-center gap-1">
-                      <AlertCircle size={11} className="text-[#B06F00]" />
+                      <AlertCircle size={11} className="text-[var(--c-tb06f00)]" />
                       {mySubmissions.length - myResolved} {t('submissions_page.active')}
                     </span>
                     <span className="flex items-center gap-1">
-                      <CheckCircle2 size={11} className="text-[#1D8A57]" />
+                      <CheckCircle2 size={11} className="text-[var(--c-t1d8a57)]" />
                       {myResolved} {t('submissions_page.done')}
                     </span>
                   </div>
@@ -384,45 +384,45 @@ export function SubmissionsPage() {
 
               {/* ── Team Progress (collapsible) ── */}
               {memberProgress.length > 0 && (
-                <div className="bg-white border border-[#e9e0d9] rounded-xl overflow-hidden">
+                <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl overflow-hidden">
                   <button
                     onClick={() => setShowTeamProgress(!showTeamProgress)}
-                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[#faf8f5] transition-colors text-left"
+                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[var(--c-sfaf8f5)] transition-colors text-left"
                   >
-                    <TrendingUp size={14} className="text-[#c0694a]" />
-                    <span className="text-sm font-semibold text-[#1c1917]">{t('submissions_page.team_progress')}</span>
-                    <span className="text-xs text-[#8f8680]">
+                    <TrendingUp size={14} className="text-[var(--c-tc0694a)]" />
+                    <span className="text-sm font-semibold text-[var(--c-t1c1917)]">{t('submissions_page.team_progress')}</span>
+                    <span className="text-xs text-[var(--c-t8f8680)]">
                       {assignedCount} {t('submissions_page.assigned')} · {memberProgress.length} {t('submissions_page.members')}
                     </span>
                     <ChevronDown
                       size={14}
-                      className={`ml-auto text-[#8f8680] transition-transform duration-200 ${showTeamProgress ? 'rotate-180' : ''}`}
+                      className={`ml-auto text-[var(--c-t8f8680)] transition-transform duration-200 ${showTeamProgress ? 'rotate-180' : ''}`}
                     />
                   </button>
 
                   {showTeamProgress && (
-                    <div className="divide-y divide-[#f2ece6] border-t border-[#f2ece6]">
+                    <div className="divide-y divide-[var(--c-bf2ece6)] border-t border-[var(--c-bf2ece6)]">
                       {memberProgress.map(({ member, total, resolved, active }) => {
                         const pct = Math.round((resolved / total) * 100);
                         const isMe = member.id === user?.id;
                         return (
                           <div key={member.id} className="px-5 py-3.5 flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[#f5e6df] flex items-center justify-center text-xs font-bold text-[#c0694a] flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[var(--c-sf5e6df)] flex items-center justify-center text-xs font-bold text-[var(--c-tc0694a)] flex-shrink-0">
                               {member.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-1.5">
-                                <p className="text-sm font-medium text-[#1c1917] truncate">
+                                <p className="text-sm font-medium text-[var(--c-t1c1917)] truncate">
                                   {member.name}
                                   {isMe && (
-                                    <span className="ml-1.5 text-xs text-[#c0694a] font-normal">{t('submissions_page.you')}</span>
+                                    <span className="ml-1.5 text-xs text-[var(--c-tc0694a)] font-normal">{t('submissions_page.you')}</span>
                                   )}
                                 </p>
-                                <span className="text-xs text-[#78716c] ml-2 flex-shrink-0">
+                                <span className="text-xs text-[var(--c-t78716c)] ml-2 flex-shrink-0">
                                   {resolved}/{total} · {pct}%
                                 </span>
                               </div>
-                              <div className="h-1.5 bg-[#f0e9e3] rounded-full overflow-hidden">
+                              <div className="h-1.5 bg-[var(--c-sf0e9e3)] rounded-full overflow-hidden">
                                 <div
                                   className="h-full rounded-full transition-all"
                                   style={{
@@ -435,7 +435,7 @@ export function SubmissionsPage() {
                                 />
                               </div>
                             </div>
-                            <span className="text-xs text-[#8f8680] flex-shrink-0 w-16 text-right">
+                            <span className="text-xs text-[var(--c-t8f8680)] flex-shrink-0 w-16 text-right">
                               {active} {t('submissions_page.active')}
                             </span>
                           </div>
@@ -449,10 +449,10 @@ export function SubmissionsPage() {
               {/* ── Cycle selector ── */}
               {cycles.length > 0 && (
                 <>
-                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[#e9e0d9] bg-white px-5 py-3.5">
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] px-5 py-3.5">
                     <div>
-                      <p className="text-sm font-bold text-[#1c1917]">{t('submissions_page.board_cycles')}</p>
-                      <p className="text-xs text-[#8f8680]">{t('submissions_page.board_cycles_help')}</p>
+                      <p className="text-sm font-bold text-[var(--c-t1c1917)]">{t('submissions_page.board_cycles')}</p>
+                      <p className="text-xs text-[var(--c-t8f8680)]">{t('submissions_page.board_cycles_help')}</p>
                     </div>
                     <CycleSwitcher
                       cycles={cycles}
@@ -490,20 +490,20 @@ export function SubmissionsPage() {
 
                 <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
                   {mergedCount > 0 && (
-                    <label className="inline-flex items-center gap-2 rounded-lg border border-[#e9e0d9] bg-white px-3 py-2 cursor-pointer select-none">
+                    <label className="inline-flex items-center gap-2 rounded-lg border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] px-3 py-2 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={showMerged}
                         onChange={(e) => setShowMerged(e.target.checked)}
-                        className="h-4 w-4 accent-[#c0694a]"
+                        className="h-4 w-4 accent-[var(--c-sc0694a)]"
                       />
-                      <span className="text-xs font-semibold text-[#78716c]">
+                      <span className="text-xs font-semibold text-[var(--c-t78716c)]">
                         {t('submissions_page.show_merged', { count: mergedCount })}
                       </span>
                     </label>
                   )}
 
-                  <p className="text-xs text-[#8f8680]">
+                  <p className="text-xs text-[var(--c-t8f8680)]">
                     {activeTab === 'active'
                       ? t('submissions_page.active_description')
                       : t('submissions_page.completed_description')}
@@ -512,7 +512,7 @@ export function SubmissionsPage() {
               </div>
 
               {/* ── Search + Results panel ── */}
-              <div className="bg-white border border-[#e9e0d9] rounded-2xl p-5">
+              <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-2xl p-5">
                 <AdvancedSearch
                   submissions={displayedSubmissions}
                   users={users}
@@ -531,7 +531,7 @@ export function SubmissionsPage() {
                   <button
                     onClick={loadMore}
                     disabled={loadingMore}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-[#e9e0d9] rounded-xl text-sm font-semibold text-[#c0694a] hover:bg-[#f5e6df] transition-colors disabled:opacity-60"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl text-sm font-semibold text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)] transition-colors disabled:opacity-60"
                   >
                     {loadingMore ? (
                       <>

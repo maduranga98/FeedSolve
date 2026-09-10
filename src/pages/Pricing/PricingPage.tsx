@@ -86,7 +86,7 @@ export function PricingPage() {
         <BillingToggle onToggle={setBilling} />
 
         {error && (
-          <div className="mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-8 p-4 bg-red-100 dark:bg-red-900 border border-red-400 text-red-700 dark:text-red-300 rounded">
             {error}
           </div>
         )}

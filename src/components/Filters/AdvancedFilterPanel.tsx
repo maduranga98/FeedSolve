@@ -126,8 +126,8 @@ export function AdvancedFilterPanel({
       onClick={onClick}
       className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
         active
-          ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]'
-          : 'bg-white text-[#6B7B8D] border-[#E8ECF0] hover:border-[#2E86AB] hover:text-[#2E86AB]'
+          ? 'bg-[var(--c-s1e3a5f)] text-white border-[var(--c-b1e3a5f)]'
+          : 'bg-[var(--c-sffffff)] text-[var(--c-t6b7b8d)] border-[var(--c-be8ecf0)] hover:border-[var(--c-b2e86ab)] hover:text-[var(--c-t2e86ab)]'
       }`}
     >
       {label}
@@ -135,7 +135,7 @@ export function AdvancedFilterPanel({
   );
 
   const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-    <p className="text-[10px] font-bold text-[#9AABBF] uppercase tracking-widest mb-2">{children}</p>
+    <p className="text-[10px] font-bold text-[var(--c-t9aabbf)] uppercase tracking-widest mb-2">{children}</p>
   );
 
   return (
@@ -144,8 +144,8 @@ export function AdvancedFilterPanel({
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold border transition-all ${
           isActive
-            ? 'bg-[#1E3A5F] text-white border-[#1E3A5F]'
-            : 'bg-white text-[#444441] border-[#D3D1C7] hover:bg-[#F1F5F8]'
+            ? 'bg-[var(--c-s1e3a5f)] text-white border-[var(--c-b1e3a5f)]'
+            : 'bg-[var(--c-sffffff)] text-[var(--c-t444441)] border-[var(--c-bd3d1c7)] hover:bg-[var(--c-sf1f5f8)]'
         }`}
       >
         <SlidersHorizontal size={14} />
@@ -159,20 +159,20 @@ export function AdvancedFilterPanel({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-[420px] bg-white border border-[#E8ECF0] rounded-xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-[420px] bg-[var(--c-sffffff)] border border-[var(--c-be8ecf0)] rounded-xl shadow-2xl z-50 overflow-hidden">
           {/* Dropdown header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0F4F8]">
-            <h3 className="text-sm font-bold text-[#1E3A5F]">Filter Submissions</h3>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--c-bf0f4f8)]">
+            <h3 className="text-sm font-bold text-[var(--c-t1e3a5f)]">Filter Submissions</h3>
             <div className="flex items-center gap-3">
               {activeFilterCount > 0 && (
                 <button
                   onClick={() => onFiltersChange({})}
-                  className="text-xs font-medium text-[#9AABBF] hover:text-[#E74C3C] transition-colors"
+                  className="text-xs font-medium text-[var(--c-t9aabbf)] hover:text-[var(--c-te74c3c)] transition-colors"
                 >
                   Clear all
                 </button>
               )}
-              <button onClick={() => setIsOpen(false)} className="text-[#C0C8D0] hover:text-[#6B7B8D] transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-[var(--c-tc0c8d0)] hover:text-[var(--c-t6b7b8d)] transition-colors">
                 <X size={16} />
               </button>
             </div>
@@ -265,7 +265,7 @@ export function AdvancedFilterPanel({
               <SectionLabel>Date Range</SectionLabel>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <p className="text-[10px] text-[#9AABBF] mb-1">From</p>
+                  <p className="text-[10px] text-[var(--c-t9aabbf)] mb-1">From</p>
                   <input
                     type="date"
                     value={
@@ -292,11 +292,11 @@ export function AdvancedFilterPanel({
                           : undefined,
                       });
                     }}
-                    className="w-full px-3 py-2 border border-[#E8ECF0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#9AABBF] mb-1">To</p>
+                  <p className="text-[10px] text-[var(--c-t9aabbf)] mb-1">To</p>
                   <input
                     type="date"
                     value={
@@ -323,7 +323,7 @@ export function AdvancedFilterPanel({
                           : undefined,
                       });
                     }}
-                    className="w-full px-3 py-2 border border-[#E8ECF0] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--c-be8ecf0)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -332,10 +332,10 @@ export function AdvancedFilterPanel({
 
           {/* Footer — Save Filter */}
           {onSaveFilter && activeFilterCount > 0 && (
-            <div className="px-4 py-3 border-t border-[#F0F4F8] bg-[#F8FAFB]">
+            <div className="px-4 py-3 border-t border-[var(--c-bf0f4f8)] bg-[var(--c-sf8fafb)]">
               <button
                 onClick={() => setSaveModal(true)}
-                className="flex items-center gap-2 text-xs font-semibold text-[#2E86AB] hover:text-[#1E6A9A] transition-colors"
+                className="flex items-center gap-2 text-xs font-semibold text-[var(--c-t2e86ab)] hover:text-[var(--c-t1e6a9a)] transition-colors"
               >
                 <Save size={13} />
                 Save this filter combination
@@ -348,29 +348,29 @@ export function AdvancedFilterPanel({
       {/* Save Filter Modal */}
       {saveModal && onSaveFilter && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-[#E8ECF0]">
-            <h3 className="text-base font-bold text-[#1E3A5F] mb-1">Save Filter</h3>
-            <p className="text-xs text-[#9AABBF] mb-5">Give this filter combination a name so you can reuse it later.</p>
+          <div className="bg-[var(--c-sffffff)] rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-[var(--c-be8ecf0)]">
+            <h3 className="text-base font-bold text-[var(--c-t1e3a5f)] mb-1">Save Filter</h3>
+            <p className="text-xs text-[var(--c-t9aabbf)] mb-5">Give this filter combination a name so you can reuse it later.</p>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#444441] mb-1.5">Filter Name *</label>
+                <label className="block text-xs font-semibold text-[var(--c-t444441)] mb-1.5">Filter Name *</label>
                 <input
                   type="text"
                   value={filterName}
                   onChange={(e) => setFilterName(e.target.value)}
                   placeholder="e.g., High Priority Open Issues"
-                  className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
+                  className="w-full px-3 py-2 border border-[var(--c-bd3d1c7)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)]"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#444441] mb-1.5">Description</label>
+                <label className="block text-xs font-semibold text-[var(--c-t444441)] mb-1.5">Description</label>
                 <textarea
                   value={filterDescription}
                   onChange={(e) => setFilterDescription(e.target.value)}
                   placeholder="Optional description..."
                   rows={2}
-                  className="w-full px-3 py-2 border border-[#D3D1C7] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2E86AB] resize-none"
+                  className="w-full px-3 py-2 border border-[var(--c-bd3d1c7)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)] resize-none"
                 />
               </div>
             </div>

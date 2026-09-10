@@ -40,11 +40,11 @@ const priorities: { value: Submission['priority']; label: string }[] = [
 
 function FilterTag({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <div className="inline-flex items-center gap-2 px-2 py-1 bg-[#E0E8EF] text-[#1E3A5F] rounded text-sm">
+    <div className="inline-flex items-center gap-2 px-2 py-1 bg-[var(--c-se0e8ef)] text-[var(--c-t1e3a5f)] rounded text-sm">
       <span>{label}</span>
       <button
         onClick={onRemove}
-        className="hover:text-[#444441]"
+        className="hover:text-[var(--c-t444441)]"
       >
         <X size={14} />
       </button>
@@ -117,11 +117,11 @@ export default function FilterBar({
             setShowFilters(!showFilters);
             loadMembers();
           }}
-          className="flex items-center gap-2 px-3 py-2 bg-white border border-[#D3D1C7] rounded text-sm text-[#444441] hover:bg-[#F1F5F8] transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-[var(--c-sffffff)] border border-[var(--c-bd3d1c7)] rounded text-sm text-[var(--c-t444441)] hover:bg-[var(--c-sf1f5f8)] transition-colors"
         >
           <span>Filters</span>
           {activeFilterCount > 0 && (
-            <span className="px-2 py-0.5 bg-[#2E86AB] text-white rounded text-xs font-medium">
+            <span className="px-2 py-0.5 bg-[var(--c-s2e86ab)] text-white rounded text-xs font-medium">
               {activeFilterCount}
             </span>
           )}
@@ -140,10 +140,10 @@ export default function FilterBar({
       </div>
 
       {showFilters && (
-        <div className="bg-white border border-[#D3D1C7] rounded-lg p-4 space-y-4">
+        <div className="bg-[var(--c-sffffff)] border border-[var(--c-bd3d1c7)] rounded-lg p-4 space-y-4">
           {/* Status Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-2">
               Status
             </label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -153,9 +153,9 @@ export default function FilterBar({
                     type="checkbox"
                     checked={currentFilters.status.includes(status.value)}
                     onChange={() => handleStatusToggle(status.value)}
-                    className="rounded border-[#D3D1C7]"
+                    className="rounded border-[var(--c-bd3d1c7)]"
                   />
-                  <span className="text-sm text-[#6B7B8D]">{status.label}</span>
+                  <span className="text-sm text-[var(--c-t6b7b8d)]">{status.label}</span>
                 </label>
               ))}
             </div>
@@ -163,7 +163,7 @@ export default function FilterBar({
 
           {/* Board Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-2">
               Board
             </label>
             <div className="space-y-2">
@@ -173,9 +173,9 @@ export default function FilterBar({
                     type="checkbox"
                     checked={currentFilters.board.includes(board.id)}
                     onChange={() => handleBoardToggle(board.id)}
-                    className="rounded border-[#D3D1C7]"
+                    className="rounded border-[var(--c-bd3d1c7)]"
                   />
-                  <span className="text-sm text-[#6B7B8D]">{board.name}</span>
+                  <span className="text-sm text-[var(--c-t6b7b8d)]">{board.name}</span>
                 </label>
               ))}
             </div>
@@ -183,14 +183,14 @@ export default function FilterBar({
 
           {/* Assignee Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-2">
               Assigned To
             </label>
             <div className="space-y-2">
               {loadingMembers ? (
-                <p className="text-xs text-[#6B7B8D]">Loading...</p>
+                <p className="text-xs text-[var(--c-t6b7b8d)]">Loading...</p>
               ) : members.length === 0 ? (
-                <p className="text-xs text-[#6B7B8D]">No team members</p>
+                <p className="text-xs text-[var(--c-t6b7b8d)]">No team members</p>
               ) : (
                 members.map((member) => (
                   <label key={member.id} className="flex items-center gap-2 cursor-pointer">
@@ -198,9 +198,9 @@ export default function FilterBar({
                       type="checkbox"
                       checked={currentFilters.assignee.includes(member.id)}
                       onChange={() => handleAssigneeToggle(member.id)}
-                      className="rounded border-[#D3D1C7]"
+                      className="rounded border-[var(--c-bd3d1c7)]"
                     />
-                    <span className="text-sm text-[#6B7B8D]">{member.name}</span>
+                    <span className="text-sm text-[var(--c-t6b7b8d)]">{member.name}</span>
                   </label>
                 ))
               )}
@@ -209,7 +209,7 @@ export default function FilterBar({
 
           {/* Priority Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-2">
               Priority
             </label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -219,9 +219,9 @@ export default function FilterBar({
                     type="checkbox"
                     checked={currentFilters.priority.includes(priority.value)}
                     onChange={() => handlePriorityToggle(priority.value)}
-                    className="rounded border-[#D3D1C7]"
+                    className="rounded border-[var(--c-bd3d1c7)]"
                   />
-                  <span className="text-sm text-[#6B7B8D]">{priority.label}</span>
+                  <span className="text-sm text-[var(--c-t6b7b8d)]">{priority.label}</span>
                 </label>
               ))}
             </div>
@@ -229,7 +229,7 @@ export default function FilterBar({
 
           {/* Date Range Filter */}
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-2">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-2">
               Date Range
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -240,7 +240,7 @@ export default function FilterBar({
                   const start = e.target.value ? new Date(e.target.value) : undefined;
                   onDateRangeChange(start, currentFilters.dateRange.end);
                 }}
-                className="px-2 py-1 border border-[#D3D1C7] rounded text-sm"
+                className="px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
               />
               <input
                 type="date"
@@ -249,7 +249,7 @@ export default function FilterBar({
                   const end = e.target.value ? new Date(e.target.value) : undefined;
                   onDateRangeChange(currentFilters.dateRange.start, end);
                 }}
-                className="px-2 py-1 border border-[#D3D1C7] rounded text-sm"
+                className="px-2 py-1 border border-[var(--c-bd3d1c7)] rounded text-sm"
               />
             </div>
           </div>

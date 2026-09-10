@@ -118,7 +118,7 @@ export function ReportBuilder({
         <button
           onClick={handleGenerateReport}
           disabled={loading || noneSelected}
-          className="w-full px-4 py-2 bg-[#1E3A5F] text-white rounded-lg font-medium hover:bg-[#2E86AB] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+          className="w-full px-4 py-2 bg-[var(--c-s1e3a5f)] text-white rounded-lg font-medium hover:bg-[var(--c-s2e86ab)] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           {t('analytics.generate_report', { count: selectedCount, plural: selectedCount === 1 ? '' : 's' })}
@@ -127,7 +127,7 @@ export function ReportBuilder({
         <button
           onClick={() => onExportPDF(options)}
           disabled={loading}
-          className="w-full px-4 py-2 bg-[#2E86AB] text-white rounded-lg font-medium hover:bg-[#1E3A5F] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+          className="w-full px-4 py-2 bg-[var(--c-s2e86ab)] text-white rounded-lg font-medium hover:bg-[var(--c-s1e3a5f)] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           {t('analytics.export_pdf')}
@@ -136,7 +136,7 @@ export function ReportBuilder({
         <button
           onClick={onExportCSV}
           disabled={loading}
-          className="w-full px-4 py-2 bg-[#EBF5FB] text-[#1E3A5F] border border-[#C8DDE8] rounded-lg font-medium hover:bg-[#2E86AB] hover:text-white hover:border-[#2E86AB] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
+          className="w-full px-4 py-2 bg-[var(--c-sebf5fb)] text-[var(--c-t1e3a5f)] border border-[var(--c-bc8dde8)] rounded-lg font-medium hover:bg-[var(--c-s2e86ab)] hover:text-white hover:border-[var(--c-b2e86ab)] disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
         >
           <Download size={18} />
           {t('analytics.export_submissions_csv')}

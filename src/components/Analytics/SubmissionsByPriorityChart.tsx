@@ -30,8 +30,8 @@ export default function SubmissionsByPriorityChart({
 
   if (chartData.length === 0) {
     return (
-      <div className="w-full h-64 flex items-center justify-center bg-[#F1F5F8] rounded-lg border border-[#D3D1C7]">
-        <p className="text-[#6B7B8D]">No data available</p>
+      <div className="w-full h-64 flex items-center justify-center bg-[var(--c-sf1f5f8)] rounded-lg border border-[var(--c-bd3d1c7)]">
+        <p className="text-[var(--c-t6b7b8d)]">No data available</p>
       </div>
     );
   }

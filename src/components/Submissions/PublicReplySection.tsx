@@ -44,13 +44,13 @@ export default function PublicReplySection({
 
   if (!canReply) {
     return (
-      <div className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[#d6cabf] bg-[#f5f0ec] text-sm text-[#78716c]">
-        <Lock size={15} className="shrink-0 text-[#8f8680]" />
+      <div className="flex items-center gap-3 p-4 rounded-lg border border-dashed border-[var(--c-bd6cabf)] bg-[var(--c-sf5f0ec)] text-sm text-[var(--c-t78716c)]">
+        <Lock size={15} className="shrink-0 text-[var(--c-t8f8680)]" />
         <span>
           Public replies are available on the <strong>Starter</strong> plan and above.{' '}
           <button
             onClick={() => navigate('/pricing')}
-            className="text-[#c0694a] hover:underline font-medium"
+            className="text-[var(--c-tc0694a)] hover:underline font-medium"
           >
             Upgrade
           </button>
@@ -88,7 +88,7 @@ export default function PublicReplySection({
     return (
       <button
         onClick={() => setIsEditing(true)}
-        className="w-full py-4 px-4 border border-dashed border-[#d6cabf] rounded-lg text-[#78716c] hover:bg-[#f5f0ec] transition-colors text-sm"
+        className="w-full py-4 px-4 border border-dashed border-[var(--c-bd6cabf)] rounded-lg text-[var(--c-t78716c)] hover:bg-[var(--c-sf5f0ec)] transition-colors text-sm"
       >
         + Add public reply
       </button>
@@ -98,11 +98,11 @@ export default function PublicReplySection({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-[#1c1917]">Public Reply</h3>
+        <h3 className="font-semibold text-[var(--c-t1c1917)]">Public Reply</h3>
         {publicReply && !isEditing && (
           <button
             onClick={() => setIsEditing(true)}
-            className="text-xs text-[#c0694a] hover:underline"
+            className="text-xs text-[var(--c-tc0694a)] hover:underline"
           >
             Edit
           </button>
@@ -119,10 +119,10 @@ export default function PublicReplySection({
           boardName={boardName}
         />
       ) : (
-        <div className="bg-[#f5f0ec] border border-[#d6cabf] rounded-lg p-4">
-          <p className="text-[#3c3632] whitespace-pre-wrap mb-2">{publicReply}</p>
+        <div className="bg-[var(--c-sf5f0ec)] border border-[var(--c-bd6cabf)] rounded-lg p-4">
+          <p className="text-[var(--c-t3c3632)] whitespace-pre-wrap mb-2">{publicReply}</p>
           {publicReplyAt && publicReplyBy && (
-            <p className="text-xs text-[#78716c]">
+            <p className="text-xs text-[var(--c-t78716c)]">
               {publicReplyBy} • {formatDate(publicReplyAt.toDate())}
             </p>
           )}

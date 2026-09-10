@@ -34,7 +34,7 @@ export function FunnelChart({ data }: FunnelChartProps) {
                 {dropPct !== null && dropPct > 0 && (
                   <div className="flex items-center gap-1 text-xs text-color-muted-text pl-2 mb-1">
                     <span>↓</span>
-                    <span className="text-red-500">{dropPct}% drop</span>
+                    <span className="text-red-500 dark:text-red-400">{dropPct}% drop</span>
                   </div>
                 )}
                 <div className="flex items-center gap-3">

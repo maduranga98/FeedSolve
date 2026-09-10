@@ -41,13 +41,13 @@ export default function InternalNotesSection({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-semibold text-[#1c1917] mb-3">Internal Notes</h3>
+        <h3 className="font-semibold text-[var(--c-t1c1917)] mb-3">Internal Notes</h3>
         <AddNoteForm onSubmit={handleAddNote} loading={loading} />
       </div>
 
       {sortedNotes.length === 0 ? (
-        <div className="text-center py-8 bg-[#f5f0ec] rounded-lg border border-[#d6cabf]">
-          <p className="text-[#78716c] text-sm">No internal notes yet</p>
+        <div className="text-center py-8 bg-[var(--c-sf5f0ec)] rounded-lg border border-[var(--c-bd6cabf)]">
+          <p className="text-[var(--c-t78716c)] text-sm">No internal notes yet</p>
         </div>
       ) : (
         <div className="space-y-3">

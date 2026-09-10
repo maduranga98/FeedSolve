@@ -114,7 +114,7 @@ export function FileUploadInput({
         <p className="text-sm font-semibold mb-1" style={{ color: "var(--brand-secondary, #1c1917)" }}>
           {dragActive ? "Drop files here" : "Drag files here or click to browse"}
         </p>
-        <p className="text-xs text-[#8f8680]">
+        <p className="text-xs text-[var(--c-t8f8680)]">
           {ATTACHMENT_CONFIG.allowedFileTypes.join(', ')} · Max {formatFileSize(maxSize)}
         </p>
       </div>

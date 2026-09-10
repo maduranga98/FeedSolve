@@ -28,9 +28,9 @@ export function SubscriptionManager({ subscription, onSubscriptionChange }: Subs
 
   if (subscription.tier === 'free') {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-        <h3 className="text-xl font-bold text-blue-900 mb-3">Upgrade Your Plan</h3>
-        <p className="text-blue-800 mb-6">
+      <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
+        <h3 className="text-xl font-bold text-blue-900 dark:text-blue-200 mb-3">Upgrade Your Plan</h3>
+        <p className="text-blue-800 dark:text-blue-200 mb-6">
           Start collecting more feedback and access advanced features
         </p>
         <button
@@ -90,7 +90,7 @@ export function SubscriptionManager({ subscription, onSubscriptionChange }: Subs
                 <button
                   key={tier}
                   onClick={() => handleUpgradeClick(tier as 'starter' | 'growth' | 'business')}
-                  className="p-4 border-2 border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-left"
+                  className="p-4 border-2 border-blue-300 dark:border-blue-700 rounded-lg hover:bg-blue-50 hover:dark:bg-blue-950 transition-colors text-left"
                 >
                   <p className="font-bold text-gray-900 capitalize">{tier}</p>
                   <p className="text-sm text-gray-600">
@@ -113,7 +113,7 @@ export function SubscriptionManager({ subscription, onSubscriptionChange }: Subs
                 <button
                   key={tier}
                   onClick={() => handleDowngradeClick(tier as 'starter' | 'growth' | 'business')}
-                  className="p-4 border-2 border-orange-300 rounded-lg hover:bg-orange-50 transition-colors text-left"
+                  className="p-4 border-2 border-orange-300 dark:border-orange-700 rounded-lg hover:bg-orange-50 hover:dark:bg-orange-950 transition-colors text-left"
                 >
                   <p className="font-bold text-gray-900 capitalize">{tier}</p>
                   <p className="text-sm text-gray-600">

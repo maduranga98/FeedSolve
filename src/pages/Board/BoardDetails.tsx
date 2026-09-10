@@ -136,8 +136,8 @@ export function BoardDetails() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)] lg:items-start">
           {/* Board Info */}
           <div className="rounded-2xl border border-color-border bg-color-surface p-6 shadow-md lg:sticky lg:top-6">
-            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[#f5e6df] to-white p-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">
+            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[var(--c-sf5e6df)] to-[var(--c-sffffff)] p-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">
                 Feedback board
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold text-color-primary break-words">{board.name}</h1>
@@ -217,12 +217,12 @@ export function BoardDetails() {
             </div>
           </div>
 
-          <section className="overflow-hidden rounded-2xl border border-[#d6cabf] bg-white shadow-md">
-            <div className="border-b border-[#e9e0d9] bg-gradient-to-r from-[#f5f0ec] via-white to-[#f5e6df] p-5 sm:p-6">
+          <section className="overflow-hidden rounded-2xl border border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] shadow-md">
+            <div className="border-b border-[var(--c-be9e0d9)] bg-gradient-to-r from-[var(--c-sf5f0ec)] via-[var(--c-sffffff)] to-[var(--c-sf5e6df)] p-5 sm:p-6">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c0694a]">Board setup</p>
-                <h2 className="mt-1 text-xl font-bold text-[#1c1917] sm:text-2xl">Configure how feedback is collected</h2>
-                <p className="mt-1 text-sm text-[#78716c]">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">Board setup</p>
+                <h2 className="mt-1 text-xl font-bold text-[var(--c-t1c1917)] sm:text-2xl">Configure how feedback is collected</h2>
+                <p className="mt-1 text-sm text-[var(--c-t78716c)]">
                   Manage QR sharing, recurring cycles, and locations for this board.
                 </p>
               </div>
@@ -241,11 +241,11 @@ export function BoardDetails() {
                       onClick={() => setActiveSetupStep(step.id)}
                       className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
                         active
-                          ? 'border-[#c0694a] bg-white text-[#1c1917] shadow-sm ring-2 ring-[#c0694a]/15'
-                          : 'border-[#d6cabf] bg-white/65 text-[#78716c] hover:border-[#c0694a]/50 hover:bg-white'
+                          ? 'border-[var(--c-bc0694a)] bg-[var(--c-sffffff)] text-[var(--c-t1c1917)] shadow-sm ring-2 ring-[var(--c-bc0694a)]/15'
+                          : 'border-[var(--c-bd6cabf)] bg-white/65 text-[var(--c-t78716c)] hover:border-[var(--c-bc0694a)]/50 hover:bg-[var(--c-sffffff)]'
                       }`}
                     >
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[#c0694a] text-white' : 'bg-[#f1ebe5] text-[#78716c] group-hover:text-[#c0694a]'}`}>
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[var(--c-sc0694a)] text-white' : 'bg-[var(--c-sf1ebe5)] text-[var(--c-t78716c)] group-hover:text-[var(--c-tc0694a)]'}`}>
                         <Icon size={17} />
                       </span>
                       <span className="min-w-0">
@@ -258,16 +258,16 @@ export function BoardDetails() {
               </div>
             </div>
 
-            <div className="bg-[#faf8f5] p-4 sm:p-6">
+            <div className="bg-[var(--c-sfaf8f5)] p-4 sm:p-6">
               {activeSetupStep === 'qr' && (
-                <div className="rounded-xl border border-[#d6cabf] bg-white p-5">
+                <div className="rounded-xl border border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] p-5">
                   <div className="mb-5 flex items-start gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5e6df] text-[#c0694a]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)]">
                       <QrCode size={18} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-[#1c1917]">QR Code</h3>
-                      <p className="text-sm text-[#78716c]">Customize style, colors, logo, and frame — then download.</p>
+                      <h3 className="text-lg font-bold text-[var(--c-t1c1917)]">QR Code</h3>
+                      <p className="text-sm text-[var(--c-t78716c)]">Customize style, colors, logo, and frame — then download.</p>
                     </div>
                   </div>
                   <QRCustomizer feedbackUrl={feedbackUrl} boardName={board.name} />

@@ -82,7 +82,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={`relative ${isReply ? 'ml-6' : ''}`}>
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-4">
         <div className="relative">
           <textarea
             ref={textareaRef}

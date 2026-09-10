@@ -38,13 +38,13 @@ export function StorageUsageBar({ usedBytes, totalBytes, tierName }: StorageUsag
           {percentageUsed.toFixed(1)}% used
         </p>
         {isNearLimit && (
-          <div className="flex items-center gap-1 text-xs text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+          <div className="flex items-center gap-1 text-xs text-yellow-700 dark:text-yellow-300 bg-yellow-50 dark:bg-yellow-950 px-2 py-1 rounded">
             <AlertCircle size={14} />
             Storage limit approaching
           </div>
         )}
         {isExceeded && (
-          <div className="flex items-center gap-1 text-xs text-color-error bg-red-50 px-2 py-1 rounded">
+          <div className="flex items-center gap-1 text-xs text-color-error bg-red-50 dark:bg-red-950 px-2 py-1 rounded">
             <AlertCircle size={14} />
             Storage limit exceeded
           </div>

@@ -238,7 +238,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
 
       {/* Live Preview */}
       <div className="flex flex-col items-center gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[#857c75]">{t('qr.preview')}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t857c75)]">{t('qr.preview')}</p>
         <div className="flex items-center justify-center min-h-[260px]">
           <FrameWrapper config={config}>
             <div ref={qrRef} />
@@ -247,15 +247,15 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#d6cabf]">
+      <div className="flex border-b border-[var(--c-bd6cabf)]">
         {(['dots', 'logo', 'frame'] as const).map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 text-sm font-medium capitalize transition-colors ${
               activeTab === tab
-                ? 'border-b-2 border-[#c0694a] text-[#c0694a]'
-                : 'text-[#857c75] hover:text-[#1c1917]'
+                ? 'border-b-2 border-[var(--c-bc0694a)] text-[var(--c-tc0694a)]'
+                : 'text-[var(--c-t857c75)] hover:text-[var(--c-t1c1917)]'
             }`}
           >
             {tabKeys[tab]}
@@ -267,7 +267,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {activeTab === 'dots' && (
         <div className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.dot_style')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.dot_style')}</label>
             <div className="grid grid-cols-3 gap-2">
               {DOT_STYLES.map(({ value, key }) => (
                 <button
@@ -275,8 +275,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   onClick={() => set('dotStyle', value)}
                   className={`py-2 px-1 text-xs rounded-md border transition-all ${
                     config.dotStyle === value
-                      ? 'border-[#c0694a] bg-[#f5e6df] text-[#c0694a] font-semibold'
-                      : 'border-[#d6cabf] text-[#857c75] hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] font-semibold'
+                      : 'border-[var(--c-bd6cabf)] text-[var(--c-t857c75)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
                   {t(`qr.${key}`)}
@@ -286,7 +286,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.corner_square')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.corner_square')}</label>
             <div className="flex gap-2">
               {CORNER_SQUARE_STYLES.map(({ value, key }) => (
                 <button
@@ -294,8 +294,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   onClick={() => set('cornerSquareStyle', value)}
                   className={`flex-1 py-2 text-xs rounded-md border transition-all ${
                     config.cornerSquareStyle === value
-                      ? 'border-[#c0694a] bg-[#f5e6df] text-[#c0694a] font-semibold'
-                      : 'border-[#d6cabf] text-[#857c75] hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] font-semibold'
+                      : 'border-[var(--c-bd6cabf)] text-[var(--c-t857c75)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
                   {t(`qr.${key}`)}
@@ -305,7 +305,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.corner_dot')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.corner_dot')}</label>
             <div className="flex gap-2">
               {CORNER_DOT_STYLES.map(({ value, key }) => (
                 <button
@@ -313,8 +313,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   onClick={() => set('cornerDotStyle', value)}
                   className={`flex-1 py-2 text-xs rounded-md border transition-all ${
                     config.cornerDotStyle === value
-                      ? 'border-[#c0694a] bg-[#f5e6df] text-[#c0694a] font-semibold'
-                      : 'border-[#d6cabf] text-[#857c75] hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] font-semibold'
+                      : 'border-[var(--c-bd6cabf)] text-[var(--c-t857c75)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
                   {t(`qr.${key}`)}
@@ -324,7 +324,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.qr_color')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.qr_color')}</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {PRESET_COLORS.map(color => (
                 <button
@@ -333,7 +333,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   title={color}
                   style={{ backgroundColor: color }}
                   className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${
-                    config.dotColor === color ? 'border-[#c0694a] scale-110' : 'border-transparent'
+                    config.dotColor === color ? 'border-[var(--c-bc0694a)] scale-110' : 'border-transparent'
                   }`}
                 />
               ))}
@@ -343,22 +343,22 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                 type="color"
                 value={config.dotColor}
                 onChange={e => set('dotColor', e.target.value)}
-                className="w-9 h-9 rounded cursor-pointer border border-[#d6cabf]"
+                className="w-9 h-9 rounded cursor-pointer border border-[var(--c-bd6cabf)]"
               />
-              <span className="text-sm text-[#857c75] font-mono">{config.dotColor}</span>
+              <span className="text-sm text-[var(--c-t857c75)] font-mono">{config.dotColor}</span>
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.background')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.background')}</label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
                 value={config.backgroundColor}
                 onChange={e => set('backgroundColor', e.target.value)}
-                className="w-9 h-9 rounded cursor-pointer border border-[#d6cabf]"
+                className="w-9 h-9 rounded cursor-pointer border border-[var(--c-bd6cabf)]"
               />
-              <span className="text-sm text-[#857c75] font-mono">{config.backgroundColor}</span>
+              <span className="text-sm text-[var(--c-t857c75)] font-mono">{config.backgroundColor}</span>
             </div>
           </div>
         </div>
@@ -368,33 +368,33 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {activeTab === 'logo' && (
         <div className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.center_logo')}</label>
-            <p className="text-xs text-[#857c75] mb-3">
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.center_logo')}</label>
+            <p className="text-xs text-[var(--c-t857c75)] mb-3">
               {t('qr.logo_help')}
             </p>
             {config.logo ? (
-              <div className="flex items-center gap-3 p-3 bg-[#f2ece6] rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-[var(--c-sf2ece6)] rounded-lg">
                 <img
                   src={config.logo}
                   alt="Logo"
-                  className="w-12 h-12 rounded object-contain border border-[#d6cabf] bg-white"
+                  className="w-12 h-12 rounded object-contain border border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)]"
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#1c1917]">{t('qr.logo_uploaded')}</p>
-                  <p className="text-xs text-[#857c75]">{t('qr.shown_in_center')}</p>
+                  <p className="text-sm font-medium text-[var(--c-t1c1917)]">{t('qr.logo_uploaded')}</p>
+                  <p className="text-xs text-[var(--c-t857c75)]">{t('qr.shown_in_center')}</p>
                 </div>
                 <button
                   onClick={() => set('logo', null)}
-                  className="text-[#857c75] hover:text-[#c0392b] transition-colors"
+                  className="text-[var(--c-t857c75)] hover:text-[var(--c-tc0392b)] transition-colors"
                 >
                   <X size={18} />
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-[#d6cabf] rounded-lg cursor-pointer hover:border-[#c0694a] hover:bg-[#f5e6df] transition-all">
-                <Upload size={24} className="text-[#857c75]" />
-                <span className="text-sm font-medium text-[#1c1917]">{t('qr.upload_logo_image')}</span>
-                <span className="text-xs text-[#857c75]">{t('qr.logo_formats')}</span>
+              <label className="flex flex-col items-center gap-2 p-6 border-2 border-dashed border-[var(--c-bd6cabf)] rounded-lg cursor-pointer hover:border-[var(--c-bc0694a)] hover:bg-[var(--c-sf5e6df)] transition-all">
+                <Upload size={24} className="text-[var(--c-t857c75)]" />
+                <span className="text-sm font-medium text-[var(--c-t1c1917)]">{t('qr.upload_logo_image')}</span>
+                <span className="text-xs text-[var(--c-t857c75)]">{t('qr.logo_formats')}</span>
                 <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
               </label>
             )}
@@ -402,7 +402,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
 
           {config.logo && (
             <div>
-              <label className="text-sm font-medium text-[#1c1917] mb-2 block">
+              <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">
                 {t('qr.logo_size', { percent: Math.round(config.logoSize * 100) })}
               </label>
               <input
@@ -411,9 +411,9 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                 max="40"
                 value={Math.round(config.logoSize * 100)}
                 onChange={e => set('logoSize', parseInt(e.target.value) / 100)}
-                className="w-full accent-[#c0694a]"
+                className="w-full accent-[var(--c-sc0694a)]"
               />
-              <div className="flex justify-between text-xs text-[#857c75] mt-1">
+              <div className="flex justify-between text-xs text-[var(--c-t857c75)] mt-1">
                 <span>{t('qr.small')}</span>
                 <span>{t('qr.large')}</span>
               </div>
@@ -426,7 +426,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       {activeTab === 'frame' && (
         <div className="space-y-5">
           <div>
-            <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.frame_style')}</label>
+            <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.frame_style')}</label>
             <div className="grid grid-cols-3 gap-2">
               {FRAME_STYLES.map(({ value, labelKey, descKey }) => (
                 <button
@@ -434,14 +434,14 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                   onClick={() => set('frameStyle', value)}
                   className={`py-2 px-2 rounded-md border transition-all text-left ${
                     config.frameStyle === value
-                      ? 'border-[#c0694a] bg-[#f5e6df]'
-                      : 'border-[#d6cabf] hover:border-[#c0694a]'
+                      ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)]'
+                      : 'border-[var(--c-bd6cabf)] hover:border-[var(--c-bc0694a)]'
                   }`}
                 >
-                  <p className={`text-xs font-semibold ${config.frameStyle === value ? 'text-[#c0694a]' : 'text-[#1c1917]'}`}>
+                  <p className={`text-xs font-semibold ${config.frameStyle === value ? 'text-[var(--c-tc0694a)]' : 'text-[var(--c-t1c1917)]'}`}>
                     {t(`qr.${labelKey}`)}
                   </p>
-                  <p className="text-[10px] text-[#857c75]">{t(`qr.${descKey}`)}</p>
+                  <p className="text-[10px] text-[var(--c-t857c75)]">{t(`qr.${descKey}`)}</p>
                 </button>
               ))}
             </div>
@@ -450,7 +450,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
           {config.frameStyle !== 'none' && (
             <>
               <div>
-                <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.frame_color')}</label>
+                <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.frame_color')}</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {PRESET_COLORS.slice(0, 8).map(color => (
                     <button
@@ -459,7 +459,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                       title={color}
                       style={{ backgroundColor: color }}
                       className={`w-7 h-7 rounded-full border-2 transition-transform hover:scale-110 ${
-                        config.frameColor === color ? 'border-[#c0694a] scale-110' : 'border-transparent'
+                        config.frameColor === color ? 'border-[var(--c-bc0694a)] scale-110' : 'border-transparent'
                       }`}
                     />
                   ))}
@@ -469,26 +469,26 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                     type="color"
                     value={config.frameColor}
                     onChange={e => set('frameColor', e.target.value)}
-                    className="w-9 h-9 rounded cursor-pointer border border-[#d6cabf]"
+                    className="w-9 h-9 rounded cursor-pointer border border-[var(--c-bd6cabf)]"
                   />
-                  <span className="text-sm text-[#857c75] font-mono">{config.frameColor}</span>
+                  <span className="text-sm text-[var(--c-t857c75)] font-mono">{config.frameColor}</span>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.label_text')}</label>
+                <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.label_text')}</label>
                 <input
                   type="text"
                   value={config.labelText}
                   onChange={e => set('labelText', e.target.value)}
                   maxLength={24}
                   placeholder={t('qr.label_placeholder')}
-                  className="w-full px-3 py-2 border border-[#d6cabf] rounded-md text-sm text-[#1c1917] bg-white focus:outline-none focus:ring-2 focus:ring-[#c0694a]"
+                  className="w-full px-3 py-2 border border-[var(--c-bd6cabf)] rounded-md text-sm text-[var(--c-t1c1917)] bg-[var(--c-sffffff)] focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-[#1c1917] mb-2 block">{t('qr.label_position')}</label>
+                <label className="text-sm font-medium text-[var(--c-t1c1917)] mb-2 block">{t('qr.label_position')}</label>
                 <div className="flex gap-2">
                   {(['top', 'bottom'] as const).map(pos => (
                     <button
@@ -496,8 +496,8 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
                       onClick={() => set('labelPosition', pos)}
                       className={`flex-1 py-2 text-sm rounded-md border capitalize transition-all ${
                         config.labelPosition === pos
-                          ? 'border-[#c0694a] bg-[#f5e6df] text-[#c0694a] font-semibold'
-                          : 'border-[#d6cabf] text-[#857c75] hover:border-[#c0694a]'
+                          ? 'border-[var(--c-bc0694a)] bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] font-semibold'
+                          : 'border-[var(--c-bd6cabf)] text-[var(--c-t857c75)] hover:border-[var(--c-bc0694a)]'
                       }`}
                     >
                       {t(`qr.${pos}`)}
@@ -511,7 +511,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
       )}
 
       {/* Actions */}
-      <div className="space-y-2 pt-2 border-t border-[#d6cabf]">
+      <div className="space-y-2 pt-2 border-t border-[var(--c-bd6cabf)]">
         <div className="flex gap-2">
           <Button
             onClick={downloadQR}
@@ -533,7 +533,7 @@ export function QRCustomizer({ feedbackUrl, boardName }: QRCustomizerProps) {
         </div>
         <button
           onClick={() => setConfig(DEFAULT_CONFIG)}
-          className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs text-[#857c75] hover:text-[#1c1917] transition-colors"
+          className="w-full flex items-center justify-center gap-1.5 py-1.5 text-xs text-[var(--c-t857c75)] hover:text-[var(--c-t1c1917)] transition-colors"
         >
           <RotateCcw size={12} />
           {t('qr.reset_default')}

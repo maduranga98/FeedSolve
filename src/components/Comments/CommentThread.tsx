@@ -183,8 +183,8 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
 
       {/* Reply Section */}
       {replyingTo && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 ml-6">
-          <div className="text-sm font-medium text-blue-900 mb-3">
+        <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 ml-6">
+          <div className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-3">
             Replying to comment...
           </div>
           <CommentInput

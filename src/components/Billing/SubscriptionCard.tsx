@@ -30,7 +30,7 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
   return (
     <div
       className={`rounded-lg border-2 p-6 ${
-        isPastDue ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+        isPastDue ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-950' : 'border-gray-200 bg-[var(--c-sffffff)]'
       }`}
     >
       <div className="flex items-start justify-between mb-6">
@@ -45,8 +45,8 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
         <span
           className={`px-4 py-2 rounded-full text-sm font-bold ${
             subscription.status === 'active'
-              ? 'bg-green-100 text-green-800'
-              : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+              : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
           }`}
         >
           {subscription.status === 'active' ? 'Active' : 'Past Due'}
@@ -54,11 +54,11 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
       </div>
 
       {isPastDue && (
-        <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+        <div className="mb-6 p-4 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-lg flex gap-3">
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-bold text-red-900">Payment Failed</p>
-            <p className="text-red-800 text-sm">Please update your payment method to continue service.</p>
+            <p className="font-bold text-red-900 dark:text-red-200">Payment Failed</p>
+            <p className="text-red-800 dark:text-red-200 text-sm">Please update your payment method to continue service.</p>
           </div>
         </div>
       )}
@@ -81,8 +81,8 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
       )}
 
       {subscription.tier === 'free' && (
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-blue-900">
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <p className="text-blue-900 dark:text-blue-200">
             Unlock more features and higher limits with a paid plan
           </p>
         </div>
@@ -92,7 +92,7 @@ export function SubscriptionCard({ subscription, onCancel }: SubscriptionCardPro
         <div className="mt-6">
           <button
             onClick={() => setShowCancelModal(true)}
-            className="w-full px-4 py-2 border-2 border-red-300 text-red-600 rounded-lg hover:bg-red-50 font-medium flex items-center justify-center gap-2"
+            className="w-full px-4 py-2 border-2 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 hover:dark:bg-red-950 font-medium flex items-center justify-center gap-2"
           >
             <Trash2 className="w-4 h-4" />
             Cancel Subscription

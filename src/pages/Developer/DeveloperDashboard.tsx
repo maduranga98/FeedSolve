@@ -132,7 +132,7 @@ const DeveloperDashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Code2 size={32} className="text-blue-600" />
+            <Code2 size={32} className="text-blue-600 dark:text-blue-400" />
             <h1 className="text-3xl font-bold text-gray-900">Developer Dashboard</h1>
           </div>
           <p className="text-gray-600">
@@ -141,7 +141,7 @@ const DeveloperDashboard: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap gap-1 mb-6 bg-white rounded-lg border border-gray-200 p-1 w-full sm:w-fit overflow-x-auto">
+        <div className="flex flex-wrap gap-1 mb-6 bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-1 w-full sm:w-fit overflow-x-auto">
           {[
             { id: 'overview', label: 'Overview', icon: Eye },
             { id: 'keys', label: 'API Keys', icon: Settings },
@@ -154,7 +154,7 @@ const DeveloperDashboard: React.FC = () => {
                 onClick={() => setSelectedTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md font-medium transition ${
                   selectedTab === tab.id
-                    ? 'bg-blue-100 text-blue-700'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -175,23 +175,23 @@ const DeveloperDashboard: React.FC = () => {
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Quick Start</h3>
                 <ol className="space-y-3 text-sm text-gray-600">
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-semibold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-semibold">
                       1
                     </span>
                     <span>Create an API key in the "API Keys" tab</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-semibold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-semibold">
                       2
                     </span>
                     <span>Copy your key and store it securely</span>
                   </li>
                   <li className="flex gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-xs font-semibold">
+                    <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-semibold">
                       3
                     </span>
                     <span>Use it in your API requests</span>
@@ -199,7 +199,7 @@ const DeveloperDashboard: React.FC = () => {
                 </ol>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Documentation</h3>
                 <ul className="space-y-2 text-sm">
                   <li>
@@ -207,7 +207,7 @@ const DeveloperDashboard: React.FC = () => {
                       href="/api/docs"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 underline"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:dark:text-blue-300 underline"
                     >
                       → API Reference
                     </a>
@@ -215,7 +215,7 @@ const DeveloperDashboard: React.FC = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-blue-600 hover:text-blue-700 underline"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:dark:text-blue-300 underline"
                     >
                       → Integration Guide
                     </a>
@@ -223,7 +223,7 @@ const DeveloperDashboard: React.FC = () => {
                   <li>
                     <a
                       href="#"
-                      className="text-blue-600 hover:text-blue-700 underline"
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 hover:dark:text-blue-300 underline"
                     >
                       → Code Examples
                     </a>
@@ -231,7 +231,7 @@ const DeveloperDashboard: React.FC = () => {
                 </ul>
               </div>
 
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
                 <p className="text-sm text-gray-600 mb-4">
                   Need help? Contact our developer support team.
@@ -263,7 +263,7 @@ const DeveloperDashboard: React.FC = () => {
             </div>
 
             {apiKeys.length === 0 ? (
-              <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+              <div className="bg-[var(--c-sffffff)] rounded-lg border border-gray-200 p-12 text-center">
                 <Code2 size={48} className="text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No API Keys Yet</h3>
                 <p className="text-gray-600 mb-6">Create your first API key to get started</p>

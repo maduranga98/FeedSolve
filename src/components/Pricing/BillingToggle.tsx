@@ -33,7 +33,7 @@ export function BillingToggle({ onToggle }: BillingToggleProps) {
         }`}
       >
         Annual
-        <span className="absolute -top-8 right-0 bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">
+        <span className="absolute -top-8 right-0 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-bold px-2 py-1 rounded whitespace-nowrap">
           Save 20%
         </span>
       </button>

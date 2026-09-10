@@ -62,23 +62,23 @@ export function TemplatePickerPopover({
   };
 
   return (
-    <div className="border border-[#e9e0d9] rounded-xl bg-white shadow-md overflow-hidden">
+    <div className="border border-[var(--c-be9e0d9)] rounded-xl bg-[var(--c-sffffff)] shadow-md overflow-hidden">
       {/* Confirmation overlay */}
       {pendingTemplate && (
-        <div className="p-4 bg-[#FFFBF0] border-b border-[#F0E4A8]">
-          <p className="text-sm text-[#78716c] mb-3">
-            Replace current draft with <strong className="text-[#1c1917]">{pendingTemplate.title}</strong>?
+        <div className="p-4 bg-[var(--c-sfffbf0)] border-b border-[var(--c-bf0e4a8)]">
+          <p className="text-sm text-[var(--c-t78716c)] mb-3">
+            Replace current draft with <strong className="text-[var(--c-t1c1917)]">{pendingTemplate.title}</strong>?
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setPendingTemplate(null)}
-              className="flex-1 px-3 py-1.5 text-sm font-medium text-[#78716c] bg-white border border-[#d6cabf] rounded-lg hover:bg-[#ece5de] transition-colors"
+              className="flex-1 px-3 py-1.5 text-sm font-medium text-[var(--c-t78716c)] bg-[var(--c-sffffff)] border border-[var(--c-bd6cabf)] rounded-lg hover:bg-[var(--c-sece5de)] transition-colors"
             >
               Keep draft
             </button>
             <button
               onClick={handleConfirmReplace}
-              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-[#c0694a] rounded-lg hover:bg-[#9c4a2f] transition-colors"
+              className="flex-1 px-3 py-1.5 text-sm font-medium text-white bg-[var(--c-sc0694a)] rounded-lg hover:bg-[var(--c-s9c4a2f)] transition-colors"
             >
               Replace
             </button>
@@ -87,19 +87,19 @@ export function TemplatePickerPopover({
       )}
 
       {/* Search + close */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#f2ece6]">
-        <Search size={14} className="text-[#8f8680] flex-shrink-0" />
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[var(--c-bf2ece6)]">
+        <Search size={14} className="text-[var(--c-t8f8680)] flex-shrink-0" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search templates…"
           autoFocus
-          className="flex-1 text-sm text-[#1c1917] placeholder-[#b3a89f] bg-transparent outline-none"
+          className="flex-1 text-sm text-[var(--c-t1c1917)] placeholder-[var(--c-tb3a89f)] bg-transparent outline-none"
         />
         <button
           onClick={onClose}
-          className="p-1 text-[#8f8680] hover:text-[#3c3632] rounded transition-colors flex-shrink-0"
+          className="p-1 text-[var(--c-t8f8680)] hover:text-[var(--c-t3c3632)] rounded transition-colors flex-shrink-0"
         >
           <X size={14} />
         </button>
@@ -107,13 +107,13 @@ export function TemplatePickerPopover({
 
       {/* Category tabs */}
       {categories.length > 0 && (
-        <div className="flex items-center gap-1 px-3 py-2 border-b border-[#f2ece6] overflow-x-auto">
+        <div className="flex items-center gap-1 px-3 py-2 border-b border-[var(--c-bf2ece6)] overflow-x-auto">
           <button
             onClick={() => setActiveCategory(null)}
             className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
               activeCategory === null
-                ? 'bg-[#c0694a] text-white'
-                : 'bg-[#ece5de] text-[#78716c] hover:bg-[#e9e0d9]'
+                ? 'bg-[var(--c-sc0694a)] text-white'
+                : 'bg-[var(--c-sece5de)] text-[var(--c-t78716c)] hover:bg-[var(--c-se9e0d9)]'
             }`}
           >
             All
@@ -124,8 +124,8 @@ export function TemplatePickerPopover({
               onClick={() => setActiveCategory(cat === activeCategory ? null : cat)}
               className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                 activeCategory === cat
-                  ? 'bg-[#c0694a] text-white'
-                  : 'bg-[#ece5de] text-[#78716c] hover:bg-[#e9e0d9]'
+                  ? 'bg-[var(--c-sc0694a)] text-white'
+                  : 'bg-[var(--c-sece5de)] text-[var(--c-t78716c)] hover:bg-[var(--c-se9e0d9)]'
               }`}
             >
               {cat}
@@ -137,7 +137,7 @@ export function TemplatePickerPopover({
       {/* Template list */}
       <div className="max-h-56 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="text-sm text-[#8f8680] text-center py-6 px-4">
+          <p className="text-sm text-[var(--c-t8f8680)] text-center py-6 px-4">
             No templates match. Try a different search.
           </p>
         ) : (
@@ -145,14 +145,14 @@ export function TemplatePickerPopover({
             <button
               key={template.id}
               onClick={() => handleSelect(template)}
-              className="w-full text-left px-4 py-3 hover:bg-[#ece5de] transition-colors border-b border-[#f5f0ec] last:border-0"
+              className="w-full text-left px-4 py-3 hover:bg-[var(--c-sece5de)] transition-colors border-b border-[var(--c-bf5f0ec)] last:border-0"
             >
-              <p className="text-sm font-medium text-[#1c1917] leading-snug">{template.title}</p>
-              <p className="text-xs text-[#8f8680] mt-0.5 line-clamp-2 leading-relaxed">
+              <p className="text-sm font-medium text-[var(--c-t1c1917)] leading-snug">{template.title}</p>
+              <p className="text-xs text-[var(--c-t8f8680)] mt-0.5 line-clamp-2 leading-relaxed">
                 {template.body.slice(0, 120)}{template.body.length > 120 ? '…' : ''}
               </p>
               {template.category && (
-                <span className="inline-block mt-1.5 px-1.5 py-0.5 rounded bg-[#f5e6df] text-[#c0694a] text-[10px] font-medium">
+                <span className="inline-block mt-1.5 px-1.5 py-0.5 rounded bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] text-[10px] font-medium">
                   {template.category}
                 </span>
               )}

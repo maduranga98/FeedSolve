@@ -9,10 +9,10 @@ interface PriorityDropdownProps {
 }
 
 const priorityColors: Record<string, { bg: string; text: string }> = {
-  low: { bg: 'bg-[#E8F4F8]', text: 'text-[#0B5563]' },
-  medium: { bg: 'bg-[#FEF5E7]', text: 'text-[#854F0B]' },
-  high: { bg: 'bg-[#FDE8E8]', text: 'text-[#A32D2D]' },
-  critical: { bg: 'bg-[#8B0000]', text: 'text-[#FFFFFF]' },
+  low: { bg: 'bg-[var(--c-se8f4f8)]', text: 'text-[var(--c-t0b5563)]' },
+  medium: { bg: 'bg-[var(--c-sfef5e7)]', text: 'text-[var(--c-t854f0b)]' },
+  high: { bg: 'bg-[var(--c-sfde8e8)]', text: 'text-[var(--c-ta32d2d)]' },
+  critical: { bg: 'bg-[var(--c-s8b0000)]', text: 'text-[var(--c-tffffff)]' },
 };
 
 export default function PriorityDropdown({
@@ -57,7 +57,7 @@ export default function PriorityDropdown({
         handleChange(e.target.value as 'low' | 'medium' | 'high' | 'critical')
       }
       disabled={loading}
-      className={`w-full px-3 py-2 rounded text-sm font-medium border-2 focus:outline-none focus:ring-2 focus:ring-[#c0694a] disabled:opacity-50 ${style.bg} ${style.text}`}
+      className={`w-full px-3 py-2 rounded text-sm font-medium border-2 focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)] disabled:opacity-50 ${style.bg} ${style.text}`}
     >
       <option value="low">Low</option>
       <option value="medium">Medium</option>

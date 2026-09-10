@@ -37,7 +37,7 @@ export function CommentInput({
   };
 
   return (
-    <div className="space-y-2 sticky bottom-0 bg-[#f1ebe5] pt-2 pb-1 sm:static sm:bg-transparent sm:p-0">
+    <div className="space-y-2 sticky bottom-0 bg-[var(--c-sf1ebe5)] pt-2 pb-1 sm:static sm:bg-transparent sm:p-0">
       <textarea
         value={body}
         onChange={event => setBody(event.target.value)}
@@ -53,12 +53,12 @@ export function CommentInput({
         autoFocus={autoFocus}
         placeholder={placeholder}
         disabled={loading}
-        className="w-full resize-none rounded-lg border border-[#d6cabf] bg-white px-3.5 py-3 text-sm text-[#1c1917] placeholder:text-[#78716c] focus:border-[#c0694a] focus:outline-none focus:ring-2 focus:ring-[#c0694a]/30 disabled:opacity-60"
+        className="w-full resize-none rounded-lg border border-[var(--c-bd6cabf)] bg-[var(--c-sffffff)] px-3.5 py-3 text-sm text-[var(--c-t1c1917)] placeholder:text-[var(--c-t78716c)] focus:border-[var(--c-bc0694a)] focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]/30 disabled:opacity-60"
       />
       <div className="flex items-center justify-between gap-3">
         <div className="min-h-5 text-xs">
           {showCharCount && (
-            <span className={body.length >= MAX_COMMENT_LENGTH ? "text-[#C0392B]" : "text-[#78716c]"}>
+            <span className={body.length >= MAX_COMMENT_LENGTH ? "text-[var(--c-tc0392b)]" : "text-[var(--c-t78716c)]"}>
               {body.length}/{MAX_COMMENT_LENGTH}
             </span>
           )}

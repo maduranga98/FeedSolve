@@ -685,5 +685,10 @@
     "aria_label": "اختر دورة اللوحة",
     "current_cycle": "الدورة الحالية",
     "all_time": "كل الأوقات"
-  }
+  },
+  "theme": "المظهر",
+  "theme_light": "فاتح",
+  "theme_dark": "داكن",
+  "theme_system": "النظام",
+  "theme_toggle": "تبديل المظهر"
 }

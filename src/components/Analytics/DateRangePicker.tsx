@@ -67,16 +67,16 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-lg border border-[#D5DDE5] bg-white px-3.5 py-2 text-sm font-semibold text-[#1E3A5F] shadow-sm hover:border-[#2E86AB] hover:bg-[#F5FAFD] transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg border border-[var(--c-bd5dde5)] bg-[var(--c-sffffff)] px-3.5 py-2 text-sm font-semibold text-[var(--c-t1e3a5f)] shadow-sm hover:border-[var(--c-b2e86ab)] hover:bg-[var(--c-sf5fafd)] transition-colors"
       >
-        <Calendar size={15} className="text-[#2E86AB]" />
-        <span className="font-medium text-[#1E3A5F]">{formatDateRange(value)}</span>
-        <ChevronDown size={14} className="text-[#6B7B8D]" />
+        <Calendar size={15} className="text-[var(--c-t2e86ab)]" />
+        <span className="font-medium text-[var(--c-t1e3a5f)]">{formatDateRange(value)}</span>
+        <ChevronDown size={14} className="text-[var(--c-t6b7b8d)]" />
       </button>
 
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-80 rounded-xl border border-[#E3EDF4] bg-white p-4 shadow-xl">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#6B7B8D]">
+        <div className="absolute right-0 z-30 mt-2 w-80 rounded-xl border border-[var(--c-be3edf4)] bg-[var(--c-sffffff)] p-4 shadow-xl">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--c-t6b7b8d)]">
             Quick presets
           </p>
           <div className="mb-4 grid grid-cols-1 gap-1.5">
@@ -89,8 +89,8 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                   onClick={() => handlePreset(preset.key)}
                   className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     active
-                      ? 'bg-[#2E86AB] text-white'
-                      : 'text-[#1E3A5F] hover:bg-[#EBF5FB]'
+                      ? 'bg-[var(--c-s2e86ab)] text-white'
+                      : 'text-[var(--c-t1e3a5f)] hover:bg-[var(--c-sebf5fb)]'
                   }`}
                 >
                   <span>{preset.label}</span>
@@ -100,28 +100,28 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
             })}
           </div>
 
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#6B7B8D]">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--c-t6b7b8d)]">
             Custom range
           </p>
           <div className="grid grid-cols-2 gap-2">
             <label className="block">
-              <span className="block text-xs font-medium text-[#6B7B8D] mb-1">From</span>
+              <span className="block text-xs font-medium text-[var(--c-t6b7b8d)] mb-1">From</span>
               <input
                 type="date"
                 value={from}
                 max={to}
                 onChange={(e) => setFrom(e.target.value)}
-                className="w-full rounded-lg border border-[#D5DDE5] px-2.5 py-1.5 text-sm text-[#1E3A5F] focus:border-[#2E86AB] focus:outline-none"
+                className="w-full rounded-lg border border-[var(--c-bd5dde5)] px-2.5 py-1.5 text-sm text-[var(--c-t1e3a5f)] focus:border-[var(--c-b2e86ab)] focus:outline-none"
               />
             </label>
             <label className="block">
-              <span className="block text-xs font-medium text-[#6B7B8D] mb-1">To</span>
+              <span className="block text-xs font-medium text-[var(--c-t6b7b8d)] mb-1">To</span>
               <input
                 type="date"
                 value={to}
                 min={from}
                 onChange={(e) => setTo(e.target.value)}
-                className="w-full rounded-lg border border-[#D5DDE5] px-2.5 py-1.5 text-sm text-[#1E3A5F] focus:border-[#2E86AB] focus:outline-none"
+                className="w-full rounded-lg border border-[var(--c-bd5dde5)] px-2.5 py-1.5 text-sm text-[var(--c-t1e3a5f)] focus:border-[var(--c-b2e86ab)] focus:outline-none"
               />
             </label>
           </div>
@@ -129,7 +129,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
           <button
             type="button"
             onClick={handleApplyCustom}
-            className="mt-3 w-full rounded-lg bg-gradient-to-r from-[#2E86AB] to-[#1E3A5F] px-3 py-2 text-sm font-semibold text-white hover:opacity-95"
+            className="mt-3 w-full rounded-lg bg-gradient-to-r from-[var(--c-s2e86ab)] to-[var(--c-s1e3a5f)] px-3 py-2 text-sm font-semibold text-white hover:opacity-95"
           >
             Apply custom range
           </button>

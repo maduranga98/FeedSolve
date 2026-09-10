@@ -46,12 +46,12 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-lg">
+      <div className="bg-[var(--c-sffffff)] rounded-lg max-w-md w-full p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-[#1E3A5F]">Add Team Member</h2>
+          <h2 className="text-xl font-bold text-[var(--c-t1e3a5f)]">Add Team Member</h2>
           <button
             onClick={onClose}
-            className="text-[#6B7B8D] hover:text-[#444441]"
+            className="text-[var(--c-t6b7b8d)] hover:text-[var(--c-t444441)]"
           >
             <X size={24} />
           </button>
@@ -81,14 +81,14 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#444441] mb-1">
+            <label className="block text-sm font-medium text-[var(--c-t444441)] mb-1">
               Role
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'admin' | 'viewer')}
               disabled={loading}
-              className="w-full px-3 py-2 border border-[#D3D1C7] rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E86AB]"
+              className="w-full px-3 py-2 border border-[var(--c-bd3d1c7)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--c-b2e86ab)]"
             >
               <option value="viewer">Viewer</option>
               <option value="admin">Admin</option>
@@ -96,7 +96,7 @@ export default function AddTeamMemberModal({ onClose, onMemberAdded }: AddTeamMe
           </div>
 
           {error && (
-            <div className="p-3 bg-[#FDE8E8] text-[#A32D2D] rounded text-sm">
+            <div className="p-3 bg-[var(--c-sfde8e8)] text-[var(--c-ta32d2d)] rounded text-sm">
               {error}
             </div>
           )}
