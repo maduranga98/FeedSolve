@@ -30,6 +30,11 @@ Recipients are resolved per submission, in this order:
 Addresses are normalised, de-duplicated, and sent on BCC so recipients don't see each
 other.
 
+If a company has notifications off or no recipients configured at all, nobody would ever
+hear about the event — so an internal alert is sent to **hello@feedsolve.com** instead,
+naming the company and the event. This alert is only ever a substitute: it is never sent
+alongside a real team notification, only when one didn't go out.
+
 ## Delivery frequency
 
 `instant` sends immediately. `daily_digest` and `weekly_digest` queue the event to

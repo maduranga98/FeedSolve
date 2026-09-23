@@ -291,6 +291,34 @@ export function renderSubmissionAlertEmail(args: {
   return { subject, html, text };
 }
 
+/** Internal alert sent to hello@feedsolve.com when a company has no notification recipients configured. */
+export function renderUnconfiguredRecipientsEmail(args: {
+  companyId: string;
+  eventType: string;
+  submission: SubmissionEmailData;
+  submissionUrl?: string;
+}): { subject: string; html: string; text: string } {
+  const title = EVENT_TITLES[args.eventType] || "Feedback update";
+  const subject = `[FeedSolve] No notification recipients configured — ${args.companyId}`;
+  const html = renderBrandedEmail({
+    preheader: `Company ${args.companyId} has no notification recipients configured.`,
+    title: "No one was notified for this submission",
+    intro:
+      `Company <strong>${escapeHtml(args.companyId)}</strong> has email notifications ` +
+      `off or no recipients set, so nobody on their team was emailed about this event (<strong>${escapeHtml(title)}</strong>).`,
+    body: submissionCard(args.submission),
+    ctaLabel: args.submissionUrl ? "Open Submission" : undefined,
+    ctaUrl: args.submissionUrl,
+  });
+  const text =
+    `FeedSolve — no notification recipients configured\n\n` +
+    `Company: ${args.companyId}\n` +
+    `Event: ${title}\n\n` +
+    submissionText(args.submission) +
+    (args.submissionUrl ? `\nOpen submission: ${args.submissionUrl}\n` : "");
+  return { subject, html, text };
+}
+
 /** Daily or weekly roll-up of submission activity for the team. */
 export function renderDigestEmail(args: {
   period: "daily" | "weekly";
