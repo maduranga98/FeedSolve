@@ -7,12 +7,17 @@
  */
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { appUrl, sendMail } from "./mailer";
-import { renderSubmissionAlertEmail, type SubmissionEmailData } from "./email-templates";
+import { appUrl, sendMail, SUPPORT_EMAIL } from "./mailer";
+import {
+  renderSubmissionAlertEmail,
+  renderUnconfiguredRecipientsEmail,
+  type SubmissionEmailData,
+} from "./email-templates";
 import {
   emailWantsEvent,
   getNotificationSettings,
   resolveRecipients,
+  resolveRoleRecipients,
   type EmailFrequency,
   type NotificationSettings,
 } from "./notification-settings";
@@ -170,6 +175,40 @@ export async function sendNotificationEmail(
   }
 }
 
+/**
+ * Last-resort alert to FeedSolve support, used only when a company has no
+ * notification recipients configured AND no admin to fall back to either
+ * (should not normally happen — every account has an admin).
+ */
+async function notifySupportOfMissingRecipients(
+  submission: Submission,
+  eventType: string,
+  boardName?: string,
+): Promise<void> {
+  const base = appUrl();
+  const email = renderUnconfiguredRecipientsEmail({
+    companyId: submission.companyId,
+    eventType,
+    submission: toEmailData(submission, boardName),
+    submissionUrl: `${base}/submission/${submission.id}`,
+  });
+
+  try {
+    await sendMail({
+      to: SUPPORT_EMAIL,
+      subject: email.subject,
+      html: email.html,
+      text: email.text,
+    });
+  } catch (error) {
+    functions.logger.error("Failed to send missing-recipients alert", {
+      error,
+      companyId: submission.companyId,
+      submissionId: submission.id,
+    });
+  }
+}
+
 /** Instant delivery, or queued for the configured digest. */
 async function deliver(
   submission: Submission,
@@ -181,9 +220,18 @@ async function deliver(
     settings,
     submission.boardId,
   );
-  if (!recipients.length) return;
-
   const boardName = await getBoardName(submission.boardId);
+
+  if (!recipients.length) {
+    const adminRecipients = await resolveRoleRecipients(submission.companyId, ["admin"]);
+    if (adminRecipients.length) {
+      await sendNotificationEmail(submission, eventType, adminRecipients, boardName);
+    } else {
+      await notifySupportOfMissingRecipients(submission, eventType, boardName);
+    }
+    return;
+  }
+
   const frequency = settings.email?.frequency || "instant";
 
   if (frequency === "instant") {

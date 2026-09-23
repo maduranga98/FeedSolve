@@ -30,6 +30,13 @@ Recipients are resolved per submission, in this order:
 Addresses are normalised, de-duplicated, and sent on BCC so recipients don't see each
 other.
 
+If notifications are enabled but no roles/addresses/board recipients resolve to anyone
+(e.g. the selected roles have no members and no extra addresses were added), the event
+falls back to every team member with the **admin** role, so a submission is never missed.
+If somehow there is no admin either, an internal alert goes to **hello@feedsolve.com**
+instead, naming the company and the event. Either fallback is only ever a substitute: it
+is never sent alongside a real team notification, only when one didn't go out.
+
 ## Delivery frequency
 
 `instant` sends immediately. `daily_digest` and `weekly_digest` queue the event to
