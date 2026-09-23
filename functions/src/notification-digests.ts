@@ -97,16 +97,18 @@ async function runDigest(frequency: "daily_digest" | "weekly_digest") {
 }
 
 /** Every day at 08:00 UTC. */
-export const sendDailyDigests = functions.pubsub
-  .schedule("0 8 * * *")
+export const sendDailyDigests = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .pubsub.schedule("0 8 * * *")
   .timeZone("UTC")
   .onRun(async () => {
     await runDigest("daily_digest");
   });
 
 /** Mondays at 08:00 UTC. */
-export const sendWeeklyDigests = functions.pubsub
-  .schedule("0 8 * * 1")
+export const sendWeeklyDigests = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .pubsub.schedule("0 8 * * 1")
   .timeZone("UTC")
   .onRun(async () => {
     await runDigest("weekly_digest");

@@ -181,8 +181,9 @@ async function applyRule(
   });
 }
 
-export const evaluateEscalationRules = functions.pubsub
-  .schedule("every 15 minutes")
+export const evaluateEscalationRules = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .pubsub.schedule("every 15 minutes")
   .timeZone("UTC")
   .onRun(async () => {
     const now = admin.firestore.Timestamp.now();

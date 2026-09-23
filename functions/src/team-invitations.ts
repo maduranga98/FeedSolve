@@ -12,8 +12,9 @@ interface TeamInvitation {
   status: "pending" | "accepted" | "expired";
 }
 
-export const onTeamInvitationCreated = functions.firestore
-  .document("teamInvitations/{invitationId}")
+export const onTeamInvitationCreated = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .firestore.document("teamInvitations/{invitationId}")
   .onCreate(async (snap) => {
     const invitation = snap.data() as TeamInvitation;
 
