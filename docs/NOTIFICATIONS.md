@@ -30,10 +30,12 @@ Recipients are resolved per submission, in this order:
 Addresses are normalised, de-duplicated, and sent on BCC so recipients don't see each
 other.
 
-If a company has notifications off or no recipients configured at all, nobody would ever
-hear about the event — so an internal alert is sent to **hello@feedsolve.com** instead,
-naming the company and the event. This alert is only ever a substitute: it is never sent
-alongside a real team notification, only when one didn't go out.
+If notifications are enabled but no roles/addresses/board recipients resolve to anyone
+(e.g. the selected roles have no members and no extra addresses were added), the event
+falls back to every team member with the **admin** role, so a submission is never missed.
+If somehow there is no admin either, an internal alert goes to **hello@feedsolve.com**
+instead, naming the company and the event. Either fallback is only ever a substitute: it
+is never sent alongside a real team notification, only when one didn't go out.
 
 ## Delivery frequency
 

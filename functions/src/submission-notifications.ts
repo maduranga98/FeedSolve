@@ -17,6 +17,7 @@ import {
   emailWantsEvent,
   getNotificationSettings,
   resolveRecipients,
+  resolveRoleRecipients,
   type EmailFrequency,
   type NotificationSettings,
 } from "./notification-settings";
@@ -175,9 +176,9 @@ export async function sendNotificationEmail(
 }
 
 /**
- * Fallback alert to FeedSolve support when a company has no notification
- * recipients configured, so a submission never goes completely unnoticed.
- * Never sent alongside a real team notification — only when one wasn't.
+ * Last-resort alert to FeedSolve support, used only when a company has no
+ * notification recipients configured AND no admin to fall back to either
+ * (should not normally happen — every account has an admin).
  */
 async function notifySupportOfMissingRecipients(
   submission: Submission,
@@ -222,7 +223,12 @@ async function deliver(
   const boardName = await getBoardName(submission.boardId);
 
   if (!recipients.length) {
-    await notifySupportOfMissingRecipients(submission, eventType, boardName);
+    const adminRecipients = await resolveRoleRecipients(submission.companyId, ["admin"]);
+    if (adminRecipients.length) {
+      await sendNotificationEmail(submission, eventType, adminRecipients, boardName);
+    } else {
+      await notifySupportOfMissingRecipients(submission, eventType, boardName);
+    }
     return;
   }
 
