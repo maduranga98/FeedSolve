@@ -113,8 +113,9 @@ async function notifyBoardOwner(
   }
 }
 
-export const rotateBoardCycles = functions.pubsub
-  .schedule("0 0 * * *")
+export const rotateBoardCycles = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .pubsub.schedule("0 0 * * *")
   .timeZone("UTC")
   .onRun(async () => {
     const db = admin.firestore();

@@ -241,8 +241,9 @@ async function deliver(
   await queueDigestEvent(submission, eventType, recipients, frequency, boardName);
 }
 
-export const onSubmissionNotification = functions.firestore
-  .document("submissions/{submissionId}")
+export const onSubmissionNotification = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .firestore.document("submissions/{submissionId}")
   .onWrite(async (change) => {
     const submission = change.after.data() as Submission | undefined;
     if (!submission) return;
@@ -267,7 +268,9 @@ export const onSubmissionNotification = functions.firestore
   });
 
 /** Send a sample notification to the configured recipients (owner/admin only). */
-export const sendTestNotification = functions.https.onCall(async (data, context) => {
+export const sendTestNotification = functions
+  .runWith({ secrets: ["SMTP_PASS"] })
+  .https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
