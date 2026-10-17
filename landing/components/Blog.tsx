@@ -1,45 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { BookOpen, ArrowRight, Star, MessageCircle, Mail, Hash, BellRing } from "lucide-react";
+import { blogPosts } from "../lib/blog-posts";
 
-const smallPosts = [
-  {
-    accent: "var(--teal)",
-    catBg: "var(--teal-pale)",
-    catColor: "var(--teal)",
-    category: "Operations",
-    title: "How to build a zero-leakage complaint resolution process",
-    excerpt: "A step-by-step guide to making sure every complaint is logged, assigned, and closed.",
-    authorBg: "var(--navy)",
-    authorInitials: "SR",
-    author: "Shreya Rao",
-    readTime: "4 min",
-  },
-  {
-    accent: "#6366F1",
-    catBg: "#EEF2FF",
-    catColor: "#3730A3",
-    category: "QR Codes",
-    title: "5 places to put your feedback QR code that actually get scanned",
-    excerpt: "Placement strategies that drive real, actionable feedback from your customers.",
-    authorBg: "var(--teal)",
-    authorInitials: "MJ",
-    author: "Mehul Joshi",
-    readTime: "3 min",
-  },
-  {
-    accent: "#16A34A",
-    catBg: "#F0FDF4",
-    catColor: "#16A34A",
-    category: "Case Study",
-    title: "How Zest Foods reduced customer complaints by 68% in 90 days",
-    excerpt: "A real story from food manufacturing to quality control transformation.",
-    authorBg: "#16A34A",
-    authorInitials: "TR",
-    author: "Team FeedSolve",
-    readTime: "6 min",
-  },
-];
+const smallPosts = blogPosts.slice(0, 3);
 
 export function Blog() {
   return (
@@ -57,9 +22,9 @@ export function Blog() {
               Insights on feedback<br />and operations
             </h2>
           </div>
-          <a href="#" className="btn-outline flex-shrink-0">
+          <Link href="/blog" className="btn-outline flex-shrink-0">
             View all posts <ArrowRight size={15} />
-          </a>
+          </Link>
         </div>
 
         {/* Featured post */}
@@ -221,9 +186,9 @@ export function Blog() {
           style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}
         >
           {smallPosts.map((post) => (
-            <a
-              key={post.title}
-              href="#"
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
               className="no-underline flex flex-col"
               style={{
                 background: "var(--bg)",
@@ -306,7 +271,7 @@ export function Blog() {
                   </span>
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
