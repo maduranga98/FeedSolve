@@ -1,10 +1,18 @@
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Play } from 'lucide-react';
+import { startProductTour } from '../../hooks/useProductTour';
 import { InstructionsAndGuidance } from '../../components/Help/InstructionsAndGuidance';
 
 export function HelpPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const replayTour = () => {
+    navigate('/dashboard');
+    startProductTour();
+  };
 
   useEffect(() => {
     document.title = `${t('help.title')} | FeedSolve`;
@@ -25,6 +33,14 @@ export function HelpPage() {
                 {t('help.subtitle')}
               </p>
             </div>
+            <button
+              type="button"
+              onClick={replayTour}
+              className="ms-auto inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg bg-[var(--c-sf5e6df)] text-[var(--c-tc0694a)] hover:bg-[var(--c-sd6eefa)] transition-colors"
+            >
+              <Play size={14} />
+              {t('tour.replay')}
+            </button>
           </div>
         </div>
       </div>

@@ -99,6 +99,14 @@ export async function getUser(id: string): Promise<User | null> {
   }
 }
 
+export async function markTourCompleted(userId: string): Promise<void> {
+  try {
+    await updateDoc(doc(db, 'users', userId), { tourCompletedAt: Timestamp.now() });
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
 // Company operations
 export async function createCompany(
   id: string,

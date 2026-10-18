@@ -690,5 +690,59 @@
   "theme_light": "Claro",
   "theme_dark": "Escuro",
   "theme_system": "Sistema",
-  "theme_toggle": "Alterar tema"
+  "theme_toggle": "Alterar tema",
+  "tour": {
+    "replay": "Fazer o tour do produto",
+    "skip": "Pular tour",
+    "finish": "Começar",
+    "progress": "Passo {{current}} de {{total}}",
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo ao FeedSolve",
+        "body": "Faça um tour de 1 minuto pelo essencial: quadros, compartilhamento, envios, modelos de resposta e ações em massa."
+      },
+      "board": {
+        "title": "O que é um quadro?",
+        "body": "Um quadro é um formulário de feedback para uma equipe, produto ou local. Cada quadro tem seu próprio link, QR code, categorias e envios."
+      },
+      "create": {
+        "title": "Crie um quadro",
+        "body": "Clique aqui, dê um nome, adicione categorias e escolha as opções que precisar. O formulário fica ativo assim que for salvo.",
+        "hint": "Painel → Criar quadro"
+      },
+      "languages": {
+        "title": "Vários idiomas",
+        "body": "Edite um quadro e escolha todos os idiomas dos seus clientes. Eles escolhem o deles no formulário e as categorias também podem ser traduzidas.",
+        "hint": "Editar quadro → Idiomas compatíveis"
+      },
+      "share": {
+        "title": "Compartilhe por QR code ou link",
+        "body": "Abra QR Code e configurações para personalizar e baixar o QR, ou copie o link do quadro para enviar por e-mail, chat ou imprimir.",
+        "hint": "Cartão do quadro → QR Code e configurações"
+      },
+      "submissions": {
+        "title": "Veja os envios",
+        "body": "Cada resposta chega em Envios. Filtre por quadro, status ou ciclo e abra um para responder, adicionar notas internas e atribuir."
+      },
+      "templates": {
+        "title": "Modelos de resposta",
+        "body": "Salve como modelos as respostas que você envia com frequência. Ao responder, insira um com um clique e ajuste antes de enviar.",
+        "hint": "Modelos de resposta → Novo modelo"
+      },
+      "bulk": {
+        "title": "Ações em massa",
+        "body": "Marque vários envios na lista para alterar o status, atribuir ou fechar todos de uma vez na barra de ações.",
+        "hint": "Envios → marque as caixas"
+      },
+      "merge": {
+        "title": "Mesclar duplicados",
+        "body": "O mesmo problema vindo de várias pessoas? Abra um envio, use o menu ⋮ e escolha Mesclar com outro para uni-los em um só.",
+        "hint": "Envio → ⋮ → Mesclar com outro"
+      },
+      "done": {
+        "title": "Tudo pronto!",
+        "body": "Você pode refazer este tour a qualquer momento em Ajuda e suporte. Crie seu primeiro quadro para começar!"
+      }
+    }
+  }
 }

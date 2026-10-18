@@ -690,5 +690,59 @@
   "theme_light": "Claro",
   "theme_dark": "Oscuro",
   "theme_system": "Sistema",
-  "theme_toggle": "Cambiar tema"
+  "theme_toggle": "Cambiar tema",
+  "tour": {
+    "replay": "Hacer el recorrido del producto",
+    "skip": "Omitir recorrido",
+    "finish": "Comenzar",
+    "progress": "Paso {{current}} de {{total}}",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenido a FeedSolve",
+        "body": "Haz un recorrido de 1 minuto por lo esencial: tableros, compartir, envíos, plantillas de respuesta y acciones masivas."
+      },
+      "board": {
+        "title": "¿Qué es un tablero?",
+        "body": "Un tablero es un formulario de comentarios para un equipo, producto o ubicación. Cada tablero tiene su propio enlace, código QR, categorías y envíos."
+      },
+      "create": {
+        "title": "Crea un tablero",
+        "body": "Haz clic aquí, ponle nombre, añade categorías y elige las opciones que necesites. El formulario se activa al guardarlo.",
+        "hint": "Panel → Crear tablero"
+      },
+      "languages": {
+        "title": "Varios idiomas",
+        "body": "Edita un tablero y elige todos los idiomas de tus clientes. Ellos eligen el suyo en el formulario y las categorías también se pueden traducir.",
+        "hint": "Editar tablero → Idiomas admitidos"
+      },
+      "share": {
+        "title": "Comparte con QR o enlace",
+        "body": "Abre Código QR y ajustes para personalizar y descargar el QR, o copia el enlace del tablero para compartirlo por correo, chat o impresión.",
+        "hint": "Tarjeta del tablero → Código QR y ajustes"
+      },
+      "submissions": {
+        "title": "Ver envíos",
+        "body": "Cada respuesta llega a Envíos. Filtra por tablero, estado o ciclo, y abre uno para responder, añadir notas internas y asignarlo."
+      },
+      "templates": {
+        "title": "Plantillas de respuesta",
+        "body": "Guarda como plantillas las respuestas que envías a menudo. Al responder, insértala con un clic y ajústala antes de enviar.",
+        "hint": "Plantillas de respuesta → Nueva plantilla"
+      },
+      "bulk": {
+        "title": "Acciones masivas",
+        "body": "Marca varios envíos de la lista para cambiar el estado, asignarlos o cerrarlos a la vez desde la barra de acciones.",
+        "hint": "Envíos → selecciona las casillas"
+      },
+      "merge": {
+        "title": "Combinar duplicados",
+        "body": "¿El mismo problema de varias personas? Abre un envío, usa el menú ⋮ y elige Combinar con otro para unirlos en uno.",
+        "hint": "Envío → ⋮ → Combinar con otro"
+      },
+      "done": {
+        "title": "¡Todo listo!",
+        "body": "Puedes repetir este recorrido cuando quieras desde Ayuda y soporte. ¡Crea tu primer tablero para empezar!"
+      }
+    }
+  }
 }

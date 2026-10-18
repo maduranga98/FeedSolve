@@ -690,5 +690,59 @@
   "theme_light": "Light",
   "theme_dark": "Dark",
   "theme_system": "System",
-  "theme_toggle": "Switch theme"
+  "theme_toggle": "Switch theme",
+  "tour": {
+    "replay": "Take the product tour",
+    "skip": "Skip tour",
+    "finish": "Get started",
+    "progress": "Step {{current}} of {{total}}",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to FeedSolve",
+        "body": "Take a 1-minute tour of the essentials: boards, sharing, submissions, reply templates and bulk tools."
+      },
+      "board": {
+        "title": "What is a board?",
+        "body": "A board is a feedback form for one team, product or location. Each board has its own link, QR code, categories and submissions."
+      },
+      "create": {
+        "title": "Create a board",
+        "body": "Click here, name your board, add categories and choose the options you need. Your form goes live as soon as it is saved.",
+        "hint": "Dashboard → Create Board"
+      },
+      "languages": {
+        "title": "Multiple languages",
+        "body": "Edit a board and pick every language your customers speak. They choose theirs on the form, and category names can be translated too.",
+        "hint": "Edit board → Supported languages"
+      },
+      "share": {
+        "title": "Share by QR code or link",
+        "body": "Open QR code & settings to style and download the QR code, or copy the board link to share by email, chat or print.",
+        "hint": "Board card → QR Code & Settings"
+      },
+      "submissions": {
+        "title": "View submissions",
+        "body": "Every response lands in Submissions. Filter by board, status or cycle, open one to reply, add internal notes and assign it."
+      },
+      "templates": {
+        "title": "Reply templates",
+        "body": "Save answers you send often as templates. When replying to a submission, insert one in a click and adjust it before sending.",
+        "hint": "Reply Templates → New template"
+      },
+      "bulk": {
+        "title": "Bulk actions",
+        "body": "Tick several submissions in the list to change status, assign or close them all at once from the action bar.",
+        "hint": "Submissions → select checkboxes"
+      },
+      "merge": {
+        "title": "Merge duplicates",
+        "body": "Got the same issue from several people? Open a submission, choose the ⋮ menu, then Merge with another to combine them into one.",
+        "hint": "Submission → ⋮ → Merge with another"
+      },
+      "done": {
+        "title": "You are all set",
+        "body": "You can replay this tour anytime from Help & Support. Create your first board to get started!"
+      }
+    }
+  }
 }
