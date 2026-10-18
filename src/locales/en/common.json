@@ -739,6 +739,16 @@
         "body": "Got the same issue from several people? Open a submission, choose the ⋮ menu, then Merge with another to combine them into one.",
         "hint": "Submission → ⋮ → Merge with another"
       },
+      "notifications": {
+        "title": "Notifications",
+        "body": "Choose who gets an email when new feedback arrives, set recipients per board, and review the log of every notification sent.",
+        "hint": "Sidebar → Notifications"
+      },
+      "team": {
+        "title": "Invite your team",
+        "body": "Invite teammates by email and give each a role: admin, manager or viewer. Managers handle submissions, viewers can only read, and you can change roles anytime.",
+        "hint": "Sidebar → Team → Invite member"
+      },
       "done": {
         "title": "You are all set",
         "body": "You can replay this tour anytime from Help & Support. Create your first board to get started!"

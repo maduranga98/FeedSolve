@@ -739,6 +739,16 @@
         "body": "¿El mismo problema de varias personas? Abre un envío, usa el menú ⋮ y elige Combinar con otro para unirlos en uno.",
         "hint": "Envío → ⋮ → Combinar con otro"
       },
+      "notifications": {
+        "title": "Notificaciones",
+        "body": "Elige quién recibe un correo cuando llega un comentario nuevo, define destinatarios por tablero y revisa el registro de cada notificación enviada.",
+        "hint": "Barra lateral → Notificaciones"
+      },
+      "team": {
+        "title": "Invita a tu equipo",
+        "body": "Invita a compañeros por correo y asigna un rol: administrador, gestor o lector. Los gestores atienden envíos, los lectores solo consultan y puedes cambiar roles cuando quieras.",
+        "hint": "Barra lateral → Equipo → Invitar miembro"
+      },
       "done": {
         "title": "¡Todo listo!",
         "body": "Puedes repetir este recorrido cuando quieras desde Ayuda y soporte. ¡Crea tu primer tablero para empezar!"

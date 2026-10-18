@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Globe,
   GitMerge,
+  Bell,
   Inbox,
   LayoutDashboard,
   ListChecks,
@@ -14,32 +15,35 @@ import {
   Plus,
   QrCode,
   Sparkles,
+  Users,
   X,
   type LucideIcon,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useProductTour } from '../../hooks/useProductTour';
-import { hasPermission } from '../../lib/rbac';
+import { hasPermission, type Permission } from '../../lib/rbac';
 
 interface TourStep {
   id: string;
   icon: LucideIcon;
   /** `data-tour` value to spotlight; the card is centred when it isn't on screen. */
   target?: string;
-  /** Needs permission to create boards. */
-  manage?: boolean;
+  /** Hidden for roles lacking this permission. */
+  permission?: Permission;
 }
 
 const STEPS: TourStep[] = [
   { id: 'welcome', icon: Sparkles },
   { id: 'board', icon: LayoutDashboard },
-  { id: 'create', icon: Plus, target: 'create-board', manage: true },
-  { id: 'languages', icon: Globe, target: 'board-edit', manage: true },
-  { id: 'share', icon: QrCode, target: 'board-share', manage: true },
+  { id: 'create', icon: Plus, target: 'create-board', permission: 'submissions:create' },
+  { id: 'languages', icon: Globe, target: 'board-edit', permission: 'submissions:create' },
+  { id: 'share', icon: QrCode, target: 'board-share', permission: 'submissions:create' },
   { id: 'submissions', icon: Inbox, target: 'nav-submissions' },
   { id: 'templates', icon: MessageSquareReply, target: 'nav-reply-templates' },
   { id: 'bulk', icon: ListChecks },
   { id: 'merge', icon: GitMerge },
+  { id: 'notifications', icon: Bell, target: 'nav-notifications', permission: 'company:update' },
+  { id: 'team', icon: Users, target: 'nav-team', permission: 'team:read' },
   { id: 'done', icon: PartyPopper },
 ];
 
@@ -89,9 +93,10 @@ function TourOverlay({ onFinish: finish }: { onFinish: () => void }) {
 
   const steps = useMemo(() => {
     const role = user?.role?.toLowerCase();
-    const canManage =
-      role === 'owner' || role === 'admin' || (!!user && hasPermission(user.role, 'submissions:create'));
-    return STEPS.filter((s) => !s.manage || canManage);
+    const privileged = role === 'owner' || role === 'admin';
+    return STEPS.filter(
+      (s) => !s.permission || privileged || (!!user && hasPermission(user.role, s.permission))
+    );
   }, [user]);
 
   const step = steps[Math.min(index, steps.length - 1)];
