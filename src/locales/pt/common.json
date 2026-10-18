@@ -739,6 +739,16 @@
         "body": "O mesmo problema vindo de várias pessoas? Abra um envio, use o menu ⋮ e escolha Mesclar com outro para uni-los em um só.",
         "hint": "Envio → ⋮ → Mesclar com outro"
       },
+      "notifications": {
+        "title": "Notificações",
+        "body": "Escolha quem recebe um e-mail quando chega um novo feedback, defina destinatários por quadro e consulte o registro de cada notificação enviada.",
+        "hint": "Barra lateral → Notificações"
+      },
+      "team": {
+        "title": "Convide sua equipe",
+        "body": "Convide colegas por e-mail e atribua uma função: administrador, gerente ou leitor. Gerentes tratam os envios, leitores apenas visualizam e você pode alterar funções quando quiser.",
+        "hint": "Barra lateral → Equipe → Convidar membro"
+      },
       "done": {
         "title": "Tudo pronto!",
         "body": "Você pode refazer este tour a qualquer momento em Ajuda e suporte. Crie seu primeiro quadro para começar!"
