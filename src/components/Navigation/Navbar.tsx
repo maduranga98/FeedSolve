@@ -166,6 +166,7 @@ export function Navbar() {
     return (
       <button
         key={item.path}
+        data-tour={`nav-${item.path.slice(1)}`}
         onClick={() => go(item.path)}
         aria-current={active ? "page" : undefined}
         className={`${navButtonBase} ${

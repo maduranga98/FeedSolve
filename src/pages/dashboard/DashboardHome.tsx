@@ -392,6 +392,7 @@ export function DashboardHome() {
             <Button
               variant="primary"
               size="md"
+              data-tour="create-board"
               onClick={() => navigate("/board/create")}
               className="flex-shrink-0 self-start sm:self-auto"
             >
@@ -470,6 +471,7 @@ export function DashboardHome() {
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
+                        data-tour={board.id === boards[0]?.id ? "board-edit" : undefined}
                         onClick={() => setEditingBoard(board)}
                         className="p-1.5 text-[var(--c-t8f8680)] hover:text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)] rounded-lg transition-colors"
                         title={t("boards:dashboard.edit_tooltip")}
@@ -522,6 +524,7 @@ export function DashboardHome() {
                   <div className="flex flex-wrap gap-2 pt-1 border-t border-[var(--c-bf2ece6)]">
                     <button
                       type="button"
+                      data-tour={board.id === boards[0]?.id ? "board-share" : undefined}
                       onClick={() => navigate(`/board/${board.id}`)}
                       className="flex-1 min-w-[120px] inline-flex items-center justify-center gap-1.5 text-xs font-medium text-[var(--c-tc0694a)] bg-[var(--c-sf5e6df)] hover:bg-[var(--c-sd6eefa)] py-2 px-2 rounded-lg transition-colors"
                     >

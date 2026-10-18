@@ -11,6 +11,7 @@ export interface User {
   status?: "active" | "inactive";
   createdAt: Timestamp;
   lastActive?: Timestamp;
+  tourCompletedAt?: Timestamp;
 }
 
 export interface PermissionAuditLog {

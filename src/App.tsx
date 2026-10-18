@@ -15,6 +15,7 @@ import { LoadingSpinner } from './components/Shared';
 import { TrialBanner } from './components/Shared/TrialBanner';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { OfflineIndicator } from './components/Shared/OfflineIndicator';
+import { ProductTour } from './components/Tour/ProductTour';
 import { hasPermission, type Permission } from './lib/rbac';
 
 // Auth Pages
@@ -139,6 +140,7 @@ function AppContent() {
       <Toaster position="top-right" richColors closeButton theme={theme} />
       <TrialBanner />
       <OfflineIndicator />
+      <ProductTour />
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes>
         {/* Auth Routes */}
