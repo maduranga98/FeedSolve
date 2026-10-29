@@ -13,5 +13,6 @@ export * from './evaluateEscalationRules';
 export * from './rotateBoardCycles';
 export * from './onSubmissionCreate';
 export * from './notification-digests';
+export * from './super-admin';
 
 export const api = functions.https.onRequest(app);

@@ -17,6 +17,7 @@ import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { OfflineIndicator } from './components/Shared/OfflineIndicator';
 import { ProductTour } from './components/Tour/ProductTour';
 import { hasPermission, type Permission } from './lib/rbac';
+import { useIsSuperAdmin } from './hooks/useSuperAdmin';
 
 // Auth Pages
 const SignUp = lazy(() => import('./pages/Auth/SignUp').then(m => ({ default: m.SignUp })));
@@ -64,6 +65,9 @@ const PublicResolutionFeed = lazy(() => import('./pages/public/PublicResolutionF
 
 // Audit Logs Pages
 const AuditLogsPage = lazy(() => import('./pages/AuditLogs/AuditLogsPage').then(m => ({ default: m.AuditLogsPage })));
+
+// Super Admin
+const SuperAdminPage = lazy(() => import('./pages/SuperAdmin/SuperAdminPage').then(m => ({ default: m.SuperAdminPage })));
 
 // Fallback
 import { NotFound } from './pages/NotFound';
@@ -115,6 +119,26 @@ function PermissionRoute({ children, permission }: { children: ReactNode; permis
   }
 
   return children;
+}
+
+function SuperAdminRoute({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+  const { loading: claimLoading, isSuperAdmin } = useIsSuperAdmin();
+
+  if (loading || (user && claimLoading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // The claim only gates the UI; superAdminOverview re-checks it server-side.
+  return isSuperAdmin ? children : <NotFound />;
 }
 
 function PublicRoute({ children }: { children: ReactNode }) {
@@ -345,6 +369,15 @@ function AppContent() {
             <ProtectedRoute>
               <ReplyTemplatesPage />
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/super-admin"
+          element={
+            <SuperAdminRoute>
+              <SuperAdminPage />
+            </SuperAdminRoute>
           }
         />
 
