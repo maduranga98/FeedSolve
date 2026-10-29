@@ -55,6 +55,17 @@ export declare function renderSubmissionAlertEmail(args: {
     html: string;
     text: string;
 };
+/** Internal alert sent to hello@feedsolve.com when a company has no notification recipients configured. */
+export declare function renderUnconfiguredRecipientsEmail(args: {
+    companyId: string;
+    eventType: string;
+    submission: SubmissionEmailData;
+    submissionUrl?: string;
+}): {
+    subject: string;
+    html: string;
+    text: string;
+};
 /** Daily or weekly roll-up of submission activity for the team. */
 export declare function renderDigestEmail(args: {
     period: "daily" | "weekly";

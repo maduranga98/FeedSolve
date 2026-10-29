@@ -11,5 +11,6 @@ export * from './evaluateEscalationRules';
 export * from './rotateBoardCycles';
 export * from './onSubmissionCreate';
 export * from './notification-digests';
+export * from './super-admin';
 export declare const api: functions.HttpsFunction;
 //# sourceMappingURL=index.d.ts.map

@@ -54,5 +54,6 @@ __exportStar(require("./evaluateEscalationRules"), exports);
 __exportStar(require("./rotateBoardCycles"), exports);
 __exportStar(require("./onSubmissionCreate"), exports);
 __exportStar(require("./notification-digests"), exports);
+__exportStar(require("./super-admin"), exports);
 exports.api = functions.https.onRequest(api_1.default);
 //# sourceMappingURL=index.js.map
