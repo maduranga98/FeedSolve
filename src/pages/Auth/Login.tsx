@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, Zap, Workflow, ShieldCheck, Target } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { auth } from "../../lib/firebase";
 import { Button, Input } from "../../components/Shared";
 import { FloatingThemeToggle } from '../../components/Shared/ThemeToggle';
 function AppleIcon({ size = 24 }: { size?: number }) {
@@ -34,6 +35,11 @@ function GoogleIcon() {
       />
     </svg>
   );
+}
+
+async function postLoginPath() {
+  const result = await auth.currentUser?.getIdTokenResult();
+  return result?.claims.superAdmin === true ? "/super-admin" : "/dashboard";
 }
 
 export function Login() {
@@ -69,7 +75,7 @@ export function Login() {
     setIsLoading(true);
     try {
       await login(formData.email, formData.password);
-      navigate("/dashboard");
+      navigate(await postLoginPath());
     } catch (error) {
       setErrors({
         submit:
@@ -87,7 +93,7 @@ export function Login() {
     setErrors({});
     try {
       await loginWithGoogle();
-      navigate("/dashboard");
+      navigate(await postLoginPath());
     } catch (error) {
       setErrors({
         submit:
@@ -105,7 +111,7 @@ export function Login() {
     setErrors({});
     try {
       await loginWithApple();
-      navigate("/dashboard");
+      navigate(await postLoginPath());
     } catch (error) {
       setErrors({
         submit:

@@ -7,7 +7,9 @@ import {
   OAuthProvider,
   signOut,
   onAuthStateChanged,
+  type User as FirebaseUser,
 } from 'firebase/auth';
+import { Timestamp } from 'firebase/firestore';
 import type { User, AuthContextType } from '../types';
 import { auth } from '../lib/firebase';
 import { createUser, createCompany, getUser } from '../lib/firestore';
@@ -18,6 +20,29 @@ const appleProvider = new OAuthProvider('apple.com');
 appleProvider.addScope('email');
 appleProvider.addScope('name');
 
+/**
+ * Loads the app user for a signed-in Firebase account. A platform super admin
+ * (custom claim set via scripts/set-super-admin.mjs) may have no tenant
+ * `users` document, so a minimal in-memory profile is used instead; it is never
+ * written to Firestore and grants no tenant access.
+ */
+async function resolveUser(firebaseUser: FirebaseUser): Promise<User | null> {
+  const userData = await getUser(firebaseUser.uid);
+  if (userData) return userData;
+
+  const { claims } = await firebaseUser.getIdTokenResult();
+  if (claims.superAdmin !== true) return null;
+
+  return {
+    id: firebaseUser.uid,
+    companyId: firebaseUser.uid,
+    email: firebaseUser.email ?? '',
+    name: firebaseUser.displayName ?? 'Super Admin',
+    role: 'viewer',
+    createdAt: Timestamp.now(),
+  };
+}
+
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -27,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const userData = await getUser(firebaseUser.uid);
+        const userData = await resolveUser(firebaseUser);
         if (userData) {
           setUser(userData);
         }
@@ -60,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
-      const userData = await getUser(result.user.uid);
+      const userData = await resolveUser(result.user);
       if (userData) setUser(userData);
     } catch (error) {
       throw new Error(getFirebaseErrorMessage(error));
