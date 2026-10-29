@@ -232,6 +232,13 @@ export function SuperAdminPage() {
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
         {error && <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div>}
 
+        {data?.warnings && data.warnings.length > 0 && (
+          <div role="status" className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            Some figures are incomplete ({data.warnings.join(', ')}). This is usually a Firestore index that is not deployed yet:
+            run <code>firebase deploy --only firestore:indexes</code>, wait for it to build, then refresh.
+          </div>
+        )}
+
         {loading && !data && (
           <div className="flex justify-center py-24"><LoadingSpinner size="lg" /></div>
         )}
