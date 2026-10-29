@@ -106,6 +106,17 @@ export const superAdminOverview = functions
       );
     }
 
+    try {
+      return await buildOverview();
+    } catch (err) {
+      if (err instanceof functions.https.HttpsError) throw err;
+      const message = err instanceof Error ? err.message : String(err);
+      functions.logger.error("superAdminOverview failed", {error: message});
+      throw new functions.https.HttpsError("internal", message);
+    }
+  });
+
+async function buildOverview() {
     const db = admin.firestore();
     const now = Date.now();
     const activeSince = admin.firestore.Timestamp.fromMillis(
@@ -174,16 +185,36 @@ export const superAdminOverview = functions
       );
     }
 
+    const partialErrors = new Set<string>();
     const companies = await mapInBatches(companiesSnap.docs, async (doc) => {
       const c = doc.data();
       const submissions = db
         .collection("submissions")
         .where("companyId", "==", doc.id);
 
-      const [totalAgg, recentAgg, lastSnap] = await Promise.all([
-        submissions.count().get(),
-        submissions.where("createdAt", ">=", activeSince).count().get(),
-        submissions.orderBy("createdAt", "desc").limit(1).get(),
+      // A failing stat (e.g. an index not deployed yet) must not take down the
+      // whole overview; log it and fall back to an empty value for this company.
+      const safe = async <T>(label: string, run: () => Promise<T>, fallback: T) => {
+        try {
+          return await run();
+        } catch (err) {
+          functions.logger.error(`superAdminOverview: ${label} failed`, {
+            companyId: doc.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
+          partialErrors.add(label);
+          return fallback;
+        }
+      };
+
+      const [totalCount, recentCount, lastSnap] = await Promise.all([
+        safe("total submission count", async () =>
+          (await submissions.count().get()).data().count, 0),
+        safe("30-day submission count", async () =>
+          (await submissions.where("createdAt", ">=", activeSince).count().get())
+            .data().count, 0),
+        safe("last submission lookup", () =>
+          submissions.orderBy("createdAt", "desc").limit(1).get(), null),
       ]);
 
       const members = (membersByCompany.get(doc.id) ?? []).sort(
@@ -197,9 +228,9 @@ export const superAdminOverview = functions
         members.find((m) => ["owner", "admin"].includes(m.role.toLowerCase())) ??
         members[0];
 
-      const totalSubmissions = totalAgg.data().count;
-      const submissionsLast30Days = recentAgg.data().count;
-      const lastSubmissionAt = lastSnap.empty ?
+      const totalSubmissions = totalCount;
+      const submissionsLast30Days = recentCount;
+      const lastSubmissionAt = !lastSnap || lastSnap.empty ?
         null :
         toMillis(lastSnap.docs[0].data().createdAt);
       const lastMemberActive = maxOf(...members.map((m) => m.lastActive));
@@ -271,5 +302,11 @@ export const superAdminOverview = functions
       },
     );
 
-    return {generatedAt: now, activeWindowDays: ACTIVE_WINDOW_DAYS, totals, companies};
-  });
+    return {
+      generatedAt: now,
+      activeWindowDays: ACTIVE_WINDOW_DAYS,
+      totals,
+      companies,
+      warnings: [...partialErrors],
+    };
+}

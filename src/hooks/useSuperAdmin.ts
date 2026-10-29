@@ -57,6 +57,7 @@ export interface AdminOverview {
     engagement: Record<Engagement, number>;
   };
   companies: AdminCompany[];
+  warnings?: string[];
 }
 
 /** Resolves whether the signed-in user carries the `superAdmin` custom claim. */
