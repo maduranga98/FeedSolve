@@ -231,7 +231,11 @@ export function BoardDetails() {
                 </p>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" role="tablist" aria-label="Board setup sections">
+              <div
+                className="-mx-1 mt-5 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                role="tablist"
+                aria-label="Board setup sections"
+              >
                 {setupSteps.map((step) => {
                   const Icon = step.icon;
                   const active = activeSetupStep === step.id;
@@ -242,20 +246,16 @@ export function BoardDetails() {
                       type="button"
                       role="tab"
                       aria-selected={active}
+                      title={step.description}
                       onClick={() => setActiveSetupStep(step.id)}
-                      className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
+                      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)]/40 ${
                         active
-                          ? 'border-[var(--c-bc0694a)] bg-[var(--c-sffffff)] text-[var(--c-t1c1917)] shadow-sm ring-2 ring-[var(--c-bc0694a)]/15'
-                          : 'border-[var(--c-bd6cabf)] bg-white/65 text-[var(--c-t78716c)] hover:border-[var(--c-bc0694a)]/50 hover:bg-[var(--c-sffffff)]'
+                          ? 'border-[var(--c-sc0694a)] bg-[var(--c-sc0694a)] text-white shadow-sm'
+                          : 'border-[var(--c-bd6cabf)] bg-white/70 text-[var(--c-t78716c)] hover:border-[var(--c-bc0694a)]/50 hover:bg-[var(--c-sffffff)] hover:text-[var(--c-t1c1917)]'
                       }`}
                     >
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${active ? 'bg-[var(--c-sc0694a)] text-white' : 'bg-[var(--c-sf1ebe5)] text-[var(--c-t78716c)] group-hover:text-[var(--c-tc0694a)]'}`}>
-                        <Icon size={17} />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-sm font-bold">{step.label}</span>
-                        <span className="block text-xs">{step.description}</span>
-                      </span>
+                      <Icon size={16} />
+                      {step.label}
                     </button>
                   );
                 })}
