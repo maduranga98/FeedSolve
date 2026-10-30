@@ -12,7 +12,7 @@ import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSe
 import { FeedbackConfigSettings } from '../../components/boards/FeedbackConfigSettings';
 import { FeedbackResponsesTab } from '../../components/boards/FeedbackResponsesTab';
 import { FeedbackLockedCard } from '../../components/boards/FeedbackLockedCard';
-import { hasFeature } from '../../lib/tier-limits';
+import { canUseFeedback as hasFeedbackAccess } from '../../lib/tier-limits';
 
 type SetupStep = 'qr' | 'cycle' | 'locations' | 'feedback-settings' | 'feedback';
 
@@ -127,7 +127,7 @@ export function BoardDetails() {
   }
 
   const feedbackUrl = `${window.location.origin}/submit/${board.slug}`;
-  const canUseFeedback = hasFeature(company?.subscription?.tier ?? 'free', 'canUseAdvancedFeedback');
+  const canUseFeedback = hasFeedbackAccess(company?.subscription);
 
   return (
     <main className="min-h-screen bg-color-bg">

@@ -197,11 +197,14 @@ service cloud.firestore {
         get(submissionPath).data.boardId == d.boardId;
     }
 
-    // Post-resolution feedback is a Growth and Business feature.
+    // Post-resolution feedback is a Growth and Business feature, also open during the free trial.
     function isFeedbackPlan(companyId) {
       let companyPath = /databases/$(database)/documents/companies/$(companyId);
+      let sub = get(companyPath).data.get('subscription', {});
       return exists(companyPath) &&
-        get(companyPath).data.get('subscription', {}).get('tier', 'free') in ['growth', 'business'];
+        (sub.get('tier', 'free') in ['growth', 'business'] ||
+         (sub.get('tier', 'free') == 'free' &&
+          sub.get('trialEndsAt', request.time) > request.time));
     }
 
     // The submission's current status must equal the board's configured trigger.

@@ -13,7 +13,7 @@ export function FeedbackLockedCard() {
       <h3 className="text-lg font-bold text-[var(--c-t1c1917)]">Post-resolution feedback is a Growth feature</h3>
       <p className="mx-auto mt-1 max-w-md text-sm text-[var(--c-t78716c)]">
         Collect ratings and custom questions after a request is resolved, let submitters share their name or email,
-        and export responses to CSV. Available on Growth and Business plans.
+        and export responses to CSV. Available on Growth and Business plans, and during your free trial.
       </p>
       <Button type="button" variant="primary" size="sm" className="mt-4" onClick={() => navigate('/pricing')}>
         Upgrade plan

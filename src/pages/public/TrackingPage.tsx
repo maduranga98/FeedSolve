@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
 import { getSubmission, getSubmissionByTrackingCode, getBoard, getCompany, getFeedbackResponse } from "../../lib/firestore";
 import { getFeedbackConfig } from "../../lib/feedback";
-import { hasFeature } from "../../lib/tier-limits";
+import { canUseFeedback } from "../../lib/tier-limits";
 import { applyBrandColors } from "../../lib/color-utils";
 import { AttachmentGallery } from "../../components/Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
@@ -261,7 +261,7 @@ function TrackingView({ code }: { code: string }) {
   const showFeedbackForm =
     !!board &&
     !!company &&
-    hasFeature(company.subscription?.tier ?? "free", "canUseAdvancedFeedback") &&
+    canUseFeedback(company.subscription) &&
     !!feedbackConfig &&
     feedbackChecked &&
     !feedbackResponse &&
