@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Timestamp } from "firebase/firestore";
-import { getSubmission, getSubmissionByTrackingCode, getBoard, getCompany } from "../../lib/firestore";
+import { getSubmission, getSubmissionByTrackingCode, getBoard, getCompany, getFeedbackResponse } from "../../lib/firestore";
+import { getFeedbackConfig } from "../../lib/feedback";
 import { applyBrandColors } from "../../lib/color-utils";
 import { AttachmentGallery } from "../../components/Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
-import type { Submission, Board, Company } from "../../types";
+import type { Submission, Board, Company, FeedbackResponse } from "../../types";
 import { Badge, LoadingSpinner, Button, Input } from "../../components/Shared";
 import { TrackByCode } from "../../components/public/TrackByCode";
 import { FloatingThemeToggle } from "../../components/Shared/ThemeToggle";
 import { FindByEmail } from "../../components/public/FindByEmail";
+import { FeedbackForm } from "../../components/public/FeedbackForm";
 import { formatDate, getStatusLabel } from "../../lib/utils";
 import {
   Lock,
@@ -108,6 +110,8 @@ function TrackingView({ code }: { code: string }) {
   const [masterSubmission, setMasterSubmission] = useState<Submission | null>(null);
   const [board, setBoard] = useState<Board | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
+  const [feedbackResponse, setFeedbackResponse] = useState<FeedbackResponse | null>(null);
+  const [feedbackChecked, setFeedbackChecked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [passwordRequired, setPasswordRequired] = useState(false);
@@ -132,6 +136,13 @@ function TrackingView({ code }: { code: string }) {
               setMasterSubmission(master);
               publicSubmission = master;
             }
+          }
+          // Merged submissions defer to the master's page, which owns the feedback form.
+          if (!data.isMerged) {
+            try {
+              setFeedbackResponse(await getFeedbackResponse(data.trackingCode));
+              setFeedbackChecked(true);
+            } catch { /* non-critical: without the check the form stays hidden */ }
           }
           try {
             const boardData = await getBoard(publicSubmission.boardId);
@@ -245,6 +256,15 @@ function TrackingView({ code }: { code: string }) {
   const mergedMasterCode = masterSubmission?.trackingCode ?? null;
   const branding = company?.branding;
   const companyName = branding?.companyName || company?.name || board?.name || "";
+  const feedbackConfig = board ? getFeedbackConfig(board) : null;
+  const showFeedbackForm =
+    !!board &&
+    !!feedbackConfig &&
+    feedbackChecked &&
+    !feedbackResponse &&
+    !submission.isMerged &&
+    feedbackConfig.enabled &&
+    submission.status === feedbackConfig.triggerStatus;
   const currentStep = getStepIndex(publicSubmission.status);
   const isClosed = publicSubmission.status === "closed";
   const isResolved = publicSubmission.status === "resolved";
@@ -445,6 +465,19 @@ function TrackingView({ code }: { code: string }) {
             ))}
           </div>
         </div>
+
+        {/* Post-resolution feedback */}
+        {showFeedbackForm && board && <FeedbackForm board={board} submission={submission} />}
+        {feedbackResponse && (
+          <div className="bg-[var(--c-seaf9f2)] border border-[var(--c-ba8dfc4)] rounded-2xl shadow-sm px-6 py-5">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={15} className="text-[var(--c-t1d8a57)]" />
+              <p className="text-sm font-semibold text-[var(--c-t1d6b45)]">
+                You've already submitted feedback for this request — thank you
+              </p>
+            </div>
+          </div>
+        )}
 
         <p className="text-center text-xs text-[var(--c-tc8d8e4)] pb-2">Powered by FeedSolve</p>
       </div>

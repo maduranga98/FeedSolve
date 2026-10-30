@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check } from 'lucide-react';
+import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
@@ -9,13 +9,17 @@ import type { Board, Company } from '../../types';
 import { LocationManager } from '../../components/boards/LocationManager';
 import { LocationQRSection } from '../../components/boards/LocationQRSection';
 import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSettings';
+import { FeedbackConfigSettings } from '../../components/boards/FeedbackConfigSettings';
+import { FeedbackResponsesTab } from '../../components/boards/FeedbackResponsesTab';
 
-type SetupStep = 'qr' | 'cycle' | 'locations';
+type SetupStep = 'qr' | 'cycle' | 'locations' | 'feedback-settings' | 'feedback';
 
 const setupSteps: Array<{ id: SetupStep; label: string; description: string; icon: typeof QrCode }> = [
   { id: 'qr', label: 'QR Code', description: 'Style & share', icon: QrCode },
   { id: 'cycle', label: 'Recurring Cycle', description: 'Automate resets', icon: CalendarClock },
   { id: 'locations', label: 'Locations', description: 'Manage spots', icon: MapPin },
+  { id: 'feedback-settings', label: 'Feedback Config', description: 'After resolution', icon: Star },
+  { id: 'feedback', label: 'Feedback', description: 'Responses & export', icon: MessageSquare },
 ];
 
 export function BoardDetails() {
@@ -223,11 +227,11 @@ export function BoardDetails() {
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">Board setup</p>
                 <h2 className="mt-1 text-xl font-bold text-[var(--c-t1c1917)] sm:text-2xl">Configure how feedback is collected</h2>
                 <p className="mt-1 text-sm text-[var(--c-t78716c)]">
-                  Manage QR sharing, recurring cycles, and locations for this board.
+                  Manage QR sharing, recurring cycles, locations, and post-resolution feedback for this board.
                 </p>
               </div>
 
-              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-3" role="tablist" aria-label="Board setup sections">
+              <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" role="tablist" aria-label="Board setup sections">
                 {setupSteps.map((step) => {
                   const Icon = step.icon;
                   const active = activeSetupStep === step.id;
@@ -279,6 +283,22 @@ export function BoardDetails() {
                   board={board}
                   company={company}
                   onBoardChange={setBoard}
+                />
+              )}
+
+              {activeSetupStep === 'feedback-settings' && (
+                <FeedbackConfigSettings
+                  board={board}
+                  company={company}
+                  onBoardChange={setBoard}
+                />
+              )}
+
+              {activeSetupStep === 'feedback' && (
+                <FeedbackResponsesTab
+                  board={board}
+                  company={company}
+                  onOpenSettings={() => setActiveSetupStep('feedback-settings')}
                 />
               )}
 

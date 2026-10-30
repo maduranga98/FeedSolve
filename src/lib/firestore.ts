@@ -16,6 +16,7 @@ import {
   arrayUnion,
   deleteField,
   increment,
+  serverTimestamp,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore';
 import { getFirebaseErrorMessage, isQuotaError } from './firebase-errors';
@@ -58,10 +59,13 @@ import type {
   TeamMember,
   InternalNote,
   BoardTemplate,
+  FeedbackAnswer,
+  FeedbackResponse,
 } from '../types';
 import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { generateTrackingCode, generateBoardSlug } from './utils';
+import { feedbackResponseId } from './feedback';
 import { v4 as uuidv4 } from 'uuid';
 
 // User operations
@@ -271,7 +275,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'categoryTranslationsEnabled' | 'categoryTranslations' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'categoryTranslationsEnabled' | 'categoryTranslations' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate' | 'feedbackConfig'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
@@ -459,6 +463,58 @@ export async function updateSubmissionStatus(
     updateData.resolvedAt = Timestamp.now();
   }
   await updateDoc(submissionRef, updateData);
+}
+
+// Post-resolution feedback operations
+export async function getFeedbackResponse(trackingCode: string): Promise<FeedbackResponse | null> {
+  try {
+    const responseRef = doc(db, 'feedbackResponses', feedbackResponseId(trackingCode));
+    const snapshot = await getDoc(responseRef);
+    return snapshot.exists() ? ({ ...snapshot.data(), id: snapshot.id } as FeedbackResponse) : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
+export async function submitFeedbackResponse(input: {
+  trackingCode: string;
+  boardId: string;
+  submissionId: string;
+  responses: FeedbackAnswer[];
+}): Promise<void> {
+  try {
+    // Doc ID is keyed to the tracking code; the rules only allow create, so a
+    // second submission for the same tracking code is rejected.
+    const responseRef = doc(db, 'feedbackResponses', feedbackResponseId(input.trackingCode));
+    await setDoc(responseRef, {
+      trackingCode: input.trackingCode,
+      boardId: input.boardId,
+      submissionId: input.submissionId,
+      responses: input.responses,
+      submittedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
+export async function getBoardFeedbackResponses(
+  boardId: string,
+  limitCount: number = 500
+): Promise<FeedbackResponse[]> {
+  try {
+    const responsesRef = collection(db, 'feedbackResponses');
+    const q = query(
+      responsesRef,
+      where('boardId', '==', boardId),
+      orderBy('submittedAt', 'desc'),
+      limit(limitCount)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id } as FeedbackResponse));
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 export async function getSubmission(id: string): Promise<Submission | null> {
