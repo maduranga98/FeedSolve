@@ -13,6 +13,7 @@ import { useRTL } from './hooks/useRTL';
 import { Navbar } from './components/Navigation/Navbar';
 import { LoadingSpinner } from './components/Shared';
 import { TrialBanner } from './components/Shared/TrialBanner';
+import { TrialExpiredGate } from './components/Shared/TrialExpiredGate';
 import { ErrorBoundary } from './components/Shared/ErrorBoundary';
 import { OfflineIndicator } from './components/Shared/OfflineIndicator';
 import { ProductTour } from './components/Tour/ProductTour';
@@ -93,7 +94,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <TrialExpiredGate>{children}</TrialExpiredGate>;
 }
 
 function PermissionRoute({ children, permission }: { children: ReactNode; permission: Permission }) {
@@ -118,7 +119,7 @@ function PermissionRoute({ children, permission }: { children: ReactNode; permis
     return <Navigate to="/submissions" replace />;
   }
 
-  return children;
+  return <TrialExpiredGate>{children}</TrialExpiredGate>;
 }
 
 function SuperAdminRoute({ children }: { children: ReactNode }) {

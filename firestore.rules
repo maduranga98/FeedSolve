@@ -162,6 +162,15 @@ service cloud.firestore {
       );
     }
 
+    // Free accounts whose trial window has closed cannot create new boards or receive submissions.
+    function isCompanyActive(companyId) {
+      let companyPath = /databases/$(database)/documents/companies/$(companyId);
+      let sub = get(companyPath).data.get('subscription', {});
+      return exists(companyPath) &&
+        !(sub.get('tier', 'free') == 'free' &&
+          sub.get('trialEndsAt', request.time + duration.value(1, 'd')) <= request.time);
+    }
+
     function isValidSubmissionCreate() {
       let d = request.resource.data;
       let validScore = !('satisfactionScore' in d) ||
@@ -175,6 +184,7 @@ service cloud.firestore {
                           (d.location is string && d.location.size() > 0 && d.location.size() <= 120);
       return d.boardId is string && d.boardId.size() > 0 && d.boardId.size() <= 128 &&
              d.companyId is string && d.companyId.size() > 0 && d.companyId.size() <= 128 &&
+             isCompanyActive(d.companyId) &&
              d.subject is string && d.subject.size() > 0 && d.subject.size() <= 100 &&
              d.description is string && d.description.size() > 0 && d.description.size() <= 5000 &&
              d.trackingCode is string && isValidTrackingCode(d.trackingCode) &&
@@ -347,7 +357,8 @@ service cloud.firestore {
       // submit-feedback form (slug query) and the public tracking page (get by ID)
       allow read: if true;
       // create: resource doesn't exist yet, so use request.resource.data
-      allow create: if canManageCompany(request.resource.data.companyId);
+      allow create: if canManageCompany(request.resource.data.companyId) &&
+        isCompanyActive(request.resource.data.companyId);
       // Allow anyone to increment submissionCount by exactly 1 (public form submissions)
       // Location lists and all other board settings are writable by company admins only.
       allow update: if canManageCompany(resource.data.companyId) ||
