@@ -47,13 +47,15 @@ export function exportFeedbackResponsesToCSV(
   filename = 'feedback-responses.csv'
 ) {
   const orderedFields = sortFeedbackFields(fields);
-  const headers = ['Tracking Code', 'Submitted At', ...orderedFields.map((field) => field.label)];
+  const headers = ['Tracking Code', 'Submitted At', 'Name', 'Email', ...orderedFields.map((field) => field.label)];
 
   const rows = responses.map((response) => {
     const valuesByFieldId = new Map(response.responses.map((answer) => [answer.fieldId, answer.value]));
     return [
       response.trackingCode,
       response.submittedAt?.toDate().toISOString() ?? '',
+      response.contact?.name ?? '',
+      response.contact?.email ?? '',
       ...orderedFields.map((field) => formatFeedbackValue(field, valuesByFieldId.get(field.id))),
     ];
   });

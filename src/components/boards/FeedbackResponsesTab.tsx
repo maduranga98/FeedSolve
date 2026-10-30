@@ -190,6 +190,21 @@ export function FeedbackResponsesTab({ board, company, onOpenSettings }: Feedbac
                       {response.submittedAt ? formatDate(response.submittedAt.toDate()) : '—'}
                     </time>
                   </div>
+                  <p className="mb-3 break-words text-xs text-[var(--c-t78716c)]">
+                    {response.contact?.name || response.contact?.email ? (
+                      <>
+                        <span className="font-semibold text-[var(--c-t1c1917)]">{response.contact.name}</span>
+                        {response.contact.name && response.contact.email && ' · '}
+                        {response.contact.email && (
+                          <a href={`mailto:${response.contact.email}`} className="underline">
+                            {response.contact.email}
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      'Anonymous'
+                    )}
+                  </p>
                   <dl className="space-y-3">
                     {config.fields.map((field) => {
                       const value = valuesByFieldId.get(field.id);

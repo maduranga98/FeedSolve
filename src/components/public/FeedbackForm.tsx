@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { CheckCircle2, Star } from "lucide-react";
-import type { Board, FeedbackAnswerValue, FeedbackField, Submission } from "../../types";
+import type { Board, FeedbackAnswerValue, FeedbackContact, FeedbackField, Submission } from "../../types";
 import { Button, Input, Select } from "../Shared";
 import { SatisfactionRating } from "./SatisfactionRating";
 import type { SatisfactionScore } from "./SatisfactionRating";
@@ -36,6 +36,40 @@ function FieldError({ message }: { message?: string }) {
   return <p className="text-xs text-[var(--c-tc0392b)] mt-1.5">{message}</p>;
 }
 
+const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+
+function ContactToggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center justify-between gap-3 text-sm text-[var(--c-t1c1917)]">
+      {label}
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={`relative h-5 w-9 shrink-0 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--c-bc0694a)]/30 ${
+          checked ? "bg-[var(--c-sc0694a)]" : "bg-[var(--c-bd6cabf)]"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${
+            checked ? "translate-x-4" : ""
+          }`}
+        />
+      </button>
+    </label>
+  );
+}
+
 export function FeedbackForm({ board, submission }: FeedbackFormProps) {
   const fields = sortFeedbackFields(getFeedbackConfig(board).fields);
   const [answers, setAnswers] = useState<FeedbackAnswers>({});
@@ -43,6 +77,18 @@ export function FeedbackForm({ board, submission }: FeedbackFormProps) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [shareName, setShareName] = useState(false);
+  const [shareEmail, setShareEmail] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  const clearError = (key: string) =>
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
 
   const setAnswer = (fieldId: string, value: FeedbackAnswerValue) => {
     setAnswers((prev) => ({ ...prev, [fieldId]: value }));
@@ -62,6 +108,20 @@ export function FeedbackForm({ board, submission }: FeedbackFormProps) {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
+    const contactErrors: Record<string, string> = {};
+    const trimmedName = shareName ? name.trim() : "";
+    const trimmedEmail = shareEmail ? email.trim() : "";
+    if (shareName && !trimmedName) contactErrors.contactName = "Enter your name or turn this off.";
+    if (shareEmail && !EMAIL_PATTERN.test(trimmedEmail)) {
+      contactErrors.contactEmail = "Enter a valid email or turn this off.";
+    }
+    setErrors({ ...validationErrors, ...contactErrors });
+    if (Object.keys(contactErrors).length > 0) return;
+
+    const contact: FeedbackContact = {};
+    if (trimmedName) contact.name = trimmedName;
+    if (trimmedEmail) contact.email = trimmedEmail;
+
     setSubmitting(true);
     try {
       await submitFeedbackResponse({
@@ -69,6 +129,7 @@ export function FeedbackForm({ board, submission }: FeedbackFormProps) {
         boardId: submission.boardId,
         submissionId: submission.id,
         responses: buildFeedbackAnswers(fields, answers),
+        contact,
       });
       setSubmitted(true);
     } catch (err) {
@@ -196,6 +257,54 @@ export function FeedbackForm({ board, submission }: FeedbackFormProps) {
           </div>
         ))}
       </div>
+
+      <fieldset className="mt-5 space-y-3 rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sf5f0ec)] p-4">
+        <legend className="px-1 text-xs font-semibold text-[var(--c-t78716c)]">
+          Share your details (optional)
+        </legend>
+        <p className="text-xs text-[var(--c-t78716c)]">
+          Leave both off to stay anonymous. Turn on only what you're comfortable sharing.
+        </p>
+
+        <div>
+          <ContactToggle label="Share my name" checked={shareName} onChange={setShareName} />
+          {shareName && (
+            <Input
+              aria-label="Your name"
+              autoComplete="name"
+              maxLength={100}
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                clearError("contactName");
+              }}
+              error={errors.contactName}
+              className="mt-2"
+            />
+          )}
+        </div>
+
+        <div>
+          <ContactToggle label="Share my email" checked={shareEmail} onChange={setShareEmail} />
+          {shareEmail && (
+            <Input
+              aria-label="Your email"
+              type="email"
+              autoComplete="email"
+              maxLength={254}
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError("contactEmail");
+              }}
+              error={errors.contactEmail}
+              className="mt-2"
+            />
+          )}
+        </div>
+      </fieldset>
 
       {submitError && (
         <div className="mt-5 p-3 bg-[var(--c-sfdecea)] border border-[var(--c-bfadbd8)] rounded-xl">
