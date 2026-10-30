@@ -1,24 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Lock, MessageSquare, Star } from 'lucide-react';
-import type { Board, Company, FeedbackResponse } from '../../types';
+import { Download, MessageSquare, Star } from 'lucide-react';
+import type { Board, FeedbackResponse } from '../../types';
 import { Button, LoadingSpinner } from '../Shared';
 import { getBoardFeedbackResponses } from '../../lib/firestore';
 import { exportFeedbackResponsesToCSV } from '../../lib/exportCSV';
 import { formatFeedbackValue, getFeedbackConfig } from '../../lib/feedback';
-import { hasFeature } from '../../lib/tier-limits';
 import { formatDate } from '../../lib/utils';
 
 const EXPORT_LIMIT = 5000;
 
 interface FeedbackResponsesTabProps {
   board: Board;
-  company: Company | null;
   onOpenSettings: () => void;
 }
 
-export function FeedbackResponsesTab({ board, company, onOpenSettings }: FeedbackResponsesTabProps) {
+export function FeedbackResponsesTab({ board, onOpenSettings }: FeedbackResponsesTabProps) {
   const config = useMemo(() => getFeedbackConfig(board), [board]);
-  const canExport = hasFeature(company?.subscription?.tier ?? 'free', 'canUseAdvancedFeedback');
   const [responses, setResponses] = useState<FeedbackResponse[]>([]);
   const [loading, setLoading] = useState(config.enabled);
   const [exporting, setExporting] = useState(false);
@@ -106,19 +103,13 @@ export function FeedbackResponsesTab({ board, company, onOpenSettings }: Feedbac
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {!canExport && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--c-sf1efe8)] px-2 py-0.5 text-xs font-semibold text-[var(--c-t5f5e5a)]">
-              <Lock size={11} /> Growth+
-            </span>
-          )}
           <Button
             type="button"
             variant="secondary"
             size="sm"
             onClick={handleExport}
             isLoading={exporting}
-            disabled={!canExport || loading || responses.length === 0}
-            title={canExport ? undefined : 'CSV export is available on Growth and Business plans'}
+            disabled={loading || responses.length === 0}
           >
             <Download size={14} /> Export CSV
           </Button>

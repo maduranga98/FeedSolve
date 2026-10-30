@@ -86,6 +86,15 @@ export function hasFeature(tier: string, feature: keyof TierLimits): boolean {
   return false;
 }
 
+/** Post-resolution feedback: Growth and above, or any account still inside its free trial. */
+export function canUseFeedback(
+  subscription: { tier?: string; trialEndsAt?: { toMillis(): number } } | null | undefined
+): boolean {
+  const tier = subscription?.tier ?? 'free';
+  if (hasFeature(tier, 'canUseAdvancedFeedback')) return true;
+  return tier === 'free' && !!subscription?.trialEndsAt && subscription.trialEndsAt.toMillis() > Date.now();
+}
+
 export function getLimit(tier: string, feature: 'boards' | 'submissions' | 'teamMembers'): number {
   const limits = getTierLimits(tier);
   return limits[feature];

@@ -45,6 +45,9 @@ export function DowngradeModal({
   if (fromLimits.canReply && !toLimits.canReply) {
     featuresLost.push('Reply to submitters');
   }
+  if (fromLimits.canUseAdvancedFeedback && !toLimits.canUseAdvancedFeedback) {
+    featuresLost.push('Post-resolution feedback');
+  }
   if (fromLimits.canRemoveBranding && !toLimits.canRemoveBranding) {
     featuresLost.push('Custom branding');
   }

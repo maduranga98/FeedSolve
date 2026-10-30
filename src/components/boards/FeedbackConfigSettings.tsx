@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { ArrowDown, ArrowUp, Lock, MessageSquare, Plus, Trash2 } from 'lucide-react';
-import type { Board, Company, FeedbackConfig, FeedbackField, FeedbackFieldType } from '../../types';
+import { ArrowDown, ArrowUp, MessageSquare, Plus, Trash2 } from 'lucide-react';
+import type { Board, FeedbackConfig, FeedbackField, FeedbackFieldType } from '../../types';
 import { Button, Input, Select } from '../Shared';
 import { updateBoard } from '../../lib/firestore';
-import { hasFeature } from '../../lib/tier-limits';
 import {
-  DEFAULT_FEEDBACK_FIELDS,
   FEEDBACK_FIELD_TYPE_LABELS,
   MAX_FEEDBACK_FIELDS,
   MAX_FEEDBACK_LABEL_LENGTH,
@@ -17,7 +15,6 @@ import {
 
 interface FeedbackConfigSettingsProps {
   board: Board;
-  company: Company | null;
   onBoardChange: (board: Board) => void;
 }
 
@@ -31,12 +28,11 @@ const TRIGGER_STATUS_OPTIONS = [
   { value: 'closed', label: 'Closed' },
 ];
 
-export function FeedbackConfigSettings({ board, company, onBoardChange }: FeedbackConfigSettingsProps) {
-  const canCustomize = hasFeature(company?.subscription?.tier ?? 'free', 'canUseAdvancedFeedback');
+export function FeedbackConfigSettings({ board, onBoardChange }: FeedbackConfigSettingsProps) {
   const initial = getFeedbackConfig(board);
   const [enabled, setEnabled] = useState(initial.enabled);
   const [triggerStatus, setTriggerStatus] = useState<FeedbackConfig['triggerStatus']>(initial.triggerStatus);
-  const [fields, setFields] = useState<FeedbackField[]>(canCustomize ? initial.fields : DEFAULT_FEEDBACK_FIELDS);
+  const [fields, setFields] = useState<FeedbackField[]>(initial.fields);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,7 +77,7 @@ export function FeedbackConfigSettings({ board, company, onBoardChange }: Feedba
   const handleSave = async () => {
     setError(null);
 
-    const nextFields = canCustomize ? normalizeFeedbackFields(fields) : DEFAULT_FEEDBACK_FIELDS;
+    const nextFields = normalizeFeedbackFields(fields);
     if (enabled) {
       const validationError = validateFeedbackFields(nextFields);
       if (validationError) {
@@ -148,35 +144,8 @@ export function FeedbackConfigSettings({ board, company, onBoardChange }: Feedba
             </div>
 
             <div className="rounded-xl border border-[var(--c-be9e0d9)] p-4">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-bold text-[var(--c-t1c1917)]">Questions</h3>
-                {!canCustomize && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-[var(--c-sf1efe8)] px-2 py-0.5 text-xs font-semibold text-[var(--c-t5f5e5a)]">
-                    <Lock size={11} /> Growth+
-                  </span>
-                )}
-              </div>
+              <h3 className="mb-3 text-sm font-bold text-[var(--c-t1c1917)]">Questions</h3>
 
-              {!canCustomize ? (
-                <div className="space-y-3">
-                  <ul className="space-y-2">
-                    {DEFAULT_FEEDBACK_FIELDS.map((field) => (
-                      <li
-                        key={field.id}
-                        className="flex items-center justify-between gap-3 rounded-lg bg-[var(--c-sf5f0ec)] px-3 py-2 text-sm"
-                      >
-                        <span className="text-[var(--c-t1c1917)]">{field.label}</span>
-                        <span className="shrink-0 text-xs text-[var(--c-t78716c)]">
-                          {FEEDBACK_FIELD_TYPE_LABELS[field.type]} · {field.required ? 'Required' : 'Optional'}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="rounded-xl border border-dashed border-[var(--c-bd6cabf)] bg-[var(--c-sf5f0ec)] p-4 text-sm text-[var(--c-t78716c)]">
-                    Custom questions are available on Growth and Business plans.
-                  </div>
-                </div>
-              ) : (
                 <div className="space-y-3">
                   {fields.map((field, index) => (
                     <div key={field.id} className="space-y-3 rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sf5f0ec)] p-3">
@@ -265,7 +234,6 @@ export function FeedbackConfigSettings({ board, company, onBoardChange }: Feedba
                     <Plus size={14} /> Add question
                   </Button>
                 </div>
-              )}
             </div>
           </>
         )}
