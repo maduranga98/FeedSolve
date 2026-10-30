@@ -186,6 +186,45 @@ service cloud.firestore {
              validLocation;
     }
 
+    // Post-resolution feedback. The response doc ID is the tracking code without
+    // its leading '#', which makes "one response per submission" structural:
+    // clients may only create, so a second write to the same ID is rejected.
+    function isFeedbackSubmissionMatch(d) {
+      let submissionPath = /databases/$(database)/documents/submissions/$(d.submissionId);
+      return d.submissionId is string &&
+        exists(submissionPath) &&
+        get(submissionPath).data.trackingCode == d.trackingCode &&
+        get(submissionPath).data.boardId == d.boardId;
+    }
+
+    // The submission's current status must equal the board's configured trigger.
+    function isFeedbackCollectionOpen(d) {
+      let submissionPath = /databases/$(database)/documents/submissions/$(d.submissionId);
+      let boardPath = /databases/$(database)/documents/boards/$(d.boardId);
+      return d.boardId is string &&
+        exists(boardPath) &&
+        get(boardPath).data.get('feedbackConfig', {}).get('enabled', false) == true &&
+        get(submissionPath).data.status ==
+          get(boardPath).data.get('feedbackConfig', {}).get('triggerStatus', 'resolved');
+    }
+
+    function isValidFeedbackResponseCreate(responseId) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['trackingCode', 'boardId', 'submissionId', 'responses', 'submittedAt']) &&
+        d.keys().hasAll(['trackingCode', 'boardId', 'submissionId', 'responses', 'submittedAt']) &&
+        isValidTrackingCode(d.trackingCode) &&
+        '#' + responseId == d.trackingCode &&
+        d.responses is list && d.responses.size() <= 20 &&
+        d.submittedAt == request.time &&
+        isFeedbackSubmissionMatch(d) &&
+        isFeedbackCollectionOpen(d);
+    }
+
+    function canReadBoardFeedback(boardId) {
+      return exists(/databases/$(database)/documents/boards/$(boardId)) &&
+        canReadSubmissions(get(/databases/$(database)/documents/boards/$(boardId)).data.companyId);
+    }
+
     // Notification delivery history - Cloud Functions write, Admin+ read.
     match /notification_logs/{companyId}/logs/{logId} {
       allow read: if canManageCompany(companyId);
@@ -370,6 +409,17 @@ service cloud.firestore {
       }
     }
 
+
+    // Post-resolution feedback - public create-only; company members read.
+    match /feedbackResponses/{responseId} {
+      // Single-doc get is public so the tracking page can tell whether feedback was already
+      // sent. The ID is derived from the tracking code, which is already the capability
+      // that unlocks the submission itself. Listing/querying stays private.
+      allow get: if true;
+      allow list: if canReadBoardFeedback(resource.data.boardId);
+      allow create: if isValidFeedbackResponseCreate(responseId);
+      allow update, delete: if false;
+    }
 
     // Board cycle archives - company members read, admins manage settings-created cycles.
     match /boardCycles/{cycleId} {

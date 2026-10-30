@@ -143,6 +143,39 @@ export interface CustomForm {
   updatedAt: Timestamp;
 }
 
+export type FeedbackFieldType = "rating" | "text" | "textarea" | "dropdown" | "yesno";
+
+export interface FeedbackField {
+  id: string;
+  type: FeedbackFieldType;
+  label: string;
+  required: boolean;
+  options?: string[]; // dropdown only
+  order: number;
+}
+
+export interface FeedbackConfig {
+  enabled: boolean;
+  triggerStatus: "resolved" | "closed";
+  fields: FeedbackField[];
+}
+
+export type FeedbackAnswerValue = string | number | boolean;
+
+export interface FeedbackAnswer {
+  fieldId: string;
+  value: FeedbackAnswerValue;
+}
+
+export interface FeedbackResponse {
+  id: string;
+  trackingCode: string;
+  boardId: string;
+  submissionId: string;
+  responses: FeedbackAnswer[];
+  submittedAt: Timestamp;
+}
+
 export type RecurringFrequency = "monthly" | "quarterly" | "custom";
 
 export interface BoardCycleStats {
@@ -199,6 +232,7 @@ export interface Board {
   recurringStartDate?: Timestamp | null;
   currentCycleId?: string | null;
   nextCycleDate?: Timestamp | null;
+  feedbackConfig?: FeedbackConfig;
 }
 
 export interface InternalNote {
@@ -346,6 +380,7 @@ export interface TierLimits {
   canRemoveBranding: boolean;
   canAccessAPI: boolean;
   canUseTemplates: boolean;
+  canUseAdvancedFeedback: boolean;
   maxTemplates: number;
   analyticsLevel: 'none' | 'basic' | 'full' | 'advanced';
 }
