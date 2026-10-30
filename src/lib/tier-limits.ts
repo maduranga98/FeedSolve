@@ -86,6 +86,18 @@ export function hasFeature(tier: string, feature: keyof TierLimits): boolean {
   return false;
 }
 
+/** A free account whose trial window has closed and that never subscribed. */
+export function isTrialExpired(
+  subscription: { tier?: string; trialEndsAt?: { toMillis(): number } } | null | undefined
+): boolean {
+  return (
+    !!subscription &&
+    (subscription.tier ?? 'free') === 'free' &&
+    !!subscription.trialEndsAt &&
+    subscription.trialEndsAt.toMillis() <= Date.now()
+  );
+}
+
 /** Post-resolution feedback: Growth and above, or any account still inside its free trial. */
 export function canUseFeedback(
   subscription: { tier?: string; trialEndsAt?: { toMillis(): number } } | null | undefined
