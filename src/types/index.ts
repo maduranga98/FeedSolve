@@ -167,12 +167,19 @@ export interface FeedbackAnswer {
   value: FeedbackAnswerValue;
 }
 
+// Optional identity the submitter chose to share. Absent when they stay anonymous.
+export interface FeedbackContact {
+  name?: string;
+  email?: string;
+}
+
 export interface FeedbackResponse {
   id: string;
   trackingCode: string;
   boardId: string;
   submissionId: string;
   responses: FeedbackAnswer[];
+  contact?: FeedbackContact;
   submittedAt: Timestamp;
 }
 

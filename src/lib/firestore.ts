@@ -61,6 +61,7 @@ import type {
   BoardTemplate,
   FeedbackAnswer,
   FeedbackResponse,
+  FeedbackContact,
 } from '../types';
 import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -481,6 +482,7 @@ export async function submitFeedbackResponse(input: {
   boardId: string;
   submissionId: string;
   responses: FeedbackAnswer[];
+  contact?: FeedbackContact;
 }): Promise<void> {
   try {
     // Doc ID is keyed to the tracking code; the rules only allow create, so a
@@ -491,6 +493,7 @@ export async function submitFeedbackResponse(input: {
       boardId: input.boardId,
       submissionId: input.submissionId,
       responses: input.responses,
+      ...(input.contact && Object.keys(input.contact).length > 0 ? { contact: input.contact } : {}),
       submittedAt: serverTimestamp(),
     });
   } catch (error) {

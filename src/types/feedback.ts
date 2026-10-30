@@ -5,4 +5,5 @@ export type {
   FeedbackAnswerValue,
   FeedbackAnswer,
   FeedbackResponse,
+  FeedbackContact,
 } from './index';
