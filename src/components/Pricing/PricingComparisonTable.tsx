@@ -23,6 +23,7 @@ export function PricingComparisonTable() {
     { name: 'Recurring Cycle Resets', free: false, starter: false, growth: true, business: true },
     { name: 'Escalation Rules', free: false, starter: false, growth: true, business: true },
     { name: 'Board Templates', free: false, starter: false, growth: true, business: true },
+    { name: 'Post-Resolution Feedback (custom questions, optional contact, CSV export)', free: false, starter: false, growth: true, business: true },
     { name: 'Public Resolution Feed', free: false, starter: false, growth: true, business: true },
     { name: 'Custom Roles & Permissions', free: false, starter: false, growth: false, business: true },
     { name: 'Audit Logs', free: false, starter: false, growth: false, business: true },

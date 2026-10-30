@@ -197,12 +197,20 @@ service cloud.firestore {
         get(submissionPath).data.boardId == d.boardId;
     }
 
+    // Post-resolution feedback is a Growth and Business feature.
+    function isFeedbackPlan(companyId) {
+      let companyPath = /databases/$(database)/documents/companies/$(companyId);
+      return exists(companyPath) &&
+        get(companyPath).data.get('subscription', {}).get('tier', 'free') in ['growth', 'business'];
+    }
+
     // The submission's current status must equal the board's configured trigger.
     function isFeedbackCollectionOpen(d) {
       let submissionPath = /databases/$(database)/documents/submissions/$(d.submissionId);
       let boardPath = /databases/$(database)/documents/boards/$(d.boardId);
       return d.boardId is string &&
         exists(boardPath) &&
+        isFeedbackPlan(get(boardPath).data.companyId) &&
         get(boardPath).data.get('feedbackConfig', {}).get('enabled', false) == true &&
         get(submissionPath).data.status ==
           get(boardPath).data.get('feedbackConfig', {}).get('triggerStatus', 'resolved');

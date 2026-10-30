@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star } from 'lucide-react';
+import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star, Lock } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
@@ -11,15 +11,17 @@ import { LocationQRSection } from '../../components/boards/LocationQRSection';
 import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSettings';
 import { FeedbackConfigSettings } from '../../components/boards/FeedbackConfigSettings';
 import { FeedbackResponsesTab } from '../../components/boards/FeedbackResponsesTab';
+import { FeedbackLockedCard } from '../../components/boards/FeedbackLockedCard';
+import { hasFeature } from '../../lib/tier-limits';
 
 type SetupStep = 'qr' | 'cycle' | 'locations' | 'feedback-settings' | 'feedback';
 
-const setupSteps: Array<{ id: SetupStep; label: string; description: string; icon: typeof QrCode }> = [
+const setupSteps: Array<{ id: SetupStep; label: string; description: string; icon: typeof QrCode; growthOnly?: boolean }> = [
   { id: 'qr', label: 'QR Code', description: 'Style & share', icon: QrCode },
   { id: 'cycle', label: 'Recurring Cycle', description: 'Automate resets', icon: CalendarClock },
   { id: 'locations', label: 'Locations', description: 'Manage spots', icon: MapPin },
-  { id: 'feedback-settings', label: 'Feedback Config', description: 'After resolution', icon: Star },
-  { id: 'feedback', label: 'Feedback', description: 'Responses & export', icon: MessageSquare },
+  { id: 'feedback-settings', label: 'Feedback Config', description: 'After resolution', icon: Star, growthOnly: true },
+  { id: 'feedback', label: 'Feedback', description: 'Responses & export', icon: MessageSquare, growthOnly: true },
 ];
 
 export function BoardDetails() {
@@ -125,6 +127,7 @@ export function BoardDetails() {
   }
 
   const feedbackUrl = `${window.location.origin}/submit/${board.slug}`;
+  const canUseFeedback = hasFeature(company?.subscription?.tier ?? 'free', 'canUseAdvancedFeedback');
 
   return (
     <main className="min-h-screen bg-color-bg">
@@ -242,7 +245,10 @@ export function BoardDetails() {
                         <Icon size={17} />
                       </span>
                       <span className="min-w-0">
-                        <span className="block truncate text-sm font-bold">{step.label}</span>
+                        <span className="flex items-center gap-1 truncate text-sm font-bold">
+                          {step.label}
+                          {step.growthOnly && !canUseFeedback && <Lock size={12} aria-label="Growth plan required" />}
+                        </span>
                         <span className="block truncate text-xs">{step.description}</span>
                       </span>
                     </button>
@@ -276,19 +282,22 @@ export function BoardDetails() {
               )}
 
               {activeSetupStep === 'feedback-settings' && (
-                <FeedbackConfigSettings
-                  board={board}
-                  company={company}
-                  onBoardChange={setBoard}
-                />
+                canUseFeedback ? (
+                  <FeedbackConfigSettings board={board} onBoardChange={setBoard} />
+                ) : (
+                  <FeedbackLockedCard />
+                )
               )}
 
               {activeSetupStep === 'feedback' && (
-                <FeedbackResponsesTab
-                  board={board}
-                  company={company}
-                  onOpenSettings={() => setActiveSetupStep('feedback-settings')}
-                />
+                canUseFeedback ? (
+                  <FeedbackResponsesTab
+                    board={board}
+                    onOpenSettings={() => setActiveSetupStep('feedback-settings')}
+                  />
+                ) : (
+                  <FeedbackLockedCard />
+                )
               )}
 
               {activeSetupStep === 'locations' && (
