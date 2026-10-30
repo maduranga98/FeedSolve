@@ -128,7 +128,7 @@ export function BoardDetails() {
 
   return (
     <main className="min-h-screen bg-color-bg">
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <button
           onClick={() => navigate('/dashboard')}
           className="mb-6 flex items-center gap-2 font-medium text-color-accent hover:text-color-primary"
@@ -137,25 +137,36 @@ export function BoardDetails() {
           Back to Dashboard
         </button>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.35fr)] lg:items-start">
+        <div className="space-y-6">
           {/* Board Info */}
-          <div className="rounded-2xl border border-color-border bg-color-surface p-6 shadow-md lg:sticky lg:top-6">
-            <div className="mb-6 rounded-2xl bg-gradient-to-br from-[var(--c-sf5e6df)] to-[var(--c-sffffff)] p-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">
-                Feedback board
-              </p>
-              <h1 className="text-2xl sm:text-3xl font-bold text-color-primary break-words">{board.name}</h1>
-              <p className="mt-2 text-color-muted-text">{board.description}</p>
+          <div className="rounded-2xl border border-color-border bg-color-surface p-5 shadow-md sm:p-6">
+            <div className="mb-6 flex flex-col gap-4 rounded-2xl bg-gradient-to-br from-[var(--c-sf5e6df)] to-[var(--c-sffffff)] p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">
+                  Feedback board
+                </p>
+                <h1 className="break-words text-2xl font-bold text-color-primary sm:text-3xl">{board.name}</h1>
+                {board.description && <p className="mt-2 text-color-muted-text">{board.description}</p>}
+              </div>
+              <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+                <Button onClick={handleShareQR} variant="primary" className="flex items-center justify-center gap-2">
+                  <Share2 size={18} />
+                  Share Feedback Form
+                </Button>
+                <Button onClick={() => navigate('/submissions')} variant="secondary">
+                  View Submissions
+                </Button>
+              </div>
             </div>
 
-            <div className="space-y-5 mb-6">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_1.4fr_auto] lg:items-start">
               <div>
-                <p className="text-sm font-semibold text-color-muted-text mb-2">Categories</p>
+                <p className="mb-2 text-sm font-semibold text-color-muted-text">Categories</p>
                 <div className="flex flex-wrap gap-2">
                   {board.categories.map((category) => (
                     <span
                       key={category}
-                      className="px-3 py-1 bg-color-accent-light text-color-primary rounded-full text-sm"
+                      className="rounded-full bg-color-accent-light px-3 py-1 text-sm text-color-primary"
                     >
                       {category}
                     </span>
@@ -164,13 +175,13 @@ export function BoardDetails() {
               </div>
 
               <div>
-                <p className="text-sm font-semibold text-color-muted-text mb-2">Feedback URL</p>
+                <p className="mb-2 text-sm font-semibold text-color-muted-text">Feedback URL</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     readOnly
                     value={feedbackUrl}
-                    className="flex-1 px-3 py-2 border border-color-border rounded-md bg-color-bg text-sm text-color-body-text"
+                    className="min-w-0 flex-1 rounded-md border border-color-border bg-color-bg px-3 py-2 text-sm text-color-body-text"
                   />
                   <Button
                     variant="secondary"
@@ -184,40 +195,18 @@ export function BoardDetails() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-color-border bg-color-bg p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">
-                    Anonymous
-                  </p>
+              <div className="grid grid-cols-2 gap-3 lg:min-w-[16rem]">
+                <div className="rounded-xl border border-color-border bg-color-bg p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">Anonymous</p>
                   <p className="mt-1 font-bold text-color-body-text">
                     {board.isAnonymousAllowed ? 'Allowed' : 'Not Allowed'}
                   </p>
                 </div>
-                <div className="rounded-xl border border-color-border bg-color-bg p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">
-                    Submissions
-                  </p>
+                <div className="rounded-xl border border-color-border bg-color-bg p-3">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-color-muted-text">Submissions</p>
                   <p className="mt-1 text-xl font-bold text-color-accent">{board.submissionCount}</p>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Button
-                onClick={handleShareQR}
-                variant="primary"
-                className="w-full flex items-center justify-center gap-2"
-              >
-                <Share2 size={18} />
-                Share Feedback Form
-              </Button>
-              <Button
-                onClick={() => navigate('/submissions')}
-                variant="secondary"
-                className="w-full"
-              >
-                View Submissions
-              </Button>
             </div>
           </div>
 
@@ -231,11 +220,7 @@ export function BoardDetails() {
                 </p>
               </div>
 
-              <div
-                className="-mx-1 mt-5 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                role="tablist"
-                aria-label="Board setup sections"
-              >
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="tablist" aria-label="Board setup sections">
                 {setupSteps.map((step) => {
                   const Icon = step.icon;
                   const active = activeSetupStep === step.id;
@@ -246,16 +231,20 @@ export function BoardDetails() {
                       type="button"
                       role="tab"
                       aria-selected={active}
-                      title={step.description}
                       onClick={() => setActiveSetupStep(step.id)}
-                      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)]/40 ${
+                      className={`group flex items-center gap-3 rounded-xl border p-3 text-left transition-all ${
                         active
-                          ? 'border-[var(--c-sc0694a)] bg-[var(--c-sc0694a)] text-white shadow-sm'
-                          : 'border-[var(--c-bd6cabf)] bg-white/70 text-[var(--c-t78716c)] hover:border-[var(--c-bc0694a)]/50 hover:bg-[var(--c-sffffff)] hover:text-[var(--c-t1c1917)]'
+                          ? 'border-[var(--c-bc0694a)] bg-[var(--c-sffffff)] text-[var(--c-t1c1917)] shadow-sm ring-2 ring-[var(--c-bc0694a)]/15'
+                          : 'border-[var(--c-bd6cabf)] bg-white/65 text-[var(--c-t78716c)] hover:border-[var(--c-bc0694a)]/50 hover:bg-[var(--c-sffffff)]'
                       }`}
                     >
-                      <Icon size={16} />
-                      {step.label}
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${active ? 'bg-[var(--c-sc0694a)] text-white' : 'bg-[var(--c-sf1ebe5)] text-[var(--c-t78716c)] group-hover:text-[var(--c-tc0694a)]'}`}>
+                        <Icon size={17} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-bold">{step.label}</span>
+                        <span className="block truncate text-xs">{step.description}</span>
+                      </span>
                     </button>
                   );
                 })}
