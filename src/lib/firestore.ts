@@ -55,6 +55,7 @@ import type {
   Submission,
   BoardFormInput,
   SubmissionFormInput,
+  InternalSubmissionOrigin,
   TeamInvitation,
   TeamMember,
   InternalNote,
@@ -299,7 +300,8 @@ export async function deleteBoard(boardId: string): Promise<void> {
 export async function createSubmission(
   boardId: string,
   companyId: string,
-  input: SubmissionFormInput
+  input: SubmissionFormInput,
+  origin?: InternalSubmissionOrigin
 ): Promise<{ trackingCode: string; submissionId: string }> {
   try {
     const trackingCode = generateTrackingCode();
@@ -337,6 +339,9 @@ export async function createSubmission(
       cycleId: board?.currentCycleId ?? null,
       satisfactionScore: input.satisfactionScore ?? null,
       satisfactionLabel: input.satisfactionLabel ?? null,
+      ...(origin
+        ? { source: origin.source, createdBy: origin.createdBy }
+        : { source: 'public' as const }),
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };

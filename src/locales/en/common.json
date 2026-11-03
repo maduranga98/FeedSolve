@@ -140,6 +140,10 @@
     "frame_desc_soft": "Soft edges"
   },
   "submissions_page": {
+    "add_submission": "Add Submission",
+    "no_boards": "Create a board before adding a submission.",
+    "boards_load_failed": "Couldn't load your boards. Please try again.",
+    "logged_by_team": "Logged by a team member",
     "title": "Submissions",
     "subtitle": "Review, assign, and resolve feedback",
     "export_csv": "Export CSV",

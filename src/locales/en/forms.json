@@ -41,6 +41,22 @@
     "submit_another": "Submit another response",
     "back": "Back"
   },
+  "internal_submission": {
+    "title": "Add Submission",
+    "description": "Log feedback you received by phone, email or in person. It gets a tracking code and follows the same workflow as any other submission.",
+    "board": "Board",
+    "from_section": "Who is this from?",
+    "from_help": "Optional. Details of the person who gave the feedback, not yours.",
+    "submit": "Add Submission",
+    "created": "Submission added",
+    "share_hint": "Share this code or link with the customer so they can follow progress.",
+    "tracking_link": "Tracking link",
+    "copy_link": "Copy link",
+    "copy_code": "Copy code",
+    "copied": "Copied",
+    "add_another": "Add another",
+    "done": "Done"
+  },
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email",

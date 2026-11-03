@@ -291,9 +291,21 @@ export interface Submission {
   submissionLanguage?: string;
   satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
   satisfactionLabel?: string | null;
+  /** Where the submission came from. Docs created before this field existed are public. */
+  source?: SubmissionSource;
+  /** uid of the team member who logged it; only set when source === "internal". */
+  createdBy?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   resolvedAt?: Timestamp;
+}
+
+export type SubmissionSource = "public" | "internal";
+
+/** Origin metadata for a submission logged by a team member from the dashboard. */
+export interface InternalSubmissionOrigin {
+  source: "internal";
+  createdBy: string;
 }
 
 export interface SubmissionFormInput {
