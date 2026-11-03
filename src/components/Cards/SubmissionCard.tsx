@@ -3,7 +3,7 @@ import type { Submission, User } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
 import { getUser } from '../../lib/firestore';
-import { MapPin, MessageSquare, UserCircle } from 'lucide-react';
+import { MapPin, MessageSquare, PenLine, UserCircle } from 'lucide-react';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -113,6 +113,15 @@ function SubmissionCardComponent({
             </h3>
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-[11px] text-[var(--c-t9aabbf)] font-mono">{submission.trackingCode}</p>
+              {submission.source === 'internal' && (
+                <span
+                  className="inline-flex items-center text-[var(--c-t9aabbf)]"
+                  title="Logged by a team member"
+                  aria-label="Logged by a team member"
+                >
+                  <PenLine size={11} />
+                </span>
+              )}
               {submission.isMerged && (
                 <span className="rounded-full bg-[var(--c-sf1efe8)] px-2 py-0.5 text-[11px] font-semibold text-[var(--c-t5f5e5a)]">
                   Merged

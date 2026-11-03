@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star, Lock } from 'lucide-react';
+import { Share2, Plus, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star, Lock } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useTranslation } from 'react-i18next';
 import { getBoard, getCompany } from '../../lib/firestore';
 import { Button, LoadingSpinner } from '../../components/Shared';
 import { QRCustomizer } from '../../components/QR';
+import { AddSubmissionModal } from '../../components/Submissions/AddSubmissionModal';
 import type { Board, Company } from '../../types';
 import { LocationManager } from '../../components/boards/LocationManager';
 import { LocationQRSection } from '../../components/boards/LocationQRSection';
@@ -28,6 +31,9 @@ export function BoardDetails() {
   const { boardId } = useParams<{ boardId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { hasPermissionTo } = usePermissions();
+  const { t } = useTranslation();
+  const [showAddSubmission, setShowAddSubmission] = useState(false);
   const [board, setBoard] = useState<Board | null>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
@@ -156,6 +162,16 @@ export function BoardDetails() {
                   <Share2 size={18} />
                   Share Feedback Form
                 </Button>
+                {hasPermissionTo('submissions:update') && (
+                  <Button
+                    onClick={() => setShowAddSubmission(true)}
+                    variant="secondary"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <Plus size={18} />
+                    {t('common:submissions_page.add_submission')}
+                  </Button>
+                )}
                 <Button onClick={() => navigate('/submissions')} variant="secondary">
                   View Submissions
                 </Button>
@@ -314,6 +330,19 @@ export function BoardDetails() {
           </section>
         </div>
       </div>
+
+      {showAddSubmission && (
+        <AddSubmissionModal
+          boards={[board]}
+          defaultBoardId={board.id}
+          onClose={() => setShowAddSubmission(false)}
+          onCreated={() =>
+            setBoard((prev) =>
+              prev ? { ...prev, submissionCount: (prev.submissionCount ?? 0) + 1 } : prev
+            )
+          }
+        />
+      )}
     </main>
   );
 }

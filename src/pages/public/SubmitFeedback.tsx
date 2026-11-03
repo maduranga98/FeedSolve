@@ -9,6 +9,12 @@ import {
 import { applyBrandColors } from "../../lib/color-utils";
 import { applyTextDirection } from "../../lib/rtl";
 import { getCategoryLabel } from "../../lib/utils";
+import {
+  SUBJECT_MAX,
+  DESCRIPTION_MAX,
+  EMAIL_PATTERN,
+  validateSubmissionContent,
+} from "../../lib/submission-validation";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../config/languages";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
 import { FloatingThemeToggle } from "../../components/Shared/ThemeToggle";
@@ -338,33 +344,13 @@ export function SubmitFeedback() {
   const branding = company?.branding;
   const companyDisplayName = branding?.companyName || company?.name || board?.name || "";
 
-  const SUBJECT_MAX = 100;
-  const DESCRIPTION_MAX = 5000;
-
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.category)
-      newErrors.category = t("forms:feedback.category") + " " + t("forms:validation.required");
-    else if (board && board.categories.length > 0 && !board.categories.includes(formData.category))
-      newErrors.category = t("forms:validation.invalid_category") || "Invalid category selected";
-
-    const subject = formData.subject.trim();
-    if (!subject)
-      newErrors.subject = t("forms:feedback.subject") + " " + t("forms:validation.required");
-    else if (subject.length > SUBJECT_MAX)
-      newErrors.subject = t("forms:validation.subject_max", { max: SUBJECT_MAX });
-
-    const description = formData.description.trim();
-    if (!description)
-      newErrors.description = t("forms:feedback.description") + " " + t("forms:validation.required");
-    else if (description.length > DESCRIPTION_MAX)
-      newErrors.description = t("forms:validation.description_max", { max: DESCRIPTION_MAX });
+    const newErrors: Record<string, string> = validateSubmissionContent(formData, board, t);
 
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
         newErrors.email = t("forms:validation.required");
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      else if (!EMAIL_PATTERN.test(formData.email))
         newErrors.email = t("forms:validation.email");
     }
 

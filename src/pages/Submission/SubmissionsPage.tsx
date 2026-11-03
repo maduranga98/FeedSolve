@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermissions } from '../../hooks/usePermissions';
 import { useSubmissionSelection } from '../../hooks/useSubmissionSelection';
-import { getCompanySubmissionsPage, getCompanyMembers } from '../../lib/firestore';
+import { getCompanySubmissionsPage, getCompanyMembers, getCompanyBoards } from '../../lib/firestore';
 import { downloadCSV } from '../../lib/export-report';
 import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
-import type { Submission, User } from '../../types';
+import type { Board, Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
 import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
+import { AddSubmissionModal } from '../../components/Submissions/AddSubmissionModal';
 import { BulkActionBar } from '../../components/Submissions/BulkActionBar';
 import { CycleSwitcher, type CycleSelection } from '../../components/dashboard/CycleSwitcher';
 import { CycleStatsBanner } from '../../components/dashboard/CycleStatsBanner';
@@ -26,6 +29,7 @@ import {
   RefreshCw,
   Download,
   TrendingUp,
+  Plus,
 } from 'lucide-react';
 
 const PAGE_SIZE = 20;
@@ -96,6 +100,7 @@ function TabButton({
 export function SubmissionsPage() {
   const { t } = useTranslation('common');
   const { user } = useAuth();
+  const { hasPermissionTo } = usePermissions();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -105,6 +110,8 @@ export function SubmissionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('active');
   const [showTeamProgress, setShowTeamProgress] = useState(false);
   const [showMerged, setShowMerged] = useState(false);
+  const [addBoards, setAddBoards] = useState<Board[] | null>(null);
+  const [openingAdd, setOpeningAdd] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<CycleSelection>('current');
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
@@ -175,6 +182,27 @@ export function SubmissionsPage() {
   useEffect(() => {
     void Promise.resolve().then(() => loadInitial());
   }, [loadInitial]);
+
+  // Same roles that can manage submissions under firestore.rules (owner, admin, manager).
+  const canAddSubmission = hasPermissionTo('submissions:update');
+
+  const handleOpenAddSubmission = useCallback(async () => {
+    if (!user || openingAdd) return;
+    setOpeningAdd(true);
+    try {
+      const boards = await getCompanyBoards(user.companyId);
+      if (boards.length === 0) {
+        toast.error(t('submissions_page.no_boards'));
+        return;
+      }
+      setAddBoards(boards);
+    } catch (error) {
+      console.error('Failed to load boards:', error);
+      toast.error(t('submissions_page.boards_load_failed'));
+    } finally {
+      setOpeningAdd(false);
+    }
+  }, [user, openingAdd, t]);
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
@@ -281,6 +309,16 @@ export function SubmissionsPage() {
             </div>
 
             <div className="flex items-center gap-2 self-end sm:self-auto">
+              {canAddSubmission && (
+                <button
+                  onClick={handleOpenAddSubmission}
+                  disabled={openingAdd}
+                  className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[var(--c-t1c1917)] bg-[var(--c-sffffff)] border border-[var(--c-bd6cabf)] hover:bg-[var(--c-sf5e6df)] hover:border-[var(--c-bc0694a)] rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <Plus size={13} />
+                  {t('submissions_page.add_submission')}
+                </button>
+              )}
               <button
                 onClick={loadInitial}
                 disabled={loading}
@@ -561,6 +599,16 @@ export function SubmissionsPage() {
           onBulkAssign={handleBulkAssign}
           onBulkClose={handleBulkClose}
           onClear={clearSelection}
+        />
+      )}
+
+      {addBoards && (
+        <AddSubmissionModal
+          boards={addBoards}
+          onClose={() => setAddBoards(null)}
+          onCreated={() => {
+            void loadInitial();
+          }}
         />
       )}
 

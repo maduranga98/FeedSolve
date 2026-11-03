@@ -196,6 +196,28 @@ service cloud.firestore {
              validLocation;
     }
 
+    // Public form submissions never carry an internal origin. `source` may be absent
+    // (clients that predate the field) or "public"; `createdBy` is internal-only.
+    function isPublicSubmissionOrigin() {
+      let d = request.resource.data;
+      return (!('source' in d) || d.source == 'public') && !('createdBy' in d);
+    }
+
+    // A team member logging a submission from the dashboard (phone, email, in person).
+    // Reuses every field constraint from isValidSubmissionCreate(), and additionally
+    // pins the origin to the caller and the board to the caller's own company.
+    function isValidInternalSubmissionCreate() {
+      let d = request.resource.data;
+      return d.source == 'internal' &&
+             d.createdBy == request.auth.uid &&
+             canManageSubmissions(d.companyId) &&
+             exists(/databases/$(database)/documents/boards/$(d.boardId)) &&
+             get(/databases/$(database)/documents/boards/$(d.boardId)).data.companyId == d.companyId &&
+             d.category is string &&
+             d.category in get(/databases/$(database)/documents/boards/$(d.boardId)).data.categories &&
+             isValidSubmissionCreate();
+    }
+
     // Post-resolution feedback. The response doc ID is the tracking code without
     // its leading '#', which makes "one response per submission" structural:
     // clients may only create, so a second write to the same ID is rejected.
@@ -380,11 +402,13 @@ service cloud.firestore {
       allow list: if request.query.limit <= 1 ||
         isPublicEmailLookup() ||
         (request.query.limit <= 1000 && isPublicFeedCompany(resource.data.companyId));
-      // Authenticated company member create
-      allow create: if isUserInCompany(request.resource.data.companyId) && isValidSubmissionCreate();
+      // Internal create: an owner/admin/manager logs a submission for their own company.
+      // source must be "internal" and createdBy must be the caller, so it cannot be spoofed.
+      allow create: if isAuthenticated() && isValidInternalSubmissionCreate();
       // Public create from the feedback form (works for both unauthenticated visitors
       // and signed-in users submitting on a board outside their own company).
-      allow create: if isValidSubmissionCreate();
+      // Cannot claim an internal origin; see isPublicSubmissionOrigin().
+      allow create: if isPublicSubmissionOrigin() && isValidSubmissionCreate();
       allow update: if isSubmissionMergeUpdate() ||
         canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
