@@ -107,6 +107,13 @@ export function canUseFeedback(
   return tier === 'free' && !!subscription?.trialEndsAt && subscription.trialEndsAt.toMillis() > Date.now();
 }
 
+/** Custom submission fields share the feedback gate: Growth and above, or an active free trial. */
+export function canUseSubmissionFields(
+  subscription: { tier?: string; trialEndsAt?: { toMillis(): number } } | null | undefined
+): boolean {
+  return canUseFeedback(subscription);
+}
+
 export function getLimit(tier: string, feature: 'boards' | 'submissions' | 'teamMembers'): number {
   const limits = getTierLimits(tier);
   return limits[feature];
