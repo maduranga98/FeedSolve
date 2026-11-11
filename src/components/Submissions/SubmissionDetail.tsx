@@ -1,4 +1,5 @@
-import { downloadTextFile } from '../../lib/download';
+import { loadExportContext, downloadSingleSubmissionCSV } from '../../lib/submission-export';
+import { toast } from 'sonner';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { Board, FileAttachment, Submission } from "../../types";
@@ -102,28 +103,6 @@ function MergedSubmissionPreview({ submission, onClose, t }: { submission: Submi
   );
 }
 
-function exportSubmissionCSV(submission: Submission, t: (key: string) => string) {
-  const rows = [
-    [t("detail.csv_field"), t("detail.csv_value")],
-    [t("detail.csv_tracking_code"), submission.trackingCode],
-    [t("detail.csv_subject"), submission.subject],
-    [t("detail.csv_category"), submission.category],
-    [t("detail.csv_status"), submission.status],
-    [t("detail.csv_priority"), submission.priority],
-    [t("detail.csv_location"), submission.location ?? ""],
-    [t("detail.csv_description"), `"${submission.description.replace(/"/g, '""')}"`],
-    [t("detail.csv_submitter_email"), submission.submitterEmail ?? t("detail.anonymous")],
-    [t("detail.csv_submitter_name"), submission.submitterName ?? ""],
-    [t("detail.csv_submitter_mobile"), submission.submitterMobile ?? ""],
-    [t("detail.csv_anonymous"), submission.isAnonymous ? t("yes") : t("no")],
-    [t("detail.csv_submitted"), submission.createdAt.toDate().toISOString()],
-    [t("detail.csv_last_updated"), submission.updatedAt.toDate().toISOString()],
-    [t("detail.csv_attachments"), String(submission.attachments?.length ?? 0)],
-  ];
-  const csv = rows.map((r) => r.join(",")).join("\n");
-  downloadTextFile(csv, `submission-${submission.trackingCode}.csv`, 'text/csv;charset=utf-8;');
-}
-
 export default function SubmissionDetail({
   submission,
   onClose,
@@ -136,6 +115,7 @@ export default function SubmissionDetail({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [tab, setTab] = useState<DetailTab>("details");
+  const [exporting, setExporting] = useState(false);
   const [board, setBoard] = useState<Board | null>(null);
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
   const [mergedSubmissions, setMergedSubmissions] = useState<Submission[]>([]);
@@ -208,6 +188,22 @@ export default function SubmissionDetail({
     }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const ctx = await loadExportContext([submission], {
+        companyId: user?.companyId,
+        knownBoards: board ? [board] : [],
+      });
+      downloadSingleSubmissionCSV(submission, ctx);
+    } catch (error) {
+      console.error("Failed to export submission:", error);
+      toast.error("Failed to export submission");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleCopyTrackingLink = () => {
     const url = `${window.location.origin}/track/${submission.trackingCode.replace(/^#/, '')}`;
     navigator.clipboard.writeText(url);
@@ -276,8 +272,8 @@ export default function SubmissionDetail({
             <button onClick={handleCopyTrackingLink} className={iconBtn} title={t("detail.copy_tracking_link")}>
               {copied ? <Check size={18} className="text-[var(--c-t1d8a57)]" /> : <Share2 size={18} />}
             </button>
-            <button onClick={() => exportSubmissionCSV(submission, t)} className={iconBtn} title={t("detail.export_as_csv")}>
-              <Download size={18} />
+            <button onClick={handleExport} disabled={exporting} className={`${iconBtn} disabled:opacity-50`} title={t("detail.export_as_csv")}>
+              <Download size={18} className={exporting ? "animate-pulse" : ""} />
             </button>
             <a href={trackingPath} target="_blank" rel="noopener noreferrer" className={iconBtn} title={t("detail.open_tracking_page")}>
               <ExternalLink size={18} />

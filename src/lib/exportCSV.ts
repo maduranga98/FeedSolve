@@ -36,7 +36,7 @@ export function exportSubmissionsToCSV(submissions: Submission[], filename = 'su
 
 // Quotes every cell and neutralises spreadsheet formulas: submitters control the
 // free-text values, and Excel/Sheets evaluate cells that start with = + - @.
-function toCSVCell(value: string): string {
+export function toCSVCell(value: string): string {
   const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
   return `"${safe.replace(/"/g, '""')}"`;
 }
