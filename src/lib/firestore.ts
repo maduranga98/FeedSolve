@@ -63,6 +63,8 @@ import type {
   FeedbackAnswer,
   FeedbackResponse,
   FeedbackContact,
+  SubmissionCustomFieldValue,
+  SubmissionTeamFields,
 } from '../types';
 import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -303,7 +305,7 @@ export async function createSubmission(
   companyId: string,
   input: SubmissionFormInput,
   origin?: InternalSubmissionOrigin
-): Promise<{ trackingCode: string; submissionId: string }> {
+): Promise<{ trackingCode: string; submissionId: string; teamFieldsSaved: boolean }> {
   try {
     const trackingCode = generateTrackingCode();
     const submissionsRef = collection(db, 'submissions');
@@ -361,7 +363,20 @@ export async function createSubmission(
       await updateDoc(boardRef, { submissionCount: increment(1) });
     }
 
-    return { trackingCode, submissionId: docRef.id };
+    // Team-only answers live in their own team-readable document. The submission already
+    // exists at this point, so a failure here is reported rather than thrown: the answers
+    // can still be added once from the submission's detail view.
+    let teamFieldsSaved = true;
+    if (origin && input.teamFields && input.teamFields.length > 0) {
+      try {
+        await saveSubmissionTeamFields(docRef.id, input.teamFields, origin.createdBy);
+      } catch (error) {
+        console.error('Failed to save team-only fields:', error);
+        teamFieldsSaved = false;
+      }
+    }
+
+    return { trackingCode, submissionId: docRef.id, teamFieldsSaved };
   } catch (error) {
     wrapFirestoreError(error);
   }
@@ -478,6 +493,38 @@ export async function updateSubmissionStatus(
     updateData.resolvedAt = Timestamp.now();
   }
   await updateDoc(submissionRef, updateData);
+}
+
+const TEAM_FIELDS_DOC = 'answers';
+
+/** Team-only custom field answers for a submission, or null when none have been saved yet. */
+export async function getSubmissionTeamFields(submissionId: string): Promise<SubmissionTeamFields | null> {
+  try {
+    const snapshot = await getDoc(doc(db, 'submissions', submissionId, 'teamFields', TEAM_FIELDS_DOC));
+    return snapshot.exists() ? (snapshot.data() as SubmissionTeamFields) : null;
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
+}
+
+/**
+ * Saves a submission's team-only answers. This is a one-time write: the security rules allow
+ * the document to be created but never updated, so a second save is rejected.
+ */
+export async function saveSubmissionTeamFields(
+  submissionId: string,
+  customFields: SubmissionCustomFieldValue[],
+  createdBy: string
+): Promise<void> {
+  try {
+    await setDoc(doc(db, 'submissions', submissionId, 'teamFields', TEAM_FIELDS_DOC), {
+      customFields,
+      createdBy,
+      createdAt: serverTimestamp(),
+    });
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 // Post-resolution feedback operations

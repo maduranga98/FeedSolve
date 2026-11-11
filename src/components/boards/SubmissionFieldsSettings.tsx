@@ -5,6 +5,7 @@ import type {
   Board,
   SubmissionField,
   SubmissionFieldAppliesTo,
+  SubmissionFieldAudience,
   SubmissionFieldAutoSource,
   SubmissionFieldType,
 } from '../../types';
@@ -14,9 +15,11 @@ import {
   MAX_SUBMISSION_FIELDS,
   MAX_SUBMISSION_LABEL_LENGTH,
   SUBMISSION_APPLIES_TO_LABELS,
+  SUBMISSION_AUDIENCE_LABELS,
   SUBMISSION_AUTO_SOURCE_LABELS,
   SUBMISSION_FIELD_TYPE_LABELS,
   buildSubmissionConfig,
+  getFieldAudience,
   getSubmissionConfig,
   normalizeSubmissionFields,
   validateSubmissionFields,
@@ -46,6 +49,11 @@ const APPLIES_TO_OPTIONS = (Object.keys(SUBMISSION_APPLIES_TO_LABELS) as Submiss
   label: SUBMISSION_APPLIES_TO_LABELS[value],
 }));
 
+const AUDIENCE_OPTIONS = (Object.keys(SUBMISSION_AUDIENCE_LABELS) as SubmissionFieldAudience[]).map((value) => ({
+  value,
+  label: SUBMISSION_AUDIENCE_LABELS[value],
+}));
+
 const hasOptions = (field: SubmissionField) =>
   !field.autoSource && (field.type === 'dropdown' || field.type === 'multiselect');
 
@@ -73,6 +81,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
           next.autoSource = kind.slice(AUTO_PREFIX.length) as SubmissionFieldAutoSource;
           next.required = false;
           delete next.options;
+          delete next.visibleTo;
           return next;
         }
 
@@ -112,7 +121,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
 
     const normalized = normalizeSubmissionFields(fields);
     if (useCustomFields) {
-      const validationError = validateSubmissionFields(normalized);
+      const validationError = validateSubmissionFields(normalized, appliesTo);
       if (validationError) {
         setError(validationError);
         return;
@@ -177,8 +186,8 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
               />
               {appliesTo !== 'internal' && (
                 <p className="mt-1.5 text-xs text-[var(--c-t78716c)]">
-                  Public submitters will see every field marked as filled in by a person. Long forms reduce
-                  submissions, so keep the public list short.
+                  Public submitters see fields shown to Everyone or Submitter only. Long forms reduce
+                  submissions, so keep the public list short and mark internal questions Team only.
                 </p>
               )}
             </div>
@@ -222,6 +231,13 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                       </div>
                     )}
 
+                    {!field.autoSource && getFieldAudience(field) === 'internal' && (
+                      <p className="text-xs text-[var(--c-t78716c)]">
+                        Stored privately for your team: never shown to the submitter or in the submission list.
+                        Answers are final once saved.
+                      </p>
+                    )}
+
                     {field.autoSource && (
                       <p className="text-xs text-[var(--c-t78716c)]">
                         Filled in automatically and never shown on the form. It appears on the submission details.
@@ -230,6 +246,21 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
 
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        {!field.autoSource && (
+                          <label className="flex items-center gap-2 text-sm text-[var(--c-t1c1917)]">
+                            Shown to
+                            <span className="w-52">
+                              <Select
+                                aria-label={`Field ${index + 1} shown to`}
+                                value={getFieldAudience(field)}
+                                onChange={(event) =>
+                                  updateField(field.id, { visibleTo: event.target.value as SubmissionFieldAudience })
+                                }
+                                options={AUDIENCE_OPTIONS}
+                              />
+                            </span>
+                          </label>
+                        )}
                         {!field.autoSource && (
                           <label className="flex items-center gap-2 text-sm text-[var(--c-t1c1917)]">
                             <input
@@ -241,6 +272,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                             Required
                           </label>
                         )}
+                        {(field.autoSource || getFieldAudience(field) !== 'internal') && (
                         <label className="flex items-center gap-2 text-sm text-[var(--c-t1c1917)]">
                           <input
                             type="checkbox"
@@ -250,6 +282,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                           />
                           Show in submission list
                         </label>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
