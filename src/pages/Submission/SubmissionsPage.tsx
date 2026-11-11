@@ -11,7 +11,7 @@ import {
   updateSubmissionStatus,
   addAuditLog,
 } from '../../lib/firestore';
-import { downloadCSV } from '../../lib/export-report';
+import { loadExportContext, downloadFullSubmissionsCSV } from '../../lib/submission-export';
 import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
 import type { Board, Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
@@ -131,6 +131,7 @@ export function SubmissionsPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('active');
@@ -359,6 +360,18 @@ export function SubmissionsPage() {
     : activeTab === 'active'
       ? activeSubmissions
       : completedSubmissions;
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const ctx = await loadExportContext(displayedSubmissions, { companyId: user?.companyId });
+      downloadFullSubmissionsCSV(displayedSubmissions, ctx);
+    } catch (error) {
+      console.error('Failed to export submissions:', error);
+      toast.error('Failed to export submissions');
+    } finally {
+      setExporting(false);
+    }
+  };
   const canChangeStatus = hasPermissionTo('submissions:update');
   const contentWidth = isBoardView ? 'max-w-none' : 'max-w-7xl';
 
@@ -399,8 +412,8 @@ export function SubmissionsPage() {
                 <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
               </button>
               <button
-                onClick={() => downloadCSV(displayedSubmissions)}
-                disabled={displayedSubmissions.length === 0}
+                onClick={handleExport}
+                disabled={displayedSubmissions.length === 0 || exporting}
                 title={t('submissions_page.export_tooltip')}
                 className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-white bg-[var(--c-sc0694a)] hover:bg-[var(--c-s9c4a2f)] rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
