@@ -79,6 +79,9 @@ export function getStatusColor(status: string): { bg: string; text: string } {
   return colors[status] || colors.received;
 }
 
+/** Workflow order, used for board columns and status sorting. */
+export const SUBMISSION_STATUS_ORDER = ['received', 'in_review', 'in_progress', 'escalated', 'resolved', 'closed'] as const;
+
 export function getStatusLabel(status: string): string {
   const labels: Record<string, string> = {
     received: 'Received',

@@ -4,12 +4,18 @@ import { toast } from 'sonner';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useSubmissionSelection } from '../../hooks/useSubmissionSelection';
-import { getCompanySubmissionsPage, getCompanyMembers, getCompanyBoards } from '../../lib/firestore';
+import {
+  getCompanySubmissionsPage,
+  getCompanyMembers,
+  getCompanyBoards,
+  updateSubmissionStatus,
+  addAuditLog,
+} from '../../lib/firestore';
 import { downloadCSV } from '../../lib/export-report';
 import type { SubmissionsPage as SubmissionsPageResult } from '../../lib/firestore';
 import type { Board, Submission, User } from '../../types';
 import { LoadingSpinner } from '../../components/Shared';
-import { AdvancedSearch } from '../../components/Filters/AdvancedSearch';
+import { AdvancedSearch, type SubmissionsView } from '../../components/Filters/AdvancedSearch';
 import SubmissionDetail from '../../components/Submissions/SubmissionDetail';
 import { AddSubmissionModal } from '../../components/Submissions/AddSubmissionModal';
 import { BulkActionBar } from '../../components/Submissions/BulkActionBar';
@@ -30,13 +36,35 @@ import {
   Download,
   TrendingUp,
   Plus,
+  Columns3,
+  Table2,
+  LayoutGrid,
 } from 'lucide-react';
 
-const PAGE_SIZE = 20;
+// Loaded per request. The board and table views are built for volume, so pages are larger
+// than the card grid's on-screen page size.
+const PAGE_SIZE = 60;
+
+const VIEW_STORAGE_KEY = 'feedsolve_submissions_view';
+const VIEWS: Array<{ id: SubmissionsView; labelKey: string; fallback: string; icon: typeof Columns3 }> = [
+  { id: 'board', labelKey: 'submissions_page.view_board', fallback: 'Board', icon: Columns3 },
+  { id: 'table', labelKey: 'submissions_page.view_table', fallback: 'Table', icon: Table2 },
+  { id: 'cards', labelKey: 'submissions_page.view_cards', fallback: 'Cards', icon: LayoutGrid },
+];
+
+function readStoredView(): SubmissionsView {
+  try {
+    const stored = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (stored === 'board' || stored === 'table' || stored === 'cards') return stored;
+  } catch {
+    // storage unavailable: fall through to the default
+  }
+  return 'board';
+}
 
 type Tab = 'active' | 'completed';
 
-const ACTIVE_STATUSES: Submission['status'][] = ['received', 'in_review', 'in_progress'];
+const ACTIVE_STATUSES: Submission['status'][] = ['received', 'in_review', 'in_progress', 'escalated'];
 const COMPLETED_STATUSES: Submission['status'][] = ['resolved', 'closed'];
 
 function MetricCard({
@@ -55,12 +83,10 @@ function MetricCard({
   border: string;
 }) {
   return (
-    <div className={`rounded-xl p-4 border ${bg} ${border}`}>
-      <div className="flex items-center gap-2 mb-2 text-[var(--c-t78716c)]">
-        {icon}
-        <span className="text-xs font-semibold">{label}</span>
-      </div>
-      <p className={`text-2xl font-bold ${valueCls}`}>{value}</p>
+    <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 ${bg} ${border}`}>
+      <span className="text-[var(--c-t78716c)]">{icon}</span>
+      <span className="truncate text-xs font-semibold text-[var(--c-t78716c)]">{label}</span>
+      <span className={`ml-auto text-base font-bold ${valueCls}`}>{value}</span>
     </div>
   );
 }
@@ -113,6 +139,7 @@ export function SubmissionsPage() {
   const [addBoards, setAddBoards] = useState<Board[] | null>(null);
   const [openingAdd, setOpeningAdd] = useState(false);
   const [selectedCycle, setSelectedCycle] = useState<CycleSelection>('current');
+  const [view, setView] = useState<SubmissionsView>(readStoredView);
   const lastDocRef = useRef<QueryDocumentSnapshot | null>(null);
 
   const { cycles, currentCyclesByBoard } = useBoardCycles(user?.companyId);
@@ -204,6 +231,42 @@ export function SubmissionsPage() {
     }
   }, [user, openingAdd, t]);
 
+  const handleViewChange = useCallback((next: SubmissionsView) => {
+    setView(next);
+    try {
+      localStorage.setItem(VIEW_STORAGE_KEY, next);
+    } catch {
+      // preference simply isn't remembered
+    }
+  }, []);
+
+  // Board drag-and-drop: update the card immediately, then persist. Reverts on failure.
+  const handleStatusChange = useCallback(
+    async (submission: Submission, status: Submission['status']) => {
+      if (!user) return;
+      const previous = submission.status;
+      setSubmissions((prev) => prev.map((s) => (s.id === submission.id ? { ...s, status } : s)));
+      try {
+        await updateSubmissionStatus(submission.id, status);
+        void addAuditLog(user.companyId, {
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+          action: `Changed status to "${status}"`,
+          resourceType: 'submission',
+          resourceId: submission.id,
+          resourceName: submission.subject,
+          details: { from: previous, to: status },
+        }).catch((err) => console.error('Failed to write audit log:', err));
+      } catch (error) {
+        console.error('Failed to update status:', error);
+        setSubmissions((prev) => prev.map((s) => (s.id === submission.id ? { ...s, status: previous } : s)));
+        toast.error(t('submissions_page.status_update_failed', { defaultValue: "Couldn't update the status. Please try again." }));
+      }
+    },
+    [user, t]
+  );
+
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setActiveTab(tab);
@@ -288,15 +351,23 @@ export function SubmissionsPage() {
   ).length;
   const myPct = mySubmissions.length > 0 ? Math.round((myResolved / mySubmissions.length) * 100) : 0;
 
-  const displayedSubmissions =
-    activeTab === 'active' ? activeSubmissions : completedSubmissions;
+  // The board lays every status out side by side, so the Active/Completed split only
+  // applies to the table and card views.
+  const isBoardView = view === 'board';
+  const displayedSubmissions = isBoardView
+    ? visibleSubmissions
+    : activeTab === 'active'
+      ? activeSubmissions
+      : completedSubmissions;
+  const canChangeStatus = hasPermissionTo('submissions:update');
+  const contentWidth = isBoardView ? 'max-w-none' : 'max-w-7xl';
 
   return (
     <div className="fs-viewport flex flex-col bg-[var(--c-sf2ede7)] overflow-hidden">
 
       {/* ── Fixed top header ── */}
       <div className="bg-[var(--c-sffffff)] border-b border-[var(--c-be9e0d9)] flex-shrink-0 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className={`${contentWidth} mx-auto px-4 sm:px-6 lg:px-8 py-3`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-[var(--c-sf5e6df)] rounded-xl flex items-center justify-center flex-shrink-0">
@@ -344,7 +415,7 @@ export function SubmissionsPage() {
 
       {/* ── Scrollable body ── */}
       <div className={`flex-1 overflow-y-auto min-h-0 ${isSelectionMode ? 'pb-24' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-4">
+        <div className={`${contentWidth} mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3`}>
 
           {loading ? (
             <div className="flex items-center justify-center py-40">
@@ -354,7 +425,7 @@ export function SubmissionsPage() {
             <>
               {/* ── Metric cards ── */}
               {totalCount > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <MetricCard
                     value={newCount}
                     label={t('submissions_page.new')}
@@ -390,47 +461,20 @@ export function SubmissionsPage() {
                 </div>
               )}
 
-              {/* ── My Assigned ── */}
-              {mySubmissions.length > 0 && (
-                <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl px-5 py-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <UserCheck size={14} className="text-[var(--c-tc0694a)] flex-shrink-0" />
-                    <span className="text-sm font-semibold text-[var(--c-t1c1917)]">{t('submissions_page.my_assigned')}</span>
-                    <span className="text-sm font-bold text-[var(--c-tc0694a)] ml-auto flex-shrink-0">{myPct}%</span>
-                  </div>
-                  <div className="h-2 bg-[var(--c-sf0e9e3)] rounded-full overflow-hidden mb-2">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${myPct}%`,
-                        background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #c0694a, #d98a68)',
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-3 text-xs text-[var(--c-t8f8680)]">
-                    <span className="flex items-center gap-1">
-                      <AlertCircle size={11} className="text-[var(--c-tb06f00)]" />
-                      {mySubmissions.length - myResolved} {t('submissions_page.active')}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <CheckCircle2 size={11} className="text-[var(--c-t1d8a57)]" />
-                      {myResolved} {t('submissions_page.done')}
-                    </span>
-                  </div>
-                </div>
-              )}
-
               {/* ── Team Progress (collapsible) ── */}
               {memberProgress.length > 0 && (
                 <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-xl overflow-hidden">
                   <button
                     onClick={() => setShowTeamProgress(!showTeamProgress)}
-                    className="w-full px-5 py-3.5 flex items-center gap-2.5 hover:bg-[var(--c-sfaf8f5)] transition-colors text-left"
+                    className="w-full px-4 py-2.5 flex items-center gap-2.5 hover:bg-[var(--c-sfaf8f5)] transition-colors text-left"
                   >
                     <TrendingUp size={14} className="text-[var(--c-tc0694a)]" />
                     <span className="text-sm font-semibold text-[var(--c-t1c1917)]">{t('submissions_page.team_progress')}</span>
                     <span className="text-xs text-[var(--c-t8f8680)]">
                       {assignedCount} {t('submissions_page.assigned')} · {memberProgress.length} {t('submissions_page.members')}
+                      {mySubmissions.length > 0 && (
+                        <> · {t('submissions_page.my_assigned')} {myPct}%</>
+                      )}
                     </span>
                     <ChevronDown
                       size={14}
@@ -440,6 +484,34 @@ export function SubmissionsPage() {
 
                   {showTeamProgress && (
                     <div className="divide-y divide-[var(--c-bf2ece6)] border-t border-[var(--c-bf2ece6)]">
+                      {mySubmissions.length > 0 && (
+                        <div className="px-5 py-3.5">
+                        <div className="flex items-center gap-2 mb-2">
+                          <UserCheck size={14} className="text-[var(--c-tc0694a)] flex-shrink-0" />
+                          <span className="text-sm font-semibold text-[var(--c-t1c1917)]">{t('submissions_page.my_assigned')}</span>
+                          <span className="text-sm font-bold text-[var(--c-tc0694a)] ml-auto flex-shrink-0">{myPct}%</span>
+                        </div>
+                        <div className="h-2 bg-[var(--c-sf0e9e3)] rounded-full overflow-hidden mb-2">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{
+                              width: `${myPct}%`,
+                              background: myPct === 100 ? '#1D8A57' : 'linear-gradient(90deg, #c0694a, #d98a68)',
+                            }}
+                          />
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-[var(--c-t8f8680)]">
+                          <span className="flex items-center gap-1">
+                            <AlertCircle size={11} className="text-[var(--c-tb06f00)]" />
+                            {mySubmissions.length - myResolved} {t('submissions_page.active')}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <CheckCircle2 size={11} className="text-[var(--c-t1d8a57)]" />
+                            {myResolved} {t('submissions_page.done')}
+                          </span>
+                        </div>
+                        </div>
+                      )}
                       {memberProgress.map(({ member, total, resolved, active }) => {
                         const pct = Math.round((resolved / total) * 100);
                         const isMe = member.id === user?.id;
@@ -507,24 +579,50 @@ export function SubmissionsPage() {
 
               {/* ── Tab bar ── */}
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <TabButton
-                    active={activeTab === 'active'}
-                    onClick={() => handleTabChange('active')}
-                    count={activeSubmissions.length}
-                  >
-                    <ListChecks size={14} />
-                    {t('submissions_page.tab_active')}
-                  </TabButton>
-                  <TabButton
-                    active={activeTab === 'completed'}
-                    onClick={() => handleTabChange('completed')}
-                    count={completedSubmissions.length}
-                  >
-                    <CheckCircle2 size={14} />
-                    {t('submissions_page.tab_completed')}
-                  </TabButton>
+                <div
+                  role="tablist"
+                  aria-label={t('submissions_page.view_label', { defaultValue: 'View' })}
+                  className="inline-flex rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] p-1"
+                >
+                  {VIEWS.map(({ id, labelKey, fallback, icon: Icon }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      role="tab"
+                      aria-selected={view === id}
+                      onClick={() => handleViewChange(id)}
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        view === id
+                          ? 'bg-[var(--c-s1c1917)] text-white'
+                          : 'text-[var(--c-t78716c)] hover:bg-[var(--c-sf5e6df)] hover:text-[var(--c-tc0694a)]'
+                      }`}
+                    >
+                      <Icon size={13} />
+                      {t(labelKey, { defaultValue: fallback })}
+                    </button>
+                  ))}
                 </div>
+
+                {!isBoardView && (
+                  <div className="flex items-center gap-2">
+                    <TabButton
+                      active={activeTab === 'active'}
+                      onClick={() => handleTabChange('active')}
+                      count={activeSubmissions.length}
+                    >
+                      <ListChecks size={14} />
+                      {t('submissions_page.tab_active')}
+                    </TabButton>
+                    <TabButton
+                      active={activeTab === 'completed'}
+                      onClick={() => handleTabChange('completed')}
+                      count={completedSubmissions.length}
+                    >
+                      <CheckCircle2 size={14} />
+                      {t('submissions_page.tab_completed')}
+                    </TabButton>
+                  </div>
+                )}
 
                 <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
                   {mergedCount > 0 && (
@@ -542,16 +640,22 @@ export function SubmissionsPage() {
                   )}
 
                   <p className="text-xs text-[var(--c-t8f8680)]">
-                    {activeTab === 'active'
-                      ? t('submissions_page.active_description')
-                      : t('submissions_page.completed_description')}
+                    {isBoardView
+                      ? canChangeStatus
+                        ? t('submissions_page.board_description', { defaultValue: 'Drag a card to another column to change its status' })
+                        : t('submissions_page.board_description_readonly', { defaultValue: 'Every status, side by side' })
+                      : activeTab === 'active'
+                        ? t('submissions_page.active_description')
+                        : t('submissions_page.completed_description')}
                   </p>
                 </div>
               </div>
 
               {/* ── Search + Results panel ── */}
-              <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-2xl p-5">
+              <div className="bg-[var(--c-sffffff)] border border-[var(--c-be9e0d9)] rounded-2xl p-4">
                 <AdvancedSearch
+                  view={view}
+                  onStatusChange={canChangeStatus ? handleStatusChange : undefined}
                   submissions={displayedSubmissions}
                   users={users}
                   usersMap={usersMap}
@@ -565,7 +669,13 @@ export function SubmissionsPage() {
 
               {/* ── Load More ── */}
               {hasMore && (
-                <div className="flex justify-center pb-4">
+                <div className="flex flex-col items-center gap-1.5 pb-4">
+                  <p className="text-xs text-[var(--c-t8f8680)]">
+                    {t('submissions_page.loaded_count', {
+                      count: submissions.length,
+                      defaultValue: 'Showing the {{count}} most recent submissions',
+                    })}
+                  </p>
                   <button
                     onClick={loadMore}
                     disabled={loadingMore}

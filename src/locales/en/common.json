@@ -168,7 +168,15 @@
     "completed_description": "Resolved and closed",
     "loading_more": "Loading…",
     "load_more": "Load more submissions",
-    "you": "(you)"
+    "you": "(you)",
+    "view_label": "View",
+    "view_board": "Board",
+    "view_table": "Table",
+    "view_cards": "Cards",
+    "board_description": "Drag a card to another column to change its status",
+    "board_description_readonly": "Every status, side by side",
+    "status_update_failed": "Couldn't update the status. Please try again.",
+    "loaded_count": "Showing the {{count}} most recent submissions"
   },
   "reply_templates": {
     "title": "Reply Templates",
