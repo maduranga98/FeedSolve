@@ -12,6 +12,8 @@ import { AdvancedFilterPanel } from './AdvancedFilterPanel';
 import { SavedFilters } from './SavedFilters';
 import { QuickFilters } from './QuickFilters';
 import { SearchResults } from './SearchResults';
+import { SubmissionKanban } from '../Submissions/SubmissionKanban';
+import { SubmissionTable } from '../Submissions/SubmissionTable';
 import { LoadingSpinner } from '../Shared';
 import { Copy, Bookmark } from 'lucide-react';
 
@@ -24,7 +26,13 @@ interface AdvancedSearchProps {
   isSelectionMode?: boolean;
   onToggleSelect?: (id: string) => void;
   onSelectAll?: (ids: string[]) => void;
+  /** How results are laid out. Search and filters apply to every view. */
+  view?: SubmissionsView;
+  /** Enables drag-to-change-status on the board view. */
+  onStatusChange?: (submission: Submission, status: Submission['status']) => void;
 }
+
+export type SubmissionsView = 'board' | 'table' | 'cards';
 
 export function AdvancedSearch({
   submissions,
@@ -35,6 +43,8 @@ export function AdvancedSearch({
   isSelectionMode,
   onToggleSelect,
   onSelectAll,
+  view = 'cards',
+  onStatusChange,
 }: AdvancedSearchProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -197,6 +207,27 @@ export function AdvancedSearch({
       {/* ── Results ── */}
       {loading ? (
         <LoadingSpinner size="lg" className="min-h-96" />
+      ) : view === 'board' ? (
+        <SubmissionKanban
+          submissions={results}
+          boards={boards}
+          usersMap={usersMap}
+          onSubmissionClick={onSubmissionClick}
+          onStatusChange={onStatusChange}
+          selectedIds={selectedIds}
+          isSelectionMode={isSelectionMode}
+          onToggleSelect={onToggleSelect}
+        />
+      ) : view === 'table' ? (
+        <SubmissionTable
+          submissions={results}
+          boards={boards}
+          usersMap={usersMap}
+          onSubmissionClick={onSubmissionClick}
+          selectedIds={selectedIds}
+          onToggleSelect={onToggleSelect}
+          onSelectAll={onSelectAll}
+        />
       ) : (
         <SearchResults
           results={results}
