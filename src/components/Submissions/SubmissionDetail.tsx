@@ -17,6 +17,7 @@ import {
   ClipboardList,
   Lock,
   MessageSquare,
+  MessageSquareHeart,
 } from "lucide-react";
 import { AttachmentGallery } from "../Attachments";
 import { useFileDownload } from "../../hooks/useFileDownload";
@@ -24,6 +25,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { useMergeSubmission } from "../../hooks/useMergeSubmission";
 import AssignDropdown from "./AssignDropdown";
 import { SubmissionCustomFields } from "./SubmissionCustomFields";
+import { SubmissionFeedback } from "./SubmissionFeedback";
+import { getFeedbackConfig } from "../../lib/feedback";
 import PriorityDropdown from "./PriorityDropdown";
 import PublicReplySection from "./PublicReplySection";
 import { InternalDiscussion } from "../dashboard/InternalDiscussion";
@@ -31,7 +34,7 @@ import { MergeModal } from "../dashboard/MergeModal";
 import { updateSubmissionStatus, addAuditLog, getBoard } from "../../lib/firestore";
 import { formatDate } from "../../lib/utils";
 
-type DetailTab = "details" | "team" | "reply";
+type DetailTab = "details" | "team" | "reply" | "feedback";
 
 interface SubmissionDetailProps {
   submission: Submission;
@@ -228,12 +231,15 @@ export default function SubmissionDetail({
 
   const trackingPath = `/track/${submission.trackingCode.replace(/^#/, "")}`;
   const trackingUrl = `${window.location.origin}${trackingPath}`;
+  // Submitter feedback tab exists only when the board owner has switched it on.
+  const feedbackEnabled = board ? getFeedbackConfig(board).enabled : false;
   const attachmentCount = submission.attachments?.length ?? 0;
 
   const tabs: { id: DetailTab; label: string; icon: typeof FileText; badge?: number }[] = [
     { id: "details", label: "Details", icon: ClipboardList, badge: attachmentCount || undefined },
     { id: "team", label: "Team", icon: Lock },
     { id: "reply", label: "Reply", icon: MessageSquare },
+    ...(feedbackEnabled ? [{ id: "feedback" as const, label: "Feedback", icon: MessageSquareHeart }] : []),
   ];
 
   const labelCls = "block text-[11px] font-semibold uppercase tracking-wide text-[var(--c-t8f8680)] mb-1";
@@ -556,6 +562,15 @@ export default function SubmissionDetail({
               />
             </div>
           </div>
+
+          {/* FEEDBACK — submitter's post-resolution answers */}
+          {feedbackEnabled && (
+            <div hidden={tab !== "feedback"}>
+              <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] p-4 sm:p-5">
+                <SubmissionFeedback submission={submission} board={board} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
       {mergeModalOpen && (
