@@ -231,6 +231,13 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                       </div>
                     )}
 
+                    {!field.autoSource && getFieldAudience(field) === 'internal' && (
+                      <p className="text-xs text-[var(--c-t78716c)]">
+                        Stored privately for your team: never shown to the submitter or in the submission list.
+                        Answers are final once saved.
+                      </p>
+                    )}
+
                     {field.autoSource && (
                       <p className="text-xs text-[var(--c-t78716c)]">
                         Filled in automatically and never shown on the form. It appears on the submission details.
@@ -265,6 +272,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                             Required
                           </label>
                         )}
+                        {(field.autoSource || getFieldAudience(field) !== 'internal') && (
                         <label className="flex items-center gap-2 text-sm text-[var(--c-t1c1917)]">
                           <input
                             type="checkbox"
@@ -274,6 +282,7 @@ export function SubmissionFieldsSettings({ board, onBoardChange }: SubmissionFie
                           />
                           Show in submission list
                         </label>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <Button

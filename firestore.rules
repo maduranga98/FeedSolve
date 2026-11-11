@@ -249,39 +249,40 @@ service cloud.firestore {
         (spec.type == 'multiselect' && v is list && v.size() <= 20 && v.hasOnly(spec.options));
     }
 
-    // `audience` scopes a field to one form: a public write may not carry team-only
-    // ('internal') answers, and an internal create does not carry submitter-only ones.
-    function isValidCustomFieldEntry(e, specs, context) {
+    // `audiences` lists the field audiences this write may carry. The submission document
+    // is readable with a tracking code, so it never holds team-only ('internal') answers:
+    // those go to the team-only teamFields subcollection instead.
+    function isValidCustomFieldEntry(e, specs, audiences) {
       return e is map &&
         e.keys().hasOnly(['fieldId', 'value']) &&
         e.keys().hasAll(['fieldId', 'value']) &&
         e.fieldId is string &&
         e.fieldId in specs &&
-        specs[e.fieldId].get('audience', 'all') in ['all', context] &&
+        specs[e.fieldId].get('audience', 'all') in audiences &&
         isValidCustomFieldValue(e.value, specs[e.fieldId]);
     }
 
-    function isValidCustomFieldEntryAt(entries, i, specs, context) {
-      return entries.size() <= i || isValidCustomFieldEntry(entries[i], specs, context);
+    function isValidCustomFieldEntryAt(entries, i, specs, audiences) {
+      return entries.size() <= i || isValidCustomFieldEntry(entries[i], specs, audiences);
     }
 
-    function isValidCustomFieldEntries(entries, specs, context) {
+    function isValidCustomFieldEntries(entries, specs, audiences) {
       return entries is list && entries.size() <= 15 && specs is map &&
-        isValidCustomFieldEntryAt(entries, 0, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 1, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 2, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 3, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 4, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 5, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 6, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 7, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 8, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 9, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 10, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 11, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 12, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 13, specs, context) &&
-        isValidCustomFieldEntryAt(entries, 14, specs, context);
+        isValidCustomFieldEntryAt(entries, 0, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 1, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 2, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 3, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 4, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 5, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 6, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 7, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 8, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 9, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 10, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 11, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 12, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 13, specs, audiences) &&
+        isValidCustomFieldEntryAt(entries, 14, specs, audiences);
     }
 
     // A create with no `customFields` key is unaffected (every existing board and form).
@@ -295,8 +296,31 @@ service cloud.firestore {
            d.customFields,
            get(/databases/$(database)/documents/boards/$(d.boardId)).data
              .get('submissionConfig', {}).get('fieldSpecs', {}),
-           context
+           context == 'public' ? ['all', 'public'] : ['all']
          ));
+    }
+
+    // Team-only answers: one create-only document per submission
+    // (submissions/{id}/teamFields/answers). Written by a team member who can manage the
+    // submission, either when logging it or once afterwards; never updated or deleted from
+    // a client, which is what makes the answers final after they are submitted.
+    function isValidTeamFieldsCreate(submissionId, docId) {
+      let d = request.resource.data;
+      let submissionPath = /databases/$(database)/documents/submissions/$(submissionId);
+      let boardPath = /databases/$(database)/documents/boards/$(get(submissionPath).data.boardId);
+      let cfg = get(boardPath).data.get('submissionConfig', {});
+      return docId == 'answers' &&
+        exists(submissionPath) &&
+        canManageSubmissions(get(submissionPath).data.companyId) &&
+        d.keys().hasOnly(['customFields', 'createdBy', 'createdAt']) &&
+        d.keys().hasAll(['customFields', 'createdBy', 'createdAt']) &&
+        d.createdBy == request.auth.uid &&
+        d.createdAt == request.time &&
+        exists(boardPath) &&
+        isFeedbackPlan(get(boardPath).data.companyId) &&
+        cfg.get('useCustomFields', false) == true &&
+        d.customFields.size() > 0 &&
+        isValidCustomFieldEntries(d.customFields, cfg.get('fieldSpecs', {}), ['internal']);
     }
 
     // Post-resolution feedback. The response doc ID is the tracking code without
@@ -496,6 +520,13 @@ service cloud.firestore {
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
 
+
+      // Team-only custom field answers: company members read, managers create once.
+      match /teamFields/{docId} {
+        allow read: if canReadSubmissionDocument(submissionId);
+        allow create: if isAuthenticated() && isValidTeamFieldsCreate(submissionId, docId);
+        allow update, delete: if false;
+      }
 
       // Internal comments are team-only and are never readable from public tracking.
       match /internalComments/{commentId} {

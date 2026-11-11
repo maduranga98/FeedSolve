@@ -92,7 +92,7 @@ export function getInputFields(fields: SubmissionField[], context?: SubmissionFo
   });
 }
 
-/** Team-only fields: never on the public form, and editable from the submission detail view. */
+/** Team-only fields: never on the public form; answers are stored in the team-only subcollection. */
 export function getTeamOnlyFields(fields: SubmissionField[]): SubmissionField[] {
   return getInputFields(fields).filter((field) => getFieldAudience(field) === 'internal');
 }
@@ -136,7 +136,8 @@ export function normalizeSubmissionFields(fields: SubmissionField[]): Submission
       type: field.type,
       label: field.label.trim(),
       required: field.autoSource ? false : field.required,
-      showInList: field.showInList === true,
+      // Team-only answers are not on the submission document the list reads, so they cannot be listed.
+      showInList: field.showInList === true && (!!field.autoSource || getFieldAudience(field) !== 'internal'),
       order: index,
     };
     if (field.autoSource) normalized.autoSource = field.autoSource;
@@ -311,20 +312,24 @@ export function buildSubmissionCustomFields(
   return result;
 }
 
+/** False for an untouched form: nothing answered and no box ticked. */
+export function hasMeaningfulAnswers(entries: SubmissionCustomFieldValue[]): boolean {
+  return entries.some((entry) => entry.value !== false);
+}
+
 /**
- * Applies a team edit: replaces the stored answers of `editedFields` with `answers` and
- * leaves every other answer (including the submitter's) untouched.
+ * Splits internal-form answers by where they are stored: team-only answers go to the
+ * team-only subcollection, everything else onto the submission document.
  */
-export function mergeCustomFieldEdits(
-  existing: SubmissionCustomFieldValue[],
-  editedFields: SubmissionField[],
-  answers: SubmissionAnswers
-): SubmissionCustomFieldValue[] {
-  const editedIds = new Set(editedFields.map((field) => field.id));
-  return [
-    ...existing.filter((entry) => !editedIds.has(entry.fieldId)),
-    ...buildSubmissionCustomFields(editedFields, answers),
-  ];
+export function splitTeamAnswers(
+  fields: SubmissionField[],
+  entries: SubmissionCustomFieldValue[]
+): { shared: SubmissionCustomFieldValue[]; team: SubmissionCustomFieldValue[] } {
+  const teamIds = new Set(getTeamOnlyFields(fields).map((field) => field.id));
+  return {
+    shared: entries.filter((entry) => !teamIds.has(entry.fieldId)),
+    team: entries.filter((entry) => teamIds.has(entry.fieldId)),
+  };
 }
 
 function formatDateValue(value: string): string {
@@ -428,12 +433,18 @@ export interface SubmissionFieldDisplay {
 export function getSubmissionFieldDisplays(
   board: Pick<Board, 'submissionConfig'> | null | undefined,
   submission: Pick<Submission, 'customFields' | 'createdAt' | 'trackingCode' | 'assignedTo' | 'status'>,
-  options: { listOnly?: boolean; assigneeName?: string | null } = {}
+  options: {
+    listOnly?: boolean;
+    assigneeName?: string | null;
+    /** Team-only answers loaded from the teamFields subcollection (detail view only). */
+    teamFields?: SubmissionCustomFieldValue[];
+  } = {}
 ): SubmissionFieldDisplay[] {
   if (!submission.customFields) return [];
 
   const definitions = getSubmissionConfig(board).fields;
-  const valuesById = new Map(submission.customFields.map((entry) => [entry.fieldId, entry.value]));
+  const stored = [...submission.customFields, ...(options.teamFields ?? [])];
+  const valuesById = new Map(stored.map((entry) => [entry.fieldId, entry.value]));
   const displays: SubmissionFieldDisplay[] = [];
 
   for (const field of definitions) {
@@ -455,9 +466,9 @@ export function getSubmissionFieldDisplays(
       continue;
     }
 
-    const stored = valuesById.get(field.id);
-    if (stored === undefined) continue;
-    const value = formatCustomFieldValue(field, stored);
+    const answer = valuesById.get(field.id);
+    if (answer === undefined) continue;
+    const value = formatCustomFieldValue(field, answer);
     if (!value) continue;
     displays.push({
       id: field.id,
@@ -471,7 +482,7 @@ export function getSubmissionFieldDisplays(
 
   if (!options.listOnly) {
     const definedIds = new Set(definitions.map((field) => field.id));
-    for (const entry of submission.customFields) {
+    for (const entry of stored) {
       if (definedIds.has(entry.fieldId)) continue;
       const value = formatCustomFieldValue({ type: 'text' }, entry.value);
       if (value) {

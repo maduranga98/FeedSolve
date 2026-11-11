@@ -336,7 +336,7 @@ export default function SubmissionDetail({
           {/* Description: custom-field submissions show their fields instead, since the
               stored description is only a generated summary of those same answers. */}
           {submission.customFields ? (
-            <SubmissionCustomFields submission={submission} onUpdated={onUpdated} />
+            <SubmissionCustomFields submission={submission} />
           ) : (
             <div>
               <label className="block text-xs font-semibold text-[var(--c-t8f8680)] uppercase tracking-wide mb-2">

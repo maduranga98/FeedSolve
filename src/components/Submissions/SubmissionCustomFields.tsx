@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ClipboardList, Pencil } from 'lucide-react';
+import { ClipboardList, Lock, Plus } from 'lucide-react';
 import type { Board, Submission, SubmissionCustomFieldValue, SubmissionCustomFieldValueType } from '../../types';
 import { Button } from '../Shared';
-import { getBoard, getUser, updateSubmissionCustomFields } from '../../lib/firestore';
+import { getBoard, getSubmissionTeamFields, getUser, saveSubmissionTeamFields } from '../../lib/firestore';
+import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
 import {
-  deriveSubmissionSummary,
+  buildSubmissionCustomFields,
   getSubmissionConfig,
   getSubmissionFieldDisplays,
   getTeamOnlyFields,
-  mergeCustomFieldEdits,
+  hasMeaningfulAnswers,
   validateSubmissionAnswers,
 } from '../../lib/submission-fields';
 import type { SubmissionAnswers } from '../../lib/submission-fields';
@@ -19,24 +20,27 @@ interface SubmissionCustomFieldsProps {
   submission: Submission;
   /** Pass when the board is already loaded; otherwise it is fetched by `submission.boardId`. */
   board?: Board | null;
-  /** Called after team-only answers are saved so the parent can refresh. */
-  onUpdated?: () => void;
 }
 
 /**
  * Detail-view section for custom-field submissions: walks the board's field definitions,
- * matches each stored answer by fieldId and renders label + value. Team-only fields can be
- * filled in or corrected here by anyone allowed to manage submissions, which is how a
- * public submission gets its internal details. Renders nothing for fixed-form submissions
+ * matches each stored answer by fieldId and renders label + value. Team-only answers come
+ * from the team-only subcollection. If none were saved when the submission was created
+ * (e.g. it came from the public form), someone who can manage submissions may add them
+ * here once; after that they are final. Renders nothing for fixed-form submissions
  * (no `customFields`), which keep the standard Description block.
  */
-export function SubmissionCustomFields({ submission, board: providedBoard, onUpdated }: SubmissionCustomFieldsProps) {
+export function SubmissionCustomFields({ submission, board: providedBoard }: SubmissionCustomFieldsProps) {
   const { hasPermissionTo } = usePermissions();
+  const { user } = useAuth();
   const isCustom = submission.customFields !== undefined;
   const [fetchedBoard, setFetchedBoard] = useState<Board | null>(null);
   const [assignee, setAssignee] = useState<{ uid: string; name: string } | null>(null);
-  // Answers saved from this view, shown until the parent re-renders with fresh data.
-  const [saved, setSaved] = useState<{ submissionId: string; customFields: SubmissionCustomFieldValue[] } | null>(null);
+  // Team-only answers for this submission: undefined while loading, null when none are saved.
+  const [teamState, setTeamState] = useState<{
+    submissionId: string;
+    answers: SubmissionCustomFieldValue[] | null;
+  } | null>(null);
   const [editing, setEditing] = useState(false);
   const [answers, setAnswers] = useState<SubmissionAnswers>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -75,29 +79,45 @@ export function SubmissionCustomFields({ submission, board: providedBoard, onUpd
     };
   }, [isCustom, needsAssignee, submission.assignedTo]);
 
-  const currentFields = useMemo(
-    () => (saved && saved.submissionId === submission.id ? saved.customFields : submission.customFields ?? []),
-    [saved, submission.id, submission.customFields]
-  );
+  const hasTeamFields = teamFields.length > 0;
+
+  useEffect(() => {
+    if (!isCustom || !hasTeamFields) return;
+    let cancelled = false;
+    getSubmissionTeamFields(submission.id)
+      .then((data) => {
+        if (!cancelled) setTeamState({ submissionId: submission.id, answers: data?.customFields ?? null });
+      })
+      .catch((error) => console.error('Failed to load team-only fields:', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [isCustom, hasTeamFields, submission.id]);
+
+  const teamLoaded = teamState !== null && teamState.submissionId === submission.id;
+  const teamAnswers = teamLoaded ? teamState.answers : null;
 
   const displays = useMemo(
     () =>
-      getSubmissionFieldDisplays(
-        board,
-        { ...submission, customFields: currentFields },
-        { assigneeName: assignee && assignee.uid === submission.assignedTo ? assignee.name : null }
-      ),
-    [board, submission, currentFields, assignee]
+      getSubmissionFieldDisplays(board, submission, {
+        assigneeName: assignee && assignee.uid === submission.assignedTo ? assignee.name : null,
+        teamFields: teamAnswers ?? undefined,
+      }),
+    [board, submission, teamAnswers, assignee]
   );
 
-  const canEdit =
-    isCustom && teamFields.length > 0 && !submission.isMerged && hasPermissionTo('submissions:update');
+  // One-time fill: only offered while no team answers exist. Rules reject a second write.
+  const canAdd =
+    isCustom &&
+    hasTeamFields &&
+    teamLoaded &&
+    teamAnswers === null &&
+    !submission.isMerged &&
+    !!user &&
+    hasPermissionTo('submissions:update');
 
   const startEditing = () => {
-    const valuesById = new Map(currentFields.map((entry) => [entry.fieldId, entry.value]));
-    const initial: SubmissionAnswers = {};
-    for (const field of teamFields) initial[field.id] = valuesById.get(field.id);
-    setAnswers(initial);
+    setAnswers({});
     setErrors({});
     setEditing(true);
   };
@@ -119,17 +139,18 @@ export function SubmissionCustomFields({ submission, board: providedBoard, onUpd
       return;
     }
 
-    const next = mergeCustomFieldEdits(currentFields, teamFields, answers);
+    const next = buildSubmissionCustomFields(teamFields, answers);
+    if (!hasMeaningfulAnswers(next)) {
+      setErrors({ submit: 'Fill in at least one field before saving.' });
+      return;
+    }
+    if (!user) return;
+
     setSaving(true);
     try {
-      await updateSubmissionCustomFields(
-        submission.id,
-        next,
-        deriveSubmissionSummary(fields, next, submission.trackingCode).description
-      );
-      setSaved({ submissionId: submission.id, customFields: next });
+      await saveSubmissionTeamFields(submission.id, next, user.id);
+      setTeamState({ submissionId: submission.id, answers: next });
       setEditing(false);
-      onUpdated?.();
     } catch (error) {
       setErrors({ submit: error instanceof Error ? error.message : 'Failed to save. Please try again.' });
     } finally {
@@ -137,36 +158,36 @@ export function SubmissionCustomFields({ submission, board: providedBoard, onUpd
     }
   };
 
-  if (!isCustom || (displays.length === 0 && !canEdit)) return null;
+  if (!isCustom || (displays.length === 0 && !canAdd)) return null;
 
   return (
     <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
       <div className="mb-3 flex items-center gap-2">
         <ClipboardList size={16} className="text-[var(--c-tc0694a)]" />
         <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">Submission details</h3>
-        {canEdit && !editing && (
+        {canAdd && !editing && (
           <button
             type="button"
             onClick={startEditing}
             className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)]"
           >
-            <Pencil size={12} />
-            Edit team fields
+            <Plus size={12} />
+            Add team fields
           </button>
         )}
       </div>
 
       {displays.length > 0 ? (
         <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-          {displays
-            .filter((item) => !(editing && item.audience === 'internal'))
-            .map((item) => (
+          {displays.map((item) => (
               <div key={item.id} className={item.type === 'textarea' ? 'sm:col-span-2' : undefined}>
                 <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
                   {item.label}
                   {item.autoSource && <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(auto)</span>}
                   {item.audience === 'internal' && (
-                    <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(team only)</span>
+                    <span className="ml-1 inline-flex items-center gap-0.5 font-normal normal-case text-[var(--c-t9aabbf)]">
+                      <Lock size={10} /> team only
+                    </span>
                   )}
                   {item.removed && (
                     <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(no longer in form)</span>
@@ -174,16 +195,17 @@ export function SubmissionCustomFields({ submission, board: providedBoard, onUpd
                 </dt>
                 <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">{item.value}</dd>
               </div>
-            ))}
+          ))}
         </dl>
       ) : (
-        !editing && <p className="text-sm text-[var(--c-t78716c)]">No details yet. Add the team fields.</p>
+        !editing && <p className="text-sm text-[var(--c-t78716c)]">No details yet.</p>
       )}
 
       {editing && (
         <div className="mt-4 border-t border-[var(--c-be9e0d9)] pt-4">
           <p className="mb-3 text-xs text-[var(--c-t78716c)]">
-            Team-only fields. The submitter was never asked these and does not see them on the tracking page.
+            Team-only fields, visible to your team and never to the submitter. They can be saved once and
+            can't be changed afterwards, so check them before saving.
           </p>
           <CustomFieldsForm
             fields={teamFields}

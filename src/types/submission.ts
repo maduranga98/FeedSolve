@@ -9,4 +9,5 @@ export type {
   SubmissionConfig,
   SubmissionCustomFieldValue,
   SubmissionCustomFieldValueType,
+  SubmissionTeamFields,
 } from './index';

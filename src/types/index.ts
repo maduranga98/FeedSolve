@@ -202,7 +202,7 @@ export interface SubmissionField {
   options?: string[]; // dropdown, multiselect
   autoSource?: SubmissionFieldAutoSource; // read from the submission itself, never entered by a user
   showInList: boolean; // show on the submission card / list row
-  /** Absent means "all". "internal" fields are team-only and editable after creation. */
+  /** Absent means "all". "internal" fields are team-only and stored in a team-only subcollection. */
   visibleTo?: SubmissionFieldAudience;
   order: number;
 }
@@ -232,6 +232,13 @@ export type SubmissionCustomFieldValueType = string | string[] | boolean;
 export interface SubmissionCustomFieldValue {
   fieldId: string;
   value: SubmissionCustomFieldValueType;
+}
+
+/** submissions/{id}/teamFields/answers: team-only answers, written once and then final. */
+export interface SubmissionTeamFields {
+  customFields: SubmissionCustomFieldValue[];
+  createdBy: string;
+  createdAt: Timestamp;
 }
 
 export type RecurringFrequency = "monthly" | "quarterly" | "custom";
@@ -378,6 +385,8 @@ export interface SubmissionFormInput {
   satisfactionLabel?: string | null;
   /** Answers to custom fields; subject/description are derived from them when present. */
   customFields?: SubmissionCustomFieldValue[];
+  /** Answers to team-only fields (internal form only); written to the teamFields subcollection. */
+  teamFields?: SubmissionCustomFieldValue[];
 }
 
 export interface BoardFormInput {

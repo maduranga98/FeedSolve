@@ -18,7 +18,9 @@ import {
   deriveSubmissionSummary,
   getInputFields,
   getSubmissionConfig,
+  hasMeaningfulAnswers,
   isCustomFormActive,
+  splitTeamAnswers,
   validateSubmissionAnswers,
 } from '../../lib/submission-fields';
 import type { SubmissionAnswers } from '../../lib/submission-fields';
@@ -121,9 +123,13 @@ export function AddSubmissionModal({
     setSubmitting(true);
     try {
       // Custom-field submissions send answers only; createSubmission derives subject/description.
-      const customFields = customActive
-        ? buildSubmissionCustomFields(customFieldDefs, customAnswers)
+      // Team-only answers are split off into the team-only subcollection so they never sit
+      // on the submission document, which is readable with a tracking code.
+      const split = customActive
+        ? splitTeamAnswers(customFieldDefs, buildSubmissionCustomFields(customFieldDefs, customAnswers))
         : undefined;
+      const customFields = split?.shared;
+      const teamFields = split && hasMeaningfulAnswers(split.team) ? split.team : undefined;
 
       const result = await createSubmission(
         board.id,
@@ -133,6 +139,7 @@ export function AddSubmissionModal({
           subject: customFields ? '' : formData.subject.trim(),
           description: customFields ? '' : formData.description.trim(),
           ...(customFields ? { customFields } : {}),
+          ...(teamFields ? { teamFields } : {}),
           isAnonymous: !hasContact,
           submissionLanguage: i18n.language,
         },
@@ -153,7 +160,17 @@ export function AddSubmissionModal({
         details: { boardId: board.id, source: 'internal' },
       }).catch((err) => console.error('Failed to write audit log:', err));
 
-      const createdSubmission = { ...result, boardId: board.id };
+      if (!result.teamFieldsSaved) {
+        setErrors({ teamFields: t('forms:internal_submission.team_fields_failed', {
+          defaultValue: "The submission was created, but the team-only fields couldn't be saved. Open the submission to add them.",
+        }) });
+      }
+
+      const createdSubmission = {
+        submissionId: result.submissionId,
+        trackingCode: result.trackingCode,
+        boardId: board.id,
+      };
       setCreated(createdSubmission);
       onCreated(createdSubmission);
     } catch (err) {
@@ -235,6 +252,12 @@ export function AddSubmissionModal({
                 {t('forms:internal_submission.share_hint')}
               </p>
             </div>
+
+            {errors.teamFields && (
+              <div className="p-3 bg-[var(--c-sfff5f5)] border border-[var(--c-bfca5a5)] rounded-lg">
+                <p className="text-sm text-[var(--c-tc0392b)]">{errors.teamFields}</p>
+              </div>
+            )}
 
             <div className="rounded-xl border border-[var(--c-becd3c6)] bg-[var(--c-sf5e6df)] p-4 text-center">
               <p className="text-xs font-bold uppercase tracking-widest text-[var(--c-tc0694a)] mb-2">
