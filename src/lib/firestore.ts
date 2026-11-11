@@ -63,6 +63,7 @@ import type {
   FeedbackAnswer,
   FeedbackResponse,
   FeedbackContact,
+  SubmissionCustomFieldValue,
 } from '../types';
 import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -478,6 +479,26 @@ export async function updateSubmissionStatus(
     updateData.resolvedAt = Timestamp.now();
   }
   await updateDoc(submissionRef, updateData);
+}
+
+/**
+ * Saves team edits to a submission's custom field answers. The description is the generated
+ * "Label: value" summary of those answers, so it is refreshed alongside them.
+ */
+export async function updateSubmissionCustomFields(
+  submissionId: string,
+  customFields: SubmissionCustomFieldValue[],
+  description: string
+): Promise<void> {
+  try {
+    await updateDoc(doc(db, 'submissions', submissionId), {
+      customFields,
+      description,
+      updatedAt: Timestamp.now(),
+    });
+  } catch (error) {
+    wrapFirestoreError(error);
+  }
 }
 
 // Post-resolution feedback operations

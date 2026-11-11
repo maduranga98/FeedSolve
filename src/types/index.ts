@@ -191,6 +191,9 @@ export type SubmissionFieldType = "text" | "textarea" | "dropdown" | "date" | "c
 
 export type SubmissionFieldAutoSource = "createdAt" | "trackingCode" | "assignedTo" | "status";
 
+/** Which creation form asks for a field. "all" (the default) means both. */
+export type SubmissionFieldAudience = "all" | "public" | "internal";
+
 export interface SubmissionField {
   id: string;
   type: SubmissionFieldType;
@@ -199,6 +202,8 @@ export interface SubmissionField {
   options?: string[]; // dropdown, multiselect
   autoSource?: SubmissionFieldAutoSource; // read from the submission itself, never entered by a user
   showInList: boolean; // show on the submission card / list row
+  /** Absent means "all". "internal" fields are team-only and editable after creation. */
+  visibleTo?: SubmissionFieldAudience;
   order: number;
 }
 
@@ -211,6 +216,7 @@ export type SubmissionFieldAppliesTo = "internal" | "public" | "both";
 export interface SubmissionFieldSpec {
   type: SubmissionFieldType;
   options?: string[];
+  audience?: SubmissionFieldAudience;
 }
 
 export interface SubmissionConfig {

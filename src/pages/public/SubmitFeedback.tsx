@@ -18,6 +18,7 @@ import {
 } from "../../lib/submission-validation";
 import {
   buildSubmissionCustomFields,
+  getInputFields,
   getSubmissionConfig,
   isCustomFormActive,
   validateSubmissionAnswers,
@@ -360,7 +361,7 @@ export function SubmitFeedback() {
   // else, including a failed company lookup, falls back to the fixed form.
   const customActive =
     !!company && isCustomFormActive(board, "public", canUseSubmissionFields(company.subscription));
-  const customFieldDefs = getSubmissionConfig(board).fields;
+  const customFieldDefs = getInputFields(getSubmissionConfig(board).fields, "public");
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = customActive

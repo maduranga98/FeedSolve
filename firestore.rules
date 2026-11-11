@@ -249,36 +249,39 @@ service cloud.firestore {
         (spec.type == 'multiselect' && v is list && v.size() <= 20 && v.hasOnly(spec.options));
     }
 
-    function isValidCustomFieldEntry(e, specs) {
+    // `audience` scopes a field to one form: a public write may not carry team-only
+    // ('internal') answers, and an internal create does not carry submitter-only ones.
+    function isValidCustomFieldEntry(e, specs, context) {
       return e is map &&
         e.keys().hasOnly(['fieldId', 'value']) &&
         e.keys().hasAll(['fieldId', 'value']) &&
         e.fieldId is string &&
         e.fieldId in specs &&
+        specs[e.fieldId].get('audience', 'all') in ['all', context] &&
         isValidCustomFieldValue(e.value, specs[e.fieldId]);
     }
 
-    function isValidCustomFieldEntryAt(entries, i, specs) {
-      return entries.size() <= i || isValidCustomFieldEntry(entries[i], specs);
+    function isValidCustomFieldEntryAt(entries, i, specs, context) {
+      return entries.size() <= i || isValidCustomFieldEntry(entries[i], specs, context);
     }
 
-    function isValidCustomFieldEntries(entries, specs) {
+    function isValidCustomFieldEntries(entries, specs, context) {
       return entries is list && entries.size() <= 15 && specs is map &&
-        isValidCustomFieldEntryAt(entries, 0, specs) &&
-        isValidCustomFieldEntryAt(entries, 1, specs) &&
-        isValidCustomFieldEntryAt(entries, 2, specs) &&
-        isValidCustomFieldEntryAt(entries, 3, specs) &&
-        isValidCustomFieldEntryAt(entries, 4, specs) &&
-        isValidCustomFieldEntryAt(entries, 5, specs) &&
-        isValidCustomFieldEntryAt(entries, 6, specs) &&
-        isValidCustomFieldEntryAt(entries, 7, specs) &&
-        isValidCustomFieldEntryAt(entries, 8, specs) &&
-        isValidCustomFieldEntryAt(entries, 9, specs) &&
-        isValidCustomFieldEntryAt(entries, 10, specs) &&
-        isValidCustomFieldEntryAt(entries, 11, specs) &&
-        isValidCustomFieldEntryAt(entries, 12, specs) &&
-        isValidCustomFieldEntryAt(entries, 13, specs) &&
-        isValidCustomFieldEntryAt(entries, 14, specs);
+        isValidCustomFieldEntryAt(entries, 0, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 1, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 2, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 3, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 4, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 5, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 6, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 7, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 8, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 9, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 10, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 11, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 12, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 13, specs, context) &&
+        isValidCustomFieldEntryAt(entries, 14, specs, context);
     }
 
     // A create with no `customFields` key is unaffected (every existing board and form).
@@ -291,7 +294,8 @@ service cloud.firestore {
          isValidCustomFieldEntries(
            d.customFields,
            get(/databases/$(database)/documents/boards/$(d.boardId)).data
-             .get('submissionConfig', {}).get('fieldSpecs', {})
+             .get('submissionConfig', {}).get('fieldSpecs', {}),
+           context
          ));
     }
 

@@ -6,6 +6,7 @@ import type {
   SubmissionCustomFieldValueType,
   SubmissionField,
   SubmissionFieldAppliesTo,
+  SubmissionFieldAudience,
   SubmissionFieldAutoSource,
   SubmissionFieldSpec,
   SubmissionFieldType,
@@ -55,7 +56,17 @@ export const SUBMISSION_APPLIES_TO_LABELS: Record<SubmissionFieldAppliesTo, stri
   both: 'Both internal and public',
 };
 
+export const SUBMISSION_AUDIENCE_LABELS: Record<SubmissionFieldAudience, string> = {
+  all: 'Everyone',
+  public: 'Submitter only (public form)',
+  internal: 'Team only (internal)',
+};
+
 export type SubmissionFormContext = 'internal' | 'public';
+
+export function getFieldAudience(field: Pick<SubmissionField, 'visibleTo'>): SubmissionFieldAudience {
+  return field.visibleTo === 'public' || field.visibleTo === 'internal' ? field.visibleTo : 'all';
+}
 
 /** Fixed form stays the default; custom fields are opt-in and internal-only until widened. */
 export const DEFAULT_SUBMISSION_CONFIG: SubmissionConfig = {
@@ -68,9 +79,22 @@ export function sortSubmissionFields(fields: SubmissionField[]): SubmissionField
   return [...fields].sort((a, b) => a.order - b.order);
 }
 
-/** Fields a person fills in (everything except auto-populated ones). */
-export function getInputFields(fields: SubmissionField[]): SubmissionField[] {
-  return sortSubmissionFields(fields).filter((field) => !field.autoSource);
+/**
+ * Fields a person fills in (everything except auto-populated ones). With a `context`,
+ * only the fields that form asks for: "Everyone" fields plus the ones scoped to it.
+ */
+export function getInputFields(fields: SubmissionField[], context?: SubmissionFormContext): SubmissionField[] {
+  return sortSubmissionFields(fields).filter((field) => {
+    if (field.autoSource) return false;
+    if (!context) return true;
+    const audience = getFieldAudience(field);
+    return audience === 'all' || audience === context;
+  });
+}
+
+/** Team-only fields: never on the public form, and editable from the submission detail view. */
+export function getTeamOnlyFields(fields: SubmissionField[]): SubmissionField[] {
+  return getInputFields(fields).filter((field) => getFieldAudience(field) === 'internal');
 }
 
 /** Board config with defaults applied for boards that predate the feature. */
@@ -101,7 +125,7 @@ export function isCustomFormActive(
   const config = getSubmissionConfig(board);
   if (!config.useCustomFields) return false;
   if (config.appliesTo !== 'both' && config.appliesTo !== context) return false;
-  return getInputFields(config.fields).length > 0;
+  return getInputFields(config.fields, context).length > 0;
 }
 
 /** Trims labels/options, drops blanks and re-numbers `order` to match array position. */
@@ -116,6 +140,7 @@ export function normalizeSubmissionFields(fields: SubmissionField[]): Submission
       order: index,
     };
     if (field.autoSource) normalized.autoSource = field.autoSource;
+    else if (getFieldAudience(field) !== 'all') normalized.visibleTo = getFieldAudience(field);
     if (!field.autoSource && (field.type === 'dropdown' || field.type === 'multiselect')) {
       normalized.options = (field.options ?? []).map((option) => option.trim()).filter(Boolean);
     }
@@ -124,11 +149,22 @@ export function normalizeSubmissionFields(fields: SubmissionField[]): Submission
 }
 
 /** Returns an error message for a normalized field list, or null when it is valid. */
-export function validateSubmissionFields(fields: SubmissionField[]): string | null {
+export function validateSubmissionFields(
+  fields: SubmissionField[],
+  appliesTo: SubmissionFieldAppliesTo = 'internal'
+): string | null {
   if (fields.length === 0) return 'Add at least one submission field.';
   if (fields.length > MAX_SUBMISSION_FIELDS) return `You can add up to ${MAX_SUBMISSION_FIELDS} fields.`;
   if (getInputFields(fields).length === 0) {
     return 'Add at least one field that people fill in. Auto-filled fields alone cannot make a submission.';
+  }
+
+  // Each form the config applies to needs something to ask.
+  if (appliesTo !== 'public' && getInputFields(fields, 'internal').length === 0) {
+    return 'The internal form has no fields. Add a field shown to Everyone or Team only.';
+  }
+  if (appliesTo !== 'internal' && getInputFields(fields, 'public').length === 0) {
+    return 'The public form has no fields. Add a field shown to Everyone or Submitter only.';
   }
 
   const seenLabels = new Set<string>();
@@ -169,6 +205,7 @@ export function buildFieldSpecs(fields: SubmissionField[]): Record<string, Submi
     if (field.autoSource) continue;
     const spec: SubmissionFieldSpec = { type: field.type };
     if (field.type === 'dropdown' || field.type === 'multiselect') spec.options = field.options ?? [];
+    if (getFieldAudience(field) !== 'all') spec.audience = getFieldAudience(field);
     specs[field.id] = spec;
   }
   return specs;
@@ -274,6 +311,22 @@ export function buildSubmissionCustomFields(
   return result;
 }
 
+/**
+ * Applies a team edit: replaces the stored answers of `editedFields` with `answers` and
+ * leaves every other answer (including the submitter's) untouched.
+ */
+export function mergeCustomFieldEdits(
+  existing: SubmissionCustomFieldValue[],
+  editedFields: SubmissionField[],
+  answers: SubmissionAnswers
+): SubmissionCustomFieldValue[] {
+  const editedIds = new Set(editedFields.map((field) => field.id));
+  return [
+    ...existing.filter((entry) => !editedIds.has(entry.fieldId)),
+    ...buildSubmissionCustomFields(editedFields, answers),
+  ];
+}
+
 function formatDateValue(value: string): string {
   if (!isValidDateString(value)) return value;
   const [year, month, day] = value.split('-').map(Number);
@@ -361,6 +414,7 @@ export interface SubmissionFieldDisplay {
   value: string;
   type: SubmissionFieldType;
   autoSource?: SubmissionFieldAutoSource;
+  audience: SubmissionFieldAudience;
   /** True when the board no longer defines this field but the submission still holds an answer. */
   removed: boolean;
 }
@@ -394,6 +448,7 @@ export function getSubmissionFieldDisplays(
           value,
           type: field.type,
           autoSource: field.autoSource,
+          audience: 'all',
           removed: false,
         });
       }
@@ -404,7 +459,14 @@ export function getSubmissionFieldDisplays(
     if (stored === undefined) continue;
     const value = formatCustomFieldValue(field, stored);
     if (!value) continue;
-    displays.push({ id: field.id, label: field.label, value, type: field.type, removed: false });
+    displays.push({
+      id: field.id,
+      label: field.label,
+      value,
+      type: field.type,
+      audience: getFieldAudience(field),
+      removed: false,
+    });
   }
 
   if (!options.listOnly) {
@@ -413,7 +475,14 @@ export function getSubmissionFieldDisplays(
       if (definedIds.has(entry.fieldId)) continue;
       const value = formatCustomFieldValue({ type: 'text' }, entry.value);
       if (value) {
-        displays.push({ id: entry.fieldId, label: 'Removed field', value, type: 'text', removed: true });
+        displays.push({
+          id: entry.fieldId,
+          label: 'Removed field',
+          value,
+          type: 'text',
+          audience: 'all',
+          removed: true,
+        });
       }
     }
   }

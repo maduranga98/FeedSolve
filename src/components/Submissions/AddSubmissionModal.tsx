@@ -16,6 +16,7 @@ import {
 import {
   buildSubmissionCustomFields,
   deriveSubmissionSummary,
+  getInputFields,
   getSubmissionConfig,
   isCustomFormActive,
   validateSubmissionAnswers,
@@ -83,7 +84,7 @@ export function AddSubmissionModal({
   // is shown and submitting is held (see the submit button) so the form never switches mid-entry.
   const { subscription, loading: planLoading } = useSubscription();
   const customActive = isCustomFormActive(board, 'internal', canUseSubmissionFields(subscription));
-  const customFieldDefs = useMemo(() => getSubmissionConfig(board).fields, [board]);
+  const customFieldDefs = useMemo(() => getInputFields(getSubmissionConfig(board).fields, 'internal'), [board]);
 
   const handleBoardChange = (nextBoardId: string) => {
     const nextBoard = boards.find((b) => b.id === nextBoardId);

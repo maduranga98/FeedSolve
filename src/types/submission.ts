@@ -4,6 +4,7 @@ export type {
   SubmissionFieldAutoSource,
   SubmissionField,
   SubmissionFieldAppliesTo,
+  SubmissionFieldAudience,
   SubmissionFieldSpec,
   SubmissionConfig,
   SubmissionCustomFieldValue,
