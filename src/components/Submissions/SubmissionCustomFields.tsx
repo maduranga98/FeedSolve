@@ -21,6 +21,13 @@ interface SubmissionCustomFieldsProps {
   submission: Submission;
   /** Pass when the board is already loaded; otherwise it is fetched by `submission.boardId`. */
   board?: Board | null;
+  /** Render only the form answers ('details'), only the team-only fields ('team'), or both. */
+  section?: 'details' | 'team' | 'all';
+}
+
+/** Long or multi-line values get a full-width row so they never get squeezed into a half column. */
+function isWideValue(type: string, value: string) {
+  return type === 'textarea' || value.length > 36 || value.includes('\n');
 }
 
 /**
@@ -34,7 +41,11 @@ interface SubmissionCustomFieldsProps {
  * the team-only subcollection; when none exist, someone who can manage submissions may add
  * them once, after which they are final.
  */
-export function SubmissionCustomFields({ submission, board: providedBoard }: SubmissionCustomFieldsProps) {
+export function SubmissionCustomFields({
+  submission,
+  board: providedBoard,
+  section = 'all',
+}: SubmissionCustomFieldsProps) {
   const { hasPermissionTo } = usePermissions();
   const { user } = useAuth();
   const isCustom = submission.customFields !== undefined;
@@ -70,8 +81,8 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
   const fields = config.fields;
   // Team-only fields apply to the whole board once custom fields are switched on.
   const teamFields = useMemo(
-    () => (config.useCustomFields ? getTeamOnlyFields(config.fields) : []),
-    [config]
+    () => (config.useCustomFields && section !== 'details' ? getTeamOnlyFields(config.fields) : []),
+    [config, section]
   );
   const needsAssignee = fields.some((field) => field.autoSource === 'assignedTo');
 
@@ -185,30 +196,32 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
     }
   };
 
-  const showDetails = isCustom && displays.length > 0;
+  const showDetails = section !== 'team' && isCustom && displays.length > 0;
   if (!showDetails && !hasTeamFields) return null;
 
   return (
     <div className="space-y-4">
       {showDetails && (
-        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
-          <div className="mb-3 flex items-center gap-2">
+        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] p-4 sm:p-5">
+          <div className="mb-4 flex items-center gap-2">
             <ClipboardList size={16} className="text-[var(--c-tc0694a)]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
-              Submission details
-            </h3>
+            <h3 className="text-sm font-bold text-[var(--c-t1c1917)]">Form responses</h3>
+            <span className="ml-auto text-xs text-[var(--c-t8f8680)]">{displays.length} fields</span>
           </div>
-          <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
             {displays.map((item) => (
-              <div key={item.id} className={item.type === 'textarea' ? 'sm:col-span-2' : undefined}>
-                <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
+              <div
+                key={item.id}
+                className={`min-w-0 ${isWideValue(item.type, item.value) ? 'sm:col-span-2' : ''}`}
+              >
+                <dt className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
                   {item.label}
                   {item.autoSource && <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(auto)</span>}
                   {item.removed && (
                     <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(no longer in form)</span>
                   )}
                 </dt>
-                <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">{item.value}</dd>
+                <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">{item.value || '—'}</dd>
               </div>
             ))}
           </dl>
@@ -216,10 +229,10 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
       )}
 
       {hasTeamFields && (
-        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
+        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfaf8f5)] p-4 sm:p-5">
           <div className="mb-1 flex items-center gap-2">
             <Lock size={15} className="text-[var(--c-tc0694a)]" />
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">Team-only fields</h3>
+            <h3 className="text-sm font-bold text-[var(--c-t1c1917)]">Team-only fields</h3>
             {canAdd && !editing && (
               <Button type="button" variant="primary" size="sm" className="ml-auto" onClick={startEditing}>
                 <Plus size={13} />
@@ -241,10 +254,10 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
           )}
 
           {!editing && (
-            <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
               {teamRows.map((row) => (
-                <div key={row.id} className={row.type === 'textarea' ? 'sm:col-span-2' : undefined}>
-                  <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
+                <div key={row.id} className={`min-w-0 ${isWideValue(row.type, row.value) ? 'sm:col-span-2' : ''}`}>
+                  <dt className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
                     {row.label}
                   </dt>
                   <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">
