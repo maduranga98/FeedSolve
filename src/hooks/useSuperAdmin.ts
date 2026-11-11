@@ -121,3 +121,24 @@ export function useSuperAdminOverview() {
 
   return { data, loading, error, refresh };
 }
+
+export interface CreateBoardInput {
+  companyId: string;
+  name: string;
+  description: string;
+  categories: string[];
+  isAnonymousAllowed: boolean;
+  users: { email: string; role: 'admin' | 'manager' | 'viewer' }[];
+}
+
+export interface CreateBoardResult {
+  boardId: string;
+  slug: string;
+  name: string;
+  invites: { email: string; status: 'invited' | 'skipped'; reason?: string }[];
+}
+
+export async function createBoardAsSuperAdmin(input: CreateBoardInput) {
+  const fn = httpsCallable<CreateBoardInput, CreateBoardResult>(getFunctions(), 'superAdminCreateBoard');
+  return (await fn(input)).data;
+}
