@@ -8,6 +8,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import {
   buildSubmissionCustomFields,
   getSubmissionConfig,
+  formatCustomFieldValue,
   getSubmissionFieldDisplays,
   getTeamOnlyFields,
   hasMeaningfulAnswers,
@@ -23,12 +24,15 @@ interface SubmissionCustomFieldsProps {
 }
 
 /**
- * Detail-view section for custom-field submissions: walks the board's field definitions,
- * matches each stored answer by fieldId and renders label + value. Team-only answers come
- * from the team-only subcollection. If none were saved when the submission was created
- * (e.g. it came from the public form), someone who can manage submissions may add them
- * here once; after that they are final. Renders nothing for fixed-form submissions
- * (no `customFields`), which keep the standard Description block.
+ * Detail-view sections for a board's custom fields.
+ *
+ * "Submission details" maps the answers stored on the submission to the board's field
+ * definitions (by fieldId); it only appears for submissions created through the custom form.
+ *
+ * "Team-only fields" appears on every submission of a board that defines team-only fields,
+ * whichever form created it. Each field is listed even while unanswered. Answers come from
+ * the team-only subcollection; when none exist, someone who can manage submissions may add
+ * them once, after which they are final.
  */
 export function SubmissionCustomFields({ submission, board: providedBoard }: SubmissionCustomFieldsProps) {
   const { hasPermissionTo } = usePermissions();
@@ -45,11 +49,12 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
   const [answers, setAnswers] = useState<SubmissionAnswers>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [teamLoadError, setTeamLoadError] = useState<string | null>(null);
 
   const board = providedBoard ?? fetchedBoard;
 
   useEffect(() => {
-    if (!isCustom || providedBoard) return;
+    if (providedBoard) return;
     let cancelled = false;
     getBoard(submission.boardId)
       .then((data) => {
@@ -59,10 +64,15 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
     return () => {
       cancelled = true;
     };
-  }, [isCustom, providedBoard, submission.boardId]);
+  }, [providedBoard, submission.boardId]);
 
-  const fields = useMemo(() => getSubmissionConfig(board).fields, [board]);
-  const teamFields = useMemo(() => getTeamOnlyFields(fields), [fields]);
+  const config = useMemo(() => getSubmissionConfig(board), [board]);
+  const fields = config.fields;
+  // Team-only fields apply to the whole board once custom fields are switched on.
+  const teamFields = useMemo(
+    () => (config.useCustomFields ? getTeamOnlyFields(config.fields) : []),
+    [config]
+  );
   const needsAssignee = fields.some((field) => field.autoSource === 'assignedTo');
 
   useEffect(() => {
@@ -82,33 +92,50 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
   const hasTeamFields = teamFields.length > 0;
 
   useEffect(() => {
-    if (!isCustom || !hasTeamFields) return;
+    if (!hasTeamFields) return;
     let cancelled = false;
     getSubmissionTeamFields(submission.id)
       .then((data) => {
-        if (!cancelled) setTeamState({ submissionId: submission.id, answers: data?.customFields ?? null });
+        if (cancelled) return;
+        setTeamLoadError(null);
+        setTeamState({ submissionId: submission.id, answers: data?.customFields ?? null });
       })
-      .catch((error) => console.error('Failed to load team-only fields:', error));
+      .catch((error) => {
+        console.error('Failed to load team-only fields:', error);
+        if (!cancelled) setTeamLoadError(error instanceof Error ? error.message : 'Unknown error');
+      });
     return () => {
       cancelled = true;
     };
-  }, [isCustom, hasTeamFields, submission.id]);
+  }, [hasTeamFields, submission.id]);
 
   const teamLoaded = teamState !== null && teamState.submissionId === submission.id;
   const teamAnswers = teamLoaded ? teamState.answers : null;
 
+  // Answers on the submission document. Team-only fields are rendered in their own section.
   const displays = useMemo(
     () =>
       getSubmissionFieldDisplays(board, submission, {
         assigneeName: assignee && assignee.uid === submission.assignedTo ? assignee.name : null,
-        teamFields: teamAnswers ?? undefined,
-      }),
-    [board, submission, teamAnswers, assignee]
+      }).filter((item) => item.audience !== 'internal'),
+    [board, submission, assignee]
   );
+
+  // Every team-only field, answered or not, so the team can see what is still missing.
+  const teamRows = useMemo(() => {
+    const valuesById = new Map(
+      [...(submission.customFields ?? []), ...(teamAnswers ?? [])].map((entry) => [entry.fieldId, entry.value])
+    );
+    return teamFields.map((field) => ({
+      id: field.id,
+      label: field.label,
+      type: field.type,
+      value: formatCustomFieldValue(field, valuesById.get(field.id)),
+    }));
+  }, [teamFields, teamAnswers, submission.customFields]);
 
   // One-time fill: only offered while no team answers exist. Rules reject a second write.
   const canAdd =
-    isCustom &&
     hasTeamFields &&
     teamLoaded &&
     teamAnswers === null &&
@@ -158,72 +185,97 @@ export function SubmissionCustomFields({ submission, board: providedBoard }: Sub
     }
   };
 
-  if (!isCustom || (displays.length === 0 && !canAdd)) return null;
+  const showDetails = isCustom && displays.length > 0;
+  if (!showDetails && !hasTeamFields) return null;
 
   return (
-    <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
-      <div className="mb-3 flex items-center gap-2">
-        <ClipboardList size={16} className="text-[var(--c-tc0694a)]" />
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">Submission details</h3>
-        {canAdd && !editing && (
-          <button
-            type="button"
-            onClick={startEditing}
-            className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-[var(--c-tc0694a)] hover:bg-[var(--c-sf5e6df)]"
-          >
-            <Plus size={12} />
-            Add team fields
-          </button>
-        )}
-      </div>
-
-      {displays.length > 0 ? (
-        <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
-          {displays.map((item) => (
+    <div className="space-y-4">
+      {showDetails && (
+        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <ClipboardList size={16} className="text-[var(--c-tc0694a)]" />
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
+              Submission details
+            </h3>
+          </div>
+          <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+            {displays.map((item) => (
               <div key={item.id} className={item.type === 'textarea' ? 'sm:col-span-2' : undefined}>
                 <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
                   {item.label}
                   {item.autoSource && <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(auto)</span>}
-                  {item.audience === 'internal' && (
-                    <span className="ml-1 inline-flex items-center gap-0.5 font-normal normal-case text-[var(--c-t9aabbf)]">
-                      <Lock size={10} /> team only
-                    </span>
-                  )}
                   {item.removed && (
                     <span className="ml-1 font-normal normal-case text-[var(--c-t9aabbf)]">(no longer in form)</span>
                   )}
                 </dt>
                 <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">{item.value}</dd>
               </div>
-          ))}
-        </dl>
-      ) : (
-        !editing && <p className="text-sm text-[var(--c-t78716c)]">No details yet.</p>
+            ))}
+          </dl>
+        </div>
       )}
 
-      {editing && (
-        <div className="mt-4 border-t border-[var(--c-be9e0d9)] pt-4">
-          <p className="mb-3 text-xs text-[var(--c-t78716c)]">
-            Team-only fields, visible to your team and never to the submitter. They can be saved once and
-            can't be changed afterwards, so check them before saving.
-          </p>
-          <CustomFieldsForm
-            fields={teamFields}
-            answers={answers}
-            errors={errors}
-            onChange={handleChange}
-            disabled={saving}
-            idPrefix={`team-field-${submission.id}`}
-          />
-          {errors.submit && <p className="mt-3 text-sm font-semibold text-[var(--c-tc0392b)]">{errors.submit}</p>}
-          <div className="mt-4 flex gap-2">
-            <Button type="button" variant="secondary" size="sm" onClick={() => setEditing(false)} disabled={saving}>
-              Cancel
-            </Button>
-            <Button type="button" variant="primary" size="sm" onClick={handleSave} isLoading={saving}>
-              Save team fields
-            </Button>
+      {hasTeamFields && (
+        <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sfafafa)] p-4">
+          <div className="mb-1 flex items-center gap-2">
+            <Lock size={15} className="text-[var(--c-tc0694a)]" />
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">Team-only fields</h3>
+            {canAdd && !editing && (
+              <Button type="button" variant="primary" size="sm" className="ml-auto" onClick={startEditing}>
+                <Plus size={13} />
+                Fill in
+              </Button>
+            )}
           </div>
+          <p className="mb-3 text-xs text-[var(--c-t78716c)]">
+            {teamAnswers
+              ? 'Visible to your team only. These answers are final.'
+              : 'Visible to your team only. They can be saved once and not changed afterwards.'}
+          </p>
+
+          {teamLoadError && (
+            <p className="mb-3 rounded-lg border border-[var(--c-bfca5a5)] bg-[var(--c-sfff5f5)] p-3 text-sm text-[var(--c-tc0392b)]">
+              Couldn't load the team-only answers ({teamLoadError}). If this feature was just released, the
+              updated Firestore security rules may not be deployed yet.
+            </p>
+          )}
+
+          {!editing && (
+            <dl className="grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-2">
+              {teamRows.map((row) => (
+                <div key={row.id} className={row.type === 'textarea' ? 'sm:col-span-2' : undefined}>
+                  <dt className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-[var(--c-t8f8680)]">
+                    {row.label}
+                  </dt>
+                  <dd className="whitespace-pre-wrap break-words text-[var(--c-t3c3632)]">
+                    {row.value || <span className="text-[var(--c-t9aabbf)]">Not filled in</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+
+          {editing && (
+            <>
+              <CustomFieldsForm
+                fields={teamFields}
+                answers={answers}
+                errors={errors}
+                onChange={handleChange}
+                disabled={saving}
+                idPrefix={`team-field-${submission.id}`}
+              />
+              {errors.submit && <p className="mt-3 text-sm font-semibold text-[var(--c-tc0392b)]">{errors.submit}</p>}
+              <div className="mt-4 flex gap-2">
+                <Button type="button" variant="secondary" size="sm" onClick={() => setEditing(false)} disabled={saving}>
+                  Cancel
+                </Button>
+                <Button type="button" variant="primary" size="sm" onClick={handleSave} isLoading={saving}>
+                  Save (final)
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

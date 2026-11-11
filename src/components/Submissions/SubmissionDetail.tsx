@@ -333,11 +333,9 @@ export default function SubmissionDetail({
             </div>
           )}
 
-          {/* Description: custom-field submissions show their fields instead, since the
-              stored description is only a generated summary of those same answers. */}
-          {submission.customFields ? (
-            <SubmissionCustomFields submission={submission} />
-          ) : (
+          {/* Description: hidden for custom-field submissions, whose stored description is
+              only a generated summary of the answers shown in the section below. */}
+          {!submission.customFields && (
             <div>
               <label className="block text-xs font-semibold text-[var(--c-t8f8680)] uppercase tracking-wide mb-2">
                 {t('description')}
@@ -349,6 +347,9 @@ export default function SubmissionDetail({
               </div>
             </div>
           )}
+
+          {/* Custom field answers, plus the board's team-only fields on every submission. */}
+          <SubmissionCustomFields submission={submission} />
 
           {/* Submitter Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
