@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, RefreshCw, Search, X } from 'lucide-react';
+import { ArrowLeft, Download, Plus, RefreshCw, Search, X } from 'lucide-react';
+import { CreateBoardModal } from './CreateBoardModal';
 import { LoadingSpinner } from '../../components/Shared';
 import { downloadTextFile } from '../../lib/download';
 import {
@@ -92,7 +93,7 @@ function EngagementBadge({ value }: { value: Engagement }) {
   );
 }
 
-function CompanyDrawer({ company, onClose }: { company: AdminCompany; onClose: () => void }) {
+function CompanyDrawer({ company, onClose, onAddBoard }: { company: AdminCompany; onClose: () => void; onAddBoard: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
@@ -133,7 +134,12 @@ function CompanyDrawer({ company, onClose }: { company: AdminCompany; onClose: (
           ))}
         </dl>
 
-        <h3 className="mt-6 text-sm font-semibold text-[var(--c-t1c1917)]">Boards ({company.boards.length})</h3>
+        <div className="mt-6 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-[var(--c-t1c1917)]">Boards ({company.boards.length})</h3>
+          <button onClick={onAddBoard} className="inline-flex items-center gap-1 text-sm font-medium text-[var(--c-tc0694a)]">
+            <Plus size={14} /> Add board
+          </button>
+        </div>
         <ul className="mt-2 divide-y divide-[var(--c-be0d6cf)] rounded-2xl border border-[var(--c-be0d6cf)]">
           {company.boards.length === 0 && <li className="p-3 text-sm text-[var(--c-ta89890)]">No boards created</li>}
           {company.boards.map((b) => (
@@ -173,6 +179,7 @@ export function SuperAdminPage() {
   const [sortKey, setSortKey] = useState<SortKey>('createdAt');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [createFor, setCreateFor] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     document.title = 'Super Admin | FeedSolve';
@@ -219,6 +226,9 @@ export function SuperAdminPage() {
             {data && <p className="text-xs text-[var(--c-ta89890)]">Updated {new Date(data.generatedAt).toLocaleTimeString()}</p>}
           </div>
           <div className="ms-auto flex gap-2">
+            <button onClick={() => setCreateFor(null)} disabled={!data} className="inline-flex items-center gap-2 rounded-xl bg-[var(--c-bc0694a)] px-3 py-2 text-sm font-medium text-white disabled:opacity-50">
+              <Plus size={14} /> <span className="hidden sm:inline">New board</span>
+            </button>
             <button onClick={() => data && exportCsv(rows)} disabled={!rows.length} className={`${inputCls} inline-flex items-center gap-2 disabled:opacity-50`}>
               <Download size={14} /> <span className="hidden sm:inline">Export CSV</span>
             </button>
@@ -366,7 +376,15 @@ export function SuperAdminPage() {
         )}
       </main>
 
-      {selected && <CompanyDrawer company={selected} onClose={() => setSelectedId(null)} />}
+      {selected && <CompanyDrawer company={selected} onClose={() => setSelectedId(null)} onAddBoard={() => setCreateFor(selected.id)} />}
+      {data && createFor !== undefined && (
+        <CreateBoardModal
+          companies={data.companies}
+          defaultCompanyId={createFor ?? undefined}
+          onClose={() => setCreateFor(undefined)}
+          onCreated={refresh}
+        />
+      )}
     </div>
   );
 }

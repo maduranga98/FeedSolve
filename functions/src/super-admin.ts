@@ -310,3 +310,199 @@ async function buildOverview() {
       warnings: [...partialErrors],
     };
 }
+
+const INVITE_ROLES = ["admin", "manager", "viewer"] as const;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const INVITE_TTL_MS = 7 * DAY_MS;
+
+const slugify = (text: string): string =>
+  text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+interface CreateBoardInput {
+  companyId?: unknown;
+  name?: unknown;
+  description?: unknown;
+  categories?: unknown;
+  isAnonymousAllowed?: unknown;
+  users?: unknown;
+}
+
+interface InviteResult {
+  email: string;
+  status: "invited" | "skipped";
+  reason?: string;
+}
+
+/**
+ * Super admin: create a board inside any company and invite users to that
+ * company in one step. Plan limits are intentionally bypassed (operator
+ * override). Invitations reuse the regular `teamInvitations` flow, so the
+ * existing trigger emails each invitee an accept link.
+ */
+export const superAdminCreateBoard = functions
+  .runWith({timeoutSeconds: 60})
+  .https.onCall(async (data: CreateBoardInput, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError("unauthenticated", "Sign in required");
+    }
+    if (context.auth.token.superAdmin !== true) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "Super admin access required",
+      );
+    }
+
+    const companyId = typeof data?.companyId === "string" ? data.companyId : "";
+    const name = typeof data?.name === "string" ? data.name.trim() : "";
+    if (!companyId) {
+      throw new functions.https.HttpsError("invalid-argument", "Select a company");
+    }
+    if (name.length < 2 || name.length > 100) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Board name must be 2-100 characters",
+      );
+    }
+    const slug = slugify(name);
+    if (!slug) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Board name must contain letters or numbers",
+      );
+    }
+
+    const description = typeof data.description === "string" ?
+      data.description.trim().slice(0, 500) :
+      "";
+    const categories = Array.isArray(data.categories) ?
+      [...new Set(
+        data.categories
+          .filter((c): c is string => typeof c === "string")
+          .map((c) => c.trim())
+          .filter(Boolean),
+      )].slice(0, 30) :
+      [];
+
+    const rawUsers = Array.isArray(data.users) ? data.users : [];
+    if (rawUsers.length > 20) {
+      throw new functions.https.HttpsError("invalid-argument", "Max 20 users per board");
+    }
+    const invitees = new Map<string, string>();
+    for (const u of rawUsers) {
+      const email = typeof u?.email === "string" ? u.email.trim().toLowerCase() : "";
+      const role = typeof u?.role === "string" ? u.role : "manager";
+      if (!EMAIL_RE.test(email)) {
+        throw new functions.https.HttpsError("invalid-argument", `Invalid email: ${email || "(empty)"}`);
+      }
+      if (!(INVITE_ROLES as readonly string[]).includes(role)) {
+        throw new functions.https.HttpsError("invalid-argument", `Invalid role: ${role}`);
+      }
+      invitees.set(email, role);
+    }
+
+    const db = admin.firestore();
+    const companyRef = db.collection("companies").doc(companyId);
+    const companySnap = await companyRef.get();
+    if (!companySnap.exists) {
+      throw new functions.https.HttpsError("not-found", "Company not found");
+    }
+
+    const conflict = await db
+      .collection("boards")
+      .where("companyId", "==", companyId)
+      .where("name", "==", name)
+      .limit(1)
+      .get();
+    if (!conflict.empty) {
+      throw new functions.https.HttpsError(
+        "already-exists",
+        "This company already has a board with that name",
+      );
+    }
+
+    // Slugs are global public URLs (/submit/:slug); never collide with another company.
+    const slugTaken = await db.collection("boards").where("slug", "==", slug).limit(1).get();
+    const finalSlug = slugTaken.empty ? slug : `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+
+    const now = admin.firestore.Timestamp.now();
+    const boardRef = db.collection("boards").doc();
+    const appBase = process.env.APP_URL || process.env.VITE_APP_URL || "https://app.feedsolve.com";
+
+    const batch = db.batch();
+    batch.set(boardRef, {
+      companyId,
+      name,
+      description,
+      slug: finalSlug,
+      categories,
+      categoryTranslationsEnabled: false,
+      categoryTranslations: {},
+      locations: [],
+      isAnonymousAllowed: data.isAnonymousAllowed !== false,
+      showSatisfactionRating: false,
+      satisfactionRequired: false,
+      supportedLanguages: ["en"],
+      qrCodeUrl: `${appBase}/submit/${finalSlug}`,
+      createdAt: now,
+      updatedAt: now,
+      submissionCount: 0,
+      recurringEnabled: false,
+      recurringFrequency: null,
+      recurringCustomDays: null,
+      recurringStartDate: null,
+      currentCycleId: null,
+      nextCycleDate: null,
+      createdBySuperAdmin: context.auth.uid,
+    });
+    batch.update(companyRef, {
+      boardCount: admin.firestore.FieldValue.increment(1),
+      "usage.boardsCreated": admin.firestore.FieldValue.increment(1),
+      updatedAt: now,
+    });
+    await batch.commit();
+
+    // Users: skip existing members and pending invites; one account = one company.
+    const invites: InviteResult[] = [];
+    for (const [email, role] of invitees) {
+      const [existingUser, pending] = await Promise.all([
+        db.collection("users").where("email", "==", email).limit(1).get(),
+        db.collection("teamInvitations")
+          .where("companyId", "==", companyId)
+          .where("email", "==", email)
+          .where("status", "==", "pending")
+          .limit(1)
+          .get(),
+      ]);
+      if (!existingUser.empty) {
+        const sameCompany = existingUser.docs[0].data().companyId === companyId;
+        invites.push({
+          email,
+          status: "skipped",
+          reason: sameCompany ? "Already a member" : "Belongs to another company",
+        });
+        continue;
+      }
+      if (!pending.empty) {
+        invites.push({email, status: "skipped", reason: "Invite already pending"});
+        continue;
+      }
+      await db.collection("teamInvitations").add({
+        companyId,
+        email,
+        role,
+        invitedBy: context.auth.uid,
+        inviteCode: Math.random().toString(36).slice(2, 10).toUpperCase(),
+        status: "pending",
+        createdAt: now,
+        expiresAt: admin.firestore.Timestamp.fromMillis(now.toMillis() + INVITE_TTL_MS),
+      });
+      invites.push({email, status: "invited"});
+    }
+
+    functions.logger.info("superAdminCreateBoard", {
+      boardId: boardRef.id,
+      companyId,
+      by: context.auth.uid,
+    });
+    return {boardId: boardRef.id, slug: finalSlug, name, invites};
+  });
