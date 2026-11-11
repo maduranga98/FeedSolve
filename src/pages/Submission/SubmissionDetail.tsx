@@ -322,16 +322,16 @@ export function SubmissionDetail() {
             </div>
           </div>
 
-          {submission.customFields ? (
-            <div className="mb-6">
-              <SubmissionCustomFields submission={submission} />
-            </div>
-          ) : (
+          {!submission.customFields && (
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-color-primary mb-2">Description</h2>
               <p className="text-color-body-text whitespace-pre-wrap">{submission.description}</p>
             </div>
           )}
+
+          <div className="mb-6 empty:hidden">
+            <SubmissionCustomFields submission={submission} />
+          </div>
 
           {submission.attachments && submission.attachments.length > 0 && (
             <div className="mb-6 pb-6 border-b border-color-border">
