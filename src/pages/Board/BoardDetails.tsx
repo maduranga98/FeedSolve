@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Share2, Plus, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star, Lock } from 'lucide-react';
+import { Share2, Plus, ArrowLeft, CalendarClock, MapPin, QrCode, Copy, Check, MessageSquare, Star, Lock, ClipboardList } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTranslation } from 'react-i18next';
@@ -15,14 +15,17 @@ import { RecurringCycleSettings } from '../../components/boards/RecurringCycleSe
 import { FeedbackConfigSettings } from '../../components/boards/FeedbackConfigSettings';
 import { FeedbackResponsesTab } from '../../components/boards/FeedbackResponsesTab';
 import { FeedbackLockedCard } from '../../components/boards/FeedbackLockedCard';
-import { canUseFeedback as hasFeedbackAccess } from '../../lib/tier-limits';
+import { SubmissionFieldsSettings } from '../../components/boards/SubmissionFieldsSettings';
+import { SubmissionFieldsLockedCard } from '../../components/boards/SubmissionFieldsLockedCard';
+import { canUseFeedback as hasFeedbackAccess, canUseSubmissionFields as hasSubmissionFieldsAccess } from '../../lib/tier-limits';
 
-type SetupStep = 'qr' | 'cycle' | 'locations' | 'feedback-settings' | 'feedback';
+type SetupStep = 'qr' | 'cycle' | 'locations' | 'submission-form' | 'feedback-settings' | 'feedback';
 
 const setupSteps: Array<{ id: SetupStep; label: string; description: string; icon: typeof QrCode; growthOnly?: boolean }> = [
   { id: 'qr', label: 'QR Code', description: 'Style & share', icon: QrCode },
   { id: 'cycle', label: 'Recurring Cycle', description: 'Automate resets', icon: CalendarClock },
   { id: 'locations', label: 'Locations', description: 'Manage spots', icon: MapPin },
+  { id: 'submission-form', label: 'Submission Form', description: 'Custom fields', icon: ClipboardList, growthOnly: true },
   { id: 'feedback-settings', label: 'Feedback Config', description: 'After resolution', icon: Star, growthOnly: true },
   { id: 'feedback', label: 'Feedback', description: 'Responses & export', icon: MessageSquare, growthOnly: true },
 ];
@@ -134,6 +137,7 @@ export function BoardDetails() {
 
   const feedbackUrl = `${window.location.origin}/submit/${board.slug}`;
   const canUseFeedback = hasFeedbackAccess(company?.subscription);
+  const canUseSubmissionFields = hasSubmissionFieldsAccess(company?.subscription);
 
   return (
     <main className="min-h-screen bg-color-bg">
@@ -235,11 +239,11 @@ export function BoardDetails() {
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--c-tc0694a)]">Board setup</p>
                 <h2 className="mt-1 text-xl font-bold text-[var(--c-t1c1917)] sm:text-2xl">Configure how feedback is collected</h2>
                 <p className="mt-1 text-sm text-[var(--c-t78716c)]">
-                  Manage QR sharing, recurring cycles, locations, and post-resolution feedback for this board.
+                  Manage QR sharing, recurring cycles, locations, the submission form, and post-resolution feedback for this board.
                 </p>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" role="tablist" aria-label="Board setup sections">
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6" role="tablist" aria-label="Board setup sections">
                 {setupSteps.map((step) => {
                   const Icon = step.icon;
                   const active = activeSetupStep === step.id;
@@ -263,7 +267,7 @@ export function BoardDetails() {
                       <span className="min-w-0">
                         <span className="flex items-center gap-1 truncate text-sm font-bold">
                           {step.label}
-                          {step.growthOnly && !canUseFeedback && <Lock size={12} aria-label="Growth plan required" />}
+                          {step.growthOnly && !(step.id === 'submission-form' ? canUseSubmissionFields : canUseFeedback) && <Lock size={12} aria-label="Growth plan required" />}
                         </span>
                         <span className="block truncate text-xs">{step.description}</span>
                       </span>
@@ -295,6 +299,14 @@ export function BoardDetails() {
                   company={company}
                   onBoardChange={setBoard}
                 />
+              )}
+
+              {activeSetupStep === 'submission-form' && (
+                canUseSubmissionFields ? (
+                  <SubmissionFieldsSettings board={board} onBoardChange={setBoard} />
+                ) : (
+                  <SubmissionFieldsLockedCard />
+                )
               )}
 
               {activeSetupStep === 'feedback-settings' && (

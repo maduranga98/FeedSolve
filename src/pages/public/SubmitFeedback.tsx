@@ -13,8 +13,18 @@ import {
   SUBJECT_MAX,
   DESCRIPTION_MAX,
   EMAIL_PATTERN,
+  validateSubmissionCategory,
   validateSubmissionContent,
 } from "../../lib/submission-validation";
+import {
+  buildSubmissionCustomFields,
+  getSubmissionConfig,
+  isCustomFormActive,
+  validateSubmissionAnswers,
+} from "../../lib/submission-fields";
+import type { SubmissionAnswers } from "../../lib/submission-fields";
+import { canUseSubmissionFields } from "../../lib/tier-limits";
+import { CustomFieldsForm } from "../../components/Submissions/CustomFieldsForm";
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from "../../config/languages";
 import { LoadingSpinner, Input, Select } from "../../components/Shared";
 import { FloatingThemeToggle } from "../../components/Shared/ThemeToggle";
@@ -283,6 +293,7 @@ export function SubmitFeedback() {
     satisfactionLabel: null,
     location: locationTag,
   });
+  const [customAnswers, setCustomAnswers] = useState<SubmissionAnswers>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const boardLanguageCodes =
@@ -344,8 +355,20 @@ export function SubmitFeedback() {
   const branding = company?.branding;
   const companyDisplayName = branding?.companyName || company?.name || board?.name || "";
 
+  // The board's custom fields replace Subject/Description on the public form only when the
+  // board opts in for public (or both) and the company's plan includes the feature; anything
+  // else, including a failed company lookup, falls back to the fixed form.
+  const customActive =
+    !!company && isCustomFormActive(board, "public", canUseSubmissionFields(company.subscription));
+  const customFieldDefs = getSubmissionConfig(board).fields;
+
   const validateForm = (): boolean => {
-    const newErrors: Record<string, string> = validateSubmissionContent(formData, board, t);
+    const newErrors: Record<string, string> = customActive
+      ? {
+          ...validateSubmissionCategory(formData.category, board, t),
+          ...validateSubmissionAnswers(customFieldDefs, customAnswers),
+        }
+      : validateSubmissionContent(formData, board, t);
 
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
@@ -367,7 +390,18 @@ export function SubmitFeedback() {
     if (!validateForm() || !board) return;
     setSubmitting(true);
     try {
-      const result = await createSubmission(board.id, board.companyId, formData);
+      const result = await createSubmission(
+        board.id,
+        board.companyId,
+        customActive
+          ? {
+              ...formData,
+              subject: "",
+              description: "",
+              customFields: buildSubmissionCustomFields(customFieldDefs, customAnswers),
+            }
+          : formData
+      );
       if (selectedFiles.length > 0) {
         await uploadFiles(result.submissionId, selectedFiles);
       }
@@ -783,6 +817,7 @@ export function SubmitFeedback() {
                     satisfactionScore: null,
                     satisfactionLabel: null,
                   });
+                  setCustomAnswers({});
                 }}
                 className="w-full px-5 py-2.5 text-sm text-[var(--c-t8f8680)] hover:text-[var(--c-t78716c)] transition-colors font-medium"
               >
@@ -943,6 +978,24 @@ export function SubmitFeedback() {
                     error={errors.category}
                   />
 
+                  {customActive ? (
+                    <CustomFieldsForm
+                      fields={customFieldDefs}
+                      answers={customAnswers}
+                      errors={errors}
+                      idPrefix="public-custom-field"
+                      onChange={(fieldId, value) => {
+                        setCustomAnswers((prev) => ({ ...prev, [fieldId]: value }));
+                        setErrors((prev) => {
+                          if (!prev[fieldId]) return prev;
+                          const rest = { ...prev };
+                          delete rest[fieldId];
+                          return rest;
+                        });
+                      }}
+                    />
+                  ) : (
+                    <>
                   <div>
                     <Input
                       label={t("forms:feedback.subject")}
@@ -981,6 +1034,8 @@ export function SubmitFeedback() {
                       </p>
                     </div>
                   </div>
+                    </>
+                  )}
                 </div>
               </div>
 

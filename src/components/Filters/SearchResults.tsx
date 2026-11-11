@@ -1,7 +1,7 @@
 import { memo, useMemo, useState } from 'react';
 import { SubmissionCard } from '../Cards/SubmissionCard';
 import { SelectAllCheckbox } from '../Submissions/SelectAllCheckbox';
-import type { Submission, User } from '../../types';
+import type { Board, Submission, User } from '../../types';
 import { LayoutGrid, Rows3, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SearchResultsProps {
@@ -9,6 +9,7 @@ interface SearchResultsProps {
   loading?: boolean;
   onSubmissionClick: (submission: Submission) => void;
   usersMap?: Record<string, User>;
+  boards?: Board[];
   page: number;
   pageSize?: number;
   onPageChange: (page: number) => void;
@@ -35,6 +36,7 @@ export const SearchResults = memo(function SearchResults({
   loading = false,
   onSubmissionClick,
   usersMap,
+  boards,
   page,
   pageSize = 20,
   onPageChange,
@@ -49,6 +51,8 @@ export const SearchResults = memo(function SearchResults({
   const safePage = Math.min(Math.max(1, page), Math.max(1, totalPages));
   const start = (safePage - 1) * pageSize;
   const end = start + pageSize;
+
+  const boardsById = useMemo(() => new Map((boards ?? []).map((board) => [board.id, board])), [boards]);
 
   const paginatedResults = useMemo(
     () => results.slice(start, end),
@@ -147,6 +151,7 @@ export const SearchResults = memo(function SearchResults({
             onClick={() => onSubmissionClick(submission)}
             compact={viewMode === 'list'}
             usersMap={usersMap}
+            board={boardsById.get(submission.boardId) ?? null}
             isSelected={selectedIds?.has(submission.id) ?? false}
             isSelectionMode={isSelectionMode}
             onToggleSelect={onToggleSelect}

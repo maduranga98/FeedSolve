@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, memo } from 'react';
-import type { Submission, User } from '../../types';
+import type { Board, Submission, User } from '../../types';
 import { Badge } from '../Shared';
 import { formatDate } from '../../lib/utils';
+import { getSubmissionFieldDisplays } from '../../lib/submission-fields';
 import { getUser } from '../../lib/firestore';
 import { MapPin, MessageSquare, PenLine, UserCircle } from 'lucide-react';
 
@@ -10,6 +11,8 @@ interface SubmissionCardProps {
   onClick?: (submission: Submission) => void;
   compact?: boolean;
   usersMap?: Record<string, User>;
+  /** The submission's board; supplies the custom fields flagged "show in list". */
+  board?: Board | null;
   isSelected?: boolean;
   isSelectionMode?: boolean;
   onToggleSelect?: (id: string) => void;
@@ -43,6 +46,7 @@ function SubmissionCardComponent({
   onClick,
   compact = false,
   usersMap,
+  board,
   isSelected = false,
   isSelectionMode = false,
   onToggleSelect,
@@ -73,6 +77,12 @@ function SubmissionCardComponent({
   );
 
   const dot = priorityDot[submission.priority] || priorityDot.medium;
+
+  // Only fields the board owner flagged "show in list", in field order. Everything else
+  // lives in the detail view.
+  const listFields = board && submission.customFields
+    ? getSubmissionFieldDisplays(board, submission, { listOnly: true, assigneeName: assignedUser?.name })
+    : [];
 
   return (
     <div
@@ -137,6 +147,21 @@ function SubmissionCardComponent({
       <p className={`text-xs text-[var(--c-t6b7b8d)] leading-relaxed ${compact ? 'mb-2.5 line-clamp-1' : 'mb-3 line-clamp-2'}`}>
         {submission.description}
       </p>
+
+      {listFields.length > 0 && (
+        <div className={`flex flex-wrap gap-1.5 ${compact ? 'mb-2.5' : 'mb-3'}`}>
+          {listFields.map((item) => (
+            <span
+              key={item.id}
+              className="inline-flex max-w-full items-center gap-1 rounded-md bg-[var(--c-sf0f4f8)] px-2 py-0.5 text-[11px] text-[var(--c-t4a6274)]"
+              title={`${item.label}: ${item.value}`}
+            >
+              <span className="flex-shrink-0 font-semibold">{item.label}:</span>
+              <span className="truncate">{item.value}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Footer */}
       <div className={`flex items-center justify-between gap-x-2 gap-y-1.5 flex-wrap ${compact ? 'pt-2 border-t border-[var(--c-bf0f4f8)]' : ''}`}>

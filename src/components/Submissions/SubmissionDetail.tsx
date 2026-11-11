@@ -21,6 +21,7 @@ import { useFileDownload } from "../../hooks/useFileDownload";
 import { useAuth } from "../../hooks/useAuth";
 import { useMergeSubmission } from "../../hooks/useMergeSubmission";
 import AssignDropdown from "./AssignDropdown";
+import { SubmissionCustomFields } from "./SubmissionCustomFields";
 import PriorityDropdown from "./PriorityDropdown";
 import PublicReplySection from "./PublicReplySection";
 import { InternalDiscussion } from "../dashboard/InternalDiscussion";
@@ -332,17 +333,22 @@ export default function SubmissionDetail({
             </div>
           )}
 
-          {/* Description */}
-          <div>
-            <label className="block text-xs font-semibold text-[var(--c-t8f8680)] uppercase tracking-wide mb-2">
-              {t('description')}
-            </label>
-            <div className="bg-[var(--c-sfafafa)] border border-[var(--c-be9e0d9)] rounded-xl p-4">
-              <p className="text-[var(--c-t3c3632)] whitespace-pre-wrap text-sm leading-relaxed">
-                {submission.description}
-              </p>
+          {/* Description: custom-field submissions show their fields instead, since the
+              stored description is only a generated summary of those same answers. */}
+          {submission.customFields ? (
+            <SubmissionCustomFields submission={submission} />
+          ) : (
+            <div>
+              <label className="block text-xs font-semibold text-[var(--c-t8f8680)] uppercase tracking-wide mb-2">
+                {t('description')}
+              </label>
+              <div className="bg-[var(--c-sfafafa)] border border-[var(--c-be9e0d9)] rounded-xl p-4">
+                <p className="text-[var(--c-t3c3632)] whitespace-pre-wrap text-sm leading-relaxed">
+                  {submission.description}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Submitter Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">

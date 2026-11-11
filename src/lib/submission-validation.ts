@@ -6,7 +6,27 @@ export const DESCRIPTION_MAX = 5000;
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Validates the fields every submission shares (category, subject, description),
+ * Validates the category. Category stays on every form, fixed or custom, because it
+ * routes the submission. Mirrors the category check in `isValidInternalSubmissionCreate()`.
+ */
+export function validateSubmissionCategory(
+  category: string,
+  board: Pick<Board, 'categories'> | null,
+  t: TFunction
+): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!category) {
+    errors.category = t('forms:feedback.category') + ' ' + t('forms:validation.required');
+  } else if (board && board.categories.length > 0 && !board.categories.includes(category)) {
+    errors.category = t('forms:validation.invalid_category') || 'Invalid category selected';
+  }
+
+  return errors;
+}
+
+/**
+ * Validates the fields every fixed-form submission shares (category, subject, description),
  * whether it comes from the public form or is logged by a team member. The limits
  * mirror `isValidSubmissionCreate()` in firestore.rules.
  */
@@ -15,13 +35,7 @@ export function validateSubmissionContent(
   board: Pick<Board, 'categories'> | null,
   t: TFunction
 ): Record<string, string> {
-  const errors: Record<string, string> = {};
-
-  if (!input.category) {
-    errors.category = t('forms:feedback.category') + ' ' + t('forms:validation.required');
-  } else if (board && board.categories.length > 0 && !board.categories.includes(input.category)) {
-    errors.category = t('forms:validation.invalid_category') || 'Invalid category selected';
-  }
+  const errors = validateSubmissionCategory(input.category, board, t);
 
   const subject = input.subject.trim();
   if (!subject) {

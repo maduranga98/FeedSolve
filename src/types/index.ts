@@ -183,6 +183,51 @@ export interface FeedbackResponse {
   submittedAt: Timestamp;
 }
 
+/**
+ * Custom submission intake fields. Mirrors FeedbackField, extended with the
+ * date / checkbox / multiselect types and optional auto-populated sources.
+ */
+export type SubmissionFieldType = "text" | "textarea" | "dropdown" | "date" | "checkbox" | "multiselect";
+
+export type SubmissionFieldAutoSource = "createdAt" | "trackingCode" | "assignedTo" | "status";
+
+export interface SubmissionField {
+  id: string;
+  type: SubmissionFieldType;
+  label: string;
+  required: boolean;
+  options?: string[]; // dropdown, multiselect
+  autoSource?: SubmissionFieldAutoSource; // read from the submission itself, never entered by a user
+  showInList: boolean; // show on the submission card / list row
+  order: number;
+}
+
+export type SubmissionFieldAppliesTo = "internal" | "public" | "both";
+
+/**
+ * Rules-readable summary of one user-entered field. Firestore rules cannot loop
+ * over `fields`, so the same definitions are also stored as a map keyed by field id.
+ */
+export interface SubmissionFieldSpec {
+  type: SubmissionFieldType;
+  options?: string[];
+}
+
+export interface SubmissionConfig {
+  useCustomFields: boolean;
+  appliesTo: SubmissionFieldAppliesTo;
+  fields: SubmissionField[];
+  /** Derived from `fields` on save; used only by firestore.rules to validate submissions. */
+  fieldSpecs?: Record<string, SubmissionFieldSpec>;
+}
+
+export type SubmissionCustomFieldValueType = string | string[] | boolean;
+
+export interface SubmissionCustomFieldValue {
+  fieldId: string;
+  value: SubmissionCustomFieldValueType;
+}
+
 export type RecurringFrequency = "monthly" | "quarterly" | "custom";
 
 export interface BoardCycleStats {
@@ -240,6 +285,8 @@ export interface Board {
   currentCycleId?: string | null;
   nextCycleDate?: Timestamp | null;
   feedbackConfig?: FeedbackConfig;
+  /** Absent on boards that predate custom submission fields: the fixed form applies. */
+  submissionConfig?: SubmissionConfig;
 }
 
 export interface InternalNote {
@@ -295,6 +342,8 @@ export interface Submission {
   source?: SubmissionSource;
   /** uid of the team member who logged it; only set when source === "internal". */
   createdBy?: string;
+  /** Answers to the board's custom submission fields. Absent for fixed-form submissions. */
+  customFields?: SubmissionCustomFieldValue[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
   resolvedAt?: Timestamp;
@@ -321,6 +370,8 @@ export interface SubmissionFormInput {
   submissionLanguage?: string;
   satisfactionScore?: 1 | 2 | 3 | 4 | 5 | null;
   satisfactionLabel?: string | null;
+  /** Answers to custom fields; subject/description are derived from them when present. */
+  customFields?: SubmissionCustomFieldValue[];
 }
 
 export interface BoardFormInput {

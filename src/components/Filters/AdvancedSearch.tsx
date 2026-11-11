@@ -202,6 +202,7 @@ export function AdvancedSearch({
           results={results}
           onSubmissionClick={onSubmissionClick}
           usersMap={usersMap}
+          boards={boards}
           page={page}
           pageSize={20}
           onPageChange={setPage}

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Copy, Check, CheckCircle2, PenLine } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useSubscription } from '../../hooks/useSubscription';
 import { createSubmission, addAuditLog } from '../../lib/firestore';
 import { getAppOrigin } from '../../lib/app-url';
 import { getCategoryLabel } from '../../lib/utils';
@@ -9,8 +10,19 @@ import {
   SUBJECT_MAX,
   DESCRIPTION_MAX,
   EMAIL_PATTERN,
+  validateSubmissionCategory,
   validateSubmissionContent,
 } from '../../lib/submission-validation';
+import {
+  buildSubmissionCustomFields,
+  deriveSubmissionSummary,
+  getSubmissionConfig,
+  isCustomFormActive,
+  validateSubmissionAnswers,
+} from '../../lib/submission-fields';
+import type { SubmissionAnswers } from '../../lib/submission-fields';
+import { canUseSubmissionFields } from '../../lib/tier-limits';
+import { CustomFieldsForm } from './CustomFieldsForm';
 import { Button, Input, Select } from '../Shared';
 import type { Board, SubmissionFormInput } from '../../types';
 
@@ -58,6 +70,7 @@ export function AddSubmissionModal({
   const [formData, setFormData] = useState<SubmissionFormInput>(
     emptyForm(initialBoard?.categories[0] ?? '')
   );
+  const [customAnswers, setCustomAnswers] = useState<SubmissionAnswers>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [created, setCreated] = useState<CreatedSubmission | null>(null);
@@ -65,15 +78,28 @@ export function AddSubmissionModal({
 
   const board = useMemo(() => boards.find((b) => b.id === boardId) ?? null, [boards, boardId]);
 
+  // The board's custom fields replace Subject/Description when enabled for the internal form
+  // and the plan allows it. Category stays either way. Until the plan loads the fixed form
+  // is shown and submitting is held (see the submit button) so the form never switches mid-entry.
+  const { subscription, loading: planLoading } = useSubscription();
+  const customActive = isCustomFormActive(board, 'internal', canUseSubmissionFields(subscription));
+  const customFieldDefs = useMemo(() => getSubmissionConfig(board).fields, [board]);
+
   const handleBoardChange = (nextBoardId: string) => {
     const nextBoard = boards.find((b) => b.id === nextBoardId);
     setBoardId(nextBoardId);
     setFormData((prev) => ({ ...prev, category: nextBoard?.categories[0] ?? '' }));
+    setCustomAnswers({});
     setErrors({});
   };
 
   const validate = (): boolean => {
-    const next = validateSubmissionContent(formData, board, t);
+    const next = customActive
+      ? {
+          ...validateSubmissionCategory(formData.category, board, t),
+          ...validateSubmissionAnswers(customFieldDefs, customAnswers),
+        }
+      : validateSubmissionContent(formData, board, t);
     const email = formData.email?.trim();
     if (email && !EMAIL_PATTERN.test(email)) {
       next.email = t('forms:validation.email');
@@ -84,7 +110,7 @@ export function AddSubmissionModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (submitting || !board || !user || !validate()) return;
+    if (submitting || planLoading || !board || !user || !validate()) return;
 
     // Contact details are optional here: the caller may not want to leave any.
     const hasContact = Boolean(
@@ -93,13 +119,19 @@ export function AddSubmissionModal({
 
     setSubmitting(true);
     try {
+      // Custom-field submissions send answers only; createSubmission derives subject/description.
+      const customFields = customActive
+        ? buildSubmissionCustomFields(customFieldDefs, customAnswers)
+        : undefined;
+
       const result = await createSubmission(
         board.id,
         board.companyId,
         {
           ...formData,
-          subject: formData.subject.trim(),
-          description: formData.description.trim(),
+          subject: customFields ? '' : formData.subject.trim(),
+          description: customFields ? '' : formData.description.trim(),
+          ...(customFields ? { customFields } : {}),
           isAnonymous: !hasContact,
           submissionLanguage: i18n.language,
         },
@@ -114,7 +146,9 @@ export function AddSubmissionModal({
         action: `Logged internal submission ${result.trackingCode}`,
         resourceType: 'submission',
         resourceId: result.submissionId,
-        resourceName: formData.subject.trim(),
+        resourceName: customFields
+          ? deriveSubmissionSummary(customFieldDefs, customFields, result.trackingCode).subject
+          : formData.subject.trim(),
         details: { boardId: board.id, source: 'internal' },
       }).catch((err) => console.error('Failed to write audit log:', err));
 
@@ -150,6 +184,7 @@ export function AddSubmissionModal({
     setErrors({});
     setCopied(null);
     setFormData(emptyForm(board?.categories[0] ?? ''));
+    setCustomAnswers({});
   };
 
   const categoryOptions = (board?.categories ?? []).map((cat) => ({
@@ -272,6 +307,25 @@ export function AddSubmissionModal({
               disabled={submitting}
             />
 
+            {customActive ? (
+              <CustomFieldsForm
+                fields={customFieldDefs}
+                answers={customAnswers}
+                errors={errors}
+                disabled={submitting}
+                idPrefix="internal-custom-field"
+                onChange={(fieldId, value) => {
+                  setCustomAnswers((prev) => ({ ...prev, [fieldId]: value }));
+                  setErrors((prev) => {
+                    if (!prev[fieldId]) return prev;
+                    const rest = { ...prev };
+                    delete rest[fieldId];
+                    return rest;
+                  });
+                }}
+              />
+            ) : (
+              <>
             <div>
               <Input
                 label={t('forms:feedback.subject')}
@@ -332,6 +386,8 @@ export function AddSubmissionModal({
                 </p>
               </div>
             </div>
+              </>
+            )}
 
             <div className="pt-4 border-t border-[var(--c-bf2ece6)] space-y-4">
               <div>
@@ -376,7 +432,7 @@ export function AddSubmissionModal({
               <Button variant="secondary" fullWidth onClick={onClose} disabled={submitting} type="button">
                 {t('common:cancel', { defaultValue: 'Cancel' })}
               </Button>
-              <Button variant="primary" fullWidth type="submit" isLoading={submitting} disabled={!board}>
+              <Button variant="primary" fullWidth type="submit" isLoading={submitting} disabled={!board || planLoading}>
                 {t('forms:internal_submission.submit')}
               </Button>
             </div>

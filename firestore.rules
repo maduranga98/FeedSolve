@@ -215,7 +215,84 @@ service cloud.firestore {
              get(/databases/$(database)/documents/boards/$(d.boardId)).data.companyId == d.companyId &&
              d.category is string &&
              d.category in get(/databases/$(database)/documents/boards/$(d.boardId)).data.categories &&
-             isValidSubmissionCreate();
+             isValidSubmissionCreate() &&
+             hasValidCustomFields('internal');
+    }
+
+    // ── Custom submission fields ──────────────────────────────────────────────
+    // A board may replace the fixed Subject/Description pair with its own fields
+    // (boards/{id}.submissionConfig). Rules cannot loop over lists, so the board also
+    // stores `fieldSpecs`, a map of fieldId -> {type, options}, and each submitted entry is
+    // checked against it. Entry checks are unrolled to 15 (MAX_SUBMISSION_FIELDS in
+    // src/lib/submission-fields.ts); keep the two in sync. Length caps mirror the fixed
+    // fields: short text = subject (100), long text = description (5000).
+    // Required-ness is enforced client-side only: rules cannot prove an entry is missing.
+
+    // True when the board has custom fields switched on for this origin
+    // (context is 'internal' or 'public') and the company's plan includes the feature.
+    function isCustomFieldsEnabledFor(d, context) {
+      let boardPath = /databases/$(database)/documents/boards/$(d.boardId);
+      let cfg = get(boardPath).data.get('submissionConfig', {});
+      return exists(boardPath) &&
+        isFeedbackPlan(get(boardPath).data.companyId) &&
+        cfg.get('useCustomFields', false) == true &&
+        (cfg.get('appliesTo', 'internal') == 'both' ||
+         cfg.get('appliesTo', 'internal') == context);
+    }
+
+    function isValidCustomFieldValue(v, spec) {
+      return (spec.type == 'text' && v is string && v.size() <= 100) ||
+        (spec.type == 'textarea' && v is string && v.size() <= 5000) ||
+        (spec.type == 'dropdown' && v is string && v in spec.options) ||
+        (spec.type == 'date' && v is string && v.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')) ||
+        (spec.type == 'checkbox' && v is bool) ||
+        (spec.type == 'multiselect' && v is list && v.size() <= 20 && v.hasOnly(spec.options));
+    }
+
+    function isValidCustomFieldEntry(e, specs) {
+      return e is map &&
+        e.keys().hasOnly(['fieldId', 'value']) &&
+        e.keys().hasAll(['fieldId', 'value']) &&
+        e.fieldId is string &&
+        e.fieldId in specs &&
+        isValidCustomFieldValue(e.value, specs[e.fieldId]);
+    }
+
+    function isValidCustomFieldEntryAt(entries, i, specs) {
+      return entries.size() <= i || isValidCustomFieldEntry(entries[i], specs);
+    }
+
+    function isValidCustomFieldEntries(entries, specs) {
+      return entries is list && entries.size() <= 15 && specs is map &&
+        isValidCustomFieldEntryAt(entries, 0, specs) &&
+        isValidCustomFieldEntryAt(entries, 1, specs) &&
+        isValidCustomFieldEntryAt(entries, 2, specs) &&
+        isValidCustomFieldEntryAt(entries, 3, specs) &&
+        isValidCustomFieldEntryAt(entries, 4, specs) &&
+        isValidCustomFieldEntryAt(entries, 5, specs) &&
+        isValidCustomFieldEntryAt(entries, 6, specs) &&
+        isValidCustomFieldEntryAt(entries, 7, specs) &&
+        isValidCustomFieldEntryAt(entries, 8, specs) &&
+        isValidCustomFieldEntryAt(entries, 9, specs) &&
+        isValidCustomFieldEntryAt(entries, 10, specs) &&
+        isValidCustomFieldEntryAt(entries, 11, specs) &&
+        isValidCustomFieldEntryAt(entries, 12, specs) &&
+        isValidCustomFieldEntryAt(entries, 13, specs) &&
+        isValidCustomFieldEntryAt(entries, 14, specs);
+    }
+
+    // A create with no `customFields` key is unaffected (every existing board and form).
+    // With the key, the board must enable custom fields for this origin and every entry
+    // must match the board's field definitions.
+    function hasValidCustomFields(context) {
+      let d = request.resource.data;
+      return !('customFields' in d) ||
+        (isCustomFieldsEnabledFor(d, context) &&
+         isValidCustomFieldEntries(
+           d.customFields,
+           get(/databases/$(database)/documents/boards/$(d.boardId)).data
+             .get('submissionConfig', {}).get('fieldSpecs', {})
+         ));
     }
 
     // Post-resolution feedback. The response doc ID is the tracking code without
@@ -408,7 +485,8 @@ service cloud.firestore {
       // Public create from the feedback form (works for both unauthenticated visitors
       // and signed-in users submitting on a board outside their own company).
       // Cannot claim an internal origin; see isPublicSubmissionOrigin().
-      allow create: if isPublicSubmissionOrigin() && isValidSubmissionCreate();
+      allow create: if isPublicSubmissionOrigin() && isValidSubmissionCreate() &&
+        hasValidCustomFields('public');
       allow update: if isSubmissionMergeUpdate() ||
         canManageSubmissions(resource.data.companyId) ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));

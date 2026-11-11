@@ -68,6 +68,7 @@ import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { generateTrackingCode, generateBoardSlug } from './utils';
 import { feedbackResponseId } from './feedback';
+import { deriveSubmissionSummary, getSubmissionConfig } from './submission-fields';
 import { v4 as uuidv4 } from 'uuid';
 
 // User operations
@@ -277,7 +278,7 @@ export async function getBoard(id: string): Promise<Board | null> {
 
 export async function updateBoard(
   boardId: string,
-  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'categoryTranslationsEnabled' | 'categoryTranslations' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate' | 'feedbackConfig'>>
+  data: Partial<Pick<Board, 'name' | 'description' | 'categories' | 'categoryTranslationsEnabled' | 'categoryTranslations' | 'locations' | 'isAnonymousAllowed' | 'showSatisfactionRating' | 'satisfactionRequired' | 'supportedLanguages' | 'recurringEnabled' | 'recurringFrequency' | 'recurringCustomDays' | 'recurringStartDate' | 'currentCycleId' | 'nextCycleDate' | 'feedbackConfig' | 'submissionConfig'>>
 ): Promise<void> {
   try {
     const boardRef = doc(db, 'boards', boardId);
@@ -318,13 +319,21 @@ export async function createSubmission(
           ...(input.submitterMobile?.trim() ? { submitterMobile: input.submitterMobile.trim() } : {}),
         };
 
+    // Custom-field submissions carry no typed subject/description: derive them from the
+    // answers so every consumer of those two fields keeps working (see deriveSubmissionSummary).
+    const customFields = input.customFields;
+    const summary = customFields
+      ? deriveSubmissionSummary(getSubmissionConfig(board).fields, customFields, trackingCode)
+      : { subject: input.subject, description: input.description };
+
     const newSubmission = {
       boardId,
       companyId,
       trackingCode,
       category: input.category,
-      subject: input.subject,
-      description: input.description,
+      subject: summary.subject,
+      description: summary.description,
+      ...(customFields ? { customFields } : {}),
       location: input.location?.trim() || null,
       ...identityFields,
       isAnonymous: input.isAnonymous,
