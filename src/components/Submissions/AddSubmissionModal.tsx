@@ -16,6 +16,7 @@ import {
 import {
   buildSubmissionCustomFields,
   deriveSubmissionSummary,
+  getFormElementToggles,
   getInputFields,
   getSubmissionConfig,
   hasMeaningfulAnswers,
@@ -87,6 +88,9 @@ export function AddSubmissionModal({
   const { subscription, loading: planLoading } = useSubscription();
   const customActive = isCustomFormActive(board, 'internal', canUseSubmissionFields(subscription));
   const customFieldDefs = useMemo(() => getInputFields(getSubmissionConfig(board).fields, 'internal'), [board]);
+  // Default form elements the board owner can switch off. With the category selector hidden the
+  // form keeps its preselected first category: the schema (and the rules) still require one.
+  const { showCategorySelector, showTrackingCodeToSubmitter } = getFormElementToggles(board);
 
   const handleBoardChange = (nextBoardId: string) => {
     const nextBoard = boards.find((b) => b.id === nextBoardId);
@@ -99,10 +103,10 @@ export function AddSubmissionModal({
   const validate = (): boolean => {
     const next = customActive
       ? {
-          ...validateSubmissionCategory(formData.category, board, t),
+          ...(showCategorySelector ? validateSubmissionCategory(formData.category, board, t) : {}),
           ...validateSubmissionAnswers(customFieldDefs, customAnswers),
         }
-      : validateSubmissionContent(formData, board, t);
+      : validateSubmissionContent(formData, board, t, showCategorySelector);
     const email = formData.email?.trim();
     if (email && !EMAIL_PATTERN.test(email)) {
       next.email = t('forms:validation.email');
@@ -246,11 +250,15 @@ export function AddSubmissionModal({
                 <CheckCircle2 size={24} className="text-[var(--c-t1d8a57)]" />
               </div>
               <h3 className="text-base font-semibold text-[var(--c-t1c1917)]">
-                {t('forms:internal_submission.created')}
+                {showTrackingCodeToSubmitter
+                  ? t('forms:internal_submission.created')
+                  : t('forms:feedback.submission_received', { defaultValue: 'Submission received' })}
               </h3>
-              <p className="text-sm text-[var(--c-t78716c)] mt-1">
-                {t('forms:internal_submission.share_hint')}
-              </p>
+              {showTrackingCodeToSubmitter && (
+                <p className="text-sm text-[var(--c-t78716c)] mt-1">
+                  {t('forms:internal_submission.share_hint')}
+                </p>
+              )}
             </div>
 
             {errors.teamFields && (
@@ -259,6 +267,8 @@ export function AddSubmissionModal({
               </div>
             )}
 
+            {showTrackingCodeToSubmitter && (
+              <>
             <div className="rounded-xl border border-[var(--c-becd3c6)] bg-[var(--c-sf5e6df)] p-4 text-center">
               <p className="text-xs font-bold uppercase tracking-widest text-[var(--c-tc0694a)] mb-2">
                 {t('forms:feedback.tracking_code')}
@@ -286,15 +296,19 @@ export function AddSubmissionModal({
                 </Button>
               </div>
             </div>
+              </>
+            )}
 
             <div className="flex flex-col-reverse sm:flex-row gap-2 pt-1">
               <Button variant="secondary" fullWidth onClick={handleAddAnother}>
                 {t('forms:internal_submission.add_another')}
               </Button>
-              <Button variant="secondary" fullWidth onClick={() => copy('code')}>
-                {copied === 'code' ? <Check size={14} /> : <Copy size={14} />}
-                {copied === 'code' ? t('forms:internal_submission.copied') : t('forms:internal_submission.copy_code')}
-              </Button>
+              {showTrackingCodeToSubmitter && (
+                <Button variant="secondary" fullWidth onClick={() => copy('code')}>
+                  {copied === 'code' ? <Check size={14} /> : <Copy size={14} />}
+                  {copied === 'code' ? t('forms:internal_submission.copied') : t('forms:internal_submission.copy_code')}
+                </Button>
+              )}
               <Button variant="primary" fullWidth onClick={onClose}>
                 {t('forms:internal_submission.done')}
               </Button>
@@ -322,14 +336,16 @@ export function AddSubmissionModal({
               />
             )}
 
-            <Select
-              label={t('forms:feedback.category')}
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              options={categoryOptions}
-              error={errors.category}
-              disabled={submitting}
-            />
+            {showCategorySelector && (
+              <Select
+                label={t('forms:feedback.category')}
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                options={categoryOptions}
+                error={errors.category}
+                disabled={submitting}
+              />
+            )}
 
             {customActive ? (
               <CustomFieldsForm

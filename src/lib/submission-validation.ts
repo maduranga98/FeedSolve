@@ -7,7 +7,7 @@ export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * Validates the category. Category stays on every form, fixed or custom, because it
- * routes the submission. Mirrors the category check in `isValidInternalSubmissionCreate()`.
+ * routes the submission (unless the board owner hides the selector). Mirrors the category check in `isValidInternalSubmissionCreate()`.
  */
 export function validateSubmissionCategory(
   category: string,
@@ -33,9 +33,11 @@ export function validateSubmissionCategory(
 export function validateSubmissionContent(
   input: Pick<SubmissionFormInput, 'category' | 'subject' | 'description'>,
   board: Pick<Board, 'categories'> | null,
-  t: TFunction
+  t: TFunction,
+  /** False when the board hides the category selector: the submitter cannot fix a category error. */
+  checkCategory: boolean = true
 ): Record<string, string> {
-  const errors = validateSubmissionCategory(input.category, board, t);
+  const errors = checkCategory ? validateSubmissionCategory(input.category, board, t) : {};
 
   const subject = input.subject.trim();
   if (!subject) {

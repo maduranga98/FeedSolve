@@ -18,6 +18,7 @@ import {
 } from "../../lib/submission-validation";
 import {
   buildSubmissionCustomFields,
+  getFormElementToggles,
   getInputFields,
   getSubmissionConfig,
   isCustomFormActive,
@@ -362,14 +363,17 @@ export function SubmitFeedback() {
   const customActive =
     !!company && isCustomFormActive(board, "public", canUseSubmissionFields(company.subscription));
   const customFieldDefs = getInputFields(getSubmissionConfig(board).fields, "public");
+  // Default form elements the board owner can switch off. With the category selector hidden the
+  // form keeps its preselected first category, which the schema still requires on a submission.
+  const { showCategorySelector, allowAttachments, showTrackingCodeToSubmitter } = getFormElementToggles(board);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = customActive
       ? {
-          ...validateSubmissionCategory(formData.category, board, t),
+          ...(showCategorySelector ? validateSubmissionCategory(formData.category, board, t) : {}),
           ...validateSubmissionAnswers(customFieldDefs, customAnswers),
         }
-      : validateSubmissionContent(formData, board, t);
+      : validateSubmissionContent(formData, board, t, showCategorySelector);
 
     if (!formData.isAnonymous) {
       if (!formData.email?.trim())
@@ -403,7 +407,7 @@ export function SubmitFeedback() {
             }
           : formData
       );
-      if (selectedFiles.length > 0) {
+      if (allowAttachments && selectedFiles.length > 0) {
         await uploadFiles(result.submissionId, selectedFiles);
       }
       setSuccess(result);
@@ -721,12 +725,16 @@ export function SubmitFeedback() {
               </div>
 
               <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--brand-secondary, #1c1917)" }}>
-                {t("forms:feedback.submit_success")}
+                {showTrackingCodeToSubmitter
+                  ? t("forms:feedback.submit_success")
+                  : t("forms:feedback.submission_received", { defaultValue: "Submission received" })}
               </h1>
               <p className="text-[var(--c-t78716c)] mb-8 leading-relaxed text-sm">
                 {t("forms:feedback.thank_you")}
               </p>
 
+              {showTrackingCodeToSubmitter && (
+              <>
               {/* Tracking code */}
               <div
                 className="rounded-2xl p-5 mb-6"
@@ -800,6 +808,8 @@ export function SubmitFeedback() {
               <p className="text-xs text-[var(--c-t8f8680)] mb-1 -mt-1">
                 {t("forms:feedback.pdf_help")}
               </p>
+              </>
+              )}
 
               <button
                 onClick={() => {
@@ -962,22 +972,24 @@ export function SubmitFeedback() {
                     />
                   )}
 
-                  <Select
-                    label={t("forms:feedback.category")}
-                    value={formData.category}
-                    onChange={e => setFormData({ ...formData, category: e.target.value })}
-                    options={board.categories.map(cat => ({
-                      value: cat,
-                      label: board.categoryTranslationsEnabled
-                        ? getCategoryLabel(
-                            cat,
-                            formData.submissionLanguage || i18n.language,
-                            board.categoryTranslations
-                          )
-                        : cat,
-                    }))}
-                    error={errors.category}
-                  />
+                  {showCategorySelector && (
+                    <Select
+                      label={t("forms:feedback.category")}
+                      value={formData.category}
+                      onChange={e => setFormData({ ...formData, category: e.target.value })}
+                      options={board.categories.map(cat => ({
+                        value: cat,
+                        label: board.categoryTranslationsEnabled
+                          ? getCategoryLabel(
+                              cat,
+                              formData.submissionLanguage || i18n.language,
+                              board.categoryTranslations
+                            )
+                          : cat,
+                      }))}
+                      error={errors.category}
+                    />
+                  )}
 
                   {customActive ? (
                     <CustomFieldsForm
@@ -1153,48 +1165,50 @@ export function SubmitFeedback() {
               </div>
 
               {/* ── Section 3: Attachments ── */}
-              <div className="brand-section-card">
-                <div className="flex items-center gap-2.5 mb-5">
-                  <div className="p-2 rounded-lg"
-                    style={{ background: "var(--brand-primary-bg, rgba(192,105,74,0.10))" }}>
-                    <Paperclip size={15} style={{ color: "var(--brand-primary, #c0694a)" }} />
+              {allowAttachments && (
+                <div className="brand-section-card">
+                  <div className="flex items-center gap-2.5 mb-5">
+                    <div className="p-2 rounded-lg"
+                      style={{ background: "var(--brand-primary-bg, rgba(192,105,74,0.10))" }}>
+                      <Paperclip size={15} style={{ color: "var(--brand-primary, #c0694a)" }} />
+                    </div>
+                    <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1c1917)" }}>
+                      {t("forms:feedback.attachments")}
+                    </h3>
                   </div>
-                  <h3 className="text-sm font-bold" style={{ color: "var(--brand-secondary, #1c1917)" }}>
-                    {t("forms:feedback.attachments")}
-                  </h3>
-                </div>
 
-                <FileUploadInput
-                  onFilesSelected={files => setSelectedFiles(prev => [...prev, ...files])}
-                  disabled={submitting || fileUploading}
-                />
-                {selectedFiles.length > 0 && (
-                  <div className="mt-3">
-                    <FilePreview
-                      files={selectedFiles.map(f => ({ name: f.name, size: f.size }))}
-                      onRemove={id => {
-                        if (typeof id !== "number") return;
-                        setSelectedFiles(prev => prev.filter((_, i) => i !== id));
-                      }}
-                      isUploading={fileUploading}
-                    />
-                  </div>
-                )}
-                {uploads.size > 0 && (
-                  <div className="mt-3 space-y-2">
-                    {Array.from(uploads.values()).map(u => (
-                      <FileProgressBar
-                        key={u.fileId}
-                        filename={u.filename}
-                        progress={u.progress}
-                        totalBytes={u.totalBytes}
-                        uploadedBytes={u.uploadedBytes}
-                        error={u.error}
+                  <FileUploadInput
+                    onFilesSelected={files => setSelectedFiles(prev => [...prev, ...files])}
+                    disabled={submitting || fileUploading}
+                  />
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-3">
+                      <FilePreview
+                        files={selectedFiles.map(f => ({ name: f.name, size: f.size }))}
+                        onRemove={id => {
+                          if (typeof id !== "number") return;
+                          setSelectedFiles(prev => prev.filter((_, i) => i !== id));
+                        }}
+                        isUploading={fileUploading}
                       />
-                    ))}
-                  </div>
-                )}
-              </div>
+                    </div>
+                  )}
+                  {uploads.size > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {Array.from(uploads.values()).map(u => (
+                        <FileProgressBar
+                          key={u.fileId}
+                          filename={u.filename}
+                          progress={u.progress}
+                          totalBytes={u.totalBytes}
+                          uploadedBytes={u.uploadedBytes}
+                          error={u.error}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ── Section 4: Satisfaction Rating ── */}
               {board.showSatisfactionRating && (

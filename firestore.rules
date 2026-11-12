@@ -300,6 +300,85 @@ service cloud.firestore {
          ));
     }
 
+    // ── Resolution-phase fields ───────────────────────────────────────────────
+    // A field whose spec has phase == 'resolution' is edited by the team after the submission
+    // exists, by updating the submission's `customFields` array. The update may change nothing
+    // but resolution entries, checked in one positional pass (rules cannot loop, and comparing
+    // the two lists with `in` exceeds the 1000-expression budget):
+    //   - the new list is at least as long as the old one (entries are never removed);
+    //   - each existing position is either untouched, or an existing resolution entry whose
+    //     value changed (same fieldId, valid value for that field);
+    //   - every position past the old end is a new, valid resolution entry.
+    // Intake answers therefore cannot be edited, removed, reordered or added after creation.
+    // Clearing an answer stores an empty value ('' / [] / false) rather than deleting the
+    // entry, so the dropdown and date types also accept '' here. The client (mergeResolutionAnswers
+    // in src/lib/submission-fields.ts) writes in this positional shape.
+    function isValidResolutionValue(v, spec) {
+      return isValidCustomFieldValue(v, spec) || (v == '' && spec.type in ['dropdown', 'date']);
+    }
+
+    function isResolutionEntry(e, specs) {
+      let spec = specs[e.fieldId];
+      // A missing fieldId or value (or a non-map entry) makes the expression error, which denies.
+      return e.keys().hasOnly(['fieldId', 'value']) &&
+        e.fieldId in specs &&
+        spec.get('phase', 'intake') == 'resolution' &&
+        isValidResolutionValue(e.value, spec);
+    }
+
+    function isResolutionEntryAt(next, old, i, specs) {
+      return next.size() <= i ||
+        (i < old.size()
+          ? (next[i] == old[i] || (next[i].fieldId == old[i].fieldId && isResolutionEntry(next[i], specs)))
+          : isResolutionEntry(next[i], specs));
+    }
+
+    // Budget: rules may evaluate 1000 expressions per request, and every changed or appended
+    // entry costs roughly 130 of them on a 15-field board (measured in the emulator; about 5
+    // changed entries fit). The client therefore never sends more than
+    // MAX_RESOLUTION_ENTRY_CHANGES_PER_WRITE (3) changed entries per update; see planResolutionWrites.
+    function isResolutionFieldsChange(next, old, specs) {
+      return next is list && old is list && specs is map &&
+        next.size() <= 15 && next.size() >= old.size() &&
+        isResolutionEntryAt(next, old, 0, specs) &&
+        isResolutionEntryAt(next, old, 1, specs) &&
+        isResolutionEntryAt(next, old, 2, specs) &&
+        isResolutionEntryAt(next, old, 3, specs) &&
+        isResolutionEntryAt(next, old, 4, specs) &&
+        isResolutionEntryAt(next, old, 5, specs) &&
+        isResolutionEntryAt(next, old, 6, specs) &&
+        isResolutionEntryAt(next, old, 7, specs) &&
+        isResolutionEntryAt(next, old, 8, specs) &&
+        isResolutionEntryAt(next, old, 9, specs) &&
+        isResolutionEntryAt(next, old, 10, specs) &&
+        isResolutionEntryAt(next, old, 11, specs) &&
+        isResolutionEntryAt(next, old, 12, specs) &&
+        isResolutionEntryAt(next, old, 13, specs) &&
+        isResolutionEntryAt(next, old, 14, specs);
+    }
+
+    function isResolutionFieldsUpdate() {
+      let boardPath = /databases/$(database)/documents/boards/$(resource.data.boardId);
+      let cfg = get(boardPath).data.get('submissionConfig', {});
+      return exists(boardPath) &&
+        get(boardPath).data.companyId == resource.data.companyId &&
+        isFeedbackPlan(resource.data.companyId) &&
+        cfg.get('useCustomFields', false) == true &&
+        only(['customFields', 'updatedAt']) &&
+        isResolutionFieldsChange(
+          request.resource.data.customFields,
+          resource.data.get('customFields', []),
+          cfg.get('fieldSpecs', {})
+        );
+    }
+
+    // Managers may update a submission freely except its `customFields`: that array may only
+    // change through isResolutionFieldsUpdate(), so intake answers stay as submitted.
+    function isCustomFieldsUntouchedOrResolutionUpdate() {
+      return !('customFields' in request.resource.data.diff(resource.data).affectedKeys()) ||
+        isResolutionFieldsUpdate();
+    }
+
     // Team-only answers: one create-only document per submission
     // (submissions/{id}/teamFields/answers). Written by a team member who can manage the
     // submission, either when logging it or once afterwards; never updated or deleted from
@@ -515,8 +594,8 @@ service cloud.firestore {
       // Cannot claim an internal origin; see isPublicSubmissionOrigin().
       allow create: if isPublicSubmissionOrigin() && isValidSubmissionCreate() &&
         hasValidCustomFields('public');
-      allow update: if isSubmissionMergeUpdate() ||
-        canManageSubmissions(resource.data.companyId) ||
+      allow update: if (canManageSubmissions(resource.data.companyId) && isCustomFieldsUntouchedOrResolutionUpdate()) ||
+        isSubmissionMergeUpdate() ||
         (canReplyToSubmissions(resource.data.companyId) && only(['publicReply', 'publicReplyAt', 'publicReplyBy']));
       allow delete: if canManageCompany(resource.data.companyId);
 
