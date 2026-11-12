@@ -90,7 +90,7 @@ export function AddSubmissionModal({
   const customFieldDefs = useMemo(() => getInputFields(getSubmissionConfig(board).fields, 'internal'), [board]);
   // Default form elements the board owner can switch off. With the category selector hidden the
   // form keeps its preselected first category: the schema (and the rules) still require one.
-  const { showCategorySelector, showTrackingCodeToSubmitter } = getFormElementToggles(board);
+  const { showCategorySelector, showTrackingCodeToSubmitter } = getFormElementToggles(board, canUseSubmissionFields(subscription));
 
   const handleBoardChange = (nextBoardId: string) => {
     const nextBoard = boards.find((b) => b.id === nextBoardId);
