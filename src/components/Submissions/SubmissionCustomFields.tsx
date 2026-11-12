@@ -12,6 +12,8 @@ import {
 } from '../../lib/firestore';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useSubscription } from '../../hooks/useSubscription';
+import { canUseSubmissionFields } from '../../lib/tier-limits';
 import {
   answersFromEntries,
   areAnswersEqual,
@@ -67,6 +69,8 @@ export function SubmissionCustomFields({
 }: SubmissionCustomFieldsProps) {
   const { hasPermissionTo } = usePermissions();
   const { user } = useAuth();
+  const { subscription } = useSubscription();
+  const planAllowed = canUseSubmissionFields(subscription);
   const isCustom = submission.customFields !== undefined;
   const [fetchedBoard, setFetchedBoard] = useState<Board | null>(null);
   const [assignee, setAssignee] = useState<{ uid: string; name: string } | null>(null);
@@ -111,14 +115,14 @@ export function SubmissionCustomFields({
   const fields = config.fields;
   // Team-only fields apply to the whole board once custom fields are switched on.
   const teamFields = useMemo(
-    () => (config.useCustomFields && section !== 'details' ? getTeamOnlyFields(config.fields) : []),
-    [config, section]
+    () => (planAllowed && config.useCustomFields && section !== 'details' ? getTeamOnlyFields(config.fields) : []),
+    [config, section, planAllowed]
   );
   // Resolution fields apply to every submission of a board with custom fields switched on,
   // like team-only fields, whichever form created it.
   const resolutionFields = useMemo(
-    () => (config.useCustomFields && section !== 'team' ? getResolutionFields(config.fields) : []),
-    [config, section]
+    () => (planAllowed && config.useCustomFields && section !== 'team' ? getResolutionFields(config.fields) : []),
+    [config, section, planAllowed]
   );
   const hasResolutionFields = resolutionFields.length > 0;
   const needsAssignee = fields.some((field) => field.autoSource === 'assignedTo');

@@ -150,8 +150,16 @@ export function getSubmissionConfig(board: Pick<Board, 'submissionConfig'> | nul
   };
 }
 
-/** Default form element toggles for a board; every element is shown unless explicitly turned off. */
-export function getFormElementToggles(board: Pick<Board, 'submissionConfig'> | null | undefined): FormElementToggles {
+/**
+ * Default form element toggles for a board; every element is shown unless explicitly turned off.
+ * `planAllowed` is the tier gate (canUseSubmissionFields): without it the toggles are ignored and
+ * the standard form is shown, so a company below Growth never gets a stripped-down form.
+ */
+export function getFormElementToggles(
+  board: Pick<Board, 'submissionConfig'> | null | undefined,
+  planAllowed: boolean
+): FormElementToggles {
+  if (!planAllowed) return { ...DEFAULT_FORM_ELEMENT_TOGGLES };
   const config = getSubmissionConfig(board);
   return {
     showCategorySelector: config.showCategorySelector !== false,

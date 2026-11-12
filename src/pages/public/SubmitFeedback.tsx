@@ -365,7 +365,10 @@ export function SubmitFeedback() {
   const customFieldDefs = getInputFields(getSubmissionConfig(board).fields, "public");
   // Default form elements the board owner can switch off. With the category selector hidden the
   // form keeps its preselected first category, which the schema still requires on a submission.
-  const { showCategorySelector, allowAttachments, showTrackingCodeToSubmitter } = getFormElementToggles(board);
+  const { showCategorySelector, allowAttachments, showTrackingCodeToSubmitter } = getFormElementToggles(
+    board,
+    !!company && canUseSubmissionFields(company.subscription)
+  );
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = customActive
