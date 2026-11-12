@@ -191,6 +191,12 @@ export type SubmissionFieldType = "text" | "textarea" | "dropdown" | "date" | "c
 
 export type SubmissionFieldAutoSource = "createdAt" | "trackingCode" | "assignedTo" | "status";
 
+/**
+ * When a field is filled in: "intake" fields are asked on the creation forms and are read-only
+ * afterwards; "resolution" fields are edited by the team on the submission detail view.
+ */
+export type SubmissionFieldPhase = "intake" | "resolution";
+
 /** Which creation form asks for a field. "all" (the default) means both. */
 export type SubmissionFieldAudience = "all" | "public" | "internal";
 
@@ -204,6 +210,8 @@ export interface SubmissionField {
   showInList: boolean; // show on the submission card / list row
   /** Absent means "all". "internal" fields are team-only and stored in a team-only subcollection. */
   visibleTo?: SubmissionFieldAudience;
+  /** Absent on fields created before phases existed, which means "intake". Not used for autoSource fields. */
+  phase?: SubmissionFieldPhase;
   order: number;
 }
 
@@ -217,6 +225,8 @@ export interface SubmissionFieldSpec {
   type: SubmissionFieldType;
   options?: string[];
   audience?: SubmissionFieldAudience;
+  /** Only ever stored as "resolution"; absent means "intake" so existing boards need no migration. */
+  phase?: "resolution";
 }
 
 export interface SubmissionConfig {
@@ -225,6 +235,10 @@ export interface SubmissionConfig {
   fields: SubmissionField[];
   /** Derived from `fields` on save; used only by firestore.rules to validate submissions. */
   fieldSpecs?: Record<string, SubmissionFieldSpec>;
+  /** Default form elements. Each is absent on boards that predate it, which means true (shown). */
+  showCategorySelector?: boolean;
+  allowAttachments?: boolean;
+  showTrackingCodeToSubmitter?: boolean;
 }
 
 export type SubmissionCustomFieldValueType = string | string[] | boolean;

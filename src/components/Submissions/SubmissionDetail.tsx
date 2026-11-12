@@ -387,7 +387,7 @@ export default function SubmissionDetail({
               </div>
             )}
 
-            <SubmissionCustomFields submission={submission} board={board} section="details" />
+            <SubmissionCustomFields submission={submission} board={board} section="details" onUpdated={onUpdated} />
 
             <div className="rounded-xl border border-[var(--c-be9e0d9)] bg-[var(--c-sffffff)] p-4 sm:p-5">
               <h3 className="text-sm font-bold text-[var(--c-t1c1917)] mb-4">Submission info</h3>

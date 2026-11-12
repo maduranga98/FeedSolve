@@ -64,13 +64,20 @@ import type {
   FeedbackResponse,
   FeedbackContact,
   SubmissionCustomFieldValue,
+  SubmissionField,
   SubmissionTeamFields,
 } from '../types';
 import { db, storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { generateTrackingCode, generateBoardSlug } from './utils';
 import { feedbackResponseId } from './feedback';
-import { deriveSubmissionSummary, getSubmissionConfig } from './submission-fields';
+import {
+  deriveSubmissionSummary,
+  getSubmissionConfig,
+  mergeResolutionAnswers,
+  planResolutionWrites,
+} from './submission-fields';
+import type { SubmissionAnswers } from './submission-fields';
 import { v4 as uuidv4 } from 'uuid';
 
 // User operations
@@ -493,6 +500,33 @@ export async function updateSubmissionStatus(
     updateData.resolvedAt = Timestamp.now();
   }
   await updateDoc(submissionRef, updateData);
+}
+
+/**
+ * Saves the team's answers to resolution-phase fields. Same write path as status, priority and
+ * notes (a direct update of the submission document). The submission is re-read first so
+ * intake answers, and resolution answers changed by a teammate since this view loaded, are
+ * written back untouched; only the given fields are updated, inserted or cleared.
+ * firestore.rules independently rejects any change to an intake-phase entry, and requires the
+ * positional shape mergeResolutionAnswers produces.
+ * Resolves to the saved entries so the caller can show them without another read.
+ */
+export async function updateSubmissionResolutionFields(
+  submissionId: string,
+  resolutionFields: SubmissionField[],
+  answers: SubmissionAnswers
+): Promise<SubmissionCustomFieldValue[]> {
+  const submissionRef = doc(db, 'submissions', submissionId);
+  const submission = await getSubmission(submissionId);
+  if (!submission) throw new Error('Submission not found');
+
+  const current = submission.customFields ?? [];
+  const customFields = mergeResolutionAnswers(resolutionFields, current, answers);
+  // Normally one write; a long form is split so each update stays within the rules' budget.
+  for (const next of planResolutionWrites(current, customFields)) {
+    await updateDoc(submissionRef, { customFields: next, updatedAt: Timestamp.now() });
+  }
+  return customFields;
 }
 
 const TEAM_FIELDS_DOC = 'answers';

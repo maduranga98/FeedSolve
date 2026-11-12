@@ -8,6 +8,7 @@ import type {
   SubmissionFieldAppliesTo,
   SubmissionFieldAudience,
   SubmissionFieldAutoSource,
+  SubmissionFieldPhase,
   SubmissionFieldSpec,
   SubmissionFieldType,
 } from '../types';
@@ -50,6 +51,11 @@ export const SUBMISSION_AUTO_SOURCE_LABELS: Record<SubmissionFieldAutoSource, st
   status: 'Auto: Status',
 };
 
+export const SUBMISSION_PHASE_LABELS: Record<SubmissionFieldPhase, string> = {
+  intake: 'At intake',
+  resolution: 'During resolution',
+};
+
 export const SUBMISSION_APPLIES_TO_LABELS: Record<SubmissionFieldAppliesTo, string> = {
   internal: 'Internal only (team members)',
   public: 'Public form only',
@@ -68,12 +74,34 @@ export function getFieldAudience(field: Pick<SubmissionField, 'visibleTo'>): Sub
   return field.visibleTo === 'public' || field.visibleTo === 'internal' ? field.visibleTo : 'all';
 }
 
+/** Which default (non-custom) form elements a board shows. Independent of custom fields. */
+export interface FormElementToggles {
+  showCategorySelector: boolean;
+  allowAttachments: boolean;
+  showTrackingCodeToSubmitter: boolean;
+}
+
+export const DEFAULT_FORM_ELEMENT_TOGGLES: FormElementToggles = {
+  showCategorySelector: true,
+  allowAttachments: true,
+  showTrackingCodeToSubmitter: true,
+};
+
 /** Fixed form stays the default; custom fields are opt-in and internal-only until widened. */
 export const DEFAULT_SUBMISSION_CONFIG: SubmissionConfig = {
   useCustomFields: false,
   appliesTo: 'internal',
   fields: [],
+  ...DEFAULT_FORM_ELEMENT_TOGGLES,
 };
+
+/**
+ * A field's phase. Fields saved before phases existed have none and are intake fields;
+ * auto-source fields are never filled by anyone, so they are always treated as intake.
+ */
+export function getFieldPhase(field: Pick<SubmissionField, 'phase' | 'autoSource'>): SubmissionFieldPhase {
+  return field.phase === 'resolution' && !field.autoSource ? 'resolution' : 'intake';
+}
 
 export function sortSubmissionFields(fields: SubmissionField[]): SubmissionField[] {
   return [...fields].sort((a, b) => a.order - b.order);
@@ -81,20 +109,29 @@ export function sortSubmissionFields(fields: SubmissionField[]): SubmissionField
 
 /**
  * Fields a person fills in (everything except auto-populated ones). With a `context`,
- * only the fields that form asks for: "Everyone" fields plus the ones scoped to it.
+ * only the fields that creation form asks for: intake-phase "Everyone" fields plus the
+ * ones scoped to it. Resolution-phase fields never appear on a creation form.
  */
 export function getInputFields(fields: SubmissionField[], context?: SubmissionFormContext): SubmissionField[] {
   return sortSubmissionFields(fields).filter((field) => {
     if (field.autoSource) return false;
     if (!context) return true;
+    if (getFieldPhase(field) === 'resolution') return false;
     const audience = getFieldAudience(field);
     return audience === 'all' || audience === context;
   });
 }
 
+/** Fields the team fills in on the detail view after the submission exists. */
+export function getResolutionFields(fields: SubmissionField[]): SubmissionField[] {
+  return getInputFields(fields).filter((field) => getFieldPhase(field) === 'resolution');
+}
+
 /** Team-only fields: never on the public form; answers are stored in the team-only subcollection. */
 export function getTeamOnlyFields(fields: SubmissionField[]): SubmissionField[] {
-  return getInputFields(fields).filter((field) => getFieldAudience(field) === 'internal');
+  return getInputFields(fields).filter(
+    (field) => getFieldPhase(field) === 'intake' && getFieldAudience(field) === 'internal'
+  );
 }
 
 /** Board config with defaults applied for boards that predate the feature. */
@@ -107,6 +144,19 @@ export function getSubmissionConfig(board: Pick<Board, 'submissionConfig'> | nul
     appliesTo: config.appliesTo === 'public' || config.appliesTo === 'both' ? config.appliesTo : 'internal',
     fields: Array.isArray(config.fields) ? sortSubmissionFields(config.fields) : [],
     fieldSpecs: config.fieldSpecs,
+    showCategorySelector: config.showCategorySelector !== false,
+    allowAttachments: config.allowAttachments !== false,
+    showTrackingCodeToSubmitter: config.showTrackingCodeToSubmitter !== false,
+  };
+}
+
+/** Default form element toggles for a board; every element is shown unless explicitly turned off. */
+export function getFormElementToggles(board: Pick<Board, 'submissionConfig'> | null | undefined): FormElementToggles {
+  const config = getSubmissionConfig(board);
+  return {
+    showCategorySelector: config.showCategorySelector !== false,
+    allowAttachments: config.allowAttachments !== false,
+    showTrackingCodeToSubmitter: config.showTrackingCodeToSubmitter !== false,
   };
 }
 
@@ -131,17 +181,25 @@ export function isCustomFormActive(
 /** Trims labels/options, drops blanks and re-numbers `order` to match array position. */
 export function normalizeSubmissionFields(fields: SubmissionField[]): SubmissionField[] {
   return fields.map((field, index) => {
+    const resolution = getFieldPhase(field) === 'resolution';
     const normalized: SubmissionField = {
       id: field.id,
       type: field.type,
       label: field.label.trim(),
-      required: field.autoSource ? false : field.required,
+      // Resolution fields are open tasks on the ticket, not intake gates, so they are never required.
+      required: field.autoSource || resolution ? false : field.required,
       // Team-only answers are not on the submission document the list reads, so they cannot be listed.
-      showInList: field.showInList === true && (!!field.autoSource || getFieldAudience(field) !== 'internal'),
+      showInList:
+        field.showInList === true && (!!field.autoSource || resolution || getFieldAudience(field) !== 'internal'),
       order: index,
     };
     if (field.autoSource) normalized.autoSource = field.autoSource;
-    else if (getFieldAudience(field) !== 'all') normalized.visibleTo = getFieldAudience(field);
+    else {
+      normalized.phase = resolution ? 'resolution' : 'intake';
+      // Resolution answers live on the submission document and are edited by the team, so
+      // audience scoping (which routes answers to the team-only subcollection) does not apply.
+      if (!resolution && getFieldAudience(field) !== 'all') normalized.visibleTo = getFieldAudience(field);
+    }
     if (!field.autoSource && (field.type === 'dropdown' || field.type === 'multiselect')) {
       normalized.options = (field.options ?? []).map((option) => option.trim()).filter(Boolean);
     }
@@ -160,12 +218,14 @@ export function validateSubmissionFields(
     return 'Add at least one field that people fill in. Auto-filled fields alone cannot make a submission.';
   }
 
-  // Each form the config applies to needs something to ask.
-  if (appliesTo !== 'public' && getInputFields(fields, 'internal').length === 0) {
-    return 'The internal form has no fields. Add a field shown to Everyone or Team only.';
+  // Each form the config applies to needs something to ask. A board with only resolution
+  // fields has no custom intake form: it keeps the standard Subject / Description form.
+  const hasIntakeFields = getInputFields(fields).some((field) => getFieldPhase(field) === 'intake');
+  if (hasIntakeFields && appliesTo !== 'public' && getInputFields(fields, 'internal').length === 0) {
+    return 'The internal form has no fields. Add an intake field shown to Everyone or Team only.';
   }
-  if (appliesTo !== 'internal' && getInputFields(fields, 'public').length === 0) {
-    return 'The public form has no fields. Add a field shown to Everyone or Submitter only.';
+  if (hasIntakeFields && appliesTo !== 'internal' && getInputFields(fields, 'public').length === 0) {
+    return 'The public form has no fields. Add an intake field shown to Everyone or Submitter only.';
   }
 
   const seenLabels = new Set<string>();
@@ -206,7 +266,8 @@ export function buildFieldSpecs(fields: SubmissionField[]): Record<string, Submi
     if (field.autoSource) continue;
     const spec: SubmissionFieldSpec = { type: field.type };
     if (field.type === 'dropdown' || field.type === 'multiselect') spec.options = field.options ?? [];
-    if (getFieldAudience(field) !== 'all') spec.audience = getFieldAudience(field);
+    if (getFieldPhase(field) === 'resolution') spec.phase = 'resolution';
+    else if (getFieldAudience(field) !== 'all') spec.audience = getFieldAudience(field);
     specs[field.id] = spec;
   }
   return specs;
@@ -216,10 +277,19 @@ export function buildFieldSpecs(fields: SubmissionField[]): Record<string, Submi
 export function buildSubmissionConfig(
   useCustomFields: boolean,
   appliesTo: SubmissionFieldAppliesTo,
-  fields: SubmissionField[]
+  fields: SubmissionField[],
+  elements: FormElementToggles = DEFAULT_FORM_ELEMENT_TOGGLES
 ): SubmissionConfig {
   const normalized = normalizeSubmissionFields(fields);
-  return { useCustomFields, appliesTo, fields: normalized, fieldSpecs: buildFieldSpecs(normalized) };
+  return {
+    useCustomFields,
+    appliesTo,
+    fields: normalized,
+    fieldSpecs: buildFieldSpecs(normalized),
+    showCategorySelector: elements.showCategorySelector,
+    allowAttachments: elements.allowAttachments,
+    showTrackingCodeToSubmitter: elements.showTrackingCodeToSubmitter,
+  };
 }
 
 export type SubmissionAnswers = Record<string, SubmissionCustomFieldValueType | undefined>;
@@ -315,6 +385,115 @@ export function buildSubmissionCustomFields(
 /** False for an untouched form: nothing answered and no box ticked. */
 export function hasMeaningfulAnswers(entries: SubmissionCustomFieldValue[]): boolean {
   return entries.some((entry) => entry.value !== false);
+}
+
+/** Form state for a set of fields, pre-filled from the answers already saved on the submission. */
+export function answersFromEntries(
+  fields: SubmissionField[],
+  entries: SubmissionCustomFieldValue[] | undefined
+): SubmissionAnswers {
+  const valuesById = new Map((entries ?? []).map((entry) => [entry.fieldId, entry.value]));
+  const answers: SubmissionAnswers = {};
+  for (const field of fields) {
+    const value = valuesById.get(field.id);
+    if (value !== undefined) answers[field.id] = value;
+  }
+  return answers;
+}
+
+/**
+ * Applies resolution-phase answers to a submission's stored entries, in the positional shape
+ * firestore.rules requires (see isResolutionFieldsChange): every existing entry keeps its
+ * index and is returned untouched unless it belongs to one of `resolutionFields`, in which
+ * case only its value changes; answers with no entry yet are appended. Entries are never
+ * removed, so clearing an answer stores an empty value ('' / [] / false) that every reader
+ * treats as "not filled in". Checkboxes get a new entry only once ticked, so saving another
+ * field never invents a "No" for a box nobody touched.
+ */
+export function mergeResolutionAnswers(
+  resolutionFields: SubmissionField[],
+  existing: SubmissionCustomFieldValue[],
+  answers: SubmissionAnswers
+): SubmissionCustomFieldValue[] {
+  const fieldsById = new Map(getInputFields(resolutionFields).map((field) => [field.id, field]));
+  const written = new Set<string>();
+
+  const valueFor = (field: SubmissionField): SubmissionCustomFieldValueType => {
+    const value = answers[field.id];
+    if (field.type === 'checkbox') return value === true;
+    if (field.type === 'multiselect') return Array.isArray(value) ? value : [];
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
+  const result = existing.map((entry) => {
+    const field = fieldsById.get(entry.fieldId);
+    if (!field || written.has(field.id)) return entry;
+    written.add(field.id);
+    return { fieldId: field.id, value: valueFor(field) };
+  });
+
+  for (const field of fieldsById.values()) {
+    if (written.has(field.id)) continue;
+    const value = valueFor(field);
+    if (!isEmptyAnswer(value) && value !== false) result.push({ fieldId: field.id, value });
+  }
+
+  return result;
+}
+
+/**
+ * firestore.rules checks a `customFields` update entry by entry and has a hard budget of 1000
+ * expressions per request, which roughly 5 changed entries consume on a 15-field board. Writes
+ * are therefore split so no single update changes more than this many entries.
+ * Keep in sync with the note above isResolutionFieldsChange in firestore.rules.
+ */
+export const MAX_RESOLUTION_ENTRY_CHANGES_PER_WRITE = 3;
+
+/**
+ * Splits the change from `current` to `target` (as produced by mergeResolutionAnswers) into
+ * the successive full arrays to write. Each one differs from the previous by at most
+ * `maxChanges` entries, and each is itself a valid update under the positional rule, so a write
+ * that fails part-way leaves a consistent submission and a retry simply continues. Empty when
+ * nothing changed.
+ */
+export function planResolutionWrites(
+  current: SubmissionCustomFieldValue[],
+  target: SubmissionCustomFieldValue[],
+  maxChanges: number = MAX_RESOLUTION_ENTRY_CHANGES_PER_WRITE
+): SubmissionCustomFieldValue[][] {
+  const changed: number[] = [];
+  target.forEach((entry, index) => {
+    const before = current[index];
+    if (!before || before.fieldId !== entry.fieldId || JSON.stringify(before.value) !== JSON.stringify(entry.value)) {
+      changed.push(index);
+    }
+  });
+
+  const writes: SubmissionCustomFieldValue[][] = [];
+  const working = [...current];
+  for (let start = 0; start < changed.length; start += maxChanges) {
+    // Indices past the end of `current` ascend without gaps, so assigning them appends in order.
+    for (const index of changed.slice(start, start + maxChanges)) working[index] = target[index];
+    writes.push([...working]);
+  }
+  return writes;
+}
+
+/** True when two answer maps hold the same value for every one of `fields`. */
+export function areAnswersEqual(
+  fields: SubmissionField[],
+  a: SubmissionAnswers,
+  b: SubmissionAnswers
+): boolean {
+  const normalize = (value: SubmissionCustomFieldValueType | undefined) =>
+    typeof value === 'string' ? value.trim() : Array.isArray(value) ? [...value].sort().join('\u0000') : value ?? null;
+  return fields.every((field) => {
+    const left = normalize(a[field.id]);
+    const right = normalize(b[field.id]);
+    // An unticked checkbox and a missing answer are the same state.
+    if (field.type === 'checkbox') return (left === true) === (right === true);
+    return (left === '' ? null : left) === (right === '' ? null : right);
+  });
 }
 
 /**
@@ -420,6 +599,7 @@ export interface SubmissionFieldDisplay {
   type: SubmissionFieldType;
   autoSource?: SubmissionFieldAutoSource;
   audience: SubmissionFieldAudience;
+  phase: SubmissionFieldPhase;
   /** True when the board no longer defines this field but the submission still holds an answer. */
   removed: boolean;
 }
@@ -460,6 +640,7 @@ export function getSubmissionFieldDisplays(
           type: field.type,
           autoSource: field.autoSource,
           audience: 'all',
+          phase: 'intake',
           removed: false,
         });
       }
@@ -476,6 +657,7 @@ export function getSubmissionFieldDisplays(
       value,
       type: field.type,
       audience: getFieldAudience(field),
+      phase: getFieldPhase(field),
       removed: false,
     });
   }
@@ -492,6 +674,7 @@ export function getSubmissionFieldDisplays(
           value,
           type: 'text',
           audience: 'all',
+          phase: 'intake',
           removed: true,
         });
       }
