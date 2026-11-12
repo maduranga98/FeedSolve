@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth } from '../lib/firebase';
+import type { SubmissionConfig } from '../types';
 
 export type Engagement = 'active' | 'dormant' | 'inactive' | 'not_started';
 
@@ -128,6 +129,8 @@ export interface CreateBoardInput {
   description: string;
   categories: string[];
   isAnonymousAllowed: boolean;
+  /** Optional custom submission fields and form element toggles; omitted keeps the standard form. */
+  submissionConfig?: SubmissionConfig;
   users: { email: string; role: 'admin' | 'manager' | 'viewer' }[];
 }
 

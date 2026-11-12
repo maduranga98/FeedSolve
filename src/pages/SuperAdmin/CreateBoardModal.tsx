@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { ChevronDown, Plus, X } from 'lucide-react';
 import {
   createBoardAsSuperAdmin,
   type AdminCompany,
   type CreateBoardResult,
 } from '../../hooks/useSuperAdmin';
+import { SubmissionFieldsEditor } from '../../components/boards/SubmissionFieldsEditor';
+import type { SubmissionFormDraft } from '../../components/boards/SubmissionFieldsEditor';
+import {
+  buildSubmissionConfig,
+  normalizeSubmissionFields,
+  validateSubmissionFields,
+} from '../../lib/submission-fields';
 
 type Role = 'admin' | 'manager' | 'viewer';
 interface UserRow { email: string; role: Role }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const DEFAULT_FORM_DRAFT: SubmissionFormDraft = {
+  useCustomFields: false,
+  appliesTo: 'internal',
+  fields: [],
+  showCategorySelector: true,
+  allowAttachments: true,
+  showTrackingCodeToSubmitter: true,
+};
 
 const field =
   'w-full rounded-xl border border-[var(--c-be0d6cf)] bg-[var(--c-sffffff)] px-3 py-2 text-sm text-[var(--c-t1c1917)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--c-bc0694a)]';
@@ -28,6 +44,8 @@ export function CreateBoardModal({ companies, defaultCompanyId, onClose, onCreat
   const [categories, setCategories] = useState('');
   const [anonymous, setAnonymous] = useState(true);
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
+  const [formDraft, setFormDraft] = useState<SubmissionFormDraft>(DEFAULT_FORM_DRAFT);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CreateBoardResult | null>(null);
@@ -53,6 +71,30 @@ export function CreateBoardModal({ companies, defaultCompanyId, onClose, onCreat
     if (name.trim().length < 2) return setError('Board name must be at least 2 characters');
     if (bad) return setError(`Invalid email: ${bad.email}`);
 
+    // Same normalisation and validation as the board's Submission Form settings. Left at its
+    // defaults the board is created exactly as before, with no submissionConfig at all.
+    const normalizedFields = normalizeSubmissionFields(formDraft.fields);
+    if (formDraft.useCustomFields) {
+      const formError = validateSubmissionFields(normalizedFields, formDraft.appliesTo);
+      if (formError) {
+        setFormOpen(true);
+        return setError(formError);
+      }
+    }
+    const formChanged =
+      formDraft.useCustomFields ||
+      normalizedFields.length > 0 ||
+      !formDraft.showCategorySelector ||
+      !formDraft.allowAttachments ||
+      !formDraft.showTrackingCodeToSubmitter;
+    const submissionConfig = formChanged
+      ? buildSubmissionConfig(formDraft.useCustomFields, formDraft.appliesTo, normalizedFields, {
+          showCategorySelector: formDraft.showCategorySelector,
+          allowAttachments: formDraft.allowAttachments,
+          showTrackingCodeToSubmitter: formDraft.showTrackingCodeToSubmitter,
+        })
+      : undefined;
+
     setSubmitting(true);
     try {
       const res = await createBoardAsSuperAdmin({
@@ -61,6 +103,7 @@ export function CreateBoardModal({ companies, defaultCompanyId, onClose, onCreat
         description: description.trim(),
         categories: categories.split(',').map((c) => c.trim()).filter(Boolean),
         isAnonymousAllowed: anonymous,
+        ...(submissionConfig ? { submissionConfig } : {}),
         users: cleanUsers,
       });
       setResult(res);
@@ -75,7 +118,7 @@ export function CreateBoardModal({ companies, defaultCompanyId, onClose, onCreat
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <div className="absolute inset-0 bg-black/40" onClick={() => !submitting && onClose()} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-label="Create board" className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-[var(--c-sffffff)] p-6 shadow-xl sm:rounded-3xl">
+      <div role="dialog" aria-modal="true" aria-label="Create board" className={`relative max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-[var(--c-sffffff)] p-6 shadow-xl sm:rounded-3xl ${formOpen ? 'max-w-2xl' : 'max-w-lg'}`}>
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-[var(--c-t1c1917)]">{result ? 'Board created' : 'New board'}</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-xl p-2 text-[var(--c-t78716c)] hover:bg-[var(--c-sf0eae5)]">
@@ -135,6 +178,34 @@ export function CreateBoardModal({ companies, defaultCompanyId, onClose, onCreat
               <input type="checkbox" checked={anonymous} onChange={(e) => setAnonymous(e.target.checked)} />
               Allow anonymous submissions
             </label>
+
+            <div className="rounded-2xl border border-[var(--c-be0d6cf)]">
+              <button
+                type="button"
+                onClick={() => setFormOpen((open) => !open)}
+                aria-expanded={formOpen}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm"
+              >
+                <span>
+                  <span className="block font-medium text-[var(--c-t1c1917)]">
+                    Submission form <span className="font-normal text-[var(--c-ta89890)]">(optional)</span>
+                  </span>
+                  <span className="block text-xs text-[var(--c-t78716c)]">
+                    {formDraft.useCustomFields
+                      ? `Custom fields on · ${formDraft.fields.length} field${formDraft.fields.length === 1 ? '' : 's'}`
+                      : 'Standard Subject / Description form'}
+                  </span>
+                </span>
+                <ChevronDown size={16} className={`shrink-0 text-[var(--c-t78716c)] transition-transform ${formOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {/* Kept mounted so the draft survives collapsing. */}
+              <div hidden={!formOpen} className="border-t border-[var(--c-be0d6cf)] p-4">
+                <SubmissionFieldsEditor value={formDraft} onChange={setFormDraft} />
+                <p className="mt-3 text-xs text-[var(--c-t78716c)]">
+                  Custom fields are applied once the company's plan includes them.
+                </p>
+              </div>
+            </div>
 
             <fieldset className="space-y-2">
               <legend className="mb-1 text-sm font-medium text-[var(--c-t1c1917)]">Users <span className="font-normal text-[var(--c-ta89890)]">(invited to the company by email)</span></legend>
