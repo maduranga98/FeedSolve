@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Mail, Lock, User, Building2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import { trackLeadCreated } from "../../lib/tracking";
 import { Button, Input } from "../../components/Shared";
 import {
   validatePassword,
@@ -120,6 +121,7 @@ export function SignUp() {
         sanitizeInput(formData.name),
         sanitizeInput(formData.companyName),
       );
+      trackLeadCreated(formData.email.toLowerCase().trim());
       navigate("/dashboard");
     } catch (error) {
       setErrors({

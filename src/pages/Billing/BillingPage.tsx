@@ -7,6 +7,7 @@ import { useSubscription } from '../../hooks/useSubscription';
 import { useInvoices } from '../../hooks/useInvoices';
 import { useStripe } from '../../hooks/useStripe';
 import { LoadingSpinner } from '../../components/Shared';
+import { trackSubscriptionCreated } from '../../lib/tracking';
 
 export function BillingPage() {
   const { subscription, loading: subscriptionLoading, refetch } = useSubscription();
@@ -28,6 +29,32 @@ export function BillingPage() {
   useEffect(() => {
     document.title = 'Billing | FeedSolve';
   }, []);
+
+  // Fire the conversion only once the backend (Stripe webhook -> Firestore)
+  // has confirmed an active paid subscription after checkout.
+  const checkoutSuccess = new URLSearchParams(window.location.search).get('success') === 'true';
+  const confirmedSubId =
+    subscription?.status === 'active' && subscription.tier !== 'free'
+      ? subscription.stripeSubscriptionId
+      : undefined;
+
+  useEffect(() => {
+    if (!checkoutSuccess || !confirmedSubId || !subscription) return;
+    trackSubscriptionCreated(confirmedSubId, subscription.priceId ?? subscription.tier);
+  }, [checkoutSuccess, confirmedSubId, subscription]);
+
+  // The webhook can lag behind the redirect: poll briefly until confirmed.
+  useEffect(() => {
+    if (!checkoutSuccess || confirmedSubId) return;
+    let attempts = 0;
+    const id = setInterval(() => {
+      attempts += 1;
+      if (attempts > 10) clearInterval(id);
+      else refetch();
+    }, 2000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutSuccess, confirmedSubId]);
 
   if (subscriptionLoading) {
     return (
