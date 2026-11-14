@@ -13,6 +13,7 @@ import { Timestamp } from 'firebase/firestore';
 import type { User, AuthContextType } from '../types';
 import { auth } from '../lib/firebase';
 import { createUser, createCompany, getUser } from '../lib/firestore';
+import { trackRedditEvent } from '../lib/redditPixel';
 import { getFirebaseErrorMessage } from '../lib/firebase-errors';
 
 const googleProvider = new GoogleAuthProvider();
@@ -76,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const companyId = result.user.uid;
       await createCompany(companyId, companyName, email);
       const newUser = await createUser(result.user.uid, email, name, companyId, 'admin');
+      trackRedditEvent('SignUp', { email });
       setUser(newUser);
     } catch (error) {
       throw new Error(getFirebaseErrorMessage(error));
@@ -102,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const email = result.user.email || '';
         await createCompany(uid, `${name}'s Workspace`, email);
         userData = await createUser(uid, email, name, uid, 'admin');
+        trackRedditEvent('SignUp', { email });
       }
       if (userData) setUser(userData);
     } catch (error: any) {
@@ -123,6 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const email = result.user.email || '';
         await createCompany(uid, `${name}'s Workspace`, email);
         userData = await createUser(uid, email, name, uid, 'admin');
+        trackRedditEvent('SignUp', { email });
       }
       if (userData) setUser(userData);
     } catch (error: any) {
